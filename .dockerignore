@@ -1,0 +1,11 @@
+.git
+.gitignore
+node_modules
+web/node_modules
+web/dist
+infra/
+docs/
+*.md
+*.log
+.env
+.env.*
