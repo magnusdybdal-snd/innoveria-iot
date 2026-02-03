@@ -1,9 +1,13 @@
 package main
 
 import (
-	"fmt"
+	"innoveria-iot/api-gateway/internal"
+	"innoveria-iot/api-gateway/internal/config"
 )
 
 func main()  {
-	fmt.Println("hello world")
+	cfg := config.Load()
+	server := internal.NewServer(cfg)
+
+	server.Run()
 }
