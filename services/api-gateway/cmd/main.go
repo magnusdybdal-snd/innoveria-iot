@@ -5,6 +5,7 @@ import (
 	"innoveria-iot/api-gateway/internal/server"
 )
 
+// TODO: Setup logging
 func main()  {
 	cfg := config.Load()
 	server := server.NewServer(cfg)

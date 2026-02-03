@@ -1,5 +1,6 @@
 package routing
 
+// API gateway routes 
 const (
 	INDEX = "/"
 	VERSION = "v1"

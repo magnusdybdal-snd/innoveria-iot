@@ -17,6 +17,7 @@ func NewServer(cfg *config.Config) *Server {
 	}
 }
 
+// Server entry point
 func (s *Server) Run() {
 	mux := routing.NewRouter()
 
