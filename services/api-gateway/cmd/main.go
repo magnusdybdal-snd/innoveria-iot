@@ -1,7 +1,14 @@
 package main
 
-import "fmt"
+import (
+	"innoveria-iot/api-gateway/internal/config"
+	"innoveria-iot/api-gateway/internal/server"
+)
 
+// TODO: Setup logging
 func main()  {
-	fmt.Println("hello world")
+	cfg := config.Load()
+	server := server.NewServer(cfg)
+
+	server.Run()
 }
