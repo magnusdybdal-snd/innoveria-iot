@@ -10,6 +10,7 @@ func NewRouter() *http.ServeMux  {
 	
 	// Routes:
 	mux.HandleFunc("GET /",handlers.Root)
+	mux.HandleFunc("GET /collection",handlers.HelloProxy)
 
 	return mux
 }
