@@ -88,6 +88,17 @@ services:
     environment:
       - GO_ENV=development
 
+  collection-service:
+    build:
+      context: .
+      dockerfile: infra/development/collection-service.Dockerfile
+    ports:
+      - "8082:8080"
+    volumes:
+      - ./services/collection-service:/app
+      - ./pkg:/pkg
+    environment:
+      - GO_ENV=development
 volumes:
   postgresqldata:
   redisdata:

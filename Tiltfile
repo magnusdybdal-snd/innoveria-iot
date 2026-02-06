@@ -11,6 +11,11 @@ dc_resource(
 )
 
 dc_resource(
+    'collection-service',
+    labels=['microservice']
+)
+
+dc_resource(
     'chirpstack',
     labels=['chirpstack']
 )

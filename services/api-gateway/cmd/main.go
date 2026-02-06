@@ -1,14 +1,14 @@
 package main
 
 import (
-	"innoveria-iot/api-gateway/internal/server"
-	"innoveria-iot/pkg/logger"
 	"log/slog"
 	"os"
+
+	"innoveria-iot/api-gateway/internal/server"
+	"innoveria-iot/pkg/logger"
 )
 
-// TODO: Setup logging
-func main()  {
+func main() {
 	logger.NewLogger("api-gateway")
 
 	if err := server.Run(); err != nil {
