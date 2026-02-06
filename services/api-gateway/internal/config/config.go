@@ -1,10 +1,13 @@
 package config
 
-import "innoveria-iot/pkg/env"
+import (
+	"innoveria-iot/pkg/env"
+	"strings"
+)
 
 type Config struct {
-	Addr string
-	// Some serviceURL
+	Addr       string
+	CollSvcURL string
 	// Some serviceURL
 	// Some serviceAPIKEY?
 }
@@ -13,10 +16,9 @@ type Config struct {
 func Load() *Config {
 	cfg := Config{
 		Addr: ":" + env.Get("PORT", "8080"),
+		CollSvcURL: strings.TrimSpace(env.Get("COLLECTION_SERVICE", "http://localhost:8082")),
 		// Some serviceURL
 	}
-
-	// TODO: Handle edge cases, if env is empty
 
 	return &cfg
 }
