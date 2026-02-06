@@ -1,32 +1,64 @@
 package server
 
 import (
-	"innoveria-iot/api-gateway/internal/config"
-	"innoveria-iot/api-gateway/internal/routing"
+	"context"
+	"errors"
+	"fmt"
+	"log/slog"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
+	"innoveria-iot/api-gateway/internal/config"
 )
 
-type Server struct {
-	cfg *config.Config
-}
-
-func NewServer(cfg *config.Config) *Server {
-	return &Server{
-		cfg: cfg,
-		// logger
-	}
-}
-
 // Server entry point
-func (s *Server) Run() {
-	mux := routing.NewRouter()
+func Run() error {
+	cfg := config.Load()
+	mux := NewRouter()
 
-	server :=  &http.Server{
-		Addr: s.cfg.Addr,
-		Handler: mux,
+	server := &http.Server{
+		Addr:              cfg.Addr,
+		Handler:           mux,
+		ReadHeaderTimeout: 5 * time.Second,
+		IdleTimeout:       120 * time.Second,
+		// Intentionally avoid ReadTimeout/WriteTimeout here because of mqtt
 	}
 
-	// TODO: graceful shutdown?
-	server.ListenAndServe()
-}
+	// main startup function
+	serverErrors := make(chan error, 1)
+	go func() {
+		slog.Info("api-gateway listning", "addr", cfg.Addr)
+		err := server.ListenAndServe()
+		serverErrors <- err
+	}()
 
+	shutdown := make(chan os.Signal, 1)
+	signal.Notify(shutdown, os.Interrupt, syscall.SIGTERM)
+	
+	// Handles server startup errors and graceful shutdown
+	select {
+	case err := <-serverErrors:
+		if err == nil {
+			return nil
+		}
+		if errors.Is(err,http.ErrServerClosed) {
+			return nil
+		}
+		return fmt.Errorf("listen %w",err)
+	case sig := <- shutdown:
+		slog.Info("api-gateway shutting down","signal",sig.String())
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+		
+		if err := server.Shutdown(ctx); err != nil {
+			slog.Error("api-gateway shutdown error","err", err)
+			server.Close()
+			return fmt.Errorf("shutdown: %w",err)
+		}
+	}
+
+	return nil
+}

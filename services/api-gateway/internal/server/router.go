@@ -1,4 +1,4 @@
-package routing
+package server 
 
 import (
 	"innoveria-iot/api-gateway/internal/handlers"
