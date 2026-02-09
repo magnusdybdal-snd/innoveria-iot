@@ -2,7 +2,6 @@ import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import innLogo from './assets/innoveria.png'
 import viteLogo from '/vite.svg'
-import './App.css'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -10,7 +9,7 @@ function App() {
   return (
       <>
           <div id="top">
-              <ul id="navigation">
+              <ul >
                   <li><a href="#" target="_blank">
                       <img src={innLogo} alt="Innoveria logo"/>
                   </a></li>
@@ -25,7 +24,7 @@ function App() {
                   </li>
               </ul>
           </div>
-          <a padding="2em">
+          <a>
               <div>
                   <a href="https://vite.dev" target="_blank">
                       <img src={viteLogo} className="logo" alt="Vite logo"/>
