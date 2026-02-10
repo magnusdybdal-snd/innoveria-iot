@@ -6,13 +6,13 @@ services:
     volumes:
       - ./infra/config/chirpstack:/etc/chirpstack
     depends_on:
-      - postgres
+      - chirpstack-postgres
       - mosquitto
       - redis
     environment:
       - MQTT_BROKER_HOST=mosquitto
       - REDIS_HOST=redis
-      - POSTGRESQL_HOST=postgres
+      - POSTGRESQL_HOST=chirpstack-postgres
     ports:
       - "8080:8080"
 
@@ -39,7 +39,7 @@ services:
     depends_on:
       - chirpstack
 
-  postgres:
+  chirpstack-postgres:
     image: postgres:14-alpine
     restart: unless-stopped
     volumes:

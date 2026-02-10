@@ -11,7 +11,7 @@ func NewUpstreamProxy(baseURL string) (http.Handler, error) {
 	if err != nil {
 		return nil, err
 	}
-	_ = proxy.NewReverseProxy(base)
+	rp := proxy.NewReverseProxy(base)
 
-	return nil, nil
+	return rp, nil
 }

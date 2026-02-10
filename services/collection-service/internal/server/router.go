@@ -11,6 +11,7 @@ func NewRouter() *http.ServeMux  {
 	// Routes:
 	mux.HandleFunc("GET /",handlers.Root)
 	mux.HandleFunc("GET /collection",handlers.HelloProxy)
+	mux.HandleFunc("GET /api/v1/collection/latest",handlers.HelloProxy) // test for proxy
 
 	return mux
 }

@@ -31,7 +31,7 @@ dc_resource(
 )
 
 dc_resource(
-    'postgres',
+    'chirpstack-postgres',
     labels=['chirpstack']
 )
 

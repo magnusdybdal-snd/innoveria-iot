@@ -17,7 +17,7 @@ import (
 // Server entry point
 func Run() error {
 	cfg := config.Load()
-	mux := NewRouter()
+	mux := NewRouter(cfg)
 
 	server := &http.Server{
 		Addr:              cfg.Addr,

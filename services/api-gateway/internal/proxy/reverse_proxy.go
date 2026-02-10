@@ -1,11 +1,14 @@
 package proxy
 
 import (
+	"errors"
 	"net"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
 	"time"
+
+	"innoveria-iot/pkg/json"
 )
 
 // DefaultReverseProxyTransport returns a shared HTTP transport
@@ -50,5 +53,22 @@ func NewReverseProxy(base *url.URL) *httputil.ReverseProxy {
 
 	// Flush repsonse periodically instead of buffering
 	rp.FlushInterval = 100 * time.Millisecond
+
+	// Error handling for to big requests and upstream errors 
+	rp.ErrorHandler = func(w http.ResponseWriter, r *http.Request, err error) {
+		var mbe *http.MaxBytesError
+		if errors.As(err,&mbe) {
+			resp := map[string]string {
+				"error": "request to large",
+			}
+			_ = json.Encode(w,http.StatusRequestEntityTooLarge,resp)
+		}
+
+		resp := map[string]string {
+			"error": "bad gateway",
+		}
+
+		_ = json.Encode(w,http.StatusBadGateway, resp)
+	}
 	return rp
 }

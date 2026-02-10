@@ -16,7 +16,7 @@ type Config struct {
 func Load() *Config {
 	cfg := Config{
 		Addr: ":" + env.Get("PORT", "8080"),
-		CollSvcURL: strings.TrimSpace(env.Get("COLLECTION_SERVICE", "http://localhost:8082")),
+		CollSvcURL: strings.TrimSpace(env.Get("COLLECTION_SERVICE", "http://collection-service:8080")),
 		// Some serviceURL
 	}
 
