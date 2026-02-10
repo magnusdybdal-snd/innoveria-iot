@@ -54,3 +54,7 @@ docker-compose.override.yml
 
 *.pid
 *.seed
+
+# Claude
+.claude/
+CLAUDE.md
