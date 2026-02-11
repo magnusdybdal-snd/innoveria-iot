@@ -24,6 +24,7 @@ func Run() error {
 		IdleTimeout:       120 * time.Second,
 	}
 
+
 	// main startup function
 	serverErrors := make(chan error, 1)
 	go func() {
