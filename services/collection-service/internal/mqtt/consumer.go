@@ -20,7 +20,7 @@ func New(cfg config.Config, msgHandler mqtt.MessageHandler) (*Client,error){
 		AddBroker(cfg.MQTTBrokerURL).
 		SetClientID(cfg.MQTTClientId).
 		SetAutoReconnect(true).
-		SetConnectRetry(true).
+		SetConnectRetry(false).
 		SetConnectRetryInterval(5 * time.Second).
 		SetKeepAlive(30 * time.Second).
 		SetPingTimeout(10 * time.Second).

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"innoveria-iot/collection-service/internal/config"
+	"innoveria-iot/collection-service/internal/mqtt"
 	"log/slog"
 	"net/http"
 	"os"
@@ -23,7 +24,21 @@ func Run() error {
 		ReadHeaderTimeout: 5 * time.Second,
 		IdleTimeout:       120 * time.Second,
 	}
+	
+	coll := mqtt.NewCollector(1000)
+	coll.StartWorker(cfg.MQTTWorkerCount)
+	defer coll.Close()
+	
+	client, err := mqtt.New(*cfg, coll.MQTTHandler)
+	if err != nil {
+		return fmt.Errorf("mqtt init: %v",err)
+	}
+	defer client.Close()
 
+
+	if err := client.Subscribe(cfg.MQTTTopic); err != nil {
+		return fmt.Errorf("mqtt subscribe: %v",err)
+	}
 
 	// main startup function
 	serverErrors := make(chan error, 1)
