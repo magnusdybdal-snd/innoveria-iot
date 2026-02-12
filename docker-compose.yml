@@ -1,10 +1,12 @@
 services:
   chirpstack:
     image: chirpstack/chirpstack:4
-    command: -c /etc/chirpstack
+    entrypoint: ["/bin/sh", "/scripts/startChirpstack.sh"]
     restart: unless-stopped
     volumes:
       - ./infra/config/chirpstack:/etc/chirpstack
+      - ./infra/config/chirpstack-device-profiles:/profiles
+      - ./scripts/startChirpstack.sh:/scripts/startChirpstack.sh
     depends_on:
       - chirpstack-postgres
       - mosquitto
