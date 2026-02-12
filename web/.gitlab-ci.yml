@@ -1,0 +1,46 @@
+# CI for frontend (web)
+variables:
+  FRONTEND_PROJECT_DIR: "web"
+
+check:
+  before_script:
+    - cd "$FRONTEND_PROJECT_DIR"
+  stage: check
+  tags:
+    - dind
+  image: oven/bun:latest
+  script:
+    - bun install --frozen-lockfile # Install dependencies
+    - bun run lint
+    - bun run formatcheck # Do not run `format` - this will change files.
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" # (default -> "on success" -> run pipeline automatically if previous stage succeeded)
+
+build:
+  before_script:
+    - cd "$FRONTEND_PROJECT_DIR"
+  stage: build
+  tags:
+    - dind
+  image: oven/bun:latest
+  script:
+    - bun install --frozen-lockfile # Install dependencies
+    - bun run build # Run build
+  artifacts:
+    paths:
+      - $FRONTEND_PROJECT_DIR/dist/ # vite default build path
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" # run pipeline automatically if previous stage succeeded
+
+test:
+  before_script:
+    - cd "$FRONTEND_PROJECT_DIR"
+  stage: test
+  tags:
+    - dind
+  image: oven/bun:latest
+  script:
+    - bun install --frozen-lockfile # Install dependencies
+    - bun test
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" # run pipeline automatically if previous stage succeeded
