@@ -1,13 +1,15 @@
 import Box from "@mui/material/Box";
 import Link from "@mui/material/Link";
+import { Link as RouterLink } from 'react-router';
 
 type MenuBoxProps = {
     title: string;
+    page: string;
     add: boolean;
 };
 
 {/*Box for menu components*/}
-export default function MenuBox({ title, add }: MenuBoxProps) {
+export default function MenuBox({ title, add, page }: MenuBoxProps) {
     return (
         <Box
             sx={{
@@ -19,9 +21,19 @@ export default function MenuBox({ title, add }: MenuBoxProps) {
             }}
         >
             <div className="w-64 p-[10px]">
-                <h2 className="font-normal text-3xl" style={{ margin: 0 }}>
+                {/*Page link*/}
+                <Link
+                    component={RouterLink} // use react-router's Link
+                    to={page}               // absolute path
+                    underline="none"
+                    sx={{
+                        fontSize: '1.75rem',
+                        fontWeight: 'normal',
+                        color: 'primary.main',
+                    }}
+                >
                     {title}
-                </h2>
+                </Link>
                 <nav>
                     <Link href="#" underline="none">
                         | KPI dashboard

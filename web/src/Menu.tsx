@@ -5,6 +5,7 @@ import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import Typography from '@mui/material/Typography'
 import Avatar from '@mui/material/Avatar'
+import { Link as RouterLink } from 'react-router';
 import MenuBox from './templates/menuBox.tsx'
 
 export default function Menu() {
@@ -56,20 +57,21 @@ export default function Menu() {
               <nav className="flex-1 flex flex-col mt-4 space-y-2">
 
                   <a className="py-2 hover:bg-gray-700 rounded">
-                      <MenuBox title={"Dashboard views"} add={true}/>
+                      <MenuBox title="Dashboard views" add={true} page="/Dashboard"/>
                   </a>
                   <a className="py-2 hover:bg-gray-700 rounded">
-                      <MenuBox title={"Devices"} add={false}/>
+                      <MenuBox title="Devices" add={false} page="/Devices/Sensors" />
                   </a>
                   <a className="py-2 hover:bg-gray-700 rounded">
-                      <MenuBox title={"Reports"} add={true}/>
+                      <MenuBox title="Reports" add={true} page="/Reports"/>
                   </a>
               </nav>
 
               {/* Logout pinned to bottom */}
               <div className="p-4">
                   <Button
-                      href={"Login"}
+                      component={RouterLink}
+                      to="/Login"
                       variant="outlined"
                       sx={{
                           backgroundColor: 'secondary.main',
