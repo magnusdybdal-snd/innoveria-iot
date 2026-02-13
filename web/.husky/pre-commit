@@ -9,8 +9,13 @@ cd ..
 # ACM: only Added, Copied, or Modified files 
 STAGED_GO=$(git diff --staged --name-only --diff-filter=ACM -- '*.go') 
 
-if [ -n "$STAGED_GO" ]; then 
-  echo "Go files staged — running golangci-lint..."
+if [ -n "$STAGED_GO" ]; then
+  echo "Go files staged — running gofmt + golangci-lint..."
+
+  # Auto-format staged .go files with gofmt, then re-stage them.
+  # This mirrors how Prettier auto-fixes frontend code before committing.
+  echo "$STAGED_GO" | xargs gofmt -w
+  echo "$STAGED_GO" | xargs git add
 
   # Add new Go services here to include them in pre-commit linting.
   GO_SERVICES=(

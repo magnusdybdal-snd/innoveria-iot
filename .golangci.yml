@@ -8,6 +8,7 @@ run:
 linters:
   # See full default list: https://golangci-lint.run/usage/linters/
   enable:
+    - gofmt        # Checks code is formatted per Go standard style (like Prettier for Go)
     - govet        # Reports suspicious constructs (e.g. unreachable code, wrong printf args)
     - staticcheck  # Advanced static analysis covering many bug classes
     - errcheck     # Finds unchecked errors (e.g. ignoring return from os.Close)
