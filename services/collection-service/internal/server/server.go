@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"innoveria-iot/collection-service/internal/config"
+	"innoveria-iot/collection-service/internal/db"
 	"innoveria-iot/collection-service/internal/mqtt"
 	"log/slog"
 	"net/http"
@@ -24,6 +25,12 @@ func Run() error {
 		ReadHeaderTimeout: 5 * time.Second,
 		IdleTimeout:       120 * time.Second,
 	}
+
+	db, err := db.New(cfg.DB_url)
+	if err != nil {
+		return fmt.Errorf("db error: %v", err)
+	}
+	defer db.Close()
 	
 	coll := mqtt.NewCollector(1000)
 	coll.StartWorker(cfg.MQTTWorkerCount)

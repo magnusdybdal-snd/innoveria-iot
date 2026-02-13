@@ -39,7 +39,7 @@ func (c *Collector) StartWorker(workercount int) {
 	for i := 0; i < workercount; i++ {
 		go func (id int) {
 			for event := range c.queue {
-				log.Printf("worker(%d): %v\n", id, event)
+				log.Printf("worker(%d): %v\n", id, event) // replaced with database handling
 			}
 		}(i)
 	}

@@ -1,4 +1,7 @@
 services:
+  #
+  # CHIRPSTACK / LoRaWAN Handling
+  #
   chirpstack:
     build:
       context: .
@@ -68,7 +71,10 @@ services:
       - "1883:1883"
     volumes: 
       - ./infra/config/mosquitto/config:/mosquitto/config/
-
+  
+  #
+  # Frontend
+  #
   web:
     build:
       context: .
@@ -80,6 +86,9 @@ services:
       - /app/node_modules
     command: bun run dev
 
+  #
+  # API GATEWAY
+  #
   api-gateway:
     build:
       context: .
@@ -92,6 +101,9 @@ services:
     environment:
       - GO_ENV=development
 
+  #
+  # Microservices
+  #
   collection-service:
     build:
       context: .
@@ -103,6 +115,23 @@ services:
       - ./pkg:/pkg
     environment:
       - GO_ENV=development
+
+  collection-db:
+    image: timescale/timescaledb:2.14.2-pg14
+    restart: unless-stopped
+    ports:
+      - "5433:5432"
+    volumes:
+      - collectiondata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=collection
+      - POSTGRES_PASSWORD=collection
+      - POSTGRES_DB=collection
+
+#
+# Docker data volumes
+#
 volumes:
+  collectiondata:
   postgresqldata:
   redisdata:
