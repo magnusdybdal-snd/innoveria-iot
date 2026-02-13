@@ -4,33 +4,30 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"innoveria-iot/collection-service/internal/config"
 	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
-
-	"innoveria-iot/api-gateway/internal/config"
 )
 
 // Server entry point
 func Run() error {
 	cfg := config.Load()
-	mux := NewRouter(cfg)
-
+	mux := NewRouter()
 	server := &http.Server{
 		Addr:              cfg.Addr,
 		Handler:           mux,
 		ReadHeaderTimeout: 5 * time.Second,
 		IdleTimeout:       120 * time.Second,
-		// Intentionally avoid ReadTimeout/WriteTimeout here because of mqtt
 	}
 
 	// main startup function
 	serverErrors := make(chan error, 1)
 	go func() {
-		slog.Info("api-gateway listning", "addr", cfg.Addr)
+		slog.Info("collection-service listning", "addr", cfg.Addr)
 		err := server.ListenAndServe()
 		serverErrors <- err
 	}()
@@ -49,12 +46,12 @@ func Run() error {
 		}
 		return fmt.Errorf("listen %w",err)
 	case sig := <- shutdown:
-		slog.Info("api-gateway shutting down","signal",sig.String())
+		slog.Info("collection-service shutting down","signal",sig.String())
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
 		
 		if err := server.Shutdown(ctx); err != nil {
-			slog.Error("api-gateway shutdown error","err", err)
+			slog.Error("collection-service shutdown error","err", err)
 			server.Close()
 			return fmt.Errorf("shutdown: %w",err)
 		}
@@ -62,3 +59,5 @@ func Run() error {
 
 	return nil
 }
+
+

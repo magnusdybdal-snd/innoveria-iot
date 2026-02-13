@@ -1,4 +1,4 @@
-package routing
+package server
 
 // API gateway routes 
 const (
