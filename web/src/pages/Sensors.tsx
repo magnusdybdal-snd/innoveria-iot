@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box'
 import Path from "../templates/path.tsx"
+import SensorsGenInfo from "../templates/sensorsGenInfo.tsx"
 import SensorInfo from "../templates/sensorInfo.tsx"
 import Menu from "../Menu.tsx"
 import Typography from "@mui/material/Typography"
@@ -53,7 +54,7 @@ export default function Home() {
 
                     <div className="flex justify-between flex-wrap">
                         {Array.from(sensorInfos.entries()).map(([key, value]) => (
-                            <SensorInfo key={key} title={key} count={value}/>
+                            <SensorsGenInfo key={key} title={key} count={value}/>
                         ))}
                     </div>
 
@@ -64,6 +65,8 @@ export default function Home() {
                             marginBottom: 5
                         }}
                     />
+                    <SensorInfo number={1} online={true}/>
+                    <SensorInfo number={2} online={false}/>
                 </Box>
             </Box>
         </div>

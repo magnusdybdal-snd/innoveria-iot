@@ -56,7 +56,7 @@ export default function Menu() {
               </div>
               {/* Menu navigation */}
               <nav className="flex-1 flex flex-col mt-4 space-y-2">
-                  {Object.entries(SubPages).map(([category, pages]) => (
+                  {Array.from(SubPages.entries()).map(([category, pages]) => (
                       <MenuBox
                           key={category}
                           title={category}

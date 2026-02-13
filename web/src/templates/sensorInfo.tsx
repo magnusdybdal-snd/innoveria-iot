@@ -1,14 +1,15 @@
 import Box from "@mui/material/Box"
 import Link from "@mui/material/Link"
 import Typography from "@mui/material/Typography"
+import CircleIcon from '@mui/icons-material/Circle';
 
 type InfoProps = {
-    title: string
-    count: number
+    number: number
+    online: boolean
 }
 
-{/*Format for sensor info*/}
-export default function SensorInfo({ title, count }: InfoProps) {
+{/*Format for single sensor info*/}
+export default function SensorsGenInfo({ number, online }: InfoProps) {
     return (
         <Link href="#" underline="none">
             <Box
@@ -16,20 +17,28 @@ export default function SensorInfo({ title, count }: InfoProps) {
                     backgroundColor: 'secondary.light',
                     color: 'primary.main',
                     margin: 1,
+                    padding: 5,
                     borderRadius: 3,
                     border: '3px grey',
-                    width: 250,
-                    height: 100,
                     display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    textAlign: 'center'
+                    flexDirection: 'column',
                 }}
             >
-                <div className="w-64 p-[10px]">
-                    <Typography>{title}</Typography>
-                    <Typography>{count}</Typography>
-                </div>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1,
+                    }}
+                >
+                    <CircleIcon
+                        color={online ? "success" : "error"}
+                        sx={{ fontSize: 14 }}
+                    />
+                    <Typography fontSize={30} fontWeight={300}>
+                        Sensor {number}
+                    </Typography>
+                </Box>
             </Box>
         </Link>
     );
