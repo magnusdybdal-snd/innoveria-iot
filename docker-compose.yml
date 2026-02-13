@@ -1,6 +1,8 @@
 services:
   chirpstack:
-    image: chirpstack/chirpstack:4
+    build:
+      context: .
+      dockerfile: infra/development/chirpstack.Dockerfile
     entrypoint: ["/bin/sh", "/scripts/startChirpstack.sh"]
     restart: unless-stopped
     volumes:
