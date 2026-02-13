@@ -1,6 +1,6 @@
 import Divider from '@mui/material/Divider'
 import Typography from '@mui/material/Typography'
-import {useLocation} from "react-router";
+import {useLocation} from "react-router"
 
 {/*Path of current site + line divider*/}
 export default function Home() {

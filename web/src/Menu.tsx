@@ -5,8 +5,9 @@ import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import Typography from '@mui/material/Typography'
 import Avatar from '@mui/material/Avatar'
-import { Link as RouterLink } from 'react-router';
+import { Link as RouterLink } from 'react-router'
 import MenuBox from './templates/menuBox.tsx'
+import SubPages from './pages/subPageList.tsx'
 
 export default function Menu() {
   return (
@@ -55,16 +56,14 @@ export default function Menu() {
               </div>
               {/* Menu navigation */}
               <nav className="flex-1 flex flex-col mt-4 space-y-2">
-
-                  <a className="py-2 hover:bg-gray-700 rounded">
-                      <MenuBox title="Dashboard views" add={true} page="/Dashboard"/>
-                  </a>
-                  <a className="py-2 hover:bg-gray-700 rounded">
-                      <MenuBox title="Devices" add={false} page="/Devices/Sensors" />
-                  </a>
-                  <a className="py-2 hover:bg-gray-700 rounded">
-                      <MenuBox title="Reports" add={true} page="/Reports"/>
-                  </a>
+                  {Object.entries(SubPages).map(([category, pages]) => (
+                      <MenuBox
+                          key={category}
+                          title={category}
+                          pages={pages}
+                          add={category !== "devices"} // example logic
+                      />
+                  ))}
               </nav>
 
               {/* Logout pinned to bottom */}

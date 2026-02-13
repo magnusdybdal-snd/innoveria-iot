@@ -1,15 +1,20 @@
-import Box from "@mui/material/Box";
-import Link from "@mui/material/Link";
-import { Link as RouterLink } from 'react-router';
+import Box from "@mui/material/Box"
+import Link from "@mui/material/Link"
+import { Link as RouterLink } from 'react-router'
+
+type SubPage = {
+    name: string
+    path: string
+}
 
 type MenuBoxProps = {
-    title: string;
-    page: string;
-    add: boolean;
+    title: string
+    pages: SubPage[]
+    add: boolean
 };
 
 {/*Box for menu components*/}
-export default function MenuBox({ title, add, page }: MenuBoxProps) {
+export default function MenuBox({ title, pages, add }: MenuBoxProps) {
     return (
         <Box
             sx={{
@@ -21,26 +26,26 @@ export default function MenuBox({ title, add, page }: MenuBoxProps) {
             }}
         >
             <div className="w-64 p-[10px]">
-                {/*Page link*/}
-                <Link
-                    component={RouterLink} // use react-router's Link
-                    to={page}               // absolute path
-                    underline="none"
-                    sx={{
-                        fontSize: '1.75rem',
-                        fontWeight: 'normal',
-                        color: 'primary.main',
-                    }}
-                >
+                {/*Main page*/}
+                <h2 className="font-normal text-3xl"  style={{ margin: 0 }}>
                     {title}
-                </Link>
-                <nav>
-                    <Link href="#" underline="none">
-                        | KPI dashboard
-                    </Link>
-                    <br />
+                </h2>
+
+                <nav className="flex flex-col mt-2 space-y-1">
+                    {pages.map((page) => (
+                        <Link
+                            key={page.path}
+                            component={RouterLink}
+                            to={page.path}
+                            underline="none"
+                            sx={{color: 'primary.main'}}
+                        >
+                            | {page.name}
+                        </Link>
+                    ))}
+
                     {add && (
-                        <Link href="#" underline="none">
+                        <Link underline="none" sx={{color: 'primary.main'}}>
                             + Add
                         </Link>
                     )}

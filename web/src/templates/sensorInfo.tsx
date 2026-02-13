@@ -1,8 +1,14 @@
-import Box from "@mui/material/Box";
-import Link from "@mui/material/Link";
+import Box from "@mui/material/Box"
+import Link from "@mui/material/Link"
+import Typography from "@mui/material/Typography"
+
+type InfoProps = {
+    title: string
+    count: number
+}
 
 {/*Format for sensor info*/}
-export default function SensorInfo() {
+export default function SensorInfo({ title, count }: InfoProps) {
     return (
         <Link href="#" underline="none">
             <Box
@@ -11,8 +17,8 @@ export default function SensorInfo() {
                     color: 'primary.main',
                     margin: 1,
                     borderRadius: 3,
-                    border: '3px dashed grey',
-                    width: 200,
+                    border: '3px grey',
+                    width: 250,
                     height: 100,
                     display: 'flex',
                     alignItems: 'center',
@@ -21,9 +27,8 @@ export default function SensorInfo() {
                 }}
             >
                 <div className="w-64 p-[10px]">
-                    <h2 className="font-normal text-3xl" style={{ margin: 0 }}>
-                        Add dashboard component
-                    </h2>
+                    <Typography>{title}</Typography>
+                    <Typography>{count}</Typography>
                 </div>
             </Box>
         </Link>

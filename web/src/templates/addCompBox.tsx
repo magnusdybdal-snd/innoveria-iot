@@ -1,5 +1,6 @@
-import Box from "@mui/material/Box";
-import Link from "@mui/material/Link";
+import Box from "@mui/material/Box"
+import Link from "@mui/material/Link"
+import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
 
 {/*Button to add new components*/}
 export default function AddBox() {
@@ -24,8 +25,9 @@ export default function AddBox() {
                     <h2 className="font-normal text-3xl" style={{ margin: 0 }}>
                         Add dashboard component
                     </h2>
+                    <AddBoxOutlinedIcon fontSize="large"/>
                 </div>
             </Box>
         </Link>
-    );
+    )
 }

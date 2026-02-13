@@ -23,8 +23,8 @@ export default function Home() {
                     className="flex-1 overflow-auto"
                 >
                     <Path/>
+                    <AddBox/>
                 </Box>
-                <AddBox/>
             </Box>
         </div>
     )

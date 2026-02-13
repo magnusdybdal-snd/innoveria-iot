@@ -1,7 +1,17 @@
 import Box from '@mui/material/Box'
-import Path from "../templates/path.tsx";
+import Path from "../templates/path.tsx"
+import SensorInfo from "../templates/sensorInfo.tsx"
 import Menu from "../Menu.tsx"
-import Typography from "@mui/material/Typography";
+import Typography from "@mui/material/Typography"
+import Divider from "@mui/material/Divider"
+import Button from "@mui/material/Button"
+
+const sensorInfos = new Map<string, number>()
+sensorInfos.set('Total sensors', 0)
+sensorInfos.set('Online sensors', 0)
+sensorInfos.set('Offline sensors', 0)
+sensorInfos.set('Last seen 24hr', 0)
+sensorInfos.set('Error last 24hr', 0)
 
 export default function Home() {
     return (
@@ -22,10 +32,39 @@ export default function Home() {
                     className="flex-1 overflow-auto"
                 >
                     <Path/>
+                    <div className="flex justify-between flex-wrap">
+                        <Typography variant="h4">
+                            Sensor devices
+                        </Typography>
+                        <Button
+                            variant="outlined"
+                            sx={{
+                                backgroundColor: "primary.main",
+                                color: "primary.dark",
+                                '&:hover': {
+                                    backgroundColor: "primary.main",
+                                },
+                                borderRadius: 2,
+                                textTransform: 'none',
+                                fontSize: 20
+                            }}
+                        >Add device +</Button>
+                    </div>
+
+                    <div className="flex justify-between flex-wrap">
+                        {Array.from(sensorInfos.entries()).map(([key, value]) => (
+                            <SensorInfo key={key} title={key} count={value}/>
+                        ))}
+                    </div>
+
+                    <Divider
+                        sx={{
+                            backgroundColor: 'primary.main',
+                            marginTop: 2,
+                            marginBottom: 5
+                        }}
+                    />
                 </Box>
-                <Typography>
-                    Sensor devices
-                </Typography>
             </Box>
         </div>
     )
