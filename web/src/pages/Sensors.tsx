@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Box from '@mui/material/Box'
 import Path from "../templates/path.tsx"
 import SensorsGenInfo from "../templates/sensorsGenInfo.tsx"
@@ -15,6 +16,8 @@ sensorInfos.set('Last seen 24hr', 0)
 sensorInfos.set('Error last 24hr', 0)
 
 export default function Home() {
+    const [count, setCount] = useState(0);
+
     return (
         <div className="flex h-screen">
             <Menu/>
@@ -49,6 +52,7 @@ export default function Home() {
                                 textTransform: 'none',
                                 fontSize: 20
                             }}
+                            onClick={() => setCount((count) => count + 1)}
                         >Add device +</Button>
                     </div>
 
@@ -65,8 +69,10 @@ export default function Home() {
                             marginBottom: 5
                         }}
                     />
-                    <SensorInfo number={1} online={true}/>
-                    <SensorInfo number={2} online={false}/>
+                    {/*True or false for sensor to be enabled or disabled*/}
+                    {Array.from({ length: count }).map((_, i) => (
+                        <SensorInfo key={i} number={i + 1} online={true} />
+                    ))}
                 </Box>
             </Box>
         </div>
