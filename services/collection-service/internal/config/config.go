@@ -9,9 +9,8 @@ type Config struct {
 // Loads the spesific enviroment variables
 func Load() *Config {
 	cfg := Config{
-		Addr: ":" + env.Get("PORT","8080"),
+		Addr: ":" + env.Get("PORT", "8080"),
 	}
-
 
 	return &cfg
 }
