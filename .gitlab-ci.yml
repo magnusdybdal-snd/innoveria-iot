@@ -1,9 +1,9 @@
 # Pipeline stages
 stages:
-  - check # lint & formater
-  - build # check build of software
-  - test # Tests
+  - check # Lint & formater
+  - build # Check build of software
+  - test  # Tests
 
 include:
-  - local: "web/.gitlab-ci.yml" # frontend
-#  - local: '/.gitlab-ci.yml' # add backend here
+  - local: "web/.gitlab-ci.yml"      # Frontend
+  - local: "services/.gitlab-ci.yml" # Backend
