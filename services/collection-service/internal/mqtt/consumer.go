@@ -15,7 +15,7 @@ type Client struct {
 }
 
 // New generates a mqtt client for listning to topics from a mqtt broker
-func New(cfg config.Config, msgHandler mqtt.MessageHandler) (*Client,error){
+func New(cfg config.Config, msgHandler mqtt.MessageHandler) (*Client, error) {
 	opts := mqtt.NewClientOptions().
 		AddBroker(cfg.MQTTBrokerURL).
 		SetClientID(cfg.MQTTClientId).
@@ -25,7 +25,7 @@ func New(cfg config.Config, msgHandler mqtt.MessageHandler) (*Client,error){
 		SetKeepAlive(30 * time.Second).
 		SetPingTimeout(10 * time.Second).
 		SetCleanSession(false)
-	
+
 	opts.OnConnect = func(c mqtt.Client) {
 		slog.Info("MQTT Connected")
 	}
@@ -35,7 +35,7 @@ func New(cfg config.Config, msgHandler mqtt.MessageHandler) (*Client,error){
 	}
 
 	opts.DefaultPublishHandler = msgHandler // How we structure mqtt messages
-	
+
 	client := mqtt.NewClient(opts)
 
 	if token := client.Connect(); token.Wait() && token.Error() != nil {
@@ -54,4 +54,3 @@ func (c *Client) Subscribe(topic string) error {
 func (c *Client) Close() {
 	c.client.Disconnect(disconnectTime)
 }
-

@@ -21,6 +21,11 @@ dc_resource(
 )
 
 dc_resource(
+    'collection-simulator',
+    labels=['test']
+)
+
+dc_resource(
     'chirpstack',
     labels=['chirpstack']
 )

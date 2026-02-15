@@ -22,10 +22,10 @@ func New(connString string) (*DB, error) {
 	// Config for handling the number of concurrent connection to the postgres pool
 	cfg.MaxConns = 20 // connection after this needs to wait
 	cfg.MinConns = 5  // keeps 5 connections open at all times
-	cfg.MaxConnLifetime = time.Hour 
+	cfg.MaxConnLifetime = time.Hour
 	cfg.MaxConnIdleTime = 30 * time.Minute
 
-	pool, err := pgxpool.NewWithConfig(context.Background(),cfg)
+	pool, err := pgxpool.NewWithConfig(context.Background(), cfg)
 	if err != nil {
 		return nil, err
 	}

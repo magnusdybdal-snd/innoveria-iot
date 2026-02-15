@@ -128,6 +128,15 @@ services:
       - POSTGRES_PASSWORD=collection
       - POSTGRES_DB=collection
 
+  collection-simulator:
+    build:
+      context: .
+      dockerfile: infra/development/collection-simulator.Dockerfile
+    volumes:
+      - ./services/collection-simulator:/app
+      - ./pkg:/pkg
+      
+
 #
 # Docker data volumes
 #
