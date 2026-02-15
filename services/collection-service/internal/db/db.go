@@ -5,7 +5,7 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type DB struct {
@@ -23,9 +23,9 @@ func New(connString string) (*DB, error) {
 	cfg.MaxConns = 20 // connection after this needs to wait
 	cfg.MinConns = 5  // keeps 5 connections open at all times
 	cfg.MaxConnLifetime = time.Hour 
-	cfg.MaxConnIdleTime = 30 * time.Hour
+	cfg.MaxConnIdleTime = 30 * time.Minute
 
-	pool, err := pgxpool.ConnectConfig(context.Background(), cfg)
+	pool, err := pgxpool.NewWithConfig(context.Background(),cfg)
 	if err != nil {
 		return nil, err
 	}

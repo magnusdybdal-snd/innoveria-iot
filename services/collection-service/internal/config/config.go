@@ -8,7 +8,7 @@ import (
 
 type Config struct {
 	// Server Configs
-	Addr string
+	Addr   string
 	DB_url string
 
 	// MQTT Configs
@@ -33,7 +33,7 @@ func Load() *Config {
 	}
 
 	cfg := Config{
-		Addr: ":" + env.Get("PORT", "8080"),
+		Addr:   ":" + env.Get("PORT", "8080"),
 		DB_url: env.Get("DB_url", "postgres://collection:collection@collection-db:5432/collection?sslmode=disable"),
 
 		MQTTBrokerURL:   env.Get("MQTT_BROKER_URL", "tcp://mosquitto:1883"), // Mqtt broker
