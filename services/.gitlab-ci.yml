@@ -1,0 +1,55 @@
+# CI for Go services (api-gateway, collection-service)
+variables:
+  # golangci-lint version must match the version in each service's go.mod
+  GOLANGCI_LINT_VERSION: "v2.9.0"
+  # All Go services to lint and build — seperate by space.
+  GO_SERVICES: "services/api-gateway services/collection-service"
+
+go-check:
+  stage: check
+  tags:
+    - dind
+  image: golang:1.25
+  before_script:
+    # Install golangci-lint via official install script.
+    # Uses a pre-built binary (~5s) instead of compiling from source.
+    - curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b $(go env GOPATH)/bin $GOLANGCI_LINT_VERSION
+  script:
+    - |
+      for dir in $GO_SERVICES; do
+        echo "Linting $dir..."
+        cd "$CI_PROJECT_DIR/$dir"
+        golangci-lint run ./...
+      done
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+
+go-build:
+  stage: build
+  tags:
+    - dind
+  image: golang:1.25
+  script:
+    - |
+      for dir in $GO_SERVICES; do
+        echo "Building $dir..."
+        cd "$CI_PROJECT_DIR/$dir"
+        go build ./...
+      done
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+
+go-test:
+  stage: test
+  tags:
+    - dind
+  image: golang:1.25
+  script:
+    - |
+      for dir in $GO_SERVICES; do
+        echo "Testing $dir..."
+        cd "$CI_PROJECT_DIR/$dir"
+        go test ./...
+      done
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"

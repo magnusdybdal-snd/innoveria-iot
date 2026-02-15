@@ -1,6 +1,9 @@
 package handlers
 
-import "net/http"
+import (
+	"log"
+	"net/http"
+)
 
 // TODO: Handle logic
 func Collection(w http.ResponseWriter, r *http.Request) {
@@ -9,5 +12,9 @@ func Collection(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Write([]byte("hello collection"))
+	_, err := w.Write([]byte("hello collection"))
+	if err != nil {
+		log.Printf("Error writing response: %v\n", err)
+		return
+	}
 }
