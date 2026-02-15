@@ -5,6 +5,7 @@ import (
 	"innoveria-iot/collection-simulator/internal/config"
 	"innoveria-iot/pkg/logger"
 	"log"
+	"log/slog"
 )
 
 type sensorReading struct {
@@ -21,4 +22,6 @@ func main() {
 		log.Fatal(err)
 	}
 	defer client.Close()
+
+	slog.Info("Started a collection simulator")
 }

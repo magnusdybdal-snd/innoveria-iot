@@ -1,8 +1,9 @@
 package broker
 
 import (
-	"innoveria-iot/collection-simulator/internal/config"
 	"log/slog"
+
+	"innoveria-iot/collection-simulator/internal/config"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 )
@@ -13,7 +14,9 @@ type Client struct {
 }
 
 func New(cfg config.Config) (*Client, error) {
-	opts := mqtt.NewClientOptions().AddBroker(cfg.MQTTBrokerURL)
+	opts := mqtt.NewClientOptions().
+		AddBroker(cfg.MQTTBrokerURL).
+		SetClientID("simulator")
 
 	opts.OnConnect = func(c mqtt.Client) {
 		slog.Info("MQTT Connected")
@@ -32,6 +35,11 @@ func New(cfg config.Config) (*Client, error) {
 	return &Client{
 		client: client,
 	}, nil
+}
+
+func (c *Client) Publish(topic string, qos byte, payload []byte) {
+	token := c.client.Publish(topic, qos, false, payload)
+	token.Wait()
 }
 
 func (c *Client) Close() {
