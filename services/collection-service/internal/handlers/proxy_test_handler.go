@@ -5,6 +5,7 @@ import (
 	"net/http"
 )
 
+// TODO: Remove, this is used to test the proxy from api gateway
 func HelloProxy(w http.ResponseWriter, r *http.Request) {
 	resp := map[string]string{
 		"hello": "world",

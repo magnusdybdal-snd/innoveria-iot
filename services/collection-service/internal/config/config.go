@@ -40,7 +40,7 @@ func Load() *Config {
 		MQTTClientId:    clientID,
 		MQTTUsername:    env.Get("MQTT_USERNAME", ""),
 		MQTTPassword:    env.Get("MQTT_PASSWORD", ""),
-		MQTTTopic:       env.Get("MQTT_TOPIC", "test/sensors/+"), // Handles all uplink events
+		MQTTTopic:       env.Get("MQTT_TOPIC", "test/sensors/#"), // Handles all uplink events
 		MQTTWorkerCount: workerCount,
 	}
 

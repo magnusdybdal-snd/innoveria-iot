@@ -1,4 +1,4 @@
-package models
+package mqtt
 
 // Chirpstack v4 MQTT uplink event
 type ChirpstackUpEvent struct {

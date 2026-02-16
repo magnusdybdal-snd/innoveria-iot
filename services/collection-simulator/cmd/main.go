@@ -10,10 +10,8 @@ import (
 	"innoveria-iot/pkg/logger"
 )
 
-type sensorReading struct {
-	DeviceID string `json:"DeviceEUI"`
-}
-
+// Service to mock sensor data for the development process
+// See config.go for what topic is used
 func main() {
 	logger.NewLogger("collection-simulator")
 

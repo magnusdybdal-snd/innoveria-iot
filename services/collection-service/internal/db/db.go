@@ -29,6 +29,8 @@ func New(connString string) (*DB, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	// Pinging the time series database
 	if err := pool.Ping(context.Background()); err != nil {
 		return nil, err
 	}

@@ -9,6 +9,7 @@ import (
 	"github.com/google/uuid"
 )
 
+// Generate a mock sensor data
 func GenerateMockEvent(deviceEUI string) domain.ChirpstackUpEvent {
 	return domain.ChirpstackUpEvent{
 		DeduplicationID: uuid.NewString(),

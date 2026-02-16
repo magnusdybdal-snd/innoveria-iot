@@ -18,6 +18,7 @@ type Simulator struct {
 	qos         byte
 }
 
+// Starting a new instance of simulator
 func New(client *broker.Client, cfg config.Config) *Simulator {
 	return &Simulator{
 		client:      client,
@@ -28,6 +29,8 @@ func New(client *broker.Client, cfg config.Config) *Simulator {
 	}
 }
 
+// Initilze the simulator
+// Starts goroutines so it simulate concurrent dataflow
 func (s *Simulator) Start() {
 	for i := 0; i < s.deviceCount; i++ {
 		deviceId := fmt.Sprintf("%d", i)
@@ -37,6 +40,7 @@ func (s *Simulator) Start() {
 	select {}
 }
 
+// Run is handling the data generation and mqtt publising
 func (s *Simulator) run(deviceId string) {
 	for {
 		mock := GenerateMockEvent(deviceId)

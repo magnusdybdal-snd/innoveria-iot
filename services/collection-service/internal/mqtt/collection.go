@@ -2,49 +2,75 @@ package mqtt
 
 import (
 	"encoding/json"
-	"log"
 	"log/slog"
-
-	"innoveria-iot/collection-service/internal/models"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 )
 
 type Collector struct {
-	queue chan models.ChirpstackUpEvent
+	workers []chan ChirpstackUpEvent
 }
 
-func NewCollector(buffersize int) *Collector {
+// NewCollector starts with a buffersize and worker count
+// Buffer size is the amount it can handle in a queue
+// Worker count is the physical concurrent workers to read sensor data
+func NewCollector(buffersize, workercount int) *Collector {
+	workers := make([]chan ChirpstackUpEvent, workercount)
+	for i := range workers {
+		workers[i] = make(chan ChirpstackUpEvent, buffersize)
+	}
 	return &Collector{
-		queue: make(chan models.ChirpstackUpEvent, buffersize),
+		workers: workers,
 	}
 }
 
+// MQTTHandler is how the client reacts to payload sent from a mqtt broker
 func (c *Collector) MQTTHandler(client mqtt.Client, msg mqtt.Message) {
-	var event models.ChirpstackUpEvent
+	var event ChirpstackUpEvent
 
 	if err := json.Unmarshal(msg.Payload(), &event); err != nil {
 		slog.Error("invalid uplink", "error", err)
 		return
 	}
 
+	workerindex := hash(event.DeduplicationID) % len(c.workers)
+
 	select {
-	case c.queue <- event:
+	case c.workers[workerindex] <- event:
 	default:
 		slog.Warn("MQTT collection is full")
 	}
 }
 
-func (c *Collector) StartWorker(workercount int) {
-	for i := 0; i < workercount; i++ {
-		go func(id int) {
-			for event := range c.queue {
-				log.Printf("worker(%d): %v\n", id, event) // replaced with database handling
+// StartWorkers will start up the goroutines based on workercount
+// see config.go for setting workers
+func (c *Collector) StartWorkers() {
+	for i, ch := range c.workers {
+		go func(id int, queue chan ChirpstackUpEvent) {
+			for event := range queue {
+				slog.Info("processing",
+					"workerId", id,
+					"duplicationId", event.DeduplicationID,
+					"device", event.DeviceInfo.DevEUI,
+				)
 			}
-		}(i)
+		}(i, ch)
 	}
 }
 
+// Closing the queue with workers
 func (c *Collector) Close() {
-	close(c.queue)
+	for i := range c.workers {
+		close(c.workers[i])
+	}
+}
+
+// Hashing is used to avoid having multiple workers handle the same topic
+// TODO: Test with alot of sensors to check duplication id
+func hash(s string) int {
+	h := 0
+	for _, c := range s {
+		h += int(c)
+	}
+	return h
 }
