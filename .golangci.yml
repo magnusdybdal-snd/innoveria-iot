@@ -1,0 +1,28 @@
+# golangci-lint configuration (v2 format)
+# Docs: https://golangci-lint.run/usage/configuration/
+# This file is auto-discovered by golangci-lint from any subdirectory.
+
+version: "2"
+
+run:
+  timeout: 3m
+
+linters:
+  # See full default list: https://golangci-lint.run/usage/linters/
+  enable:
+    - govet        # Reports suspicious constructs (e.g. unreachable code, wrong printf args)
+    - staticcheck  # Advanced static analysis covering many bug classes
+    - errcheck     # Finds unchecked errors (e.g. ignoring return from os.Close)
+    - ineffassign  # Detects assignments to variables that are never read afterwards
+    - unused       # Finds unused constants, variables, functions, and types
+    - gocritic     # Opinionated collection of checks not covered by other linters
+
+formatters:
+  enable:
+    - gofmt        # Enforces standard Go formatting (like Prettier for Go)
+
+issues:
+  # Show all issues from a linter, not just the first 50 per linter.
+  max-issues-per-linter: 0
+  # Show all instances of the same issue, not just 3.
+  max-same-issues: 0

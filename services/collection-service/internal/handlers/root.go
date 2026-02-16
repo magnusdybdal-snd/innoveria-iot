@@ -1,6 +1,9 @@
 package handlers
 
-import "net/http"
+import (
+	"log"
+	"net/http"
+)
 
 // Home route
 func Root(w http.ResponseWriter, r *http.Request) {
@@ -8,5 +11,9 @@ func Root(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	w.Write([]byte("ok"))
+	_, err := w.Write([]byte("ok"))
+	if err != nil {
+		log.Printf("Error writing response: %v\n", err)
+		return
+	}
 }

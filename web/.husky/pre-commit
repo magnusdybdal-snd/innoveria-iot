@@ -1,2 +1,35 @@
+### Frontend linting (ESLint + Prettier via lint-staged) ###
 cd web
 bunx lint-staged
+cd ..
+
+### Go linting (golangci-lint) ###
+
+# Only run the Go linter when .go files are actually staged.
+# ACM: only Added, Copied, or Modified files 
+STAGED_GO=$(git diff --staged --name-only --diff-filter=ACM -- '*.go') 
+
+if [ -n "$STAGED_GO" ]; then
+  echo "Go files staged — running gofmt + golangci-lint..."
+
+  # Auto-format staged .go files with gofmt, then re-stage them.
+  # This mirrors how Prettier auto-fixes frontend code before committing.
+  echo "$STAGED_GO" | xargs gofmt -w
+  echo "$STAGED_GO" | xargs git add
+
+  # Add new Go services here to include them in pre-commit linting.
+  GO_SERVICES=(
+    services/api-gateway
+    services/collection-service
+  )
+
+  # `go tool golangci-lint` uses the version pinned in go.mod
+  for dir in "${GO_SERVICES[@]}"; do
+    if [ -d "$dir" ]; then
+      echo "  Linting $dir..."
+      (cd "$dir" && go tool golangci-lint run ./...)
+    fi
+  done
+else
+  echo "No staged .go files found — skipping Go linting."
+fi
