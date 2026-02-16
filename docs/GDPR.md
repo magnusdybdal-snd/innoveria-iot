@@ -76,7 +76,7 @@ Privacy and data protection must be integrated into the system from the design s
 - **Data minimisation** — auth-db stores only what is needed (name, email, role, passwordHash). No superfluous personal information.
 - **Separation** — personal data is isolated in auth-db. Sensor data in collection-db contains no personal data. The microservice architecture ensures that services that do not need personal data have no access to it.
 - **Access control** — role-based access (Factory Worker, Superuser, Admin) restricts who can see what.
-- **Password storage** — passwords hashed with bcrypt/argon2, never stored in plaintext.
+- **Password storage** — passwords hashed with encryption, never stored in plaintext.
 - **Multi-tenancy** — `selskapId` on all tables ensures data from one company is inaccessible to another.
 
 ### Article 32 — Security of processing
@@ -86,7 +86,7 @@ The controller must implement appropriate technical and organisational measures 
 **For Fabrikkpuls:**
 - HTTPS between frontend and API Gateway (encrypted transport)
 - JWT tokens with short expiry for authentication
-- Passwords hashed with bcrypt/argon2
+- Passwords hashed with encryption
 - Database-per-service architecture limits the blast radius of a potential breach — compromising erp-db does not grant access to auth-db
 - Separate database users per service — no service has access to another service's data
 - Multi-tenancy isolation with `selskapId` prevents cross-contamination between companies
@@ -117,7 +117,7 @@ The Article 29 Working Party (now EDPB) has specifically stated that IoT applica
 
 | Measure | GDPR basis | Status |
 |---------|-----------|--------|
-| Hash passwords with bcrypt/argon2 | Art. 32 (security) | |
+| Hash passwords with encryption | Art. 32 (security) | |
 | HTTPS between frontend and API Gateway | Art. 32 (encryption in transit) | |
 | Role-based access control | Art. 25 (privacy by default) | |
 | Multi-tenancy with selskapId on all tables | Art. 25 (access restriction) | |
