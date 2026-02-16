@@ -8,6 +8,7 @@ import Avatar from '@mui/material/Avatar'
 import { Link as RouterLink } from 'react-router'
 import MenuBox from './templates/menuBox.tsx'
 import SubPages from './pages/subPageList.tsx'
+import MainPages from './pages/mainPageList.tsx'
 
 export default function Menu() {
   return (
@@ -19,7 +20,7 @@ export default function Menu() {
       >
           <div className="w-64 bg-gray-900 text-white flex flex-col h-screen">
               {/* Top menu logo */}
-              <a href="#" target="_blank">
+              <a href="/">
                   <img
                       src={innLogo}
                       alt="Innoveria logo"
@@ -56,11 +57,12 @@ export default function Menu() {
               </div>
               {/* Menu navigation */}
               <nav className="flex-1 flex flex-col mt-4 space-y-2">
-                  {Array.from(SubPages.entries()).map(([category, pages]) => (
+                  {Array.from(MainPages.entries()).map(([category, page]) => (
                       <MenuBox
                           key={category}
                           title={category}
-                          pages={pages}
+                          mainPage={page}
+                          subPages={SubPages.get(category) ?? []}
                           add={category !== "devices"} // example logic
                       />
                   ))}

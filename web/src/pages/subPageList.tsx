@@ -1,4 +1,4 @@
-type SubPage = {
+export type SubPage = {
     name: string;
     path: string;
 };
