@@ -16,7 +16,7 @@ type Config struct {
 	MQTTClientId    string
 	MQTTUsername    string
 	MQTTPassword    string
-	MQTTTopic       string //"application/+/device/+/event/up" will listen to all
+	MQTTTopic       string // "application/+/device/+/event/up" will listen to all
 	MQTTWorkerCount int
 }
 
