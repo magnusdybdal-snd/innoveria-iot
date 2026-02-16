@@ -1,11 +1,13 @@
 package main
 
 import (
-	"innoveria-iot/collection-simulator/internal/broker"
-	"innoveria-iot/collection-simulator/internal/config"
-	"innoveria-iot/pkg/logger"
 	"log"
 	"log/slog"
+
+	"innoveria-iot/collection-simulator/internal/broker"
+	"innoveria-iot/collection-simulator/internal/config"
+	"innoveria-iot/collection-simulator/internal/simulator"
+	"innoveria-iot/pkg/logger"
 )
 
 type sensorReading struct {
@@ -23,5 +25,13 @@ func main() {
 	}
 	defer client.Close()
 
-	slog.Info("Started a collection simulator")
+	sim := simulator.New(client, *cfg)
+
+	slog.Info("Started a collection-simulator",
+		"MQTT_Topic", cfg.Topic,
+		"devices", cfg.Devices,
+		"qos", cfg.Qos)
+
+	sim.Start()
+
 }

@@ -16,7 +16,7 @@ type Config struct {
 	MQTTClientId    string
 	MQTTUsername    string
 	MQTTPassword    string
-	MQTTTopic       string
+	MQTTTopic       string //"application/+/device/+/event/up" will listen to all
 	MQTTWorkerCount int
 }
 
@@ -40,7 +40,7 @@ func Load() *Config {
 		MQTTClientId:    clientID,
 		MQTTUsername:    env.Get("MQTT_USERNAME", ""),
 		MQTTPassword:    env.Get("MQTT_PASSWORD", ""),
-		MQTTTopic:       env.Get("MQTT_TOPIC", "application/+/device/+/event/up"), // Handles all uplink events
+		MQTTTopic:       env.Get("MQTT_TOPIC", "test/sensors/+"), // Handles all uplink events
 		MQTTWorkerCount: workerCount,
 	}
 
