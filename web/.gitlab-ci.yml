@@ -18,7 +18,6 @@ web-check:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event" # (default -> "on success" -> run pipeline automatically if previous stage succeeded)
 
 web-build:
-    
   stage: build
   tags:
     - dind
@@ -32,7 +31,7 @@ web-build:
     - bun -e "import('./vite.config.ts').then(()=>console.log('vite config ok')).catch(e=>{console.error('vite config import failed'); console.error(e?.stack||e); process.exit(1)})"
 
   script:
-    - BUN_DEBUG=1 VITE_LOG_LEVEL=info bunx vite build --debug 
+    - BUN_DEBUG=1 VITE_LOG_LEVEL=info bunx vite build --debug
     - bun run build # Run build
   artifacts:
     paths:
