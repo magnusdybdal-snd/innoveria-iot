@@ -32,6 +32,7 @@ export default function Home() {
           sx={{
             paddingLeft: 2,
             paddingRight: 2,
+            paddingTop: 2,
           }}
           className="flex-1 overflow-auto"
         >
