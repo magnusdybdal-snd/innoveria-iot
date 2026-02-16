@@ -18,14 +18,21 @@ web-check:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event" # (default -> "on success" -> run pipeline automatically if previous stage succeeded)
 
 web-build:
-  before_script:
-    - cd "$FRONTEND_PROJECT_DIR"
+    
   stage: build
   tags:
     - dind
   image: oven/bun:1.3.9
-  script:
+
+  before_script:
+    - cd "$FRONTEND_PROJECT_DIR"
+    - bun --version
+    - node -v || true
     - bun install --frozen-lockfile # Install dependencies
+    - bun -e "import('./vite.config.ts').then(()=>console.log('vite config ok')).catch(e=>{console.error('vite config import failed'); console.error(e?.stack||e); process.exit(1)})"
+
+  script:
+    - BUN_DEBUG=1 VITE_LOG_LEVEL=info bunx vite build --debug 
     - bun run build # Run build
   artifacts:
     paths:
