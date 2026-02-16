@@ -35,6 +35,10 @@
         "typescript-eslint": "^8.46.4",
         "vite": "^7.2.4",
       },
+      "optionalDependencies": {
+        "@rollup/rollup-linux-x64-gnu": "4.57.1",
+        "@rollup/rollup-win32-x64-msvc": "4.57.1",
+      },
     },
   },
   "packages": {
@@ -243,6 +247,8 @@
     "@react-navigation/routers": ["@react-navigation/routers@7.5.3", "", { "dependencies": { "nanoid": "^3.3.11" } }, "sha512-1tJHg4KKRJuQ1/EvJxatrMef3NZXEPzwUIUZ3n1yJ2t7Q97siwRtbynRpQG9/69ebbtiZ8W3ScOZF/OmhvM4Rg=="],
 
     "@rolldown/pluginutils": ["@rolldown/pluginutils@1.0.0-beta.53", "", {}, ""],
+
+    "@rollup/rollup-linux-x64-gnu": ["@rollup/rollup-linux-x64-gnu@4.57.1", "", { "os": "linux", "cpu": "x64" }, "sha512-ABca4ceT4N+Tv/GtotnWAeXZUZuM/9AQyCyKYyKnpk4yoA7QIAuBt6Hkgpw8kActYlew2mvckXkvx0FfoInnLg=="],
 
     "@rollup/rollup-win32-x64-gnu": ["@rollup/rollup-win32-x64-gnu@4.57.1", "", { "os": "win32", "cpu": "x64" }, ""],
 
