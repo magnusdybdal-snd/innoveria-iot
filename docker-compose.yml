@@ -1,18 +1,25 @@
 services:
+  #
+  # CHIRPSTACK / LoRaWAN Handling
+  #
   chirpstack:
-    image: chirpstack/chirpstack:4
-    command: -c /etc/chirpstack
+    build:
+      context: .
+      dockerfile: infra/development/chirpstack.Dockerfile
+    entrypoint: ["/bin/sh", "/scripts/startChirpstack.sh"]
     restart: unless-stopped
     volumes:
       - ./infra/config/chirpstack:/etc/chirpstack
+      - ./infra/config/chirpstack-device-profiles:/profiles
+      - ./scripts/startChirpstack.sh:/scripts/startChirpstack.sh
     depends_on:
-      - postgres
+      - chirpstack-postgres
       - mosquitto
       - redis
     environment:
       - MQTT_BROKER_HOST=mosquitto
       - REDIS_HOST=redis
-      - POSTGRESQL_HOST=postgres
+      - POSTGRESQL_HOST=chirpstack-postgres
     ports:
       - "8080:8080"
 
@@ -39,7 +46,7 @@ services:
     depends_on:
       - chirpstack
 
-  postgres:
+  chirpstack-postgres:
     image: postgres:14-alpine
     restart: unless-stopped
     volumes:
@@ -64,7 +71,10 @@ services:
       - "1883:1883"
     volumes: 
       - ./infra/config/mosquitto/config:/mosquitto/config/
-
+  
+  #
+  # Frontend
+  #
   web:
     build:
       context: .
@@ -76,6 +86,9 @@ services:
       - /app/node_modules
     command: bun run dev
 
+  #
+  # API GATEWAY
+  #
   api-gateway:
     build:
       context: .
@@ -88,6 +101,46 @@ services:
     environment:
       - GO_ENV=development
 
+  #
+  # Microservices
+  #
+  collection-service:
+    build:
+      context: .
+      dockerfile: infra/development/collection-service.Dockerfile
+    ports:
+      - "8082:8080"
+    volumes:
+      - ./services/collection-service:/app
+      - ./pkg:/pkg
+    environment:
+      - GO_ENV=development
+
+  collection-db:
+    image: timescale/timescaledb:2.14.2-pg14
+    restart: unless-stopped
+    ports:
+      - "5433:5432"
+    volumes:
+      - collectiondata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=collection
+      - POSTGRES_PASSWORD=collection
+      - POSTGRES_DB=collection
+
+  collection-simulator:
+    build:
+      context: .
+      dockerfile: infra/development/collection-simulator.Dockerfile
+    volumes:
+      - ./services/collection-simulator:/app
+      - ./pkg:/pkg
+      
+
+#
+# Docker data volumes
+#
 volumes:
+  collectiondata:
   postgresqldata:
   redisdata:

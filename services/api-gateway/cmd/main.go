@@ -1,7 +1,18 @@
 package main
 
-import "fmt"
+import (
+	"log/slog"
+	"os"
 
-func main()  {
-	fmt.Println("hello world")
+	"innoveria-iot/api-gateway/internal/server"
+	"innoveria-iot/pkg/logger"
+)
+
+func main() {
+	logger.NewLogger("api-gateway")
+
+	if err := server.Run(); err != nil {
+		slog.Error("api-gateway exited with error", "err", err)
+		os.Exit(1)
+	}
 }

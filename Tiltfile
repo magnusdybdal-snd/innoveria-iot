@@ -11,6 +11,21 @@ dc_resource(
 )
 
 dc_resource(
+    'collection-db',
+    labels=['database']
+)
+
+dc_resource(
+    'collection-service',
+    labels=['microservice']
+)
+
+dc_resource(
+    'collection-simulator',
+    labels=['test']
+)
+
+dc_resource(
     'chirpstack',
     labels=['chirpstack']
 )
@@ -26,7 +41,7 @@ dc_resource(
 )
 
 dc_resource(
-    'postgres',
+    'chirpstack-postgres',
     labels=['chirpstack']
 )
 
