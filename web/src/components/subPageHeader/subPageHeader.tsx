@@ -3,7 +3,7 @@ import Typography from "@mui/material/Typography";
 import type { ReactNode } from "react";
 
 type SubPageHeaderProps = {
-  title: string;
+  title?: string;
   action?: ReactNode;
 };
 
@@ -12,7 +12,7 @@ export function SubPageHeader({ title, action }: SubPageHeaderProps) {
     <>
       <Path />
       <div className="flex justify-between flex-wrap">
-        <Typography variant="h4">{title}</Typography>
+        {title && <Typography variant="h4">{title}</Typography>}
         {action}
       </div>
     </>
