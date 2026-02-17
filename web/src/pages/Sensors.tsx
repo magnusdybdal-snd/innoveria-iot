@@ -8,16 +8,17 @@ import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import Button from "@mui/material/Button";
 import JokeViewer from "../API/getJoke.tsx";
+//import ApiViewer from "../API/getData.tsx";
 
-const sensorInfos = new Map<string, number>();
-sensorInfos.set("Total sensors", 0);
-sensorInfos.set("Online sensors", 0);
-sensorInfos.set("Offline sensors", 0);
-sensorInfos.set("Last seen 24hr", 0);
-sensorInfos.set("Error last 24hr", 0);
-
-export default function Home() {
+export default function Sensors() {
   const [count, setCount] = useState(0);
+
+  const sensorInfos = new Map<string, number>();
+  sensorInfos.set("Total sensors", count);
+  sensorInfos.set("Online sensors", 0);
+  sensorInfos.set("Offline sensors", 0);
+  sensorInfos.set("Last seen 24hr", 0);
+  sensorInfos.set("Error last 24hr", 0);
 
   return (
     <div className="flex h-screen">
