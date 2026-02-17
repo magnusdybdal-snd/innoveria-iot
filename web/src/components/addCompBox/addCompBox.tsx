@@ -1,16 +1,11 @@
 import Box from "@mui/material/Box";
 import Link from "@mui/material/Link";
-import Typography from "@mui/material/Typography";
-
-type InfoProps = {
-  title: string;
-  count: number;
-};
+import AddBoxOutlinedIcon from "@mui/icons-material/AddBoxOutlined";
 
 {
-  /*Format for general sensors info*/
+  /*Button to add new components*/
 }
-export default function SensorsGenInfo({ title, count }: InfoProps) {
+export function AddBox() {
   return (
     <Link href="#" underline="none">
       <Box
@@ -19,9 +14,9 @@ export default function SensorsGenInfo({ title, count }: InfoProps) {
           color: "primary.main",
           margin: 1,
           borderRadius: 3,
-          border: "3px grey",
+          border: "3px dashed grey",
           width: 250,
-          height: 100,
+          height: 250,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -29,8 +24,10 @@ export default function SensorsGenInfo({ title, count }: InfoProps) {
         }}
       >
         <div className="w-64 p-[10px]">
-          <Typography>{title}</Typography>
-          <Typography>{count}</Typography>
+          <h2 className="font-normal text-3xl" style={{ margin: 0 }}>
+            Add dashboard component
+          </h2>
+          <AddBoxOutlinedIcon fontSize="large" />
         </div>
       </Box>
     </Link>

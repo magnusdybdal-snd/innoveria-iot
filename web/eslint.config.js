@@ -24,6 +24,12 @@ export default defineConfig([
     // 2 = "error"
     rules: {
       "no-console": 1,
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [{ regex: "^@mui/[^/]+$" }],
+        },
+      ],
     },
   },
 ]);
