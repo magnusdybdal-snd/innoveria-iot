@@ -1,4 +1,4 @@
-import innLogo from "./assets/innoveria.png";
+import innLogo from "@/assets/innoveria.png";
 import viteLogo from "/vite.svg";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -6,9 +6,9 @@ import Divider from "@mui/material/Divider";
 import Typography from "@mui/material/Typography";
 import Avatar from "@mui/material/Avatar";
 import { Link as RouterLink } from "react-router";
-import MenuBox from "./templates/menuBox.tsx";
-import SubPages from "./pages/subPageList.tsx";
-import MainPages from "./pages/mainPageList.tsx";
+import MenuBox from "@/components/menuBox";
+import SubPages from "@/pages/subPageList.tsx";
+import MainPages from "@/pages/mainPageList.tsx";
 
 export default function Menu() {
   return (
