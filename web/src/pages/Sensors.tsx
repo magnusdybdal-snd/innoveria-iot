@@ -7,6 +7,7 @@ import Menu from "../Menu.tsx";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import Button from "@mui/material/Button";
+import JokeViewer from "../API/getJoke.tsx";
 
 const sensorInfos = new Map<string, number>();
 sensorInfos.set("Total sensors", 0);
@@ -37,6 +38,7 @@ export default function Home() {
           className="flex-1 overflow-auto"
         >
           <Path />
+          <JokeViewer />
           <div className="flex justify-between flex-wrap">
             <Typography variant="h4">Sensor devices</Typography>
             <Button
