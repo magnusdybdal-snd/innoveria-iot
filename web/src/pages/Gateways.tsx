@@ -1,6 +1,6 @@
 import { SubPageHeader } from "@/components/subPageHeader";
 import Menu from "@/Menu";
-import Divider from "@mui/material/Divider";
+import { PageDivider } from "@/components/pageDivider";
 import { PageContent } from "@/components/pageContent";
 
 export default function Gateways() {
@@ -9,7 +9,7 @@ export default function Gateways() {
       <Menu />
       <PageContent>
         <SubPageHeader title="Gateways" />
-        <Divider sx={{ backgroundColor: "primary.main" }} />
+        <PageDivider />
       </PageContent>
     </div>
   );
