@@ -1,19 +1,16 @@
-import Box from "@mui/material/Box";
 import { SubPageHeader } from "@/components/subPageHeader";
 import Menu from "@/Menu";
+import Divider from "@mui/material/Divider";
+import { PageContent } from "@/components/pageContent";
 
 export default function Gateways() {
   return (
     <div className="flex h-screen">
       <Menu />
-      <Box
-        sx={{ backgroundColor: "primary.dark", color: "primary.main" }}
-        className="flex-1 overflow-auto"
-      >
-        <Box sx={{ paddingLeft: 2, paddingRight: 2 }}>
-          <SubPageHeader title="Gateways" />
-        </Box>
-      </Box>
+      <PageContent>
+        <SubPageHeader title="Gateways" />
+        <Divider sx={{ backgroundColor: "primary.main" }} />
+      </PageContent>
     </div>
   );
 }
