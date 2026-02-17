@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { type Data, fetchApiWithErrorHandling } from "./apiClient.tsx";
+import { type Data } from "./apiClient.tsx";
+import { fetchApiWithErrorHandling } from "./fetchApi.tsx";
 
 const ApiViewer: React.FC = () => {
   const [data, setApi] = useState<Data | null>(null);
