@@ -2,12 +2,12 @@ import { BrowserRouter, Routes, Route } from "react-router";
 import { createRoot } from "react-dom/client";
 import CssBaseline from "@mui/material/CssBaseline";
 import { StyledEngineProvider, ThemeProvider } from "@mui/material/styles";
-import "./index.css";
-import Home from "./pages/Home.tsx";
-import Login from "./pages/Login.tsx";
-import Dashboard from "./pages/Dashboard.tsx";
-import Sensors from "./pages/Sensors.tsx";
-import { Color } from "./Theme/color.tsx";
+import "@/index.css";
+import Home from "@/pages/Home.tsx";
+import Login from "@/pages/Login.tsx";
+import Dashboard from "@/pages/Dashboard.tsx";
+import Sensors from "@/pages/Sensors.tsx";
+import { Color } from "@/Theme/color.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <BrowserRouter>

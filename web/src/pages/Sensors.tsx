@@ -1,12 +1,12 @@
 import { useState } from "react";
 import Box from "@mui/material/Box";
-import Path from "../templates/path.tsx";
-import SensorsGenInfo from "../templates/sensorsGenInfo.tsx";
-import SensorInfo from "../templates/sensorInfo.tsx";
-import Menu from "../Menu.tsx";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import Button from "@mui/material/Button";
+import { Path } from "@/components/path";
+import { SensorsGenInfo } from "@/components/sensorsGenInfo";
+import { SensorInfo } from "@/components/sensorInfo";
+import Menu from "@/Menu.tsx";
 
 export default function Sensors() {
   const [count, setCount] = useState(0);

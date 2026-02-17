@@ -11,7 +11,7 @@ type InfoProps = {
 {
   /*Format for single sensor info*/
 }
-export default function SensorsGenInfo({ number, online }: InfoProps) {
+export function SensorInfo({ number, online }: InfoProps) {
   return (
     <Link href="#" underline="none">
       <Box

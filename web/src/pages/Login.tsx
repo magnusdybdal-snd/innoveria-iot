@@ -1,4 +1,4 @@
-import innLogo from "../assets/innoveria.png";
+import innLogo from "@/assets/innoveria.png";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";

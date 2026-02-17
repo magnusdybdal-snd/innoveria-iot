@@ -1,1 +1,1 @@
-export { fetchJokeWithErrorHandling } from "./fetchApi.tsx";
+export { fetchApiWithErrorHandling } from "./fetchApi.tsx";

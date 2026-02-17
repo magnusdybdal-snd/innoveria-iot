@@ -9,7 +9,7 @@ type InfoProps = {
 {
   /*Format for general sensors info*/
 }
-export default function SensorsGenInfo({ title, count }: InfoProps) {
+export function SensorsGenInfo({ title, count }: InfoProps) {
   return (
     <Box
       sx={{
