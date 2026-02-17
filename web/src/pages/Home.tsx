@@ -1,8 +1,8 @@
 import Box from "@mui/material/Box";
 import Path from "../templates/path.tsx";
 import Menu from "../Menu.tsx";
-import JokeViewer from "../API/getJoke.tsx";
-import ApiViewer from "../API/getData.tsx";
+import JokeViewer from "@/API/getJoke";
+import ApiViewer from "@/API/getData/getData.tsx";
 
 export default function Home() {
   return (

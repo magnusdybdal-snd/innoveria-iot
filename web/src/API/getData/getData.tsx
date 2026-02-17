@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { type Data } from "./apiClient.tsx";
-import { fetchApiWithErrorHandling } from "./fetchApi.tsx";
+import { type Data } from "@/API/apiClient";
+import { fetchApiWithErrorHandling } from "@/API/fetchApi/";
 
-const ApiViewer: React.FC = () => {
+export const ApiViewer: React.FC = () => {
   const [data, setApi] = useState<Data | null>(null);
 
   useEffect(() => {
@@ -18,5 +18,3 @@ const ApiViewer: React.FC = () => {
 
   return <p>{data.totalCount}</p>;
 };
-
-export default ApiViewer;
