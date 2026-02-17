@@ -7,8 +7,6 @@ import Menu from "../Menu.tsx";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import Button from "@mui/material/Button";
-import JokeViewer from "../API/getJoke.tsx";
-//import ApiViewer from "../API/getData.tsx";
 
 export default function Sensors() {
   const [count, setCount] = useState(0);
@@ -39,7 +37,6 @@ export default function Sensors() {
           className="flex-1 overflow-auto"
         >
           <Path />
-          <JokeViewer />
           <div className="flex justify-between flex-wrap">
             <Typography variant="h4">Sensor devices</Typography>
             <Button

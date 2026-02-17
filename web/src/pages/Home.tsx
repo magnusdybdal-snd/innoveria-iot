@@ -1,7 +1,8 @@
 import Box from "@mui/material/Box";
-import AddBox from "../templates/addCompBox.tsx";
 import Path from "../templates/path.tsx";
 import Menu from "../Menu.tsx";
+import JokeViewer from "../API/getJoke.tsx";
+import ApiViewer from "../API/getData.tsx";
 
 export default function Home() {
   return (
@@ -23,8 +24,9 @@ export default function Home() {
           className="flex-1 overflow-auto"
         >
           <Path />
+          <JokeViewer />
+          <ApiViewer />
         </Box>
-        <AddBox />
       </Box>
     </div>
   );
