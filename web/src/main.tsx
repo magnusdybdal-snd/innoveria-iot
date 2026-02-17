@@ -9,7 +9,6 @@ import Dashboard from "@/pages/Dashboard.tsx";
 import Sensors from "@/pages/Sensors.tsx";
 import Gateways from "./pages/Gateways";
 import { Color } from "@/Theme/color.tsx";
-import { Path } from "./components/path";
 
 createRoot(document.getElementById("root")!).render(
   <BrowserRouter>
@@ -21,7 +20,7 @@ createRoot(document.getElementById("root")!).render(
           <Route path="/" element={<Home />} />
           <Route path="/Dashboard" element={<Dashboard />} />
           <Route path="/Devices/Sensors" element={<Sensors />} />
-          <Route path="/Reports" element={<Path />} />
+          {/*<Route path="/Reports" element={ placeholder /> */}
           <Route path="/Devices/Gateways" element={<Gateways />} />
         </Routes>
       </ThemeProvider>
