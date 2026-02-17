@@ -1,1 +1,1 @@
-export { default } from "./sensorInfo";
+export { SensorInfo } from "./sensorInfo.tsx";

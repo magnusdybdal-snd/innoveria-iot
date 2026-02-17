@@ -13,12 +13,7 @@ type MenuBoxProps = {
 {
   /*Box for menu components*/
 }
-export default function MenuBox({
-  title,
-  mainPage,
-  subPages,
-  add,
-}: MenuBoxProps) {
+export function MenuBox({ title, mainPage, subPages, add }: MenuBoxProps) {
   return (
     <Box
       sx={{

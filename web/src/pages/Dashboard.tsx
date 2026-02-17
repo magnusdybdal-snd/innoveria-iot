@@ -1,6 +1,6 @@
 import Box from "@mui/material/Box";
-import AddBox from "@/components/addCompBox";
-import Path from "@/components/path";
+import { AddBox } from "@/components/addCompBox";
+import { Path } from "@/components/path";
 import Menu from "@/Menu.tsx";
 
 export default function Home() {

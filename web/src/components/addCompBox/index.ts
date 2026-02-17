@@ -1,1 +1,1 @@
-export { default } from "./addCompBox";
+export { AddBox } from "./addCompBox.tsx";

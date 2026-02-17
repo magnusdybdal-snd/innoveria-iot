@@ -3,9 +3,9 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import Button from "@mui/material/Button";
-import Path from "@/components/path";
-import SensorsGenInfo from "@/components/sensorsGenInfo";
-import SensorInfo from "@/components/sensorInfo";
+import { Path } from "@/components/path";
+import { SensorsGenInfo } from "@/components/sensorsGenInfo";
+import { SensorInfo } from "@/components/sensorInfo";
 import Menu from "@/Menu.tsx";
 
 const sensorInfos = new Map<string, number>();

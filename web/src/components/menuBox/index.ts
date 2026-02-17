@@ -1,1 +1,1 @@
-export { default } from "./menuBox";
+export { MenuBox } from "./menuBox.tsx";

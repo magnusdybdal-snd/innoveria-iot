@@ -1,1 +1,1 @@
-export { default } from "./path";
+export { Path } from "./path.tsx";

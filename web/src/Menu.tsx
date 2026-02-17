@@ -6,7 +6,7 @@ import Divider from "@mui/material/Divider";
 import Typography from "@mui/material/Typography";
 import Avatar from "@mui/material/Avatar";
 import { Link as RouterLink } from "react-router";
-import MenuBox from "@/components/menuBox";
+import { MenuBox } from "@/components/menuBox";
 import SubPages from "@/pages/subPageList.tsx";
 import MainPages from "@/pages/mainPageList.tsx";
 

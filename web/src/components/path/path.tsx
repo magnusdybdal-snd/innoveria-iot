@@ -5,7 +5,7 @@ import { useLocation } from "react-router";
 {
   /*Path of current site + line divider*/
 }
-export default function Home() {
+export function Path() {
   const location = useLocation();
   const pathNames = location.pathname.split("/").filter((x) => x); // removes empty strings
 

@@ -5,7 +5,7 @@ import AddBoxOutlinedIcon from "@mui/icons-material/AddBoxOutlined";
 {
   /*Button to add new components*/
 }
-export default function AddBox() {
+export function AddBox() {
   return (
     <Link href="#" underline="none">
       <Box
