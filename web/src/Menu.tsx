@@ -11,11 +11,12 @@ import SubPages from "@/pages/subPageList.tsx";
 import MainPages from "@/pages/mainPageList.tsx";
 import IconButton from "@mui/material/IconButton";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
+import LightModeIcon from "@mui/icons-material/LightMode";
 import { ThemeContext } from "@/Theme/color/themeContext";
 import { useContext } from "react";
 
 export default function Menu() {
-  const { toggle } = useContext(ThemeContext);
+  const { mode, toggle } = useContext(ThemeContext);
 
   return (
     <Box
@@ -89,12 +90,11 @@ export default function Menu() {
             Log out
           </Button>
           <IconButton aria-label="delete" size="large" onClick={toggle}>
-            <DarkModeIcon
-              sx={{
-                fontSize: 25,
-                color: "primary.main",
-              }}
-            />
+            {mode ? (
+              <DarkModeIcon sx={{ fontSize: 25, color: "primary.main" }} />
+            ) : (
+              <LightModeIcon sx={{ fontSize: 25, color: "primary.main" }} />
+            )}
           </IconButton>
         </div>
       </div>
