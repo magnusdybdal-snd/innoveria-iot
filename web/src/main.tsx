@@ -7,12 +7,12 @@ import Home from "@/pages/Home.tsx";
 import Login from "@/pages/Login.tsx";
 import Dashboard from "@/pages/Dashboard.tsx";
 import Sensors from "@/pages/Sensors.tsx";
-import { Color } from "@/Theme/color.tsx";
+import { DarkMode } from "@/Theme/color/darkMode";
 
 createRoot(document.getElementById("root")!).render(
   <BrowserRouter>
     <StyledEngineProvider injectFirst>
-      <ThemeProvider theme={Color}>
+      <ThemeProvider theme={DarkMode}>
         <CssBaseline />
         <Routes>
           <Route path="/Login" element={<Login />} />
