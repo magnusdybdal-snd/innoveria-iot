@@ -36,7 +36,12 @@ export function CategoryHeader({
     >
       {/* Map every category to display as text */}
       {categories.map((category) => (
-        <Typography key={category} className="px-4 py-2">
+        <Typography
+          key={category}
+          fontSize={18}
+          fontWeight={"bold"}
+          className="px-4 py-2"
+        >
           {category}
         </Typography>
       ))}

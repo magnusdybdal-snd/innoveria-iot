@@ -4,10 +4,9 @@ import { PageDivider } from "@/components/pageDivider";
 import { PageContent } from "@/components/pageContent";
 import { CategoryHeader } from "@/components/CategoryHeader";
 import { GatewayInfo } from "@/components/gatewayInfo";
+import { GatewayRow } from "@/components/gatewayRow/gatewayRow";
+import { mockGateways } from "@/mocks/gateways";
 
-{
-  /* Categoriesdisplayed in header of gateways */
-}
 const gatewayDetails: string[] = ["Status", "Name", "EUI", "Last seen"];
 
 export default function Gateways() {
@@ -21,11 +20,16 @@ export default function Gateways() {
           categories={gatewayDetails}
           columns={gatewayDetails.length}
         >
-          <GatewayInfo
-            name="Gateway 1"
-            euid="A1B2C3D4E5F6"
-            lastSeen="2 min ago"
-          />
+          {mockGateways.map((gateway) => (
+            <GatewayRow key={gateway.id}>
+              <GatewayInfo
+                name={gateway.name}
+                online={gateway.online}
+                euid={gateway.euid}
+                lastSeen={gateway.lastSeen}
+              />
+            </GatewayRow>
+          ))}
         </CategoryHeader>
       </PageContent>
     </div>
