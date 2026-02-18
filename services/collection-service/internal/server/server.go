@@ -21,13 +21,6 @@ import (
 // Server entry point
 func Run() error {
 	cfg := config.Load()
-	mux := NewRouter()
-	server := &http.Server{
-		Addr:              cfg.Addr,
-		Handler:           mux,
-		ReadHeaderTimeout: 5 * time.Second,
-		IdleTimeout:       120 * time.Second,
-	}
 
 	// Init connection to timescale db
 	db, err := db.New(cfg.DB_url)
@@ -54,6 +47,14 @@ func Run() error {
 	// subscribe to the mqtt topic
 	if err := client.Subscribe(cfg.MQTTTopic); err != nil {
 		return fmt.Errorf("mqtt subscribe: %v", err)
+	}
+
+	mux := NewRouter(svc)
+	server := &http.Server{
+		Addr:              cfg.Addr,
+		Handler:           mux,
+		ReadHeaderTimeout: 5 * time.Second,
+		IdleTimeout:       120 * time.Second,
 	}
 
 	// main startup function

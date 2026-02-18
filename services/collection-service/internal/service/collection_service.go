@@ -23,6 +23,7 @@ func (s *SessionServiceImpl) GetAll() []domain.SensorPayload {
 	return s.Repo.FindAll()
 }
 
+// Create will store the sensor data in a time series database
 func (s *SessionServiceImpl) Create(ctx context.Context, payload domain.SensorPayload) error {
 	return s.Repo.Insert(ctx, payload)
 }
