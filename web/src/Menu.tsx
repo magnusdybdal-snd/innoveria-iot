@@ -52,14 +52,14 @@ export default function Menu() {
           />
         </div>
         {/* Menu navigation */}
-        <nav className="flex-1 flex flex-col mt-4 space-y-2">
+        <nav className="flex-1 flex flex-col">
           {Array.from(MainPages.entries()).map(([category, page]) => (
             <MenuBox
               key={category}
               title={category}
               mainPage={page}
               subPages={SubPages.get(category) ?? []}
-              add={category !== "devices"} // example logic
+              add={category !== "Devices"} // example logic
             />
           ))}
         </nav>
