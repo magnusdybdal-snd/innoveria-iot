@@ -3,6 +3,7 @@ import Menu from "@/Menu";
 import { PageDivider } from "@/components/pageDivider";
 import { PageContent } from "@/components/pageContent";
 import { CategoryHeader } from "@/components/CategoryHeader";
+import { GatewayInfo } from "@/components/gatewayInfo";
 
 {
   /* Categoriesdisplayed in header of gateways */
@@ -19,7 +20,13 @@ export default function Gateways() {
         <CategoryHeader
           categories={gatewayDetails}
           columns={gatewayDetails.length}
-        />
+        >
+          <GatewayInfo
+            name="Gateway 1"
+            euid="A1B2C3D4E5F6"
+            lastSeen="2 min ago"
+          />
+        </CategoryHeader>
       </PageContent>
     </div>
   );
