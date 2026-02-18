@@ -27,6 +27,7 @@ export function CategoryHeader({
         display: "grid",
         gridTemplateColumns: templateColumns,
         columnGap: 4,
+        borderRadius: 2,
         backgroundColor: "primary.light",
         color: "primary.main",
         padding: 2,
