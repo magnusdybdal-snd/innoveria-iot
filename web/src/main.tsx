@@ -7,7 +7,7 @@ import Home from "@/pages/Home.tsx";
 import Login from "@/pages/Login.tsx";
 import Dashboard from "@/pages/Dashboard.tsx";
 import Sensors from "@/pages/Sensors.tsx";
-import Gateways from "./pages/Gateways";
+import Gateways from "@/pages/Gateways";
 import { Color } from "@/Theme/color.tsx";
 
 createRoot(document.getElementById("root")!).render(
