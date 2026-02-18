@@ -9,8 +9,14 @@ import { Link as RouterLink } from "react-router";
 import { MenuBox } from "@/components/menuBox";
 import SubPages from "@/pages/subPageList.tsx";
 import MainPages from "@/pages/mainPageList.tsx";
+import IconButton from "@mui/material/IconButton";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
+import { ThemeContext } from "@/Theme/color/themeContext";
+import { useContext } from "react";
 
 export default function Menu() {
+  const { toggle } = useContext(ThemeContext);
+
   return (
     <Box
       sx={{
@@ -65,7 +71,7 @@ export default function Menu() {
         </nav>
 
         {/* Logout pinned to bottom */}
-        <div className="p-4">
+        <div className="p-4 flex justify-between">
           <Button
             component={RouterLink}
             to="/Login"
@@ -82,6 +88,14 @@ export default function Menu() {
           >
             Log out
           </Button>
+          <IconButton aria-label="delete" size="large" onClick={toggle}>
+            <DarkModeIcon
+              sx={{
+                fontSize: 25,
+                color: "primary.main",
+              }}
+            />
+          </IconButton>
         </div>
       </div>
     </Box>
