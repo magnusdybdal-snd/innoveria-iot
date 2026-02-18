@@ -7,7 +7,7 @@ import Link from "@mui/material/Link";
 import Button from "@mui/material/Button";
 import { green } from "@mui/material/colors";
 import { useContext } from "react";
-import { ThemeContext } from "@/Theme/color/themeContext";
+import { ThemeContext } from "@/theme/color/themeContext";
 
 export default function Base() {
   const { mode } = useContext(ThemeContext);

@@ -13,7 +13,7 @@ import MainPages from "@/pages/mainPageList.tsx";
 import IconButton from "@mui/material/IconButton";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LightModeIcon from "@mui/icons-material/LightMode";
-import { ThemeContext } from "@/Theme/color/themeContext";
+import { ThemeContext } from "@/theme/color/themeContext";
 import { useContext } from "react";
 
 export default function Menu() {

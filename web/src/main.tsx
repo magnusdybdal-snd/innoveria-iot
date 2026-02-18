@@ -7,9 +7,9 @@ import Home from "@/pages/Home.tsx";
 import Login from "@/pages/Login.tsx";
 import Dashboard from "@/pages/Dashboard.tsx";
 import Sensors from "@/pages/Sensors.tsx";
-import { DarkMode } from "@/Theme/color/darkMode";
-import { LightMode } from "@/Theme/color/lightMode";
-import { ThemeContext } from "@/Theme/color/themeContext";
+import { DarkMode } from "@/theme/color/darkMode";
+import { LightMode } from "@/theme/color/lightMode";
+import { ThemeContext } from "@/theme/color/themeContext";
 import { useState } from "react";
 
 export default function Root() {
