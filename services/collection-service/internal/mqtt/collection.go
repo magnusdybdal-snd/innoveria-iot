@@ -1,7 +1,9 @@
 package mqtt
 
 import (
+	"context"
 	"encoding/json"
+	"innoveria-iot/collection-service/internal/domain"
 	"log/slog"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
@@ -9,18 +11,20 @@ import (
 
 type Collector struct {
 	workers []chan ChirpstackUpEvent
+	service domain.SensorService
 }
 
 // NewCollector starts with a buffersize and worker count
 // Buffer size is the amount it can handle in a queue
 // Worker count is the physical concurrent workers to read sensor data
-func NewCollector(buffersize, workercount int) *Collector {
+func NewCollector(buffersize, workercount int, svc domain.SensorService) *Collector {
 	workers := make([]chan ChirpstackUpEvent, workercount)
 	for i := range workers {
 		workers[i] = make(chan ChirpstackUpEvent, buffersize)
 	}
 	return &Collector{
 		workers: workers,
+		service: svc,
 	}
 }
 
@@ -53,6 +57,12 @@ func (c *Collector) StartWorkers() {
 					"duplicationId", event.DeduplicationID,
 					"device", event.DeviceInfo.DevEUI,
 				)
+				payload := domain.SensorPayload{
+					Data: event.DeviceInfo.DevEUI,
+				}
+				if err := c.service.Create(context.Background(), payload); err != nil {
+					slog.Error("Failed to insert", "err", err)
+				}
 			}
 		}(i, ch)
 	}

@@ -14,6 +14,8 @@ import (
 	"innoveria-iot/collection-service/internal/config"
 	"innoveria-iot/collection-service/internal/db"
 	"innoveria-iot/collection-service/internal/mqtt"
+	"innoveria-iot/collection-service/internal/repository"
+	"innoveria-iot/collection-service/internal/service"
 )
 
 // Server entry point
@@ -34,8 +36,11 @@ func Run() error {
 	}
 	defer db.Close()
 
+	repo := repository.NewSensorRepository(db)
+	svc := service.NewSensorService(repo)
+
 	// Starting up a new collector
-	coll := mqtt.NewCollector(1000, cfg.MQTTWorkerCount)
+	coll := mqtt.NewCollector(1000, cfg.MQTTWorkerCount, svc)
 	coll.StartWorkers()
 	defer coll.Close()
 
