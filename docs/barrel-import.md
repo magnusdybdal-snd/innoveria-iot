@@ -60,7 +60,7 @@ The `@/` alias is configured in both `tsconfig.app.json` and `vite.config.ts`, p
 ```ts
 // ✅ Preferred
 import Menu from "@/Menu.tsx";
-import { Color } from "@/Theme/color.tsx";
+import { Color } from "@/theme/color.tsx";
 
 // ❌ Avoid
 import Menu from "../../Menu.tsx";
