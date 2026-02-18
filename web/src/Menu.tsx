@@ -1,4 +1,5 @@
-import innLogo from "@/assets/innoveria.png";
+import innLogoDark from "@/assets/innoveriaDark.png";
+import innLogoLight from "@/assets/innoveriaLight.png";
 import viteLogo from "/vite.svg";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -29,7 +30,7 @@ export default function Menu() {
         {/* Top menu logo */}
         <a href="/">
           <img
-            src={innLogo}
+            src={mode ? innLogoDark : innLogoLight}
             alt="Innoveria logo"
             style={{
               width: "310px",
