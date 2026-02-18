@@ -6,8 +6,12 @@ import TextField from "@mui/material/TextField";
 import Link from "@mui/material/Link";
 import Button from "@mui/material/Button";
 import { green } from "@mui/material/colors";
+import { useContext } from "react";
+import { ThemeContext } from "@/Theme/color/themeContext";
 
 export default function Base() {
+  const { mode } = useContext(ThemeContext);
+
   return (
     <div className="flex h-screen">
       <Box
