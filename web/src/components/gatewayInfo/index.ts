@@ -1,1 +1,1 @@
-export { GatewayInfo } from "./GatewayInfo";
+export { GatewayInfo } from "./gatewayInfo";
