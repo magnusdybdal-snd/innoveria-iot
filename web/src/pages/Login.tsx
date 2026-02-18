@@ -1,4 +1,5 @@
-import innLogo from "@/assets/innoveria.png";
+import innLogoDark from "@/assets/innoveriaDark.png";
+import innLogoLight from "@/assets/innoveriaLight.png";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
@@ -37,7 +38,7 @@ export default function Base() {
         >
           <div className="w-64 text-white flex flex-col">
             <img
-              src={innLogo}
+              src={mode ? innLogoDark : innLogoLight}
               alt="Innoveria logo"
               style={{
                 width: "310px",
