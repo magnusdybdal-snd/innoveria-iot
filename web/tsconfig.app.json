@@ -16,6 +16,10 @@
     "noEmit": true,
     "jsx": "react-jsx",
 
+    /* Barreling paths*/
+    "baseUrl": ".",
+    "paths": { "@/*": ["./src/*"] },
+
     /* Linting */
     "strict": true,
     "noUnusedLocals": true,

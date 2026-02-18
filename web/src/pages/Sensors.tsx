@@ -1,22 +1,22 @@
 import { useState } from "react";
 import Box from "@mui/material/Box";
-import Path from "../templates/path.tsx";
-import SensorsGenInfo from "../templates/sensorsGenInfo.tsx";
-import SensorInfo from "../templates/sensorInfo.tsx";
-import Menu from "../Menu.tsx";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import Button from "@mui/material/Button";
+import { Path } from "@/components/path";
+import { SensorsGenInfo } from "@/components/sensorsGenInfo";
+import { SensorInfo } from "@/components/sensorInfo";
+import Menu from "@/Menu.tsx";
 
-const sensorInfos = new Map<string, number>();
-sensorInfos.set("Total sensors", 0);
-sensorInfos.set("Online sensors", 0);
-sensorInfos.set("Offline sensors", 0);
-sensorInfos.set("Last seen 24hr", 0);
-sensorInfos.set("Error last 24hr", 0);
-
-export default function Home() {
+export default function Sensors() {
   const [count, setCount] = useState(0);
+
+  const sensorInfos = new Map<string, number>();
+  sensorInfos.set("Total sensors", count);
+  sensorInfos.set("Online sensors", 0);
+  sensorInfos.set("Offline sensors", 0);
+  sensorInfos.set("Last seen 24hr", 0);
+  sensorInfos.set("Error last 24hr", 0);
 
   return (
     <div className="flex h-screen">
@@ -32,6 +32,7 @@ export default function Home() {
           sx={{
             paddingLeft: 2,
             paddingRight: 2,
+            paddingTop: 2,
           }}
           className="flex-1 overflow-auto"
         >

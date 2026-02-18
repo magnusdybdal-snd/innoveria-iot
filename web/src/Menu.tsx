@@ -1,4 +1,5 @@
-import innLogo from "./assets/innoveria.png";
+import innLogoDark from "@/assets/innoveriaDark.png";
+import innLogoLight from "@/assets/innoveriaLight.png";
 import viteLogo from "/vite.svg";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -6,11 +7,18 @@ import Divider from "@mui/material/Divider";
 import Typography from "@mui/material/Typography";
 import Avatar from "@mui/material/Avatar";
 import { Link as RouterLink } from "react-router";
-import MenuBox from "./templates/menuBox.tsx";
-import SubPages from "./pages/subPageList.tsx";
-import MainPages from "./pages/mainPageList.tsx";
+import { MenuBox } from "@/components/menuBox";
+import SubPages from "@/pages/subPageList.tsx";
+import MainPages from "@/pages/mainPageList.tsx";
+import IconButton from "@mui/material/IconButton";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
+import LightModeIcon from "@mui/icons-material/LightMode";
+import { ThemeContext } from "@/theme/color/themeContext";
+import { useContext } from "react";
 
 export default function Menu() {
+  const { mode, toggle } = useContext(ThemeContext);
+
   return (
     <Box
       sx={{
@@ -22,7 +30,7 @@ export default function Menu() {
         {/* Top menu logo */}
         <a href="/">
           <img
-            src={innLogo}
+            src={mode ? innLogoDark : innLogoLight}
             alt="Innoveria logo"
             style={{
               width: "310px",
@@ -52,20 +60,20 @@ export default function Menu() {
           />
         </div>
         {/* Menu navigation */}
-        <nav className="flex-1 flex flex-col mt-4 space-y-2">
+        <nav className="flex-1 flex flex-col">
           {Array.from(MainPages.entries()).map(([category, page]) => (
             <MenuBox
               key={category}
               title={category}
               mainPage={page}
               subPages={SubPages.get(category) ?? []}
-              add={category !== "devices"} // example logic
+              add={category !== "Devices"} // example logic
             />
           ))}
         </nav>
 
         {/* Logout pinned to bottom */}
-        <div className="p-4">
+        <div className="p-4 flex justify-between">
           <Button
             component={RouterLink}
             to="/Login"
@@ -82,6 +90,13 @@ export default function Menu() {
           >
             Log out
           </Button>
+          <IconButton aria-label="delete" size="large" onClick={toggle}>
+            {mode ? (
+              <DarkModeIcon sx={{ fontSize: 25, color: "primary.main" }} />
+            ) : (
+              <LightModeIcon sx={{ fontSize: 25, color: "primary.main" }} />
+            )}
+          </IconButton>
         </div>
       </div>
     </Box>
