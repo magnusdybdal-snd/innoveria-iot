@@ -1,6 +1,7 @@
+import type { ReactNode } from "react";
+
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import type { ReactNode } from "react";
 
 type CategoryHeaderProps = {
   categories: string[];

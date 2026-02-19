@@ -1,6 +1,6 @@
+import AddBoxOutlinedIcon from "@mui/icons-material/AddBoxOutlined";
 import Box from "@mui/material/Box";
 import Link from "@mui/material/Link";
-import AddBoxOutlinedIcon from "@mui/icons-material/AddBoxOutlined";
 
 {
   /*Button to add new components*/
