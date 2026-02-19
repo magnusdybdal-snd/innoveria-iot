@@ -1,14 +1,17 @@
 import { useState } from "react";
-import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogActions from "@mui/material/DialogActions";
-import TextField from "@mui/material/TextField";
+
 import CircleIcon from "@mui/icons-material/Circle";
-import { ActionMenu } from "@/components/actionMenu";
+import Button from "@mui/material/Button";
 import { green, grey, red, yellow } from "@mui/material/colors";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+
+import { ActionMenu } from "@/components/actionMenu";
+
 type InfoProps = {
   name: string;
   status: number;
@@ -39,7 +42,7 @@ export function SensorInfo({ name, status, euid, machine }: InfoProps) {
     { label: "Delete", onClick: () => {} },
   ];
 
-  const getColor = (status: number) => {
+  const statusColor = (status: number) => {
     switch (status) {
       case 0:
         return green[500];
@@ -55,12 +58,12 @@ export function SensorInfo({ name, status, euid, machine }: InfoProps) {
     <>
       <CircleIcon
         sx={{
-          color: getColor(Number(status)),
+          color: statusColor(Number(status)),
           fontSize: 14,
           alignSelf: "center",
           filter: "drop-shadow(0 0 1px grey)",
         }}
-      ></CircleIcon>
+      />
       <Typography>{currentName}</Typography>
       <Typography>{euid}</Typography>
       <Typography>{machine}</Typography>

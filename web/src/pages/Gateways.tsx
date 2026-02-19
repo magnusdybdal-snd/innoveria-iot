@@ -55,7 +55,7 @@ export default function Gateways() {
             <DeviceRow key={gateway.id}>
               <GatewayInfo
                 name={gateway.name}
-                online={gateway.online}
+                status={gateway.status}
                 euid={gateway.euid}
                 lastSeen={gateway.lastSeen}
               />

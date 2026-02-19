@@ -32,7 +32,7 @@ export function sortGateways(
     if (key === "Name") {
       cmp = a.name.localeCompare(b.name);
     } else if (key === "Status") {
-      cmp = (a.online ? 1 : 0) - (b.online ? 1 : 0);
+      cmp = a.status - b.status;
     } else if (key === "Last seen") {
       cmp =
         parseLastSeenToSeconds(a.lastSeen) - parseLastSeenToSeconds(b.lastSeen);
