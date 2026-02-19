@@ -42,12 +42,11 @@ export default function Gateways() {
    */
   function handleSort(column: string) {
     const col = column as GatewaySortKey;
-    // Clicking the active column toggles direction; clicking a new column resets to ascending
-    setSortConfig((prev) =>
-      prev.key === col
-        ? { key: col, direction: prev.direction === "asc" ? "desc" : "asc" }
-        : { key: col, direction: "asc" },
-    );
+    setSortConfig((prev) => {
+      if (prev.key !== col) return { key: col, direction: "asc" };
+      if (prev.direction === "asc") return { key: col, direction: "desc" };
+      return { key: null, direction: "asc" }; // third click resets to initial sorting (unsorted?) //TODO check if default is unsorted or sorted when connected to API.
+    });
   }
 
   // Derive sorted list on every render; sortGateways returns a new array and does not mutate mockGateways
