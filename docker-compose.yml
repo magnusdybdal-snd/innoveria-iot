@@ -137,6 +137,19 @@ services:
     volumes:
       - ./services/collection-simulator:/app
       - ./pkg:/pkg
+
+  device-service:
+    build:
+      context: .
+      dockerfile: infra/development/device-service.Dockerfile
+    ports:
+      - "8083:8080"
+    volumes:
+      - ./services/device-service:/app
+      - ./pkg:/pkg
+      - chirpstack-secrets:/secrets
+    environment:
+      - GO_ENV=development
       
 
 #
