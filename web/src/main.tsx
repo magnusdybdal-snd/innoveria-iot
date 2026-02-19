@@ -11,6 +11,7 @@ import { DarkMode } from "@/theme/color/darkMode";
 import { LightMode } from "@/theme/color/lightMode";
 import { ThemeContext } from "@/theme/color/themeContext";
 import { useState } from "react";
+import Gateways from "@/pages/Gateways";
 
 export default function Root() {
   // read saved theme on first load
@@ -40,6 +41,7 @@ export default function Root() {
               <Route path="/" element={<Home />} />
               <Route path="/Dashboard" element={<Dashboard />} />
               <Route path="/Devices/Sensors" element={<Sensors />} />
+              <Route path="/Devices/Gateways" element={<Gateways />} />
               <Route path="/Reports" element={<Home />} />
             </Routes>
           </ThemeProvider>
