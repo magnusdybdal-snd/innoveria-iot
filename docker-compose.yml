@@ -6,12 +6,14 @@ services:
     build:
       context: .
       dockerfile: infra/development/chirpstack.Dockerfile
+    user: root
     entrypoint: ["/bin/sh", "/scripts/startChirpstack.sh"]
     restart: unless-stopped
     volumes:
       - ./infra/config/chirpstack:/etc/chirpstack
       - ./infra/config/chirpstack-device-profiles:/profiles
       - ./scripts/startChirpstack.sh:/scripts/startChirpstack.sh
+      - chirpstack-secrets:/secrets
     depends_on:
       - chirpstack-postgres
       - mosquitto
@@ -144,3 +146,4 @@ volumes:
   collectiondata:
   postgresqldata:
   redisdata:
+  chirpstack-secrets: # for api key
