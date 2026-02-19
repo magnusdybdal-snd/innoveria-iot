@@ -14,7 +14,7 @@ const unitToSeconds: Record<string, number> = {
   days: 86400,
 };
 
-//
+// Parses "2 min", "1 hour", "3 days" etc. into a total seconds value for comparison
 function parseLastSeenToSeconds(lastSeen: string): number {
   const [amount, unit] = lastSeen.split(" ");
   return (parseInt(amount, 10) || 0) * (unitToSeconds[unit] ?? 0);
@@ -32,6 +32,7 @@ export function sortGateways(
     if (key === "Name") {
       cmp = a.name.localeCompare(b.name);
     } else if (key === "Status") {
+      // asc = Online first (0), neverconnected second (1), offline third (2)
       cmp = a.status - b.status;
     } else if (key === "Last seen") {
       cmp =
