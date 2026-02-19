@@ -5,21 +5,21 @@ import (
 	"time"
 )
 
-type SensorPayload struct {
-	DeviceEUI string    `json:"device_eui"`
-	Timestamp time.Time `json:"timestamp"`
-	Data      string    `json:"data"`
-	CompanyId string    `json:"company_id"`
+type SensorMeasurement struct {
+	DeviceEUI string         `json:"device_eui"`
+	Timestamp time.Time      `json:"timestamp"`
+	Payload   map[string]any `json:"payload"`
+	CompanyId string         `json:"company_id"`
 }
 
 type SensorRepository interface {
-	FindOne() SensorPayload
-	FindAll() []SensorPayload
-	Insert(ctx context.Context, payload SensorPayload) error
+	Insert(ctx context.Context, measurement SensorMeasurement) error
+	FindLatest(ctx context.Context, deviceEUI string) (SensorMeasurement, error)
+	FindByTimeRange(ctx context.Context, deviceEUI string, from, to time.Time) ([]SensorMeasurement, error)
 }
 
 type SensorService interface {
-	GetOne() SensorPayload
-	GetAll() []SensorPayload
-	Create(ctx context.Context, payload SensorPayload) error
+	Create(ctx context.Context, measurement SensorMeasurement) error
+	GetLatest(ctx context.Context, deviceEUI string) (SensorMeasurement, error)
+	GetByTimeRange(ctx context.Context, deviceEUI string, from, to time.Time) ([]SensorMeasurement, error)
 }
