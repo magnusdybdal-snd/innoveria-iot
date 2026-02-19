@@ -1,9 +1,15 @@
 package domain
 
-import "context"
+import (
+	"context"
+	"time"
+)
 
 type SensorPayload struct {
-	Data string `json:"data"` // base64 encoded
+	DeviceEUI string    `json:"device_eui"`
+	Timestamp time.Time `json:"timestamp"`
+	Data      string    `json:"data"`
+	CompanyId string    `json:"company_id"`
 }
 
 type SensorRepository interface {
