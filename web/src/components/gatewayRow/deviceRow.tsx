@@ -1,7 +1,7 @@
 import Box from "@mui/material/Box";
 import type { ReactNode } from "react";
 
-export function GatewayRow({ children }: { children: ReactNode }) {
+export function DeviceRow({ children }: { children: ReactNode }) {
   return (
     <Box
       sx={{

@@ -1,1 +1,1 @@
-export { GatewayRow } from "./gatewayRow";
+export { DeviceRow } from "./deviceRow.tsx";
