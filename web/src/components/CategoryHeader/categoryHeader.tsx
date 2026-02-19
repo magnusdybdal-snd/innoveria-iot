@@ -1,5 +1,8 @@
 import type { ReactNode } from "react";
 
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import SwapVertIcon from "@mui/icons-material/SwapVert";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 
@@ -47,11 +50,15 @@ export function CategoryHeader({
       {categories.map((category) => {
         const isSortable = sortableColumns.includes(category);
         const isActive = sortConfig?.key === category;
-        const arrow = isActive
-          ? sortConfig.direction === "asc"
-            ? " ↑"
-            : " ↓"
-          : "";
+        const arrow = isActive ? (
+          sortConfig.direction === "asc" ? (
+            <KeyboardArrowDownIcon />
+          ) : (
+            <KeyboardArrowUpIcon />
+          )
+        ) : sortConfig?.key == null ? (
+          <SwapVertIcon />
+        ) : null;
 
         return (
           <Typography
@@ -64,8 +71,10 @@ export function CategoryHeader({
               isSortable ? { cursor: "pointer", userSelect: "none" } : undefined
             }
           >
-            {category}
-            {arrow}
+            <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
+              {category}
+              {isSortable && arrow}
+            </span>
           </Typography>
         );
       })}
