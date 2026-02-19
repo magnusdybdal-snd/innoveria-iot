@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import { type Joke } from "@/API/apiClient";
-import { fetchJokeWithErrorHandling } from "@/API/fetchApi/fetchJoke";
+import { fetchJokeWithErrorHandling } from "@/API/fetch/fetchJoke";
 
 export const JokeViewer: React.FC = () => {
   const [joke, setJoke] = useState<Joke | null>(null);

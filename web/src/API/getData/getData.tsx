@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import { type Data } from "@/API/apiClient";
-import { fetchApiWithErrorHandling } from "@/API/fetchApi/fetchApi/";
+import { fetchApiWithErrorHandling } from "@/API/fetch/fetchApi/";
 
 export const ApiViewer: React.FC = () => {
   const [data, setApi] = useState<Data | null>(null);

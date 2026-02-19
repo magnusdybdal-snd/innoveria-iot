@@ -3,7 +3,7 @@ import { useState } from "react";
 import { CategoryHeader } from "@/components/CategoryHeader";
 import { GatewayInfo } from "@/components/gatewayInfo";
 import {
-  GatewayRow,
+  DeviceRow,
   sortGateways,
   type GatewaySortKey,
   type SortDirection,
@@ -70,14 +70,14 @@ export default function Gateways() {
           onSort={handleSort}
         >
           {sorted.map((gateway) => (
-            <GatewayRow key={gateway.id}>
+            <DeviceRow key={gateway.id}>
               <GatewayInfo
                 name={gateway.name}
-                online={gateway.online}
+                status={gateway.status}
                 euid={gateway.euid}
                 lastSeen={gateway.lastSeen}
               />
-            </GatewayRow>
+            </DeviceRow>
           ))}
         </CategoryHeader>
       </PageContent>

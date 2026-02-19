@@ -1,34 +1,34 @@
 /**
  *
  */
-export type Gateway = {
+export type Sensor = {
   id: string;
   name: string;
   status: number;
   euid: string;
-  lastSeen: string;
+  machine: string;
 };
 
-export const mockGateways: Gateway[] = [
+export const mockSensors: Sensor[] = [
   {
     id: "1",
-    name: "Gateway 1",
+    name: "Sensor 1",
     status: 0,
     euid: "A1B2C3D4E5F6",
-    lastSeen: "2 min ago",
+    machine: "Machine 1",
   },
   {
     id: "2",
-    name: "Gateway 2",
+    name: "Sensor 2",
     status: 2,
     euid: "B2C3D4E5F6A1",
-    lastSeen: "1 hour ago",
+    machine: "Machine 2",
   },
   {
     id: "3",
-    name: "Gateway 3",
+    name: "Sensor 3",
     status: 1,
     euid: "B2D3D5E5A6A1",
-    lastSeen: "4 days ago",
+    machine: "Machine 3",
   },
 ];

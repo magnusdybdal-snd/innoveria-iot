@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import CircleIcon from "@mui/icons-material/Circle";
 import Button from "@mui/material/Button";
+import { green, grey, red, yellow } from "@mui/material/colors";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
@@ -13,7 +14,7 @@ import { ActionMenu } from "@/components/actionMenu";
 
 type InfoProps = {
   name: string;
-  online?: boolean;
+  status: number;
   euid: string;
   lastSeen: string;
 };
@@ -30,7 +31,7 @@ type InfoProps = {
  * @param props.lastSeen - Human-readable time since last contact (e.g. "2 min")
  * @returns A set of grid-aligned cells with an action menu and rename dialog
  */
-export function GatewayInfo({ name, online, euid, lastSeen }: InfoProps) {
+export function GatewayInfo({ name, status, euid, lastSeen }: InfoProps) {
   const [currentName, setCurrentName] = useState(name);
   const [editOpen, setEditOpen] = useState(false);
   const [editValue, setEditValue] = useState(name);
@@ -50,11 +51,27 @@ export function GatewayInfo({ name, online, euid, lastSeen }: InfoProps) {
     { label: "Delete", onClick: () => {} },
   ];
 
+  const statusColor = (status: number) => {
+    switch (status) {
+      case 0:
+        return green[500];
+      case 1:
+        return yellow[500];
+      case 2:
+        return red[500];
+      default:
+        return grey[500];
+    }
+  };
   return (
     <>
       <CircleIcon
-        color={online ? "success" : "error"}
-        sx={{ fontSize: 14, alignSelf: "center" }}
+        sx={{
+          color: statusColor(Number(status)),
+          fontSize: 14,
+          alignSelf: "center",
+          filter: "drop-shadow(0 0 1px grey)",
+        }}
       />
       <Typography>{currentName}</Typography>
       <Typography>{euid}</Typography>
