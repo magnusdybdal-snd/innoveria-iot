@@ -5,7 +5,14 @@ import Box from "@mui/material/Box";
 interface PageContentProps {
   children: ReactNode;
 }
-
+/**
+ * Wrapper for the main scrollable area of a page.
+ * Provides consistent background color and padding across all pages.
+ *
+ * @param props - Component props
+ * @param props.children - Page content to render inside the wrapper
+ * @returns A scrollable Box with consistent page-level styling
+ */
 export function PageContent({ children }: PageContentProps) {
   return (
     <Box
