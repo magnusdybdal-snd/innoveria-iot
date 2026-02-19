@@ -17,6 +17,20 @@ type CategoryHeaderProps = {
   onSort?: (column: string) => void;
 };
 
+/**
+ * Renders a grid header row with column labels and optional sort controls.
+ * Sortable columns show a pointer cursor and display an arrow (↑/↓) when active.
+ * Child elements (e.g. data rows) are rendered inside the same grid below the header.
+ *
+ * @param props - Component props
+ * @param props.categories - Ordered list of column label strings
+ * @param props.columns - Total column count for the grid template; defaults to categories.length if omitted
+ * @param props.children - Data rows to render inside the grid
+ * @param props.sortableColumns - Subset of category labels that are clickable for sorting
+ * @param props.sortConfig - Currently active sort key and direction
+ * @param props.onSort - Callback invoked with the column label when a sortable header is clicked
+ * @returns A full-width grid box with header labels and child content
+ */
 export function CategoryHeader({
   categories,
   columns,

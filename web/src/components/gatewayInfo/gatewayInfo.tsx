@@ -18,6 +18,18 @@ type InfoProps = {
   lastSeen: string;
 };
 
+/**
+ * Displays a single gateway row's data: online status, name, EUI, and last-seen time.
+ * Includes an ActionMenu for renaming (local state only) and deleting the gateway.
+ * Opens a Dialog to collect the new name on rename.
+ *
+ * @param props - Component props
+ * @param props.name - Display name of the gateway
+ * @param props.online - Whether the gateway is currently online
+ * @param props.euid - EUI (Extended Unique Identifier) of the gateway
+ * @param props.lastSeen - Human-readable time since last contact (e.g. "2 min")
+ * @returns A set of grid-aligned cells with an action menu and rename dialog
+ */
 export function GatewayInfo({ name, online, euid, lastSeen }: InfoProps) {
   const [currentName, setCurrentName] = useState(name);
   const [editOpen, setEditOpen] = useState(false);

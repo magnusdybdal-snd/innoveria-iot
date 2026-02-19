@@ -6,6 +6,7 @@ export function GatewayRow({ children }: { children: ReactNode }) {
   return (
     <Box
       sx={{
+        // Span all parent grid columns and inherit their sizing so children align with headers
         gridColumn: "1 / -1",
         display: "grid",
         gridTemplateColumns: "subgrid",
