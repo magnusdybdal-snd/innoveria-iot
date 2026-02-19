@@ -1,17 +1,20 @@
-import { BrowserRouter, Routes, Route } from "react-router";
-import { createRoot } from "react-dom/client";
 import CssBaseline from "@mui/material/CssBaseline";
 import { StyledEngineProvider, ThemeProvider } from "@mui/material/styles";
+import { createRoot } from "react-dom/client";
+import { BrowserRouter, Route, Routes } from "react-router";
+
 import "@/index.css";
+
+import { useState } from "react";
+
+import Dashboard from "@/pages/Dashboard.tsx";
+import Gateways from "@/pages/Gateways";
 import Home from "@/pages/Home.tsx";
 import Login from "@/pages/Login.tsx";
-import Dashboard from "@/pages/Dashboard.tsx";
 import Sensors from "@/pages/Sensors.tsx";
 import { DarkMode } from "@/theme/color/darkMode";
 import { LightMode } from "@/theme/color/lightMode";
 import { ThemeContext } from "@/theme/color/themeContext";
-import { useState } from "react";
-import Gateways from "@/pages/Gateways";
 
 export default function Root() {
   // read saved theme on first load

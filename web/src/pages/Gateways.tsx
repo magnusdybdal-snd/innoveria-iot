@@ -1,10 +1,10 @@
-import { SubPageHeader } from "@/components/subPageHeader";
-import Menu from "@/Menu";
-import { PageDivider } from "@/components/pageDivider";
-import { PageContent } from "@/components/pageContent";
 import { CategoryHeader } from "@/components/CategoryHeader";
 import { GatewayInfo } from "@/components/gatewayInfo";
 import { GatewayRow } from "@/components/gatewayRow/gatewayRow";
+import { PageContent } from "@/components/pageContent";
+import { PageDivider } from "@/components/pageDivider";
+import { SubPageHeader } from "@/components/subPageHeader";
+import Menu from "@/Menu";
 import { mockGateways } from "@/mocks/gateways";
 
 const gatewayDetails: string[] = ["Status", "Name", "EUI", "Last seen"];

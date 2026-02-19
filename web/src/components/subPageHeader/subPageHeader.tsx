@@ -1,6 +1,8 @@
-import { Path } from "@/components/path";
-import Typography from "@mui/material/Typography";
 import type { ReactNode } from "react";
+
+import Typography from "@mui/material/Typography";
+
+import { Path } from "@/components/path";
 
 type SubPageHeaderProps = {
   title?: string;

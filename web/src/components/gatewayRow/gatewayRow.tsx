@@ -1,5 +1,6 @@
-import Box from "@mui/material/Box";
 import type { ReactNode } from "react";
+
+import Box from "@mui/material/Box";
 
 export function GatewayRow({ children }: { children: ReactNode }) {
   return (
