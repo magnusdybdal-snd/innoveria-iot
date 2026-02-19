@@ -58,7 +58,9 @@ export function CategoryHeader({
           )
         ) : sortConfig?.key == null ? (
           <SwapVertIcon />
-        ) : null;
+        ) : (
+          <SwapVertIcon style={{ visibility: "hidden" }} />
+        );
 
         return (
           <Typography
