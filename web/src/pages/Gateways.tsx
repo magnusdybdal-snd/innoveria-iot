@@ -18,7 +18,7 @@ export default function Gateways() {
         <PageDivider />
         <CategoryHeader
           categories={gatewayDetails}
-          columns={gatewayDetails.length}
+          columns={gatewayDetails.length + 1}
         >
           {mockGateways.map((gateway) => (
             <GatewayRow key={gateway.id}>
