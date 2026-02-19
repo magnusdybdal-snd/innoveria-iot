@@ -4,6 +4,7 @@ import (
 	"context"
 	"innoveria-iot/collection-service/internal/db"
 	"innoveria-iot/collection-service/internal/domain"
+	"time"
 )
 
 type SensorRepository struct {
@@ -14,15 +15,14 @@ func NewSensorRepository(db *db.DB) *SensorRepository {
 	return &SensorRepository{db: db}
 }
 
-func (s *SensorRepository) FindOne() domain.SensorPayload {
-	var data domain.SensorPayload
-	return data
-}
-
-func (s *SensorRepository) FindAll() []domain.SensorPayload {
+func (s *SensorRepository) Insert(ctx context.Context, measurement domain.SensorMeasurement) error {
 	return nil
 }
 
-func (s *SensorRepository) Insert(ctx context.Context, payload domain.SensorPayload) error {
-	return nil
+func (s *SensorRepository) FindLatest(ctx context.Context, deviceEUI string) (domain.SensorMeasurement, error) {
+	return domain.SensorMeasurement{}, nil
+}
+
+func (s *SensorRepository) FindByTimeRange(ctx context.Context, deviceEUI string, from, to time.Time) ([]domain.SensorMeasurement, error) {
+	return nil, nil
 }

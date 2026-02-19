@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"innoveria-iot/collection-service/internal/domain"
 	"log/slog"
+	"time"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 )
@@ -57,8 +58,11 @@ func (c *Collector) StartWorkers() {
 					"duplicationId", event.DeduplicationID,
 					"device", event.DeviceInfo.DevEUI,
 				)
-				payload := domain.SensorPayload{
-					Data: event.DeviceInfo.DevEUI,
+				payload := domain.SensorMeasurement{
+					DeviceEUI: event.DeviceInfo.DevEUI,
+					Timestamp: time.Now(),
+					Payload:   event.Object,
+					CompanyId: "", // This will fill from tennant lookup later
 				}
 				if err := c.service.Create(context.Background(), payload); err != nil {
 					slog.Error("Failed to insert", "err", err)
