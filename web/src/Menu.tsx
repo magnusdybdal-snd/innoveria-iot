@@ -1,20 +1,23 @@
-import innLogoDark from "@/assets/innoveriaDark.png";
-import innLogoLight from "@/assets/innoveriaLight.png";
-import viteLogo from "/vite.svg";
+import { useContext } from "react";
+
+import DarkModeIcon from "@mui/icons-material/DarkMode";
+import LightModeIcon from "@mui/icons-material/LightMode";
+import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Divider from "@mui/material/Divider";
-import Typography from "@mui/material/Typography";
-import Avatar from "@mui/material/Avatar";
-import { Link as RouterLink } from "react-router";
-import { MenuBox } from "@/components/menuBox";
-import SubPages from "@/pages/subPageList.tsx";
-import MainPages from "@/pages/mainPageList.tsx";
 import IconButton from "@mui/material/IconButton";
-import DarkModeIcon from "@mui/icons-material/DarkMode";
-import LightModeIcon from "@mui/icons-material/LightMode";
+import Typography from "@mui/material/Typography";
+import { Link as RouterLink } from "react-router";
+
+import innLogoDark from "@/assets/innoveriaDark.png";
+import innLogoLight from "@/assets/innoveriaLight.png";
+import { MenuBox } from "@/components/menuBox";
+import MainPages from "@/pages/mainPageList.tsx";
+import SubPages from "@/pages/subPageList.tsx";
 import { ThemeContext } from "@/theme/color/themeContext";
-import { useContext } from "react";
+
+import viteLogo from "/vite.svg";
 
 export default function Menu() {
   const { mode, toggle } = useContext(ThemeContext);

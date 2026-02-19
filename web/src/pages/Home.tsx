@@ -1,8 +1,8 @@
+import { ApiViewer } from "@/API/getData/";
+import { JokeViewer } from "@/API/getJoke";
 import { PageContent } from "@/components/pageContent";
 import { SubPageHeader } from "@/components/subPageHeader";
 import Menu from "@/Menu.tsx";
-import { JokeViewer } from "@/API/getJoke";
-import { ApiViewer } from "@/API/getData/";
 
 export default function Home() {
   return (
