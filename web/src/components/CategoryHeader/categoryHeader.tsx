@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import Box from "@mui/material/Box";
+import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 
 type SortDirection = "asc" | "desc";
@@ -66,6 +68,23 @@ export function CategoryHeader({
           >
             {category}
             {arrow}
+
+            {/* Adds info on status color of column is status*/}
+            {category === "Status" && (
+              <Tooltip
+                title={
+                  <>
+                    Green = Online
+                    <br />
+                    Yellow = Never connect
+                    <br />
+                    Red = Offline
+                  </>
+                }
+              >
+                <HelpOutlineIcon sx={{ fontSize: 15 }} />
+              </Tooltip>
+            )}
           </Typography>
         );
       })}
