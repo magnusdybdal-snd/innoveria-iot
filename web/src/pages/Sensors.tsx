@@ -28,8 +28,6 @@ const sensorDetails: string[] = ["Status", "Name", "DebEUI", "Machine"];
 const sortableColumns: SensorSortKey[] = ["Status", "Name", "Machine"];
 
 export default function Sensors() {
-  //const [count, setCount] = useState(mockSensors.length);
-
   const addButton = (
     <Button
       variant="outlined"
@@ -41,7 +39,6 @@ export default function Sensors() {
         textTransform: "none",
         fontSize: 20,
       }}
-      //onClick={() => setCount((count) => count + 1)}
     >
       Add device +
     </Button>
@@ -81,9 +78,6 @@ export default function Sensors() {
           sortConfig={sortConfig}
           onSort={handleSort}
         >
-          {/*Array.from({ length: count }).map((_, i) => (
-          <SensorInfo key={i} number={i + 1} online={true} />
-        ))*/}
           {sorted.map((sensor) => (
             <DeviceRow key={sensor.id}>
               <SensorInfo
