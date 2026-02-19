@@ -1,7 +1,14 @@
+import { useState } from "react";
+
 import Button from "@mui/material/Button";
 
 import { CategoryHeader } from "@/components/CategoryHeader";
-import { DeviceRow } from "@/components/gatewayRow";
+import {
+  DeviceRow,
+  sortSensors,
+  type SensorSortKey,
+  type SortDirection,
+} from "@/components/gatewayRow";
 import { PageContent } from "@/components/pageContent";
 import { PageDivider } from "@/components/pageDivider";
 import { SensorInfo } from "@/components/sensorInfo";
@@ -18,6 +25,7 @@ sensorInfos.set("Last seen 24hr", 0);
 sensorInfos.set("Error last 24hr", 0);
 
 const sensorDetails: string[] = ["Status", "Name", "DebEUI", "Machine"];
+const sortableColumns: SensorSortKey[] = ["Status", "Name", "Machine"];
 
 export default function Sensors() {
   //const [count, setCount] = useState(mockSensors.length);
@@ -39,6 +47,22 @@ export default function Sensors() {
     </Button>
   );
 
+  const [sortConfig, setSortConfig] = useState<{
+    key: SensorSortKey | null;
+    direction: SortDirection;
+  }>({ key: null, direction: "asc" });
+
+  function handleSort(column: string) {
+    const col = column as SensorSortKey;
+    setSortConfig((prev) =>
+      prev.key === col
+        ? { key: col, direction: prev.direction === "asc" ? "desc" : "asc" }
+        : { key: col, direction: "asc" },
+    );
+  }
+
+  const sorted = sortSensors(mockSensors, sortConfig.key, sortConfig.direction);
+
   return (
     <div className="flex h-screen">
       <Menu />
@@ -53,11 +77,14 @@ export default function Sensors() {
         <CategoryHeader
           categories={sensorDetails}
           columns={sensorDetails.length + 1}
+          sortableColumns={sortableColumns}
+          sortConfig={sortConfig}
+          onSort={handleSort}
         >
           {/*Array.from({ length: count }).map((_, i) => (
           <SensorInfo key={i} number={i + 1} online={true} />
         ))*/}
-          {mockSensors.map((sensor) => (
+          {sorted.map((sensor) => (
             <DeviceRow key={sensor.id}>
               <SensorInfo
                 name={sensor.name}
