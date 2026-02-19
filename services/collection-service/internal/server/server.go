@@ -14,18 +14,13 @@ import (
 	"innoveria-iot/collection-service/internal/config"
 	"innoveria-iot/collection-service/internal/db"
 	"innoveria-iot/collection-service/internal/mqtt"
+	"innoveria-iot/collection-service/internal/repository"
+	"innoveria-iot/collection-service/internal/service"
 )
 
 // Server entry point
 func Run() error {
 	cfg := config.Load()
-	mux := NewRouter()
-	server := &http.Server{
-		Addr:              cfg.Addr,
-		Handler:           mux,
-		ReadHeaderTimeout: 5 * time.Second,
-		IdleTimeout:       120 * time.Second,
-	}
 
 	// Init connection to timescale db
 	db, err := db.New(cfg.DB_url)
@@ -34,8 +29,11 @@ func Run() error {
 	}
 	defer db.Close()
 
+	repo := repository.NewSensorRepository(db)
+	svc := service.NewSensorService(repo)
+
 	// Starting up a new collector
-	coll := mqtt.NewCollector(1000, cfg.MQTTWorkerCount)
+	coll := mqtt.NewCollector(1000, cfg.MQTTWorkerCount, svc)
 	coll.StartWorkers()
 	defer coll.Close()
 
@@ -49,6 +47,14 @@ func Run() error {
 	// subscribe to the mqtt topic
 	if err := client.Subscribe(cfg.MQTTTopic); err != nil {
 		return fmt.Errorf("mqtt subscribe: %v", err)
+	}
+
+	mux := NewRouter(svc)
+	server := &http.Server{
+		Addr:              cfg.Addr,
+		Handler:           mux,
+		ReadHeaderTimeout: 5 * time.Second,
+		IdleTimeout:       120 * time.Second,
 	}
 
 	// main startup function
