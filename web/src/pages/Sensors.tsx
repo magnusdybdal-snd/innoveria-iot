@@ -1,12 +1,13 @@
 import Button from "@mui/material/Button";
-import { SensorsGenInfo } from "@/components/sensorsGenInfo";
-import { SensorInfo } from "@/components/sensorInfo";
-import { SubPageHeader } from "@/components/subPageHeader";
-import Menu from "@/Menu.tsx";
-import { PageContent } from "@/components/pageContent";
-import { PageDivider } from "@/components/pageDivider";
+
 import { CategoryHeader } from "@/components/CategoryHeader";
 import { DeviceRow } from "@/components/gatewayRow";
+import { PageContent } from "@/components/pageContent";
+import { PageDivider } from "@/components/pageDivider";
+import { SensorInfo } from "@/components/sensorInfo";
+import { SensorsGenInfo } from "@/components/sensorsGenInfo";
+import { SubPageHeader } from "@/components/subPageHeader";
+import Menu from "@/Menu.tsx";
 import { mockSensors } from "@/mocks/sensors.ts";
 
 const sensorInfos = new Map<string, number>();
