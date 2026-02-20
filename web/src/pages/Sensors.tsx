@@ -17,13 +17,6 @@ import { SubPageHeader } from "@/components/subPageHeader";
 import Menu from "@/Menu.tsx";
 import { mockSensors } from "@/mocks/sensors.ts";
 
-const sensorInfos = new Map<string, number>();
-sensorInfos.set("Total sensors", 0);
-sensorInfos.set("Online sensors", 0);
-sensorInfos.set("Offline sensors", 0);
-sensorInfos.set("Last seen 24hr", 0);
-sensorInfos.set("Error last 24hr", 0);
-
 const sensorDetails: string[] = ["Status", "Name", "DebEUI", "Machine"];
 const sortableColumns: SensorSortKey[] = ["Status", "Name", "Machine"];
 
@@ -59,6 +52,19 @@ export default function Sensors() {
   }
 
   const sorted = sortSensors(mockSensors, sortConfig.key, sortConfig.direction);
+
+  const sensorInfos = new Map<string, number>();
+  sensorInfos.set("Total sensors", sorted.length);
+  sensorInfos.set(
+    "Online sensors",
+    sorted.filter((sensor) => sensor.status === 0).length,
+  );
+  sensorInfos.set(
+    "Offline sensors",
+    sorted.filter((sensor) => sensor.status === 2).length,
+  );
+  sensorInfos.set("Last seen 24hr", 0);
+  sensorInfos.set("Error last 24hr", 0);
 
   return (
     <div className="flex h-screen">
