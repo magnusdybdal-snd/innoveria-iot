@@ -21,6 +21,7 @@ import { mockSensors } from "@/mocks/sensors.ts";
 const sensorDetails: string[] = ["Status", "Name", "DebEUI", "Machine"];
 const addSensorDetails: string[] = ["Name", "DebEUI", "Machine"];
 const sortableColumns: SensorSortKey[] = ["Status", "Name", "Machine"];
+type NewSensor = Omit<Sensor, "id" | "status">;
 
 export default function Sensors() {
   const [open, setOpen] = useState(false);
@@ -31,6 +32,17 @@ export default function Sensors() {
 
   const handleClose = () => {
     setOpen(false);
+  };
+
+  const handleAddSensor = (sensorData: NewSensor) => {
+    setSensors((prev) => [
+      ...prev,
+      {
+        id: crypto.randomUUID(),
+        status: 0,
+        ...sensorData,
+      },
+    ]);
   };
 
   const addButton = (
@@ -64,7 +76,9 @@ export default function Sensors() {
     );
   }
 
-  const sorted = sortSensors(mockSensors, sortConfig.key, sortConfig.direction);
+  const [sensors, setSensors] = useState(mockSensors);
+
+  const sorted = sortSensors(sensors, sortConfig.key, sortConfig.direction);
 
   const sensorInfos = new Map<string, number>();
   sensorInfos.set("Total sensors", sorted.length);
@@ -114,6 +128,7 @@ export default function Sensors() {
         open={open}
         onClose={handleClose}
         addOptions={addSensorDetails}
+        onAdd={handleAddSensor}
       />
     </div>
   );

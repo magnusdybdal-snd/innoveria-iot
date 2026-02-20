@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -12,16 +14,24 @@ export interface AddDeviceProps {
   open: boolean;
   onClose: () => void;
   addOptions: string[];
+  onAdd: (sensor: { name: string; euid: string; machine: string }) => void;
 }
 
 export function AddDevice(props: AddDeviceProps) {
   const { onClose, open, addOptions } = props;
+  const [values, setValues] = useState<Record<string, string>>({});
 
   const handleClose = () => {
     onClose();
   };
 
   const handleSafeClose = () => {
+    props.onAdd({
+      name: values["Name"] ?? "",
+      euid: values["DebEUI"] ?? "",
+      machine: values["Machine"] ?? "",
+    });
+
     onClose();
   };
 
@@ -57,8 +67,14 @@ export function AddDevice(props: AddDeviceProps) {
                   color: LightMode.palette.primary.main, // focused label
                 },
               }}
-              id={option}
-              type={option}
+              key={option}
+              value={values[option] ?? ""}
+              onChange={(e) =>
+                setValues((prev) => ({
+                  ...prev,
+                  [option]: e.target.value,
+                }))
+              }
             />
           ))}
         </CategoryHeader>
