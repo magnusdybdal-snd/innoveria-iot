@@ -6,9 +6,9 @@ import (
 )
 
 type Gateway struct {
-	Id   string
-	Name string
-
+	Id         string
+	Name       string
+	Status     int // 0=online, 1=never_seen, 2=offline
 	LastSeenAt time.Time
 }
 

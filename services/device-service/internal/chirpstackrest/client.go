@@ -1,7 +1,8 @@
 package chirpstackrest
 
 import (
-	"net/url"
+	"context"
+	"net/http"
 
 	"innoveria-iot/device-service/internal/config"
 
@@ -9,17 +10,33 @@ import (
 )
 
 type Client struct {
-	baseURL    *url.URL
+	baseURL    string
 	token      string
 	httpClient *httpclient.Client
 }
 
 func New(cfg config.Config) *Client {
 	return &Client{
-		baseURL:    &cfg.ChirpstackURL,
+		baseURL:    cfg.ChirpstackURL,
 		token:      cfg.ChirpstackSecret,
 		httpClient: httpclient.New(),
 	}
 }
 
-func GetSensorStatus(devEUI string)
+func (c *Client) GetAllGatewayStatus(ctx context.Context, devEUI string, limit int) (ChirpstackGatewayList, error) {
+	resp, err := httpclient.DoRequest[ChirpstackGatewayList](
+		c.httpClient,
+		ctx,
+		c.baseURL+"/api/gateways?limit=1",
+		http.MethodGet,
+		nil,
+		map[string]string{
+			"Authorization": "Bearer " + c.token,
+		},
+	)
+	if err != nil {
+		return ChirpstackGatewayList{}, err
+	}
+
+	return resp, nil
+}

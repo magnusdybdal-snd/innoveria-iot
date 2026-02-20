@@ -22,10 +22,21 @@ func (g *GatewayServiceImpl) Create() {
 
 func (g *GatewayServiceImpl) GetAll(ctx context.Context) ([]domain.Gateway, error) {
 	// 1. Get gateway from database
+	limit := 1
 
 	// 2. Get status from chirpstack
+	resp, err := g.cc.GetAllGatewayStatus(ctx, "hei", limit)
+	if err != nil {
+		return nil, err
+	}
+
+	var result []domain.Gateway
+
+	for _, g := range resp.Result {
+		result = append(result, mapGateway(g))
+	}
 
 	// 3. Merge status and gateway data
 
-	return nil, nil
+	return result, nil
 }
