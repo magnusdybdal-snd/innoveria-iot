@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import Button from "@mui/material/Button";
 
+import { AddDevice } from "@/components/addDevicePopup";
 import { CategoryHeader } from "@/components/CategoryHeader";
 import {
   DeviceRow,
@@ -21,6 +22,16 @@ const sensorDetails: string[] = ["Status", "Name", "DebEUI", "Machine"];
 const sortableColumns: SensorSortKey[] = ["Status", "Name", "Machine"];
 
 export default function Sensors() {
+  const [open, setOpen] = useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   const addButton = (
     <Button
       variant="outlined"
@@ -32,6 +43,7 @@ export default function Sensors() {
         textTransform: "none",
         fontSize: 20,
       }}
+      onClick={handleClickOpen}
     >
       Add device +
     </Button>
@@ -96,6 +108,8 @@ export default function Sensors() {
           ))}
         </CategoryHeader>
       </PageContent>
+
+      <AddDevice open={open} onClose={handleClose} />
     </div>
   );
 }
