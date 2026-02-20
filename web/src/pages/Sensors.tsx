@@ -19,6 +19,7 @@ import Menu from "@/Menu.tsx";
 import { mockSensors } from "@/mocks/sensors.ts";
 
 const sensorDetails: string[] = ["Status", "Name", "DebEUI", "Machine"];
+const addSensorDetails: string[] = ["Name", "DebEUI", "Machine"];
 const sortableColumns: SensorSortKey[] = ["Status", "Name", "Machine"];
 
 export default function Sensors() {
@@ -109,7 +110,11 @@ export default function Sensors() {
         </CategoryHeader>
       </PageContent>
 
-      <AddDevice open={open} onClose={handleClose} />
+      <AddDevice
+        open={open}
+        onClose={handleClose}
+        addOptions={addSensorDetails}
+      />
     </div>
   );
 }
