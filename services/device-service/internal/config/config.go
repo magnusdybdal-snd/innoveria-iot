@@ -16,7 +16,7 @@ type Config struct {
 func Load() *Config {
 	secret := env.GetFile("/secrets/chirpstack-api-key")
 
-	chripstackURL, err := url.Parse(env.Get("Chirpstack_REST", "http://localhost:8090/"))
+	chripstackURL, err := url.Parse(env.Get("Chirpstack_REST", "http://chirpstack-rest-api:8090"))
 	if err != nil {
 		log.Fatal("config loading failed")
 	}

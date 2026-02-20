@@ -3,6 +3,7 @@ package httpclient
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 )
@@ -36,7 +37,7 @@ func DoRequest[T any](
 
 	req, err := http.NewRequestWithContext(ctx, method, url, nil)
 	if err != nil {
-		return zero, err
+		return zero, fmt.Errorf("request error: %v", err)
 	}
 	for k, v := range headers {
 		req.Header.Set(k, v)
@@ -47,7 +48,7 @@ func DoRequest[T any](
 
 	resp, err := client.http.Do(req)
 	if err != nil {
-		return zero, err
+		return zero, fmt.Errorf("error doing the request: %v", err)
 	}
 	defer resp.Body.Close()
 

@@ -1,7 +1,6 @@
 package chirpstackrest
 
 import (
-	"net/http"
 	"net/url"
 
 	"innoveria-iot/device-service/internal/config"
@@ -12,7 +11,7 @@ import (
 type Client struct {
 	baseURL    *url.URL
 	token      string
-	httpClient *http.Client
+	httpClient *httpclient.Client
 }
 
 func New(cfg config.Config) *Client {
@@ -23,6 +22,4 @@ func New(cfg config.Config) *Client {
 	}
 }
 
-func (c *Client) GetApplications() {
-
-}
+func GetSensorStatus(devEUI string)
