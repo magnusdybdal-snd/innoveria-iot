@@ -4,7 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"innoveria-iot/device-service/internal/chirpstackrest"
 	"innoveria-iot/device-service/internal/config"
+	"innoveria-iot/device-service/internal/service"
 	"log/slog"
 	"net/http"
 	"os"
@@ -15,7 +17,11 @@ import (
 
 func Run() error {
 	cfg := config.Load()
-	mux := NewRouter()
+
+	chirpstackClient := chirpstackrest.New(*cfg)
+	gatewaySvc := service.NewGatewayService(chirpstackClient)
+
+	mux := NewRouter(gatewaySvc)
 	server := &http.Server{
 		Addr:              cfg.Addr,
 		Handler:           mux,
