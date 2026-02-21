@@ -22,10 +22,11 @@ func (g *GatewayServiceImpl) Create() {
 
 func (g *GatewayServiceImpl) GetAll(ctx context.Context) ([]domain.Gateway, error) {
 	// 1. Get gateway from database
-	limit := 1
+	limit := 1 // TODO: Get the actual meta data from device db
 
 	// 2. Get status from chirpstack
-	resp, err := g.cc.GetAllGatewayStatus(ctx, "", limit)
+	// TODO: get only the status
+	resp, err := g.cc.GetAllGateways(ctx, limit) // limit is needed for chirpstack
 	if err != nil {
 		return nil, err
 	}

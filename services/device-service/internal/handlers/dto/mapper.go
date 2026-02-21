@@ -2,28 +2,54 @@ package dto
 
 import (
 	"innoveria-iot/device-service/internal/domain"
-	"time"
 )
 
-func MapDomainToDTO(g []domain.Gateway) GatewayListResponse {
-	tot := len(g)
-	devices := make([]GatewayResponse, tot)
+// Domain to dto mapping. So the response has the json tag and shows the total count
+func MapGatewayDomainToDTO(from []domain.Gateway) GatewayListResponse {
+	tot := len(from)
+	gateways := make([]GatewayResponse, tot)
 
-	for i, d := range g {
-		devices[i] = mapGateway(d)
+	for i, g := range from {
+		gateways[i] = mapGateway(g)
 	}
 
 	return GatewayListResponse{
 		TotalCount: tot,
-		Gateways:   devices,
+		Gateways:   gateways,
 	}
 }
 
-func mapGateway(g domain.Gateway) GatewayResponse {
+func mapGateway(from domain.Gateway) GatewayResponse {
 	return GatewayResponse{
-		ID:         g.Id,
-		Name:       g.Name,
-		Status:     g.Status,
-		LastSeenAt: g.LastSeenAt.Format(time.RFC822Z),
+		ID:         from.Id,
+		DeviceEUI:  from.Id, // TODO: Change this to database id
+		Name:       from.Name,
+		Status:     from.Status,
+		LastSeenAt: from.LastSeenAt,
+	}
+}
+
+func MapSensorDomainToDTO(from []domain.Sensor) SensorListResponse {
+	tot := len(from)
+	sensors := make([]SensorResponse, tot)
+
+	for i, s := range from {
+		sensors[i] = mapSensors(s)
+	}
+
+	return SensorListResponse{
+		TotalCount: tot,
+		Sensors:    sensors,
+	}
+}
+
+func mapSensors(from domain.Sensor) SensorResponse {
+	return SensorResponse{
+		ID:         from.Id,
+		Name:       from.Name,
+		DeviceEUI:  from.DeviceEUI,
+		GatewayEUI: from.GatewayEUI,
+		Status:     from.Status,
+		LastSeenAt: from.LastSeenAt,
 	}
 }

@@ -1,9 +1,18 @@
 package domain
 
-import "time"
+import (
+	"context"
+)
 
 type Sensor struct {
-	DevEUI     string
+	Id         string
+	Name       string
+	DeviceEUI  string
 	GatewayEUI string
-	LastSeenAt time.Time
+	Status     int // 0=online, 1=never_seen, 2=offline
+	LastSeenAt string
+}
+
+type SensorService interface {
+	GetAll(ctx context.Context) ([]Sensor, error)
 }

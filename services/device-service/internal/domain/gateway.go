@@ -2,14 +2,14 @@ package domain
 
 import (
 	"context"
-	"time"
 )
 
 type Gateway struct {
 	Id         string
+	DeviceEUI  string
 	Name       string
 	Status     int // 0=online, 1=never_seen, 2=offline
-	LastSeenAt time.Time
+	LastSeenAt string
 }
 
 type GatewayService interface {

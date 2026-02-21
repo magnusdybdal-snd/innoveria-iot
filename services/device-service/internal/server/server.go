@@ -20,8 +20,9 @@ func Run() error {
 
 	chirpstackClient := chirpstackrest.New(*cfg)
 	gatewaySvc := service.NewGatewayService(chirpstackClient)
+	sensorSvc := service.NewSensorService(chirpstackClient)
 
-	mux := NewRouter(gatewaySvc)
+	mux := NewRouter(gatewaySvc, sensorSvc)
 	server := &http.Server{
 		Addr:              cfg.Addr,
 		Handler:           mux,

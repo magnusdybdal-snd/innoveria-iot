@@ -7,8 +7,8 @@ import (
 type Config struct {
 	Addr string
 
-	ChirpstackURL    string
-	ChirpstackSecret string
+	ChirpstackURL    string // chirpstack rest api url
+	ChirpstackSecret string // chirpstack api token (bearer token)
 }
 
 func Load() *Config {

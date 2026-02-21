@@ -21,6 +21,7 @@ func NewRouter(cfg *config.Config) *http.ServeMux {
 	// Device service
 	handlers.RegisterProxyService(mux, DEVICE_ROUTE, "device-service", cfg.DeviceSvcURL, []string{
 		"/gateways",
+		"/sensors",
 	})
 
 	return mux

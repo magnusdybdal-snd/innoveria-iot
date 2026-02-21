@@ -2,6 +2,7 @@ package chirpstackrest
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	"innoveria-iot/device-service/internal/config"
@@ -23,11 +24,17 @@ func New(cfg config.Config) *Client {
 	}
 }
 
-func (c *Client) GetAllGatewayStatus(ctx context.Context, devEUI string, limit int) (ChirpstackGatewayList, error) {
+// Returns all gateways in chirpstack
+// TODO: Add authentication for tennatns
+func (c *Client) GetAllGateways(ctx context.Context, limit int) (ChirpstackGatewayList, error) {
+
+	// Chirpstack needs a limit to send the correct response
+	url := fmt.Sprintf("%s/api/gateways?limit=%d", c.baseURL, limit)
+
 	resp, err := httpclient.DoRequest[ChirpstackGatewayList](
 		c.httpClient,
 		ctx,
-		c.baseURL+"/api/gateways?limit=1",
+		url,
 		http.MethodGet,
 		nil,
 		map[string]string{
@@ -36,6 +43,27 @@ func (c *Client) GetAllGatewayStatus(ctx context.Context, devEUI string, limit i
 	)
 	if err != nil {
 		return ChirpstackGatewayList{}, err
+	}
+
+	return resp, nil
+}
+
+// Returns all sensors in chirpstack
+// TODO: Add authentication for tennatns
+func (c *Client) GetAllSensors(ctx context.Context, limit int) (ChirpstackSensorList, error) {
+	url := fmt.Sprintf("%s/api/devices?limit=%d", c.baseURL, limit)
+	resp, err := httpclient.DoRequest[ChirpstackSensorList](
+		c.httpClient,
+		ctx,
+		url,
+		http.MethodGet,
+		nil,
+		map[string]string{
+			"Authorization": "Bearer " + c.token,
+		},
+	)
+	if err != nil {
+		return ChirpstackSensorList{}, err
 	}
 
 	return resp, nil

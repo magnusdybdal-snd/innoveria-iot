@@ -9,7 +9,7 @@ type ChirpstackGatewayList struct {
 }
 
 type ChirpstackGateway struct {
-	GatewayID   string `json:"gatewayId"`
+	GatewayEUI  string `json:"gatewayId"` // Chirpstack calls this gatewayId. We use our own id, so eui makes more sense
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	TenantID    string `json:"tenantId"`
