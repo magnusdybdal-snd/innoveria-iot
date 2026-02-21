@@ -25,7 +25,7 @@ func (g *GatewayServiceImpl) GetAll(ctx context.Context) ([]domain.Gateway, erro
 	limit := 1
 
 	// 2. Get status from chirpstack
-	resp, err := g.cc.GetAllGatewayStatus(ctx, "hei", limit)
+	resp, err := g.cc.GetAllGatewayStatus(ctx, "", limit)
 	if err != nil {
 		return nil, err
 	}

@@ -11,12 +11,12 @@ func mapGateway(from chirpstackrest.ChirpstackGateway) domain.Gateway {
 	return domain.Gateway{
 		Id:         from.GatewayID,
 		Name:       from.Name,
-		Status:     mapState(from.State, from.LastSeenAt),
+		Status:     mapStatus(from.State, from.LastSeenAt),
 		LastSeenAt: from.LastSeenAt,
 	}
 }
 
-func mapState(state string, lastSeen time.Time) int {
+func mapStatus(state string, lastSeen time.Time) int {
 	switch state {
 	case "ONLINE":
 		return 0
