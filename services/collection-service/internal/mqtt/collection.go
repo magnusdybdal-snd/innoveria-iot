@@ -70,7 +70,6 @@ func (c *Collector) StartWorkers() {
 					DeviceEUI: event.DeviceInfo.DevEUI,
 					Timestamp: t,
 					Payload:   event.Object,
-					CompanyID: "", // This will fill from tennant lookup later
 				}
 				if err := c.service.Create(context.Background(), payload, event.DeviceInfo.TenantID); err != nil {
 					slog.Error("Failed to insert", "err", err)

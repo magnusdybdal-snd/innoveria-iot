@@ -8,7 +8,7 @@ CREATE TABLE "collection"."tenant_mapping" (
 
 CREATE TABLE "collection"."sensor_measurement" (
   "measurement_id" uuid DEFAULT (gen_random_uuid()),
-  "device_eui" varchar NOT NULL,
+  "device_eui" TEXT NOT NULL,
   "timestamp" timestamptz NOT NULL,
   "payload" jsonb NOT NULL,
   "company_id" uuid NOT NULL
