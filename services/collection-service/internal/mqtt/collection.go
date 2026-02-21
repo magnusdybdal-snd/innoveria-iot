@@ -58,13 +58,21 @@ func (c *Collector) StartWorkers() {
 					"duplicationId", event.DeduplicationID,
 					"device", event.DeviceInfo.DevEUI,
 				)
+
+				// Parse time sent by chirpstack to time.Time
+				t, err := time.Parse(time.RFC3339Nano, event.Time)
+				if err != nil {
+					slog.Error("invalid timestamp", "device", event.DeviceInfo.DevEUI, "err", err)
+					continue
+				}
+
 				payload := domain.SensorMeasurement{
 					DeviceEUI: event.DeviceInfo.DevEUI,
-					Timestamp: time.Now(),
+					Timestamp: t,
 					Payload:   event.Object,
-					CompanyId: "", // This will fill from tennant lookup later
+					CompanyID: "", // This will fill from tennant lookup later
 				}
-				if err := c.service.Create(context.Background(), payload); err != nil {
+				if err := c.service.Create(context.Background(), payload, event.DeviceInfo.TenantID); err != nil {
 					slog.Error("Failed to insert", "err", err)
 				}
 			}

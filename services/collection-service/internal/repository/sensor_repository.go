@@ -15,7 +15,7 @@ func NewSensorRepository(db *db.DB) *SensorRepository {
 	return &SensorRepository{db: db}
 }
 
-func (s *SensorRepository) Insert(ctx context.Context, measurement domain.SensorMeasurement) error {
+func (s *SensorRepository) Insert(ctx context.Context, measurement domain.SensorMeasurement, tenantID string) error {
 	return nil
 }
 
