@@ -29,8 +29,8 @@ func Run() error {
 	}
 	defer db.Close()
 
-	repo := repository.NewSensorRepository(db)
-	svc := service.NewSensorService(repo)
+	repo := repository.NewMeasurementRepository(db)
+	svc := service.NewMeasurementService(repo)
 
 	// Starting up a new collector
 	coll := mqtt.NewCollector(1000, cfg.MQTTWorkerCount, svc)

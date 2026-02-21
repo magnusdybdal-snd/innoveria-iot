@@ -12,13 +12,13 @@ import (
 
 type Collector struct {
 	workers []chan ChirpstackUpEvent
-	service domain.SensorService
+	service domain.MeasurementService
 }
 
 // NewCollector starts with a buffersize and worker count
 // Buffer size is the amount it can handle in a queue
 // Worker count is the physical concurrent workers to read sensor data
-func NewCollector(buffersize, workercount int, svc domain.SensorService) *Collector {
+func NewCollector(buffersize, workercount int, svc domain.MeasurementService) *Collector {
 	workers := make([]chan ChirpstackUpEvent, workercount)
 	for i := range workers {
 		workers[i] = make(chan ChirpstackUpEvent, buffersize)

@@ -9,15 +9,15 @@ import (
 	"time"
 )
 
-type SensorRepository struct {
+type MeasurementRepository struct {
 	db *db.DB
 }
 
-func NewSensorRepository(db *db.DB) *SensorRepository {
-	return &SensorRepository{db: db}
+func NewMeasurementRepository(db *db.DB) *MeasurementRepository {
+	return &MeasurementRepository{db: db}
 }
 
-func (s *SensorRepository) Insert(ctx context.Context, measurement domain.SensorMeasurement, tenantID string) error {
+func (s *MeasurementRepository) Insert(ctx context.Context, measurement domain.SensorMeasurement, tenantID string) error {
 	// Marshal the payload into JSONB (json bytes) for storage in database
 	// The payload shape will vary depending on the sensor and codec in Chirpstack
 	payloadJSON, err := json.Marshal(measurement.Payload)
@@ -51,7 +51,7 @@ func (s *SensorRepository) Insert(ctx context.Context, measurement domain.Sensor
 	return nil
 }
 
-func (s *SensorRepository) FindLatest(ctx context.Context, deviceEUI string) (domain.SensorMeasurement, error) {
+func (s *MeasurementRepository) FindLatest(ctx context.Context, deviceEUI string) (domain.SensorMeasurement, error) {
 
 	// Fetch the single most recent measurement for the given device.
 	const QUERY = `
@@ -92,6 +92,6 @@ func (s *SensorRepository) FindLatest(ctx context.Context, deviceEUI string) (do
 
 }
 
-func (s *SensorRepository) FindByTimeRange(ctx context.Context, deviceEUI string, from, to time.Time) ([]domain.SensorMeasurement, error) {
+func (s *MeasurementRepository) FindByTimeRange(ctx context.Context, deviceEUI string, from, to time.Time) ([]domain.SensorMeasurement, error) {
 	return nil, nil
 }

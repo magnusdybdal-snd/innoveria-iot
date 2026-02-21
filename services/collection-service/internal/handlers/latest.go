@@ -7,7 +7,7 @@ import (
 	"innoveria-iot/pkg/json"
 )
 
-func HandleLatestSensor(svc domain.SensorService) http.HandlerFunc {
+func HandleLatestMeasurement(svc domain.MeasurementService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		// Extract the device eui query and check that it is not empty
