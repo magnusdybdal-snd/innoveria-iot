@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log/slog"
 	"net/http"
 
 	"innoveria-iot/pkg/json"
@@ -12,8 +13,11 @@ func Root(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	json.Encode(w, http.StatusOK, map[string]string{
+	err := json.Encode(w, http.StatusOK, map[string]string{
 		"name":   "device-service",
 		"status": "ok",
 	})
+	if err != nil {
+		slog.Error("error decoding json", err)
+	}
 }
