@@ -8,7 +8,6 @@ import DialogTitle from "@mui/material/DialogTitle";
 import TextField from "@mui/material/TextField";
 
 import { CategoryHeader } from "@/components/CategoryHeader";
-import { LightMode } from "@/theme/color/lightMode";
 
 export interface AddDeviceProps {
   open: boolean;
@@ -41,30 +40,38 @@ export function AddDevice(props: AddDeviceProps) {
       onClose={handleClose}
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
+      sx={{
+        "& .MuiPaper-root": {
+          backgroundColor: "primary.dark",
+          color: "primary.contrastText",
+        },
+      }}
     >
-      <DialogTitle id="alert-dialog-title">{"Insert device info"}</DialogTitle>
+      <DialogTitle id="alert-dialog-title" sx={{ color: "primary.main" }}>
+        {"Insert device info"}
+      </DialogTitle>
       <DialogContent>
         <CategoryHeader categories={addOptions} columns={addOptions.length}>
           {addOptions.map((option) => (
             <TextField
               sx={{
                 "& .MuiOutlinedInput-root": {
-                  color: LightMode.palette.primary.main, // input text color
+                  color: "primary.main", // input text color
                   "& fieldset": {
-                    borderColor: LightMode.palette.primary.main, // default border
+                    borderColor: "primary.main", // default border
                   },
                   "&:hover fieldset": {
-                    borderColor: LightMode.palette.primary.main, // hover border
+                    borderColor: "primary.main", // hover border
                   },
                   "&.Mui-focused fieldset": {
-                    borderColor: LightMode.palette.primary.main, // focused border
+                    borderColor: "primary.main", // focused border
                   },
                 },
                 "& .MuiInputLabel-root": {
-                  color: LightMode.palette.primary.main, // default label
+                  color: "primary.main", // default label
                 },
                 "& .MuiInputLabel-root.Mui-focused": {
-                  color: LightMode.palette.primary.main, // focused label
+                  color: "primary.main", // focused label
                 },
               }}
               key={option}

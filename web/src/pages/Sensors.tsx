@@ -16,7 +16,7 @@ import { SensorInfo } from "@/components/sensorInfo";
 import { SensorsGenInfo } from "@/components/sensorsGenInfo";
 import { SubPageHeader } from "@/components/subPageHeader";
 import Menu from "@/Menu.tsx";
-import { mockSensors } from "@/mocks/sensors.ts";
+import { mockSensors, type Sensor } from "@/mocks/sensors.ts";
 
 const sensorDetails: string[] = ["Status", "Name", "DebEUI", "Machine"];
 const addSensorDetails: string[] = ["Name", "DebEUI", "Machine"];
@@ -76,7 +76,7 @@ export default function Sensors() {
     );
   }
 
-  const [sensors, setSensors] = useState(mockSensors);
+  const [sensors, setSensors] = useState<Sensor[]>(mockSensors);
 
   const sorted = sortSensors(sensors, sortConfig.key, sortConfig.direction);
 
