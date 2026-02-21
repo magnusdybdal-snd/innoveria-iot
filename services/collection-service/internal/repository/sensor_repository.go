@@ -52,7 +52,44 @@ func (s *SensorRepository) Insert(ctx context.Context, measurement domain.Sensor
 }
 
 func (s *SensorRepository) FindLatest(ctx context.Context, deviceEUI string) (domain.SensorMeasurement, error) {
-	return domain.SensorMeasurement{}, nil
+
+	// Fetch the single most recent measurement for the given device.
+	const QUERY = `
+			SELECT device_eui, timestamp, payload, company_id
+			FROM collection.sensor_measurement
+			WHERE device_eui = $1
+			ORDER BY timestamp DESC
+			LIMIT 1
+	`
+
+	// The sensor measurement object to be returned
+	var measurement domain.SensorMeasurement
+	// JSONB object coming from postgres- Holds the raw JSONB bytes from postgres
+	// pgx cannot scan JSONB directly into our map structure, so it needs to be
+	// unmarshaled first.
+	var payloadBytes []byte
+
+	// Query the database for the sensor measurement. QueryRow because we expect
+	// only one row to return. Scan maps to our go object(s) in the same order
+	// as the query above.
+	err := s.db.Pool.QueryRow(ctx, QUERY, deviceEUI).Scan(
+		&measurement.DeviceEUI,
+		&measurement.Timestamp,
+		&payloadBytes,
+		&measurement.CompanyID,
+	)
+
+	if err != nil {
+		return domain.SensorMeasurement{}, fmt.Errorf("find latest: %w", err)
+	}
+
+	// Unmarshaling the JSONB bytes into the dynamic payload map.
+	if err := json.Unmarshal(payloadBytes, &measurement.Payload); err != nil {
+		return domain.SensorMeasurement{}, fmt.Errorf("unmarshal payload: %w", err)
+	}
+
+	return measurement, nil
+
 }
 
 func (s *SensorRepository) FindByTimeRange(ctx context.Context, deviceEUI string, from, to time.Time) ([]domain.SensorMeasurement, error) {
