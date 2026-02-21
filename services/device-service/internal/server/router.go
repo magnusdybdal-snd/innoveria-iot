@@ -10,7 +10,7 @@ func NewRouter(gatewaySvc domain.GatewayService) *http.ServeMux {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /", handlers.Root)
-	mux.HandleFunc("GET "+GATEWAY_ROUTE, handlers.GetGatways(gatewaySvc))
+	mux.HandleFunc("GET "+GATEWAY_ROUTE, handlers.GetGateways(gatewaySvc))
 
 	return mux
 }

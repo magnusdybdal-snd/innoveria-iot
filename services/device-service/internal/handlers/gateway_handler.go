@@ -7,7 +7,7 @@ import (
 	"innoveria-iot/pkg/json"
 )
 
-func GetGatways(svc domain.GatewayService) http.HandlerFunc {
+func GetGateways(svc domain.GatewayService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
