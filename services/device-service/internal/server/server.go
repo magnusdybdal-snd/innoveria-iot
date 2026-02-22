@@ -51,12 +51,12 @@ func Run() error {
 		}
 		return fmt.Errorf("listen %w", err)
 	case sig := <-shutdown:
-		slog.Info("collection-service shutting down", "signal", sig.String())
+		slog.Info("device-service shutting down", "signal", sig.String())
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
 
 		if err := server.Shutdown(ctx); err != nil {
-			slog.Error("collection-service shutdown error", "err", err)
+			slog.Error("device-service shutdown error", "err", err)
 			err := server.Close()
 			return fmt.Errorf("shutdown: %w", err)
 		}

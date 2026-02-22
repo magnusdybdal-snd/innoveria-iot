@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	logger.NewLogger("collection-service")
+	logger.NewLogger("device-service")
 
 	if err := server.Run(); err != nil {
 		slog.Error("device-service exited with error", "error", err)

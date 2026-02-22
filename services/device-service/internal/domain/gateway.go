@@ -8,7 +8,7 @@ type Gateway struct {
 	Id         string
 	DeviceEUI  string
 	Name       string
-	Status     int // 0=online, 1=never_seen, 2=offline
+	Status     Status // 0=online, 1=never_seen, 2=offline
 	LastSeenAt string
 }
 

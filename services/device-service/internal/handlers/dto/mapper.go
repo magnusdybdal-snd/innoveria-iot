@@ -22,9 +22,9 @@ func MapGatewayDomainToDTO(from []domain.Gateway) GatewayListResponse {
 func mapGateway(from domain.Gateway) GatewayResponse {
 	return GatewayResponse{
 		ID:         from.Id,
-		DeviceEUI:  from.Id, // TODO: Change this to database id
+		DeviceEUI:  from.DeviceEUI,
 		Name:       from.Name,
-		Status:     from.Status,
+		Status:     int(from.Status),
 		LastSeenAt: from.LastSeenAt,
 	}
 }
@@ -49,7 +49,7 @@ func mapSensors(from domain.Sensor) SensorResponse {
 		Name:       from.Name,
 		DeviceEUI:  from.DeviceEUI,
 		GatewayEUI: from.GatewayEUI,
-		Status:     from.Status,
+		Status:     int(from.Status),
 		LastSeenAt: from.LastSeenAt,
 	}
 }

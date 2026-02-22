@@ -23,19 +23,20 @@ func mapGateway(from chirpstackrest.ChirpstackGateway) domain.Gateway {
 
 // Mapping for status
 // Do number instead. And it will display as offline if last seen is bigger then 5 min
-func mapStatus(state string, lastSeen time.Time) int {
-	switch state {
+func mapStatus(status string, lastSeen time.Time) domain.Status {
+	switch status {
 	case "ONLINE":
-		return 0
+		return domain.StatusOnline
 	case "NEVER_SEEN":
-		return 1
+		return domain.StatusNeverSeen
 	case "OFFLINE":
-		return 2
+		return domain.StatusOffline
 	default:
+		// Fallback in case there is no status
 		if time.Since(lastSeen) < 5*time.Minute {
-			return 0
+			return domain.StatusOnline
 		}
-		return 2
+		return domain.StatusOffline
 	}
 }
 
@@ -53,9 +54,10 @@ func mapSensor(from chirpstackrest.ChirpstackSensor) domain.Sensor {
 	}
 }
 
-func mapStatusSensor(lastSeen time.Time) int {
+// TODO: Find a better way to handle sensor status
+func mapStatusSensor(lastSeen time.Time) domain.Status {
 	if time.Since(lastSeen) < 5*time.Minute {
-		return 0
+		return domain.StatusOnline
 	}
-	return 2
+	return domain.StatusOffline
 }

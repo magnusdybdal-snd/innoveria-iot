@@ -9,7 +9,7 @@ type Sensor struct {
 	Name       string
 	DeviceEUI  string
 	GatewayEUI string
-	Status     int // 0=online, 1=never_seen, 2=offline
+	Status     Status // 0=online, 1=never_seen, 2=offline
 	LastSeenAt string
 }
 

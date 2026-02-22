@@ -16,6 +16,7 @@ func NewGatewayService(cc *chirpstackrest.Client) *GatewayServiceImpl {
 	}
 }
 
+// TODO: Handle connection of new gateway to chirpstack
 func (g *GatewayServiceImpl) Create() {
 
 }
@@ -33,8 +34,8 @@ func (g *GatewayServiceImpl) GetAll(ctx context.Context) ([]domain.Gateway, erro
 
 	var result []domain.Gateway
 
-	for _, g := range resp.Result {
-		result = append(result, mapGateway(g))
+	for _, gw := range resp.Result {
+		result = append(result, mapGateway(gw))
 	}
 
 	// 3. Merge status and gateway data

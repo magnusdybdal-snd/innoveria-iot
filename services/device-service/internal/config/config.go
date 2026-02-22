@@ -16,7 +16,7 @@ func Load() *Config {
 
 	return &Config{
 		Addr:             ":" + env.Get("PORT", "8080"),
-		ChirpstackURL:    env.Get("Chirpstack_REST", "http://chirpstack-rest-api:8090"),
+		ChirpstackURL:    env.Get("CHIRPSTACK_REST", "http://chirpstack-rest-api:8090"),
 		ChirpstackSecret: secret,
 	}
 }

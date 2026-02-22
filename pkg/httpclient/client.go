@@ -35,9 +35,10 @@ func DoRequest[T any](
 ) (T, error) {
 	var zero T
 
+	// TODO: Handle body for PUT, POST, PATCH requests
 	req, err := http.NewRequestWithContext(ctx, method, url, nil)
 	if err != nil {
-		return zero, fmt.Errorf("request error: %v", err)
+		return zero, fmt.Errorf("request error: %w", err)
 	}
 	for k, v := range headers {
 		req.Header.Set(k, v)
@@ -48,7 +49,7 @@ func DoRequest[T any](
 
 	resp, err := client.http.Do(req)
 	if err != nil {
-		return zero, fmt.Errorf("error doing the request: %v", err)
+		return zero, fmt.Errorf("error doing the request: %w", err)
 	}
 	defer resp.Body.Close()
 
