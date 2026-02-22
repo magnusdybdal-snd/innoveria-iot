@@ -19,20 +19,31 @@ export interface AddDeviceProps {
 export function AddDevice(props: AddDeviceProps) {
   const { onClose, open, addOptions } = props;
   const [values, setValues] = useState<Record<string, string>>({});
+  const [showError, setShowError] = useState(false);
 
   const handleClose = () => {
     onClose();
   };
 
   const handleSafeClose = () => {
+    if (!allFilled) {
+      setShowError(true);
+      return;
+    }
+
     props.onAdd({
       name: values["Name"] ?? "",
       euid: values["DebEUI"] ?? "",
       machine: values["Machine"] ?? "",
     });
 
+    setShowError(false);
     onClose();
   };
+
+  const allFilled = addOptions.every(
+    (option) => (values[option] ?? "").trim() !== "",
+  );
 
   return (
     <Dialog
@@ -85,13 +96,18 @@ export function AddDevice(props: AddDeviceProps) {
             />
           ))}
         </CategoryHeader>
+        {showError && (
+          <div style={{ color: "red", marginTop: 8 }}>
+            All fields must be filled
+          </div>
+        )}
       </DialogContent>
       <DialogActions>
-        <Button sx={{ color: "primary.dark" }} onClick={handleClose}>
+        <Button sx={{ color: "primary.main" }} onClick={handleClose}>
           Close
         </Button>
         <Button
-          sx={{ color: "primary.dark" }}
+          sx={{ color: "primary.main" }}
           onClick={handleSafeClose}
           autoFocus
         >
