@@ -27,8 +27,8 @@ func (s *SensorServiceImpl) GetAll(ctx context.Context) ([]domain.Sensor, error)
 	}
 	var result []domain.Sensor
 
-	for _, sensors := range resp.Result {
-		result = append(result, mapSensor(sensors))
+	for _, sensor := range resp.Result {
+		result = append(result, mapSensor(sensor))
 	}
 	// 3. merge to sensor domain
 
