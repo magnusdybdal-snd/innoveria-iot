@@ -1,6 +1,7 @@
 export {
   chuckApiClient,
   apiClient,
+  serviceClient,
   apiRequest,
   type Joke,
   type Data,

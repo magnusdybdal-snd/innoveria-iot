@@ -9,7 +9,15 @@ export const chuckApiClient = axios.create({
 });
 
 export const apiClient = axios.create({
-  baseURL: "http://localhost:8081", // Requests are proxied through the api-gateway to the relevant microservice
+  baseURL: "http://localhost:8090/api",
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+// Client for all microservice requests — routed through the api-gateway
+export const serviceClient = axios.create({
+  baseURL: "http://localhost:8081",
   headers: {
     "Content-Type": "application/json",
   },

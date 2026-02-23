@@ -1,6 +1,6 @@
 import {
-  apiClient,
   apiRequest,
+  serviceClient,
   type GatewayListApiResponse,
 } from "@/API/apiClient";
 import type { Gateway } from "@/mocks/gateways";
@@ -8,7 +8,7 @@ import type { Gateway } from "@/mocks/gateways";
 export const fetchGateways = async (): Promise<Gateway[]> => {
   try {
     const data = await apiRequest<GatewayListApiResponse>(
-      apiClient,
+      serviceClient,
       "/api/v1/device/gateways",
       "GET",
     );
