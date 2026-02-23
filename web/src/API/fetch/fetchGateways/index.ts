@@ -1,0 +1,1 @@
+export { fetchGateways } from "./fetchGateways";
