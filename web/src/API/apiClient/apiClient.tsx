@@ -54,3 +54,16 @@ export interface Data {
   ];
   totalCount: number;
 }
+
+export interface GatewayApiResponse {
+  id: string;
+  device_eui: string;
+  name: string;
+  status: number;
+  lastSeenAt: string; // RFC1123 string from go - check format
+}
+
+export interface GatewayListApiResponse {
+  totalCount: number;
+  gateways: GatewayApiResponse[];
+}
