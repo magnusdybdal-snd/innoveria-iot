@@ -9,7 +9,7 @@ export const chuckApiClient = axios.create({
 });
 
 export const apiClient = axios.create({
-  baseURL: "http://localhost:8090/api",
+  baseURL: "http://localhost:8081/api/v1/device",
   headers: {
     "Content-Type": "application/json",
   },
@@ -43,14 +43,6 @@ export interface Joke {
 }
 
 export interface Data {
-  result: [
-    {
-      createdAt: string;
-      description: string;
-      id: string;
-      name: string;
-      updatedAt: string;
-    },
-  ];
   totalCount: number;
+  sensors: [];
 }
