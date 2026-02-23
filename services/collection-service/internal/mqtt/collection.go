@@ -5,19 +5,20 @@ import (
 	"encoding/json"
 	"innoveria-iot/collection-service/internal/domain"
 	"log/slog"
+	"time"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 )
 
 type Collector struct {
 	workers []chan ChirpstackUpEvent
-	service domain.SensorService
+	service domain.MeasurementService
 }
 
 // NewCollector starts with a buffersize and worker count
 // Buffer size is the amount it can handle in a queue
 // Worker count is the physical concurrent workers to read sensor data
-func NewCollector(buffersize, workercount int, svc domain.SensorService) *Collector {
+func NewCollector(buffersize, workercount int, svc domain.MeasurementService) *Collector {
 	workers := make([]chan ChirpstackUpEvent, workercount)
 	for i := range workers {
 		workers[i] = make(chan ChirpstackUpEvent, buffersize)
@@ -57,10 +58,20 @@ func (c *Collector) StartWorkers() {
 					"duplicationId", event.DeduplicationID,
 					"device", event.DeviceInfo.DevEUI,
 				)
-				payload := domain.SensorPayload{
-					Data: event.DeviceInfo.DevEUI,
+
+				// Parse time sent by chirpstack to time.Time
+				t, err := time.Parse(time.RFC3339Nano, event.Time)
+				if err != nil {
+					slog.Error("invalid timestamp", "device", event.DeviceInfo.DevEUI, "err", err)
+					continue
 				}
-				if err := c.service.Create(context.Background(), payload); err != nil {
+
+				payload := domain.SensorMeasurement{
+					DeviceEUI: event.DeviceInfo.DevEUI,
+					Timestamp: t,
+					Payload:   event.Object,
+				}
+				if err := c.service.Create(context.Background(), payload, event.DeviceInfo.TenantID); err != nil {
 					slog.Error("Failed to insert", "err", err)
 				}
 			}

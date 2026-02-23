@@ -8,16 +8,19 @@ CREATE TABLE "collection"."tenant_mapping" (
 
 CREATE TABLE "collection"."sensor_measurement" (
   "measurement_id" uuid DEFAULT (gen_random_uuid()),
-  "device_eui" varchar NOT NULL,
+  "device_eui" TEXT NOT NULL,
   "timestamp" timestamptz NOT NULL,
-  "value" double NOT NULL,
-  "unit" varchar NOT NULL,
+  "payload" jsonb NOT NULL,
   "company_id" uuid NOT NULL
 );
+
+SELECT create_hypertable('collection.sensor_measurement', 'timestamp');
 
 CREATE INDEX "idx_measurement_time_device" ON "collection"."sensor_measurement" ("timestamp", "device_eui");
 
 CREATE INDEX "idx_measurement_company_time" ON "collection"."sensor_measurement" ("company_id", "timestamp");
+
+CREATE INDEX "idx_measurement_payload" ON "collection"."sensor_measurement" USING GIN ("payload");
 
 COMMENT ON COLUMN "collection"."tenant_mapping"."chirpstack_tenant_id" IS 'Tenant ID from ChirpStack MQTT messages';
 

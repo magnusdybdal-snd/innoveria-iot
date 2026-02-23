@@ -6,12 +6,12 @@ import (
 	"net/http"
 )
 
-func NewRouter(svc domain.SensorService) *http.ServeMux {
+func NewRouter(svc domain.MeasurementService) *http.ServeMux {
 	mux := http.NewServeMux()
 
 	// Routes:
 	mux.HandleFunc("GET /", handlers.Root)
-	mux.HandleFunc("GET /latest", handlers.HandleLatestSensor(svc))
+	mux.HandleFunc("GET /latest", handlers.HandleLatestMeasurement(svc))
 	mux.HandleFunc("GET /api/v1/collection/latest", handlers.HelloProxy) // test for proxy
 
 	return mux
