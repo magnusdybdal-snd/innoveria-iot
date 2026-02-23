@@ -77,7 +77,8 @@ export default function Gateways() {
           sortConfig={sortConfig}
           onSort={handleSort}
         >
-          {isLoading && <p>Loading...</p>}
+          {isLoading && <p>Loading...</p>}{" "}
+          {/*TODO: make a better looking loading indicator */}
           {sorted.map((gateway) => (
             <DeviceRow key={gateway.id}>
               <GatewayInfo
