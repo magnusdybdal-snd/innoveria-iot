@@ -33,7 +33,7 @@ export function AddDevice(props: AddDeviceProps) {
 
     props.onAdd({
       name: values["Name"] ?? "",
-      euid: values["DebEUI"] ?? "",
+      euid: values["DeviceEUI"] ?? "",
       machine: values["Machine"] ?? "",
     });
 
@@ -103,11 +103,20 @@ export function AddDevice(props: AddDeviceProps) {
         )}
       </DialogContent>
       <DialogActions>
-        <Button sx={{ color: "primary.main" }} onClick={handleClose}>
+        <Button
+          sx={{
+            backgroundColor: "primary.main",
+            color: "primary.contrastText",
+          }}
+          onClick={handleClose}
+        >
           Close
         </Button>
         <Button
-          sx={{ color: "primary.main" }}
+          sx={{
+            backgroundColor: "primary.main",
+            color: "primary.contrastText",
+          }}
           onClick={handleSafeClose}
           autoFocus
         >

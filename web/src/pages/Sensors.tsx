@@ -18,8 +18,8 @@ import { SubPageHeader } from "@/components/subPageHeader";
 import Menu from "@/Menu.tsx";
 import { mockSensors, type Sensor } from "@/mocks/sensors.ts";
 
-const sensorDetails: string[] = ["Status", "Name", "DebEUI", "Machine"];
-const addSensorDetails: string[] = ["Name", "DebEUI", "Machine"];
+const sensorDetails: string[] = ["Status", "Name", "DeviceEUI", "Machine"];
+const addSensorDetails: string[] = ["Name", "DeviceEUI", "Machine"];
 const sortableColumns: SensorSortKey[] = ["Status", "Name", "Machine"];
 type NewSensor = Omit<Sensor, "id" | "status">;
 
