@@ -9,7 +9,7 @@ export const fetchGateways = async (): Promise<Gateway[]> => {
   try {
     const data = await apiRequest<GatewayListApiResponse>(
       apiClient,
-      "/v1/device/gateways",
+      "/api/v1/device/gateways",
       "GET",
     );
 
