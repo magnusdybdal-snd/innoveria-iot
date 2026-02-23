@@ -86,7 +86,7 @@ services:
     volumes:
       - ./web:/app
       - /app/node_modules
-    command: sh -c "bun install && bun run dev"
+    command: bun run dev
 
   #
   # API GATEWAY
