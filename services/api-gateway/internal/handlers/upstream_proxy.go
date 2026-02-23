@@ -1,9 +1,10 @@
 package handlers
 
 import (
-	"innoveria-iot/api-gateway/internal/proxy"
 	"net/http"
 	"net/url"
+
+	"innoveria-iot/api-gateway/internal/proxy"
 )
 
 func NewUpstreamProxy(baseURL string) (http.Handler, error) {

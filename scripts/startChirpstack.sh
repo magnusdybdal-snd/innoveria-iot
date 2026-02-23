@@ -26,7 +26,9 @@ KEY_FILE="/secrets/chirpstack-api-key"
 if [ ! -f "$KEY_FILE" ]; then
   echo "Generating API key..."
   chirpstack -c /etc/chirpstack create-api-key \
-    --name innoveria-iot > "$KEY_FILE"
+    --name innoveria-iot 2>/dev/null | \
+  grep '^token:' | \
+  awk '{print $2}' > "$KEY_FILE"
   echo "API key stored in $KEY_FILE"
 else
   echo "API key already exists"

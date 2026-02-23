@@ -117,6 +117,9 @@ services:
       - ./pkg:/pkg
     environment:
       - GO_ENV=development
+    depends_on:
+      - mosquitto
+      - collection-db 
 
   collection-db:
     image: timescale/timescaledb:2.14.2-pg14
@@ -137,6 +140,21 @@ services:
     volumes:
       - ./services/collection-simulator:/app
       - ./pkg:/pkg
+    depends_on:
+      - mosquitto
+
+  device-service:
+    build:
+      context: .
+      dockerfile: infra/development/device-service.Dockerfile
+    ports:
+      - "8083:8080"
+    volumes:
+      - ./services/device-service:/app
+      - ./pkg:/pkg
+      - chirpstack-secrets:/secrets
+    environment:
+      - GO_ENV=development
       
 
 #

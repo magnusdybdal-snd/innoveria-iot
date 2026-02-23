@@ -29,3 +29,19 @@ func RegisterServiceInfo(mux *http.ServeMux, route, name string, paths []string)
 		})
 	})
 }
+
+func RegisterProxyService(
+	mux *http.ServeMux,
+	route string,
+	serviceName string,
+	baseUrl string,
+	paths []string,
+) {
+	proxy, err := NewUpstreamProxy(baseUrl)
+	if err != nil {
+		RegisterServiceError(mux, route, serviceName)
+		return
+	}
+	RegisterServiceInfo(mux, route, serviceName, paths)
+	mux.Handle(route+"/", proxy)
+}
