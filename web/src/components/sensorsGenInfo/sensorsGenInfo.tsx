@@ -15,7 +15,7 @@ export function SensorsGenInfo({ title, count }: InfoProps) {
       sx={{
         backgroundColor: "secondary.light",
         color: "primary.main",
-        margin: 1,
+        marginTop: 2,
         borderRadius: 3,
         border: "3px grey",
         width: "15%",
