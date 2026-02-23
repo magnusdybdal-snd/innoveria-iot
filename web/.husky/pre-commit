@@ -20,7 +20,7 @@ if [ -n "$STAGED_GO" ]; then
   echo "$STAGED_GO" | xargs git add
 
   # Add new Go services here to include them in pre-commit linting.
-  GO_SERVICES="services/api-gateway services/collection-service"
+  GO_SERVICES="services/api-gateway services/collection-service services/device-service"
 
   # `go tool golangci-lint` uses the version pinned in go.mod
   for dir in $GO_SERVICES; do
