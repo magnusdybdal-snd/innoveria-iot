@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Button from "@mui/material/Button";
 
+import { fetchSensors } from "@/API/fetch/fetchSensors";
 import { AddDevice } from "@/components/addDevicePopup";
 import { CategoryHeader } from "@/components/CategoryHeader";
 import {
@@ -10,6 +11,7 @@ import {
   type SensorSortKey,
   type SortDirection,
 } from "@/components/gatewayRow";
+import { NoDeviceFoundCard } from "@/components/noDeviceFoundCard";
 import { PageContent } from "@/components/pageContent";
 import { PageDivider } from "@/components/pageDivider";
 import { SensorInfo } from "@/components/sensorInfo";
@@ -24,6 +26,17 @@ const sortableColumns: SensorSortKey[] = ["Status", "Name", "Machine"];
 type NewSensor = Omit<Sensor, "id" | "status">;
 
 export default function Sensors() {
+  const [sensors, setSensors] = useState<Sensor[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [sensorsMocked, setMockSensors] = useState<Sensor[]>(mockSensors);
+
+  useEffect(() => {
+    fetchSensors().then((data) => {
+      setSensors(data);
+      setIsLoading(false);
+    });
+  }, []);
+
   const [open, setOpen] = useState(false);
 
   const handleClickOpen = () => {
@@ -35,7 +48,7 @@ export default function Sensors() {
   };
 
   const handleAddSensor = (sensorData: NewSensor) => {
-    setSensors((prev) => [
+    setMockSensors((prev) => [
       ...prev,
       {
         id: crypto.randomUUID(),
@@ -76,9 +89,12 @@ export default function Sensors() {
     );
   }
 
-  const [sensors, setSensors] = useState<Sensor[]>(mockSensors);
-
   const sorted = sortSensors(sensors, sortConfig.key, sortConfig.direction);
+  const sortedMock = sortSensors(
+    sensorsMocked,
+    sortConfig.key,
+    sortConfig.direction,
+  );
 
   const sensorInfos = new Map<string, number>();
   sensorInfos.set("Total sensors", sorted.length);
@@ -121,7 +137,18 @@ export default function Sensors() {
               />
             </DeviceRow>
           ))}
+          {sortedMock.map((sensor) => (
+            <DeviceRow key={sensor.id}>
+              <SensorInfo
+                name={sensor.name}
+                status={sensor.status}
+                euid={sensor.euid}
+                machine={sensor.machine}
+              />
+            </DeviceRow>
+          ))}
         </CategoryHeader>
+        {!isLoading && sorted.length === 0 && <NoDeviceFoundCard />}
       </PageContent>
 
       <AddDevice
