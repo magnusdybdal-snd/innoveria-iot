@@ -27,7 +27,7 @@ func HandleMeasurementsByTimeRange(svc domain.MeasurementService) http.HandlerFu
 
 		toStr := q.Get("to")
 		if toStr == "" {
-			json.HandleError(w, http.StatusBadRequest, nil, "from query parameter is required")
+			json.HandleError(w, http.StatusBadRequest, nil, "to query parameter is required")
 			return
 		}
 
@@ -47,6 +47,7 @@ func HandleMeasurementsByTimeRange(svc domain.MeasurementService) http.HandlerFu
 		// Sanity check: timestamp from must come before timestamp to
 		if !from.Before(to) {
 			json.HandleError(w, http.StatusBadRequest, nil, "timestamp error: from must be before to")
+			return
 		}
 
 		// Delegate to the service
