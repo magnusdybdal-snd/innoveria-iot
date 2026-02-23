@@ -9,6 +9,7 @@ import {
   type GatewaySortKey,
   type SortDirection,
 } from "@/components/gatewayRow";
+import { NoDeviceFoundCard } from "@/components/noDeviceFoundCard";
 import { PageContent } from "@/components/pageContent";
 import { PageDivider } from "@/components/pageDivider";
 import { SubPageHeader } from "@/components/subPageHeader";
@@ -88,6 +89,7 @@ export default function Gateways() {
             </DeviceRow>
           ))}
         </CategoryHeader>
+        {!isLoading && sorted.length === 0 && <NoDeviceFoundCard />}
       </PageContent>
     </div>
   );
