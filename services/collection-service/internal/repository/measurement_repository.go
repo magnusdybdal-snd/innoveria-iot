@@ -93,5 +93,53 @@ func (s *MeasurementRepository) FindLatest(ctx context.Context, deviceEUI string
 }
 
 func (s *MeasurementRepository) FindByTimeRange(ctx context.Context, deviceEUI string, from, to time.Time) ([]domain.SensorMeasurement, error) {
-	return nil, nil
+
+	// Query to fetch all the measurements from one device within a time range
+	// ASC gives oldest first
+	const QUERY = `
+			SELECT device_eui, timestamp, payload, company_id
+			FROM collection.sensor_measurement
+			WHERE device_eui = $1
+			  AND timestamp >= $2
+			  AND timestamp <= $3
+			ORDER BY timestamp ASC
+	`
+	// Query the database to collect all rows
+	rows, err := s.db.Pool.Query(ctx, QUERY, deviceEUI, from, to)
+	if err != nil {
+		return nil, fmt.Errorf("find by time range: %w", err)
+	}
+	defer rows.Close()
+
+	// The slice of sensormeasurements to be returned
+	var measurements []domain.SensorMeasurement
+
+	for rows.Next() {
+		// The sensor measurement to be added to the slice
+		var measurement domain.SensorMeasurement
+		// JSONB object coming from postgres- Holds the raw JSONB bytes from postgres
+		// pgx cannot scan JSONB directly into our map structure, so it needs to be
+		// unmarshaled first.
+		var payloadBytes []byte
+
+		// Scan in the same column order as the query
+		if err := rows.Scan(&measurement.DeviceEUI, &measurement.Timestamp, &payloadBytes, &measurement.CompanyID); err != nil {
+			return nil, fmt.Errorf("scan measurement: %w", err)
+		}
+
+		// Unmarshaling the JSONB bytes into the dynamic payload map.
+		if err := json.Unmarshal(payloadBytes, &measurement.Payload); err != nil {
+			return nil, fmt.Errorf("unmarshal payload: %w", err)
+		}
+
+		// Add the measurement to the slice
+		measurements = append(measurements, measurement)
+	}
+
+	// Check if the loop ended due to an error
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("rows error: %w", err)
+	}
+
+	return measurements, nil
 }
