@@ -3,8 +3,8 @@ package db
 import (
 	"embed"
 	"fmt"
+	"innoveria-iot/pkg/env"
 	"log/slog"
-	"os"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/jackc/pgx/v5/stdlib"
@@ -15,19 +15,19 @@ var seeds embed.FS
 
 func RunSeeds(pool *pgxpool.Pool) error {
 	// Check if running production or development
-	env := os.Getenv("GO_ENV")
+	envVar := env.Get("GO_ENV", "development")
 
-	if env == "production" {
+	if envVar == "production" {
 		return nil
 	}
 
-	fileName := fmt.Sprintf("seeds/%s.sql", env)
+	fileName := fmt.Sprintf("seeds/%s.sql", envVar)
 
 	// Extract the seed. If not found: warning and skip
 	// since some db in dev might not need mock data
 	seed, err := seeds.ReadFile(fileName)
 	if err != nil {
-		slog.Warn("no seed file found, skipping", "environment", env)
+		slog.Warn("no seed file found, skipping", "environment", envVar)
 		return nil
 	}
 
