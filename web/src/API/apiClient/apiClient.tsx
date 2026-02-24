@@ -15,6 +15,14 @@ export const apiClient = axios.create({
   },
 });
 
+// Client for all microservice requests — routed through the api-gateway
+export const serviceClient = axios.create({
+  baseURL: "http://localhost:8081",
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
 // Generic API helper
 export const apiRequest = async <T,>(
   client: AxiosInstance,
@@ -53,4 +61,17 @@ export interface Data {
     },
   ];
   totalCount: number;
+}
+
+export interface GatewayApiResponse {
+  id: string;
+  device_eui: string;
+  name: string;
+  status: number;
+  lastSeenAt: string; // RFC1123 string from go - check format
+}
+
+export interface GatewayListApiResponse {
+  totalCount: number;
+  gateways: GatewayApiResponse[];
 }
