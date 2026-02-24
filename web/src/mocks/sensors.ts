@@ -7,6 +7,9 @@ export type Sensor = {
   status: number;
   euid: string;
   machine: string;
+  lastReading: string;
+  appKey: string;
+  devProf: string;
 };
 
 export const mockSensors: Sensor[] = [
@@ -16,6 +19,9 @@ export const mockSensors: Sensor[] = [
     status: 0,
     euid: "A1B2C3D4E5F6",
     machine: "Machine 1",
+    lastReading: "2 min",
+    appKey: "test1",
+    devProf: "test1",
   },
   {
     id: "2",
@@ -23,6 +29,9 @@ export const mockSensors: Sensor[] = [
     status: 2,
     euid: "B2C3D4E5F6A1",
     machine: "Machine 2",
+    lastReading: "2 min",
+    appKey: "test2",
+    devProf: "test2",
   },
   {
     id: "3",
@@ -30,5 +39,8 @@ export const mockSensors: Sensor[] = [
     status: 1,
     euid: "B2D3D5E5A6A1",
     machine: "Machine 3",
+    lastReading: "50 min",
+    appKey: "test3",
+    devProf: "test3",
   },
 ];

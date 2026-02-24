@@ -17,12 +17,23 @@ type InfoProps = {
   status: number;
   euid: string;
   machine: string;
+  lastReading: string;
+  appKey: string;
+  devProf: string;
 };
 
 {
   /*Format for single sensor info*/
 }
-export function SensorInfo({ name, status, euid, machine }: InfoProps) {
+export function SensorInfo({
+  name,
+  status,
+  euid,
+  machine,
+  lastReading,
+  appKey,
+  devProf,
+}: InfoProps) {
   const [currentName, setCurrentName] = useState(name);
   const [editOpen, setEditOpen] = useState(false);
   const [editValue, setEditValue] = useState(name);
@@ -67,6 +78,9 @@ export function SensorInfo({ name, status, euid, machine }: InfoProps) {
       <Typography>{currentName}</Typography>
       <Typography>{euid}</Typography>
       <Typography>{machine}</Typography>
+      <Typography>{lastReading}</Typography>
+      <Typography>{appKey}</Typography>
+      <Typography>{devProf}</Typography>
       <ActionMenu items={menuItems} />
       <Dialog open={editOpen} onClose={() => setEditOpen(false)}>
         <DialogTitle>Rename sensor</DialogTitle>

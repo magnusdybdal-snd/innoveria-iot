@@ -13,7 +13,14 @@ export interface AddDeviceProps {
   open: boolean;
   onClose: () => void;
   addOptions: string[];
-  onAdd: (sensor: { name: string; euid: string; machine: string }) => void;
+  onAdd: (sensor: {
+    name: string;
+    euid: string;
+    machine: string;
+    lastReading: string;
+    appKey: string;
+    devProf: string;
+  }) => void;
 }
 
 export function AddDevice(props: AddDeviceProps) {
@@ -35,6 +42,9 @@ export function AddDevice(props: AddDeviceProps) {
       name: values["Name"] ?? "",
       euid: values["DeviceEUI"] ?? "",
       machine: values["Machine"] ?? "",
+      lastReading: values["LastReading"] ?? "",
+      appKey: values["AppKey"] ?? "",
+      devProf: values["DevProf"] ?? "",
     });
 
     setShowError(false);

@@ -20,9 +20,31 @@ import { SubPageHeader } from "@/components/subPageHeader";
 import Menu from "@/Menu.tsx";
 import { mockSensors, type Sensor } from "@/mocks/sensors.ts";
 
-const sensorDetails: string[] = ["Status", "Name", "DeviceEUI", "Machine"];
-const addSensorDetails: string[] = ["Name", "DeviceEUI", "Machine"];
-const sortableColumns: SensorSortKey[] = ["Status", "Name", "Machine"];
+const sensorDetails: string[] = [
+  "Status",
+  "Name",
+  "DeviceEUI",
+  "Machine",
+  "Last reading",
+  "Application key",
+  "Device profile",
+];
+const addSensorDetails: string[] = [
+  "Name",
+  "DeviceEUI",
+  "Machine",
+  "Last reading",
+  "Application key",
+  "Device profile",
+];
+const sortableColumns: SensorSortKey[] = [
+  "Status",
+  "Name",
+  "Machine",
+  "LastReading",
+  "AppKey",
+  "DevProf",
+];
 type NewSensor = Omit<Sensor, "id" | "status">;
 
 export default function Sensors() {
@@ -134,6 +156,9 @@ export default function Sensors() {
                 status={sensor.status}
                 euid={sensor.euid}
                 machine={sensor.machine}
+                lastReading={sensor.lastReading}
+                appKey={sensor.appKey}
+                devProf={sensor.devProf}
               />
             </DeviceRow>
           ))}
@@ -144,6 +169,9 @@ export default function Sensors() {
                 status={sensor.status}
                 euid={sensor.euid}
                 machine={sensor.machine}
+                lastReading={sensor.lastReading}
+                appKey={sensor.appKey}
+                devProf={sensor.devProf}
               />
             </DeviceRow>
           ))}
