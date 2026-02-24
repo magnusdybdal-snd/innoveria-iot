@@ -17,7 +17,6 @@ export interface AddDeviceProps {
     name: string;
     euid: string;
     machine: string;
-    lastReading: string;
     appKey: string;
     devProf: string;
   }) => void;
@@ -42,7 +41,6 @@ export function AddDevice(props: AddDeviceProps) {
       name: values["Name"] ?? "",
       euid: values["DeviceEUI"] ?? "",
       machine: values["Machine"] ?? "",
-      lastReading: values["LastReading"] ?? "",
       appKey: values["AppKey"] ?? "",
       devProf: values["DevProf"] ?? "",
     });
@@ -59,6 +57,8 @@ export function AddDevice(props: AddDeviceProps) {
     <Dialog
       open={open}
       onClose={handleClose}
+      maxWidth="lg"
+      fullWidth
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
       sx={{
@@ -75,6 +75,7 @@ export function AddDevice(props: AddDeviceProps) {
         <CategoryHeader categories={addOptions} columns={addOptions.length}>
           {addOptions.map((option) => (
             <TextField
+              fullWidth
               sx={{
                 "& .MuiOutlinedInput-root": {
                   color: "primary.main", // input text color

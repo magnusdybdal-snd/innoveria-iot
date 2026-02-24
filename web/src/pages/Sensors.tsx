@@ -33,7 +33,6 @@ const addSensorDetails: string[] = [
   "Name",
   "DeviceEUI",
   "Machine",
-  "Last reading",
   "Application key",
   "Device profile",
 ];
@@ -45,7 +44,7 @@ const sortableColumns: SensorSortKey[] = [
   "AppKey",
   "DevProf",
 ];
-type NewSensor = Omit<Sensor, "id" | "status">;
+type NewSensor = Omit<Sensor, "id" | "status" | "lastReading">;
 
 export default function Sensors() {
   const [sensors, setSensors] = useState<Sensor[]>([]);
@@ -75,6 +74,7 @@ export default function Sensors() {
       {
         id: crypto.randomUUID(),
         status: 0,
+        lastReading: "0 min",
         ...sensorData,
       },
     ]);
