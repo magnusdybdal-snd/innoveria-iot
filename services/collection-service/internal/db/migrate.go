@@ -1,9 +1,10 @@
 package db
 
 import (
-	"database/sql"
 	"embed"
 
+	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/jackc/pgx/v5/stdlib"
 	"github.com/pressly/goose/v3"
 )
 
@@ -12,7 +13,10 @@ import (
 //go:embed migrations/*.sql
 var migrations embed.FS
 
-func RunMigrations(db *sql.DB) error {
+func RunMigrations(pool *pgxpool.Pool) error {
+	// Convert the pool to sqldb for goose to work on it
+	sqlDB := stdlib.OpenDBFromPool(pool)
+
 	// Teels goose to read from the embeded files instead of reading from disk
 	goose.SetBaseFS(migrations)
 
@@ -21,5 +25,5 @@ func RunMigrations(db *sql.DB) error {
 	}
 
 	// Runs all pending migrations. If already applied, goose skips them
-	return goose.Up(db, "migrations")
+	return goose.Up(sqlDB, "migrations")
 }
