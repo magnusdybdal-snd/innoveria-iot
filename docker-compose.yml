@@ -155,6 +155,16 @@ services:
       - chirpstack-secrets:/secrets
     environment:
       - GO_ENV=development
+
+  device-db:
+    image: postgres:14-alpine
+    restart: unless-stopped
+    volumes:
+      - devicedata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=device
+      - POSTGRES_PASSWORD=device
+      - POSTGRES_DB=device
       
 
 #
@@ -163,5 +173,6 @@ services:
 volumes:
   collectiondata:
   postgresqldata:
+  devicedata:
   redisdata:
   chirpstack-secrets: # for api key

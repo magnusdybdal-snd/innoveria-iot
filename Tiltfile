@@ -31,6 +31,11 @@ dc_resource(
 )
 
 dc_resource(
+    'device-db',
+    labels=['database']
+)
+
+dc_resource(
     'chirpstack',
     labels=['chirpstack']
 )

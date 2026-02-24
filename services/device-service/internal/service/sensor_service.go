@@ -19,9 +19,10 @@ func NewSensorService(cc *chirpstackrest.Client) *SensorServiceImpl {
 func (s *SensorServiceImpl) GetAll(ctx context.Context) ([]domain.Sensor, error) {
 	// 1. get sensor meta data from database
 	limit := 1
+	applicationId := ""
 
 	// 2. Get status from chirpstack
-	resp, err := s.cc.GetAllSensors(ctx, limit)
+	resp, err := s.cc.GetAllSensors(ctx, limit, applicationId)
 	if err != nil {
 		return nil, err
 	}

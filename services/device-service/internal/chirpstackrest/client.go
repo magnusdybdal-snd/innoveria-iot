@@ -50,8 +50,8 @@ func (c *Client) GetAllGateways(ctx context.Context, limit int) (ChirpstackGatew
 
 // Returns all sensors in chirpstack
 // TODO: Add authentication for tennatns
-func (c *Client) GetAllSensors(ctx context.Context, limit int) (ChirpstackSensorList, error) {
-	url := fmt.Sprintf("%s/api/devices?limit=%d", c.baseURL, limit)
+func (c *Client) GetAllSensors(ctx context.Context, limit int, applicationID string) (ChirpstackSensorList, error) {
+	url := fmt.Sprintf("%s/api/devices?limit=%d&applicationId=%s", c.baseURL, limit, applicationID)
 	resp, err := httpclient.DoRequest[ChirpstackSensorList](
 		c.httpClient,
 		ctx,
