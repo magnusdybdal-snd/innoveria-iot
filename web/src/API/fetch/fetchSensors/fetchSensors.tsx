@@ -13,12 +13,12 @@ export const fetchSensors = async (): Promise<Sensor[]> => {
       "GET",
     );
 
-    return data.sensors.map((gw) => ({
-      id: gw.id,
-      name: gw.name,
-      status: gw.status,
-      euid: gw.device_eui,
-      machine: gw.machine,
+    return data.sensors.map((sensor) => ({
+      id: sensor.id,
+      name: sensor.name,
+      status: sensor.status,
+      euid: sensor.device_eui,
+      machine: sensor.machine,
     }));
   } catch (error) {
     console.error("Failed to fetch sensors:", error);
