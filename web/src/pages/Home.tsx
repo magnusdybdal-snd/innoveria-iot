@@ -1,4 +1,3 @@
-import { ApiViewer } from "@/API/getData/";
 import { JokeViewer } from "@/API/getJoke";
 import { PageContent } from "@/components/pageContent";
 import { SubPageHeader } from "@/components/subPageHeader";
@@ -11,7 +10,6 @@ export default function Home() {
       <PageContent>
         <SubPageHeader />
         <JokeViewer />
-        <ApiViewer />
       </PageContent>
     </div>
   );
