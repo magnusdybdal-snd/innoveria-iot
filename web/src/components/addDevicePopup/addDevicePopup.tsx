@@ -53,9 +53,9 @@ export function AddDevice(props: AddDeviceProps) {
     (option) => (values[option] ?? "").trim() !== "",
   );
 
-  const labels: Record<string, string> = {
+  const inputLength: Record<string, string> = {
     DeviceEUI: "16 characters",
-    AppKey: "32 characters",
+    "Application key": "32 characters",
   };
 
   return (
@@ -94,15 +94,9 @@ export function AddDevice(props: AddDeviceProps) {
                     borderColor: "primary.main", // focused border
                   },
                 },
-                "& .MuiInputLabel-root": {
-                  color: "primary.main", // default label
-                },
-                "& .MuiInputLabel-root.Mui-focused": {
-                  color: "primary.main", // focused label
-                },
               }}
               key={option}
-              label={labels[option] ?? ""}
+              placeholder={inputLength[option] ?? ""}
               value={values[option] ?? ""}
               onChange={(e) =>
                 setValues((prev) => ({
