@@ -110,3 +110,53 @@ func DoRequest[T any](
 
 	return data, nil
 }
+
+// Returns the request
+// to handle request which only returns an status code
+func DoRaw(
+	client *Client,
+	ctx context.Context,
+	url string,
+	method string,
+	body any,
+	headers map[string]string,
+) (*http.Response, error) {
+	var reqBody io.Reader
+	if body != nil {
+		b, err := json.Marshal(body)
+		if err != nil {
+			return nil, fmt.Errorf("marshall request body %w", err)
+		}
+		reqBody = bytes.NewReader(b)
+	}
+	req, err := http.NewRequestWithContext(ctx, method, url, reqBody)
+	if err != nil {
+		return nil, fmt.Errorf("request error: %w", err)
+	}
+	for k, v := range headers {
+		req.Header.Set(k, v)
+	}
+	if body != nil {
+		req.Header.Set("Content-Type", "application/json")
+	}
+
+	resp, err := client.http.Do(req) // Defer body where the function is used
+	if err != nil {
+		return nil, fmt.Errorf("error doing the request: %w", err)
+	}
+
+	// error handling for status codes
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		const maxErrBody = 8 << 10 // 8KB
+		b, _ := io.ReadAll(io.LimitReader(resp.Body, maxErrBody))
+		return nil, &HTTPError{
+			StatusCode: resp.StatusCode,
+			Status:     resp.Status,
+			URL:        url,
+			Method:     method,
+			Body:       b,
+		}
+	}
+
+	return resp, nil
+}

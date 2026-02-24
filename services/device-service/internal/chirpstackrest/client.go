@@ -27,7 +27,6 @@ func New(cfg config.Config) *Client {
 // Returns all gateways in chirpstack
 // TODO: Add authentication for tennatns
 func (c *Client) GetAllGateways(ctx context.Context, limit int) (ChirpstackGatewayList, error) {
-
 	// Chirpstack needs a limit to send the correct response
 	url := fmt.Sprintf("%s/api/gateways?limit=%d", c.baseURL, limit)
 
@@ -46,6 +45,30 @@ func (c *Client) GetAllGateways(ctx context.Context, limit int) (ChirpstackGatew
 	}
 
 	return resp, nil
+}
+
+func (c *Client) CreateGateway(ctx context.Context, body ChirpstackGateway) error {
+	url := fmt.Sprintf("%s/api/gateways", c.baseURL)
+	resp, err := httpclient.DoRaw(
+		c.httpClient,
+		ctx,
+		url,
+		http.MethodPost,
+		body,
+		map[string]string{
+			"Authorization": "Bearer " + c.token,
+		},
+	)
+
+	if err != nil {
+		return err
+	}
+
+	if err := resp.Body.Close(); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // Returns all sensors in chirpstack
