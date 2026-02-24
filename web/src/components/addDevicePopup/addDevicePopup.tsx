@@ -53,6 +53,11 @@ export function AddDevice(props: AddDeviceProps) {
     (option) => (values[option] ?? "").trim() !== "",
   );
 
+  const labels: Record<string, string> = {
+    DeviceEUI: "16 characters",
+    AppKey: "32 characters",
+  };
+
   return (
     <Dialog
       open={open}
@@ -97,6 +102,7 @@ export function AddDevice(props: AddDeviceProps) {
                 },
               }}
               key={option}
+              label={labels[option] ?? ""}
               value={values[option] ?? ""}
               onChange={(e) =>
                 setValues((prev) => ({
