@@ -118,12 +118,19 @@ export function AddDevice(props: AddDeviceProps) {
                 (option === "DeviceEUI" || option === "Application key")
               }
               value={values[option] ?? ""}
-              onChange={(e) =>
+              onChange={(e) => {
+                let value = e.target.value;
+
+                // Only restrict DevEUI and AppKey
+                if (option === "DeviceEUI" || option === "Application key") {
+                  value = value.replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
+                }
+
                 setValues((prev) => ({
                   ...prev,
-                  [option]: e.target.value,
-                }))
-              }
+                  [option]: value,
+                }));
+              }}
             />
           ))}
         </CategoryHeader>
