@@ -8,8 +8,9 @@ export const chuckApiClient = axios.create({
   },
 });
 
-export const apiClient = axios.create({
-  baseURL: "http://localhost:8090/api",
+// Client for all microservice requests — routed through the api-gateway
+export const serviceClient = axios.create({
+  baseURL: "http://localhost:8081",
   headers: {
     "Content-Type": "application/json",
   },
@@ -42,15 +43,28 @@ export interface Joke {
   value: string;
 }
 
-export interface Data {
-  result: [
-    {
-      createdAt: string;
-      description: string;
-      id: string;
-      name: string;
-      updatedAt: string;
-    },
-  ];
+export interface GatewayApiResponse {
+  id: string;
+  device_eui: string;
+  name: string;
+  status: number;
+  lastSeenAt: string; // RFC1123 string from go - check format
+}
+
+export interface GatewayListApiResponse {
   totalCount: number;
+  gateways: GatewayApiResponse[];
+}
+
+export interface SensorApiResponse {
+  id: string;
+  device_eui: string;
+  name: string;
+  status: number;
+  machine: string;
+}
+
+export interface SensorListApiResponse {
+  totalCount: number;
+  sensors: SensorApiResponse[];
 }

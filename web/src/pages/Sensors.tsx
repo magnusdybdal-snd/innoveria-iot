@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Button from "@mui/material/Button";
 
+import { fetchSensors } from "@/API/fetch/fetchSensors";
+import { AddDevice } from "@/components/addDevicePopup";
 import { CategoryHeader } from "@/components/CategoryHeader";
 import {
   DeviceRow,
@@ -9,25 +11,53 @@ import {
   type SensorSortKey,
   type SortDirection,
 } from "@/components/gatewayRow";
+import { NoDeviceFoundCard } from "@/components/noDeviceFoundCard";
 import { PageContent } from "@/components/pageContent";
 import { PageDivider } from "@/components/pageDivider";
 import { SensorInfo } from "@/components/sensorInfo";
 import { SensorsGenInfo } from "@/components/sensorsGenInfo";
 import { SubPageHeader } from "@/components/subPageHeader";
 import Menu from "@/Menu.tsx";
-import { mockSensors } from "@/mocks/sensors.ts";
+import { mockSensors, type Sensor } from "@/mocks/sensors.ts";
 
-const sensorInfos = new Map<string, number>();
-sensorInfos.set("Total sensors", 0);
-sensorInfos.set("Online sensors", 0);
-sensorInfos.set("Offline sensors", 0);
-sensorInfos.set("Last seen 24hr", 0);
-sensorInfos.set("Error last 24hr", 0);
-
-const sensorDetails: string[] = ["Status", "Name", "DebEUI", "Machine"];
+const sensorDetails: string[] = ["Status", "Name", "DeviceEUI", "Machine"];
+const addSensorDetails: string[] = ["Name", "DeviceEUI", "Machine"];
 const sortableColumns: SensorSortKey[] = ["Status", "Name", "Machine"];
+type NewSensor = Omit<Sensor, "id" | "status">;
 
 export default function Sensors() {
+  const [sensors, setSensors] = useState<Sensor[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [sensorsMocked, setMockSensors] = useState<Sensor[]>(mockSensors);
+
+  useEffect(() => {
+    fetchSensors().then((data) => {
+      setSensors(data);
+      setIsLoading(false);
+    });
+  }, []);
+
+  const [open, setOpen] = useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleAddSensor = (sensorData: NewSensor) => {
+    setMockSensors((prev) => [
+      ...prev,
+      {
+        id: crypto.randomUUID(),
+        status: 0,
+        ...sensorData,
+      },
+    ]);
+  };
+
   const addButton = (
     <Button
       variant="outlined"
@@ -39,6 +69,7 @@ export default function Sensors() {
         textTransform: "none",
         fontSize: 20,
       }}
+      onClick={handleClickOpen}
     >
       Add device +
     </Button>
@@ -58,7 +89,25 @@ export default function Sensors() {
     );
   }
 
-  const sorted = sortSensors(mockSensors, sortConfig.key, sortConfig.direction);
+  const sorted = sortSensors(sensors, sortConfig.key, sortConfig.direction);
+  const sortedMock = sortSensors(
+    sensorsMocked,
+    sortConfig.key,
+    sortConfig.direction,
+  );
+
+  const sensorInfos = new Map<string, number>();
+  sensorInfos.set("Total sensors", sorted.length);
+  sensorInfos.set(
+    "Online sensors",
+    sorted.filter((sensor) => sensor.status === 0).length,
+  );
+  sensorInfos.set(
+    "Offline sensors",
+    sorted.filter((sensor) => sensor.status === 2).length,
+  );
+  sensorInfos.set("Last seen 24hr", 0);
+  sensorInfos.set("Error last 24hr", 0);
 
   return (
     <div className="flex h-screen">
@@ -88,8 +137,26 @@ export default function Sensors() {
               />
             </DeviceRow>
           ))}
+          {sortedMock.map((sensor) => (
+            <DeviceRow key={sensor.id}>
+              <SensorInfo
+                name={sensor.name}
+                status={sensor.status}
+                euid={sensor.euid}
+                machine={sensor.machine}
+              />
+            </DeviceRow>
+          ))}
         </CategoryHeader>
+        {!isLoading && sorted.length === 0 && <NoDeviceFoundCard />}
       </PageContent>
+
+      <AddDevice
+        open={open}
+        onClose={handleClose}
+        addOptions={addSensorDetails}
+        onAdd={handleAddSensor}
+      />
     </div>
   );
 }

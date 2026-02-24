@@ -24,5 +24,10 @@ func NewRouter(cfg *config.Config) *http.ServeMux {
 		"/sensors",
 	})
 
+	// Collection service
+	handlers.RegisterProxyService(mux, COLLECTION_ROUTE, "collection-service", cfg.CollSvcURL, []string{
+		"/latest",
+	})
+
 	return mux
 }

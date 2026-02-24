@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
+import { fetchGateways } from "@/API/fetch/fetchGateways";
 import { CategoryHeader } from "@/components/CategoryHeader";
 import { GatewayInfo } from "@/components/gatewayInfo";
 import {
@@ -8,11 +9,12 @@ import {
   type GatewaySortKey,
   type SortDirection,
 } from "@/components/gatewayRow";
+import { NoDeviceFoundCard } from "@/components/noDeviceFoundCard";
 import { PageContent } from "@/components/pageContent";
 import { PageDivider } from "@/components/pageDivider";
 import { SubPageHeader } from "@/components/subPageHeader";
 import Menu from "@/Menu";
-import { mockGateways } from "@/mocks/gateways";
+import type { Gateway } from "@/mocks/gateways";
 
 // Column labels rendered by CategoryHeader; order determines grid layout
 const gatewayDetails: string[] = ["Status", "Name", "EUI", "Last seen"];
@@ -23,10 +25,20 @@ const sortableColumns: GatewaySortKey[] = ["Status", "Name", "Last seen"];
 /**
  * Full-page view listing all LoRaWAN gateways registered in ChirpStack.
  *
- * Manages column sort state and delegates rendering to GatewayRow/GatewayInfo.
- * Data is currently sourced from mock fixtures; // TODO: replace with a live API call when the collection-service gateway endpoint is available.
+ * Fetches live gateway data from the device-service on mount and manages
+ * column sort state. Delegates row rendering to GatewayRow/GatewayInfo.
  */
 export default function Gateways() {
+  const [gateways, setGateways] = useState<Gateway[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    fetchGateways().then((data) => {
+      setGateways(data);
+      setIsLoading(false);
+    });
+  }, []);
+
   const [sortConfig, setSortConfig] = useState<{
     key: GatewaySortKey | null;
     direction: SortDirection;
@@ -49,12 +61,8 @@ export default function Gateways() {
     });
   }
 
-  // Derive sorted list on every render; sortGateways returns a new array and does not mutate mockGateways
-  const sorted = sortGateways(
-    mockGateways,
-    sortConfig.key,
-    sortConfig.direction,
-  );
+  // Derive sorted list on every render; sortGateways returns a new array and does not mutate gateways
+  const sorted = sortGateways(gateways, sortConfig.key, sortConfig.direction);
 
   return (
     <div className="flex h-screen">
@@ -69,6 +77,8 @@ export default function Gateways() {
           sortConfig={sortConfig}
           onSort={handleSort}
         >
+          {isLoading && <p>Loading...</p>}{" "}
+          {/*TODO: make a better looking loading indicator */}
           {sorted.map((gateway) => (
             <DeviceRow key={gateway.id}>
               <GatewayInfo
@@ -80,6 +90,7 @@ export default function Gateways() {
             </DeviceRow>
           ))}
         </CategoryHeader>
+        {!isLoading && sorted.length === 0 && <NoDeviceFoundCard />}
       </PageContent>
     </div>
   );
