@@ -3,7 +3,7 @@
 
 import "@mui/material/styles";
 
-declare module "@mui/metarial/styles" {
+declare module "@mui/material/styles" {
   // what useTheme() returns - after theme is built
   interface Palette {
     status: {
@@ -13,6 +13,7 @@ declare module "@mui/metarial/styles" {
       unknown: string;
     };
   }
+  // Accepted input in createTheme({palette{ ... }})
   interface PaletteOptions {
     status?: {
       online?: string;
