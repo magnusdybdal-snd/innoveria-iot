@@ -23,13 +23,13 @@ func Run() error {
 	cfg := config.Load()
 
 	// Init connection to timescale db
-	db, err := db.New(cfg.DB_url)
+	database, err := db.New(cfg.DB_url)
 	if err != nil {
 		return fmt.Errorf("db error: %v", err)
 	}
-	defer db.Close()
+	defer database.Close()
 
-	repo := repository.NewMeasurementRepository(db)
+	repo := repository.NewMeasurementRepository(database)
 	svc := service.NewMeasurementService(repo)
 
 	// Starting up a new collector
