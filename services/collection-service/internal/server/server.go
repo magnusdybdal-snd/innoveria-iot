@@ -25,9 +25,18 @@ func Run() error {
 	// Init connection to timescale db
 	database, err := db.New(cfg.DB_url)
 	if err != nil {
-		return fmt.Errorf("db error: %v", err)
+		return fmt.Errorf("db error: %w", err)
 	}
 	defer database.Close()
+
+	// Setup database schema by running migrations and seeds
+	if err := db.RunMigrations(database.Pool); err != nil {
+		return fmt.Errorf("migrations: %w", err)
+	}
+
+	if err := db.RunSeeds(database.Pool); err != nil {
+		return fmt.Errorf("seeds: %w", err)
+	}
 
 	repo := repository.NewMeasurementRepository(database)
 	svc := service.NewMeasurementService(repo)
@@ -40,13 +49,13 @@ func Run() error {
 	// Starting up the mqtt client
 	client, err := mqtt.New(*cfg, coll.MQTTHandler)
 	if err != nil {
-		return fmt.Errorf("mqtt init: %v", err)
+		return fmt.Errorf("mqtt init: %w", err)
 	}
 	defer client.Close()
 
 	// subscribe to the mqtt topic
 	if err := client.Subscribe(cfg.MQTTTopic); err != nil {
-		return fmt.Errorf("mqtt subscribe: %v", err)
+		return fmt.Errorf("mqtt subscribe: %w", err)
 	}
 
 	mux := NewRouter(svc)
