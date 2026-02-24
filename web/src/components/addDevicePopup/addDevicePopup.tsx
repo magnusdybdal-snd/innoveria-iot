@@ -25,7 +25,8 @@ export interface AddDeviceProps {
 export function AddDevice(props: AddDeviceProps) {
   const { onClose, open, addOptions } = props;
   const [values, setValues] = useState<Record<string, string>>({});
-  const [showError, setShowError] = useState(false);
+  const [fillError, setFillError] = useState(false);
+  const [lengthError, setLengthError] = useState(false);
 
   const handleClose = () => {
     onClose();
@@ -33,7 +34,11 @@ export function AddDevice(props: AddDeviceProps) {
 
   const handleSafeClose = () => {
     if (!allFilled) {
-      setShowError(true);
+      setFillError(true);
+      return;
+    } else if (!correctLength) {
+      setFillError(false);
+      setLengthError(true);
       return;
     }
 
@@ -45,7 +50,8 @@ export function AddDevice(props: AddDeviceProps) {
       devProf: values["DevProf"] ?? "",
     });
 
-    setShowError(false);
+    setFillError(false);
+    setLengthError(false);
     onClose();
   };
 
@@ -53,9 +59,18 @@ export function AddDevice(props: AddDeviceProps) {
     (option) => (values[option] ?? "").trim() !== "",
   );
 
+  const correctLength =
+    (values["DeviceEUI"] ?? "").length === 16 &&
+    (values["Application key"] ?? "").length === 32;
+
   const inputLength: Record<string, string> = {
     DeviceEUI: "16 characters",
     "Application key": "32 characters",
+  };
+
+  const inputLengthError: Record<string, string> = {
+    DeviceEUI: "DeviceEUI must be 16 characters",
+    "Application key": "Application key must be 32 characters",
   };
 
   return (
@@ -97,6 +112,11 @@ export function AddDevice(props: AddDeviceProps) {
               }}
               key={option}
               placeholder={inputLength[option] ?? ""}
+              helperText={lengthError ? (inputLengthError[option] ?? "") : ""}
+              error={
+                lengthError &&
+                (option === "DeviceEUI" || option === "Application key")
+              }
               value={values[option] ?? ""}
               onChange={(e) =>
                 setValues((prev) => ({
@@ -107,7 +127,7 @@ export function AddDevice(props: AddDeviceProps) {
             />
           ))}
         </CategoryHeader>
-        {showError && (
+        {fillError && (
           <div style={{ color: "red", marginTop: 8 }}>
             All fields must be filled
           </div>
