@@ -1,4 +1,5 @@
--- +goose Up                                                                                                                          CREATE SCHEMA "device";
+-- +goose Up
+CREATE SCHEMA "device";
 
 CREATE TYPE "device"."device_status" AS ENUM (
   'ACTIVE',

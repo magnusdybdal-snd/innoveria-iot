@@ -17,7 +17,7 @@ func Load() *Config {
 
 	return &Config{
 		Addr:             ":" + env.Get("PORT", "8080"),
-		DB_url:           env.Get("DB_url", "postgres://device:device@device-db5432:/device?sslmode=disable"),
+		DB_url:           env.Get("DB_url", "postgres://device:device@device-db:5432/device?sslmode=disable"),
 		ChirpstackURL:    env.Get("CHIRPSTACK_REST", "http://chirpstack-rest-api:8090"),
 		ChirpstackSecret: secret,
 	}
