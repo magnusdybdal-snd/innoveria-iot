@@ -112,7 +112,7 @@ func DoRequest[T any](
 }
 
 // Returns the request
-// to handle request which only returns an status code
+// to handle responses which only returns an status code
 func DoRaw(
 	client *Client,
 	ctx context.Context,

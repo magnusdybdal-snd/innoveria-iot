@@ -30,3 +30,20 @@ func GetGateways(svc domain.GatewayService) http.HandlerFunc {
 		}
 	}
 }
+
+func PostGateway(svc domain.GatewayService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+
+		err := svc.Create(ctx)
+		if err != nil {
+			json.HandleError(w, http.StatusBadRequest, err, "bad request")
+			return
+		}
+
+		if err := json.Encode(w, http.StatusCreated, map[string]string{}); err != nil {
+			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			return
+		}
+	}
+}

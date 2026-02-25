@@ -13,6 +13,6 @@ type Gateway struct {
 }
 
 type GatewayService interface {
-	Create()
+	Create(ctx context.Context) error
 	GetAll(ctx context.Context) ([]Gateway, error)
 }

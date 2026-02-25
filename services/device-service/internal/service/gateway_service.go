@@ -17,8 +17,13 @@ func NewGatewayService(cc *chirpstackrest.Client) *GatewayServiceImpl {
 }
 
 // TODO: Handle connection of new gateway to chirpstack
-func (g *GatewayServiceImpl) Create() {
-
+func (g *GatewayServiceImpl) Create(ctx context.Context) error {
+	body := chirpstackrest.ChirpstackGateway{}
+	err := g.cc.CreateGateway(ctx, body)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (g *GatewayServiceImpl) GetAll(ctx context.Context) ([]domain.Gateway, error) {
