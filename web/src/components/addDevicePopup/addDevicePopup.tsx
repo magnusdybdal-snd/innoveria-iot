@@ -5,6 +5,8 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
 
 import { CategoryHeader } from "@/components/CategoryHeader";
@@ -46,14 +48,25 @@ export function AddDevice(props: AddDeviceProps) {
       name: values["Name"] ?? "",
       euid: values["DeviceEUI"] ?? "",
       machine: values["Machine"] ?? "",
-      appKey: values["AppKey"] ?? "",
-      devProf: values["DevProf"] ?? "",
+      appKey: values["Application key"] ?? "",
+      devProf: values["Device profile"] ?? "",
     });
 
     setFillError(false);
     setLengthError(false);
     onClose();
   };
+
+  const deviceProfiles = [
+    "Temperature Sensor v1",
+    "Humidity Sensor v2",
+    "CO2 Sensor Indoor",
+    "Water Leak Detector",
+    "Smart Meter Basic",
+    "Industrial Vibration Sensor",
+    "Outdoor Weather Node",
+    "GPS Tracker Low Power",
+  ];
 
   const allFilled = addOptions.every(
     (option) => (values[option] ?? "").trim() !== "",
@@ -93,46 +106,92 @@ export function AddDevice(props: AddDeviceProps) {
       </DialogTitle>
       <DialogContent>
         <CategoryHeader categories={addOptions} columns={addOptions.length}>
-          {addOptions.map((option) => (
-            <TextField
-              fullWidth
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  color: "primary.main", // input text color
-                  "& fieldset": {
-                    borderColor: "primary.main", // default border
-                  },
-                  "&:hover fieldset": {
-                    borderColor: "primary.main", // hover border
-                  },
-                  "&.Mui-focused fieldset": {
-                    borderColor: "primary.main", // focused border
-                  },
-                },
-              }}
-              key={option}
-              placeholder={inputLength[option] ?? ""}
-              helperText={lengthError ? (inputLengthError[option] ?? "") : ""}
-              error={
-                lengthError &&
-                (option === "DeviceEUI" || option === "Application key")
-              }
-              value={values[option] ?? ""}
-              onChange={(e) => {
-                let value = e.target.value;
+          {addOptions.map((option) => {
+            // Textfield for all other than DevProf
+            if (option != "Device profile") {
+              return (
+                <TextField
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      color: "primary.main", // input text color
+                      "& fieldset": {
+                        borderColor: "primary.main", // default border
+                      },
+                      "&:hover fieldset": {
+                        borderColor: "primary.main", // hover border
+                      },
+                      "&.Mui-focused fieldset": {
+                        borderColor: "primary.main", // focused border
+                      },
+                    },
+                  }}
+                  fullWidth
+                  key={option}
+                  placeholder={inputLength[option] ?? ""}
+                  helperText={
+                    lengthError ? (inputLengthError[option] ?? "") : ""
+                  }
+                  error={
+                    lengthError &&
+                    (option === "DeviceEUI" || option === "Application key")
+                  }
+                  value={values[option] ?? ""}
+                  onChange={(e) => {
+                    let value = e.target.value;
 
-                // Only restrict DevEUI and AppKey
-                if (option === "DeviceEUI" || option === "Application key") {
-                  value = value.replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
+                    // Only restrict DevEUI and AppKey
+                    if (
+                      option === "DeviceEUI" ||
+                      option === "Application key"
+                    ) {
+                      value = value.replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
+                    }
+
+                    setValues((prev) => ({
+                      ...prev,
+                      [option]: value,
+                    }));
+                  }}
+                />
+              );
+            }
+            // Dropdown selection for device profile
+            return (
+              <Select
+                sx={{
+                  color: "primary.main",
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "primary.main",
+                  },
+                  "&:hover .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "primary.main",
+                  },
+                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "primary.main",
+                  },
+                  "& .MuiSelect-icon": {
+                    color: "primary.main",
+                  },
+                }}
+                fullWidth
+                key={option}
+                value={values[option] ?? ""}
+                displayEmpty
+                onChange={(e) =>
+                  setValues((prev) => ({
+                    ...prev,
+                    [option]: e.target.value,
+                  }))
                 }
-
-                setValues((prev) => ({
-                  ...prev,
-                  [option]: value,
-                }));
-              }}
-            />
-          ))}
+              >
+                {deviceProfiles.map((prof) => (
+                  <MenuItem key={prof} value={prof}>
+                    {prof}
+                  </MenuItem>
+                ))}
+              </Select>
+            );
+          })}
         </CategoryHeader>
         {fillError && (
           <div style={{ color: "red", marginTop: 8 }}>
