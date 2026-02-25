@@ -9,5 +9,6 @@ const (
 	COLLECTION_ROUTE = API_ROUTE + "/collection" // For proxy routing
 
 	// Routes:
-	LATEST_MEASUREMENT = COLLECTION_ROUTE + "/latest"
+	LATEST_MEASUREMENT   = COLLECTION_ROUTE + "/latest"
+	MEASUREMENTS_BY_TIME = COLLECTION_ROUTE + "/measurements"
 )
