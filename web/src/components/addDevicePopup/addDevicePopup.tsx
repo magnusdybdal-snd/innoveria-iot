@@ -28,7 +28,7 @@ export function AddDevice(props: AddDeviceProps) {
   const { onClose, open, addOptions } = props;
   const [values, setValues] = useState<Record<string, string>>({});
   const [fillError, setFillError] = useState(false);
-  const [lengthError, setLengthError] = useState(false);
+  const [lengthErrors, setLengthErrors] = useState<Record<string, boolean>>({});
 
   const handleClose = () => {
     onClose();
@@ -38,9 +38,12 @@ export function AddDevice(props: AddDeviceProps) {
     if (!allFilled) {
       setFillError(true);
       return;
-    } else if (!correctLength) {
+    } else if (
+      newLengthErrors.DeviceEUI ||
+      newLengthErrors["Application key"]
+    ) {
       setFillError(false);
-      setLengthError(true);
+      setLengthErrors(newLengthErrors);
       return;
     }
 
@@ -53,13 +56,13 @@ export function AddDevice(props: AddDeviceProps) {
     });
 
     setFillError(false);
-    setLengthError(false);
+    setLengthErrors({});
     onClose();
   };
 
   const deviceProfiles = [
-    "TemperatureSensorv1",
-    "HumiditySensorv2",
+    "TemperatureSensor",
+    "HumiditySensor",
     "CO2SensorIndoor",
     "WaterLeakDetector",
     "SmartMeterBasic",
@@ -72,9 +75,10 @@ export function AddDevice(props: AddDeviceProps) {
     (option) => (values[option] ?? "").trim() !== "",
   );
 
-  const correctLength =
-    (values["DeviceEUI"] ?? "").length === 16 &&
-    (values["Application key"] ?? "").length === 32;
+  const newLengthErrors = {
+    DeviceEUI: (values["DeviceEUI"] ?? "").length !== 16,
+    "Application key": (values["Application key"] ?? "").length !== 32,
+  };
 
   const inputLength: Record<string, string> = {
     DeviceEUI: "16 characters",
@@ -129,12 +133,9 @@ export function AddDevice(props: AddDeviceProps) {
                   key={option}
                   placeholder={inputLength[option] ?? ""}
                   helperText={
-                    lengthError ? (inputLengthError[option] ?? "") : ""
+                    lengthErrors[option] ? (inputLengthError[option] ?? "") : ""
                   }
-                  error={
-                    lengthError &&
-                    (option === "DeviceEUI" || option === "Application key")
-                  }
+                  error={!!lengthErrors[option]}
                   value={values[option] ?? ""}
                   onChange={(e) => {
                     let value = e.target.value;
