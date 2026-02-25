@@ -40,9 +40,9 @@ const sortableColumns: SensorSortKey[] = [
   "Status",
   "Name",
   "Machine",
-  "LastReading",
-  "AppKey",
-  "DevProf",
+  "Last reading",
+  "Application key",
+  "Device profile",
 ];
 type NewSensor = Omit<Sensor, "id" | "status" | "lastReading">;
 

@@ -58,14 +58,14 @@ export function AddDevice(props: AddDeviceProps) {
   };
 
   const deviceProfiles = [
-    "Temperature Sensor v1",
-    "Humidity Sensor v2",
-    "CO2 Sensor Indoor",
-    "Water Leak Detector",
-    "Smart Meter Basic",
-    "Industrial Vibration Sensor",
-    "Outdoor Weather Node",
-    "GPS Tracker Low Power",
+    "TemperatureSensorv1",
+    "HumiditySensorv2",
+    "CO2SensorIndoor",
+    "WaterLeakDetector",
+    "SmartMeterBasic",
+    "IndustrialVibrationSensor",
+    "OutdoorWeatherNode",
+    "GPSTrackerLowPower",
   ];
 
   const allFilled = addOptions.every(
