@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"innoveria-iot/device-service/internal/chirpstackrest"
 	"innoveria-iot/device-service/internal/config"
+	"innoveria-iot/device-service/internal/db"
 	"innoveria-iot/device-service/internal/service"
 	"log/slog"
 	"net/http"
@@ -17,6 +18,22 @@ import (
 
 func Run() error {
 	cfg := config.Load()
+
+	// Init connection to the database
+	database, err := db.New(cfg.DB_url)
+	if err != nil {
+		return fmt.Errorf("db error: %w", err)
+	}
+	defer database.Close()
+
+	// Setup database schema by running migrations and seeds
+	if err := db.RunMigrations(database.Pool); err != nil {
+		return fmt.Errorf("migrations: %w", err)
+	}
+
+	if err := db.RunSeeds(database.Pool); err != nil {
+		return fmt.Errorf("seeds: %w", err)
+	}
 
 	chirpstackClient := chirpstackrest.New(*cfg)
 	gatewaySvc := service.NewGatewayService(chirpstackClient)
