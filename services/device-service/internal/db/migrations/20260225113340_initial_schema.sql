@@ -1,3 +1,4 @@
+-- +goose Up
 CREATE SCHEMA "device";
 
 CREATE TYPE "device"."device_status" AS ENUM (
@@ -61,3 +62,6 @@ CREATE TABLE "device"."sensor_metric" (
 
 COMMENT ON COLUMN "device"."sensor_metric"."measurement_type" IS 'e.g. temperature, humidity, electric_current';
 COMMENT ON COLUMN "device"."sensor_metric"."unit" IS 'e.g. °C, %RH, A — useful for display and validation';
+
+-- +goose Down
+DROP SCHEMA "device" CASCADE;
