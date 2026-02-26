@@ -2,39 +2,18 @@ package db
 
 import (
 	"embed"
-	"fmt"
-	"innoveria-iot/pkg/env"
-	"log/slog"
+	"innoveria-iot/pkg/dbutil"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/jackc/pgx/v5/stdlib"
 )
 
+// Bundles all sql files in the seeds folder directly into the compiled binary
+// Declared here because //go:embed resolves relative to this file's location at compile time.
+//
 //go:embed seeds/*.sql
 var seeds embed.FS
 
+// Thin wrapper around RunSeeds in pkg/dbutil
 func RunSeeds(pool *pgxpool.Pool) error {
-	// Check if running production or development
-	envVar := env.Get("GO_ENV", "development")
-
-	if envVar == "production" {
-		return nil
-	}
-
-	fileName := fmt.Sprintf("seeds/%s.sql", envVar)
-
-	// Extract the seed. If not found: warning and skip
-	// since some db in dev might not need mock data
-	seed, err := seeds.ReadFile(fileName)
-	if err != nil {
-		slog.Warn("no seed file found, skipping", "environment", envVar)
-		return nil
-	}
-
-	// Convert from pool to sqldb for Exec
-	sqlDB := stdlib.OpenDBFromPool(pool)
-
-	// Executes the seed (inserts mock data)
-	_, err = sqlDB.Exec(string(seed))
-	return err
+	return dbutil.RunSeeds(pool, seeds)
 }

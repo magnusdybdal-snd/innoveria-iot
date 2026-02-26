@@ -8,6 +8,7 @@ import (
 	"innoveria-iot/device-service/internal/config"
 	"innoveria-iot/device-service/internal/db"
 	"innoveria-iot/device-service/internal/service"
+	"innoveria-iot/pkg/dbutil"
 	"log/slog"
 	"net/http"
 	"os"
@@ -20,7 +21,7 @@ func Run() error {
 	cfg := config.Load()
 
 	// Init connection to the database
-	database, err := db.New(cfg.DB_url)
+	database, err := dbutil.New(cfg.DB_url, "Device DB")
 	if err != nil {
 		return fmt.Errorf("db error: %w", err)
 	}

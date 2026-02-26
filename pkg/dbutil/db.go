@@ -1,4 +1,7 @@
-package db
+// Package dbutil provides shared PostgreSQL utilities for connecting to
+// and managing databases across services. It handles connection pooling,
+// schema migrations via goose, and environment-aware seeding.
+package dbutil
 
 import (
 	"context"
@@ -8,11 +11,14 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
+// DB wraps a pgxpool connection pool for safe concurrent database access.
 type DB struct {
 	Pool *pgxpool.Pool
 }
 
-func New(connString string) (*DB, error) {
+// New creates a new DB connection pool using the provided connection string.
+// serviceName is used in the startup log to identify which service connected.
+func New(connString string, serviceName string) (*DB, error) {
 	cfg, err := pgxpool.ParseConfig(connString)
 	if err != nil {
 		return nil, err
@@ -34,11 +40,12 @@ func New(connString string) (*DB, error) {
 		return nil, err
 	}
 
-	slog.Info("Device DB successfully connected")
+	slog.Info(serviceName + " successfully connected")
 
 	return &DB{Pool: pool}, nil
 }
 
+// Close releases all connections in the pool.
 func (d *DB) Close() {
 	d.Pool.Close()
 }
