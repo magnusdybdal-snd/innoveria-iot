@@ -14,9 +14,13 @@ func NewRouter(
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /", handlers.Root)
+
+	// Gateway Routes:
 	mux.HandleFunc("GET "+GATEWAY_ROUTE, handlers.GetGateways(gatewaySvc))
 	mux.HandleFunc("POST "+GATEWAY_ROUTE, handlers.PostGateway(gatewaySvc))
 	mux.HandleFunc("PUT "+GATEWAY_ROUTE_ID, handlers.PutGateway(gatewaySvc))
+
+	// Sensor Routes:
 	mux.HandleFunc("GET "+SENSOR_ROUTE, handlers.GetSensors(sensorSvc))
 
 	return mux

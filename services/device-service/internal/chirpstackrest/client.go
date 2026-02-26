@@ -2,8 +2,6 @@ package chirpstackrest
 
 import (
 	"context"
-	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 
@@ -26,8 +24,107 @@ func New(cfg config.Config) *Client {
 	}
 }
 
+// TODO: Add tennant authentication, so add tennantID as query
+
+/*
+	Application requests (factory area)
+*/
+
+// Returns all availabe application (factory areas)
+func (c *Client) GetOneApplication(ctx context.Context, applicationId string) (ChirpstackApplication, error) {
+	url := fmt.Sprintf("%s/api/applications/%s", c.baseURL, applicationId)
+
+	resp, err := httpclient.DoRequest[ChirpstackApplication](
+		c.httpClient,
+		ctx,
+		url,
+		http.MethodGet,
+		nil,
+		map[string]string{
+			"Authorization": "Bearer " + c.token,
+		},
+	)
+	if err != nil {
+		return ChirpstackApplication{}, handleChirpstackError(err)
+	}
+
+	return resp, nil
+}
+
+// Returns all chirpstack applications
+func (c *Client) GetAllApplication(ctx context.Context, limit int) (ChirpstackApplicationList, error) {
+	url := fmt.Sprintf("%s/api/applications?limit=%d", c.baseURL, limit)
+
+	resp, err := httpclient.DoRequest[ChirpstackApplicationList](
+		c.httpClient,
+		ctx,
+		url,
+		http.MethodGet,
+		nil,
+		map[string]string{
+			"Authorization": "Bearer " + c.token,
+		},
+	)
+	if err != nil {
+		return ChirpstackApplicationList{}, handleChirpstackError(err)
+	}
+
+	return resp, nil
+}
+
+// Creates a new application in chirpstack
+func (c *Client) CreateApplication(ctx context.Context, body ChirpstackApplicationList) error {
+	url := fmt.Sprintf("%s/api/applications", c.baseURL)
+
+	resp, err := httpclient.DoRaw(
+		c.httpClient,
+		ctx,
+		url,
+		http.MethodPost,
+		body,
+		map[string]string{
+			"Authorization": "Bearer " + c.token,
+		},
+	)
+	if err != nil {
+		return handleChirpstackError(err)
+	}
+
+	if err := resp.Body.Close(); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Renames the application name
+func (c *Client) RenameApplication(ctx context.Context, body ChirpstackApplication) error {
+	url := fmt.Sprintf("%s/api/applications/%s", c.baseURL, body.ID)
+
+	resp, err := httpclient.DoRaw(
+		c.httpClient,
+		ctx,
+		url,
+		http.MethodPut,
+		body,
+		map[string]string{
+			"Authorization": "Bearer " + c.token,
+		},
+	)
+	if err != nil {
+		return handleChirpstackError(err)
+	}
+
+	if err := resp.Body.Close(); err != nil {
+		return err
+	}
+	return nil
+}
+
+/*
+	Gateway requests
+*/
+
 // Returns all gateways in chirpstack
-// TODO: Add authentication for tennatns
 func (c *Client) GetAllGateways(ctx context.Context, limit int) (ChirpstackGatewayList, error) {
 	// Chirpstack needs a limit to send the correct response
 	url := fmt.Sprintf("%s/api/gateways?limit=%d", c.baseURL, limit)
@@ -43,7 +140,29 @@ func (c *Client) GetAllGateways(ctx context.Context, limit int) (ChirpstackGatew
 		},
 	)
 	if err != nil {
-		return ChirpstackGatewayList{}, err
+		return ChirpstackGatewayList{}, handleChirpstackError(err)
+	}
+
+	return resp, nil
+}
+
+// GetOneGateway returns one chirpstack gateway
+// the parameter is gatewayEUI which chirpstack calls gatewayId
+func (c *Client) GetOneGateway(ctx context.Context, gatewayEUI string) (ChirpstackGateway, error) {
+	url := fmt.Sprintf("%s/api/gateways/%s", c.baseURL, gatewayEUI)
+
+	resp, err := httpclient.DoRequest[ChirpstackGateway](
+		c.httpClient,
+		ctx,
+		url,
+		http.MethodGet,
+		nil,
+		map[string]string{
+			"Authorization": "Bearer " + c.token,
+		},
+	)
+	if err != nil {
+		return ChirpstackGateway{}, handleChirpstackError(err)
 	}
 
 	return resp, nil
@@ -61,17 +180,8 @@ func (c *Client) CreateGateway(ctx context.Context, body CreateChirpstackGateway
 			"Authorization": "Bearer " + c.token,
 		},
 	)
-
 	if err != nil {
-		var httpErr *httpclient.HTTPError
-		if errors.As(err, &httpErr) {
-			var apiErr ChirpstackError
-			if json.Unmarshal(httpErr.Body, &apiErr) == nil {
-				return fmt.Errorf("chirpstack error: %s, (code=%d)", apiErr.Message, apiErr.Code)
-			}
-			return fmt.Errorf("chirpstack error: %s", string(httpErr.Body))
-		}
-		return err
+		return handleChirpstackError(err)
 	}
 
 	if err := resp.Body.Close(); err != nil {
@@ -93,17 +203,8 @@ func (c *Client) RenameGateway(ctx context.Context, body CreateChirpstackGateway
 			"Authorization": "Bearer " + c.token,
 		},
 	)
-
 	if err != nil {
-		var httpErr *httpclient.HTTPError
-		if errors.As(err, &httpErr) {
-			var apiErr ChirpstackError
-			if json.Unmarshal(httpErr.Body, &apiErr) == nil {
-				return fmt.Errorf("chirpstack error: %s, (code=%d)", apiErr.Message, apiErr.Code)
-			}
-			return fmt.Errorf("chirpstack error: %s", string(httpErr.Body))
-		}
-		return err
+		return handleChirpstackError(err)
 	}
 
 	if err := resp.Body.Close(); err != nil {
@@ -113,8 +214,10 @@ func (c *Client) RenameGateway(ctx context.Context, body CreateChirpstackGateway
 	return nil
 }
 
+/*
+	Sensor Requests
+*/
 // Returns all sensors in chirpstack
-// TODO: Add authentication for tennatns
 func (c *Client) GetAllSensors(ctx context.Context, limit int, applicationID string) (ChirpstackSensorList, error) {
 	url := fmt.Sprintf("%s/api/devices?limit=%d&applicationId=%s", c.baseURL, limit, applicationID)
 	resp, err := httpclient.DoRequest[ChirpstackSensorList](
@@ -128,7 +231,7 @@ func (c *Client) GetAllSensors(ctx context.Context, limit int, applicationID str
 		},
 	)
 	if err != nil {
-		return ChirpstackSensorList{}, err
+		return ChirpstackSensorList{}, handleChirpstackError(err)
 	}
 
 	return resp, nil

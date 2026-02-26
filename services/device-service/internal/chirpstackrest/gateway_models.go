@@ -32,7 +32,7 @@ type ChirpstackGatewayLocation struct {
 	Source    string  `json:"source"`
 }
 
-// Chripstack Request
+// Chripstack post requests
 type CreateChirpstackGatewayRequest struct {
 	CreateGatewayPayload `json:"gateway"` // How chirpstack handles requests
 }

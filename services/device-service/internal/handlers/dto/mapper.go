@@ -28,6 +28,7 @@ func MapGatewayDomainToDTO(from []domain.Gateway) GatewayListResponse {
 func mapGateway(from domain.Gateway) GatewayResponse {
 	return GatewayResponse{
 		ID:         from.Id,
+		CompanyId:  from.CompanyId,
 		DeviceEUI:  from.GatewayEUI,
 		Name:       from.Name,
 		Status:     int(from.Status),

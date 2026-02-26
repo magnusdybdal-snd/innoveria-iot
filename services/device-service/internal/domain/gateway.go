@@ -10,6 +10,7 @@ type Gateway struct {
 	GatewayEUI string
 	Name       string
 	Status     Status // 0=online, 1=never_seen, 2=offline
+	// TODO: Add state (active or inactive)
 	LastSeenAt string
 }
 
