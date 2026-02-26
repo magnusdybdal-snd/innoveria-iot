@@ -11,13 +11,23 @@ import (
 	Gateway mapping
 */
 // Mapping for the chirpstack gateway domain to device service gateway domain
-func mapGateway(from chirpstackrest.ChirpstackGateway) domain.Gateway {
+func mapChirpstackGateway(from chirpstackrest.ChirpstackGateway) domain.Gateway {
 	return domain.Gateway{
 		Id:         from.GatewayEUI, // TODO: Change this to internal database id
-		DeviceEUI:  from.GatewayEUI,
+		GatewayEUI: from.GatewayEUI,
 		Name:       from.Name,
 		Status:     mapStatus(from.State, from.LastSeenAt),
 		LastSeenAt: from.LastSeenAt.Format(time.RFC1123),
+	}
+}
+
+func mapCreateChirpstackGateway(from domain.Gateway, companyId string) chirpstackrest.CreateChirpstackGatewayRequest {
+	return chirpstackrest.CreateChirpstackGatewayRequest{
+		CreateGatewayPayload: chirpstackrest.CreateGatewayPayload{
+			GatewayEUI: from.GatewayEUI,
+			Name:       from.Name,
+			TenantID:   companyId,
+		},
 	}
 }
 
@@ -43,7 +53,7 @@ func mapStatus(status string, lastSeen time.Time) domain.Status {
 /*
 Sensor mapping
 */
-func mapSensor(from chirpstackrest.ChirpstackSensor) domain.Sensor {
+func mapChirpstackSensor(from chirpstackrest.ChirpstackSensor) domain.Sensor {
 	return domain.Sensor{
 		Id:         from.DeviceEUI, // TODO: Change this to internal database id
 		Name:       from.Name,

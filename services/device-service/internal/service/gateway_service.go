@@ -17,12 +17,16 @@ func NewGatewayService(cc *chirpstackrest.Client) *GatewayServiceImpl {
 }
 
 // TODO: Handle connection of new gateway to chirpstack
-func (g *GatewayServiceImpl) Create(ctx context.Context) error {
-	body := chirpstackrest.ChirpstackGateway{}
-	err := g.cc.CreateGateway(ctx, body)
+func (g *GatewayServiceImpl) Create(ctx context.Context, payload domain.Gateway, companyId string) error {
+	// Convert to chirpstack models
+	gatewayReq := mapCreateChirpstackGateway(payload, companyId)
+
+	// call chirpstack
+	err := g.cc.CreateGateway(ctx, gatewayReq)
 	if err != nil {
 		return err
 	}
+	// Store in db
 	return nil
 }
 
@@ -40,7 +44,7 @@ func (g *GatewayServiceImpl) GetAll(ctx context.Context) ([]domain.Gateway, erro
 	var result []domain.Gateway
 
 	for _, gw := range resp.Result {
-		result = append(result, mapGateway(gw))
+		result = append(result, mapChirpstackGateway(gw))
 	}
 
 	// 3. Merge status and gateway data

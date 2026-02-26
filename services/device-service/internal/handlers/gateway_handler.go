@@ -35,9 +35,16 @@ func PostGateway(svc domain.GatewayService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
-		err := svc.Create(ctx)
+		payload, err := json.Decode[dto.CreateGatewayRequest](r)
 		if err != nil {
 			json.HandleError(w, http.StatusBadRequest, err, "bad request")
+			return
+		}
+
+		data := dto.MapGatewayDTOToDomain(payload)
+
+		if err := svc.Create(ctx, data, payload.CompanyId); err != nil {
+			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
 			return
 		}
 

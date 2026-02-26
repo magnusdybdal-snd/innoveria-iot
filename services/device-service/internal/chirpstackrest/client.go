@@ -2,6 +2,8 @@ package chirpstackrest
 
 import (
 	"context"
+	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -47,7 +49,7 @@ func (c *Client) GetAllGateways(ctx context.Context, limit int) (ChirpstackGatew
 	return resp, nil
 }
 
-func (c *Client) CreateGateway(ctx context.Context, body ChirpstackGateway) error {
+func (c *Client) CreateGateway(ctx context.Context, body CreateChirpstackGatewayRequest) error {
 	url := fmt.Sprintf("%s/api/gateways", c.baseURL)
 	resp, err := httpclient.DoRaw(
 		c.httpClient,
@@ -61,6 +63,14 @@ func (c *Client) CreateGateway(ctx context.Context, body ChirpstackGateway) erro
 	)
 
 	if err != nil {
+		var httpErr *httpclient.HTTPError
+		if errors.As(err, &httpErr) {
+			var apiErr ChirpstackError
+			if json.Unmarshal(httpErr.Body, &apiErr) == nil {
+				return fmt.Errorf("chirpstack error: %s, (code=%d)", apiErr.Message, apiErr.Code)
+			}
+			return fmt.Errorf("chirpstack error: %s", string(httpErr.Body))
+		}
 		return err
 	}
 

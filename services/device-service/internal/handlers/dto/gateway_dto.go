@@ -1,6 +1,10 @@
 package dto
 
 // How we format the gateway response
+
+/*
+GET Request
+*/
 type GatewayResponse struct {
 	ID         string `json:"id"`
 	DeviceEUI  string `json:"device_eui"`
@@ -12,4 +16,13 @@ type GatewayResponse struct {
 type GatewayListResponse struct {
 	TotalCount int               `json:"totalCount"`
 	Gateways   []GatewayResponse `json:"gateways"`
+}
+
+/*
+POST Request
+*/
+type CreateGatewayRequest struct {
+	CompanyId  string `json:"company_id"`
+	GatewayEUI string `json:"gateway_eui"`
+	Name       string `json:"name"`
 }

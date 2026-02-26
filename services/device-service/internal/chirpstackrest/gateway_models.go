@@ -31,3 +31,14 @@ type ChirpstackGatewayLocation struct {
 	Accuracy  float64 `json:"accuracy"`
 	Source    string  `json:"source"`
 }
+
+// Chripstack Request
+type CreateChirpstackGatewayRequest struct {
+	CreateGatewayPayload `json:"gateway"` // How chirpstack handles requests
+}
+
+type CreateGatewayPayload struct {
+	GatewayEUI string `json:"gatewayId"` // chirpstack uses eui as id
+	Name       string `json:"name"`
+	TenantID   string `json:"tenantId"` // chirpstack uses tennant id, we use company id
+}

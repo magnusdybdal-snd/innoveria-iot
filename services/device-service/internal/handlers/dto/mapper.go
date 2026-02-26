@@ -5,6 +5,12 @@ import (
 )
 
 // Domain to dto mapping. So the response has the json tag and shows the total count
+
+/*
+	Gateway mapping
+*/
+
+// Gateway Domain -> DTO
 func MapGatewayDomainToDTO(from []domain.Gateway) GatewayListResponse {
 	tot := len(from)
 	gateways := make([]GatewayResponse, tot)
@@ -22,13 +28,27 @@ func MapGatewayDomainToDTO(from []domain.Gateway) GatewayListResponse {
 func mapGateway(from domain.Gateway) GatewayResponse {
 	return GatewayResponse{
 		ID:         from.Id,
-		DeviceEUI:  from.DeviceEUI,
+		DeviceEUI:  from.GatewayEUI,
 		Name:       from.Name,
 		Status:     int(from.Status),
 		LastSeenAt: from.LastSeenAt,
 	}
 }
 
+// Post requests Gateway DTO -> domain
+func MapGatewayDTOToDomain(from CreateGatewayRequest) domain.Gateway {
+	return domain.Gateway{
+		Id:         "", // converted later in db
+		GatewayEUI: from.GatewayEUI,
+		Name:       from.Name,
+		Status:     domain.StatusNeverSeen,
+		LastSeenAt: "", // converted later after chirpstack
+	}
+}
+
+/*
+Sensors mapping
+*/
 func MapSensorDomainToDTO(from []domain.Sensor) SensorListResponse {
 	tot := len(from)
 	sensors := make([]SensorResponse, tot)

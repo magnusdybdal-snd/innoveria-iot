@@ -29,7 +29,7 @@ func (s *SensorServiceImpl) GetAll(ctx context.Context) ([]domain.Sensor, error)
 	var result []domain.Sensor
 
 	for _, sensor := range resp.Result {
-		result = append(result, mapSensor(sensor))
+		result = append(result, mapChirpstackSensor(sensor))
 	}
 	// 3. merge to sensor domain
 
