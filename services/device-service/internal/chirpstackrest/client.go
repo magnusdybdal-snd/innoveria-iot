@@ -81,6 +81,38 @@ func (c *Client) CreateGateway(ctx context.Context, body CreateChirpstackGateway
 	return nil
 }
 
+func (c *Client) RenameGateway(ctx context.Context, body CreateChirpstackGatewayRequest) error {
+	url := fmt.Sprintf("%s/api/gateways/%s", c.baseURL, body.GatewayEUI)
+	resp, err := httpclient.DoRaw(
+		c.httpClient,
+		ctx,
+		url,
+		http.MethodPut,
+		body,
+		map[string]string{
+			"Authorization": "Bearer " + c.token,
+		},
+	)
+
+	if err != nil {
+		var httpErr *httpclient.HTTPError
+		if errors.As(err, &httpErr) {
+			var apiErr ChirpstackError
+			if json.Unmarshal(httpErr.Body, &apiErr) == nil {
+				return fmt.Errorf("chirpstack error: %s, (code=%d)", apiErr.Message, apiErr.Code)
+			}
+			return fmt.Errorf("chirpstack error: %s", string(httpErr.Body))
+		}
+		return err
+	}
+
+	if err := resp.Body.Close(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // Returns all sensors in chirpstack
 // TODO: Add authentication for tennatns
 func (c *Client) GetAllSensors(ctx context.Context, limit int, applicationID string) (ChirpstackSensorList, error) {

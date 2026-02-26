@@ -39,6 +39,7 @@ func mapGateway(from domain.Gateway) GatewayResponse {
 func MapGatewayDTOToDomain(from CreateGatewayRequest) domain.Gateway {
 	return domain.Gateway{
 		Id:         "", // converted later in db
+		CompanyId:  from.CompanyId,
 		GatewayEUI: from.GatewayEUI,
 		Name:       from.Name,
 		Status:     domain.StatusNeverSeen,

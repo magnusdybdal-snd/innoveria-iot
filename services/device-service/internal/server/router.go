@@ -16,6 +16,7 @@ func NewRouter(
 	mux.HandleFunc("GET /", handlers.Root)
 	mux.HandleFunc("GET "+GATEWAY_ROUTE, handlers.GetGateways(gatewaySvc))
 	mux.HandleFunc("POST "+GATEWAY_ROUTE, handlers.PostGateway(gatewaySvc))
+	mux.HandleFunc("PUT "+GATEWAY_ROUTE_ID, handlers.PutGateway(gatewaySvc))
 	mux.HandleFunc("GET "+SENSOR_ROUTE, handlers.GetSensors(sensorSvc))
 
 	return mux

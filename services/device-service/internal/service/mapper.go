@@ -14,6 +14,7 @@ import (
 func mapChirpstackGateway(from chirpstackrest.ChirpstackGateway) domain.Gateway {
 	return domain.Gateway{
 		Id:         from.GatewayEUI, // TODO: Change this to internal database id
+		CompanyId:  "",              // TODO: look up company mapping in DB
 		GatewayEUI: from.GatewayEUI,
 		Name:       from.Name,
 		Status:     mapStatus(from.State, from.LastSeenAt),
@@ -21,12 +22,14 @@ func mapChirpstackGateway(from chirpstackrest.ChirpstackGateway) domain.Gateway 
 	}
 }
 
-func mapCreateChirpstackGateway(from domain.Gateway, companyId string) chirpstackrest.CreateChirpstackGatewayRequest {
+// Mapping for gateway domain to chirpstack post and put requests
+// Tennant id is chirpstacks internal understanding of companies
+func mapCreateChirpstackGateway(from domain.Gateway, chirpstackTennantId string) chirpstackrest.CreateChirpstackGatewayRequest {
 	return chirpstackrest.CreateChirpstackGatewayRequest{
 		CreateGatewayPayload: chirpstackrest.CreateGatewayPayload{
 			GatewayEUI: from.GatewayEUI,
 			Name:       from.Name,
-			TenantID:   companyId,
+			TenantID:   chirpstackTennantId,
 		},
 	}
 }

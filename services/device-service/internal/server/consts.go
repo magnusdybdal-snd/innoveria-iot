@@ -7,6 +7,7 @@ const (
 
 	DEVICE_ROUTE = API_ROUTE + "/device"
 
-	GATEWAY_ROUTE = DEVICE_ROUTE + "/gateways"
-	SENSOR_ROUTE  = DEVICE_ROUTE + "/sensors"
+	GATEWAY_ROUTE    = DEVICE_ROUTE + "/gateways"
+	GATEWAY_ROUTE_ID = DEVICE_ROUTE + "/gateways/{id}"
+	SENSOR_ROUTE     = DEVICE_ROUTE + "/sensors"
 )

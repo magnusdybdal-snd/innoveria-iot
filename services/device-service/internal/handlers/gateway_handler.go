@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 
 	"innoveria-iot/device-service/internal/domain"
@@ -43,14 +44,37 @@ func PostGateway(svc domain.GatewayService) http.HandlerFunc {
 
 		data := dto.MapGatewayDTOToDomain(payload)
 
-		if err := svc.Create(ctx, data, payload.CompanyId); err != nil {
+		if err := svc.Create(ctx, data); err != nil {
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
 			return
 		}
 
-		if err := json.Encode(w, http.StatusCreated, map[string]string{}); err != nil {
+		w.WriteHeader(http.StatusCreated)
+	}
+}
+
+func PutGateway(svc domain.GatewayService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+
+		id := r.PathValue("id")
+		if id == "" {
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("no gateway id found"), "bad request")
+			return
+		}
+
+		payload, err := json.Decode[dto.CreateGatewayRequest](r)
+		if err != nil {
+			json.HandleError(w, http.StatusBadRequest, err, "bad request")
+			return
+		}
+		data := dto.MapGatewayDTOToDomain(payload)
+
+		if err := svc.Update(ctx, id, data); err != nil {
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
 			return
 		}
+
+		w.WriteHeader(http.StatusNoContent)
 	}
 }
