@@ -35,7 +35,7 @@ func New(connString string) (*DB, error) {
 		return nil, err
 	}
 
-	slog.Info("Timescale DB successfully conntected")
+	slog.Info("Timescale DB successfully connected")
 
 	return &DB{Pool: pool}, nil
 }

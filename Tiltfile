@@ -16,6 +16,11 @@ dc_resource(
 )
 
 dc_resource(
+    'device-db',
+    labels=['database']
+)
+
+dc_resource(
     'collection-service',
     labels=['microservice']
 )
@@ -28,11 +33,6 @@ dc_resource(
 dc_resource(
     'device-service',
     labels=['microservice']
-)
-
-dc_resource(
-    'device-db',
-    labels=['database']
 )
 
 dc_resource(

@@ -2,11 +2,11 @@ import { useState } from "react";
 
 import CircleIcon from "@mui/icons-material/Circle";
 import Button from "@mui/material/Button";
-import { green, grey, red, yellow } from "@mui/material/colors";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
+import { useTheme } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 
@@ -23,6 +23,7 @@ type InfoProps = {
   /*Format for single sensor info*/
 }
 export function SensorInfo({ name, status, euid, machine }: InfoProps) {
+  const theme = useTheme();
   const [currentName, setCurrentName] = useState(name);
   const [editOpen, setEditOpen] = useState(false);
   const [editValue, setEditValue] = useState(name);
@@ -43,15 +44,16 @@ export function SensorInfo({ name, status, euid, machine }: InfoProps) {
   ];
 
   const statusColor = (status: number) => {
+    const s = theme.palette.status;
     switch (status) {
       case 0:
-        return green[500];
+        return s.online;
       case 1:
-        return yellow[500];
+        return s.warning;
       case 2:
-        return red[500];
+        return s.offline;
       default:
-        return grey[500];
+        return s.unknown;
     }
   };
   return (

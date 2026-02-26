@@ -12,6 +12,7 @@ func NewRouter(svc domain.MeasurementService) *http.ServeMux {
 	// Routes:
 	mux.HandleFunc("GET /", handlers.Root)
 	mux.HandleFunc("GET "+LATEST_MEASUREMENT, handlers.HandleLatestMeasurement(svc))
+	mux.HandleFunc("GET "+MEASUREMENTS_BY_TIME, handlers.HandleMeasurementsByTimeRange(svc))
 
 	return mux
 }
