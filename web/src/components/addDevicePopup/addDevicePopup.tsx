@@ -72,12 +72,12 @@ export function AddDevice(props: AddDeviceProps) {
   ];
 
   const allFilled = addOptions.every(
-    (option) => (values[option] ?? "").trim() !== "",
+    (option) => (values[option] ?? "").trim() != "",
   );
 
   const newLengthErrors = {
-    DeviceEUI: (values["DeviceEUI"] ?? "").length !== 16,
-    "Application key": (values["Application key"] ?? "").length !== 32,
+    DeviceEUI: (values["DeviceEUI"] ?? "").length != 16,
+    "Application key": (values["Application key"] ?? "").length != 32,
   };
 
   const inputLength: Record<string, string> = {

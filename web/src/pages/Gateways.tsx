@@ -55,7 +55,7 @@ export default function Gateways() {
   function handleSort(column: string) {
     const col = column as GatewaySortKey;
     setSortConfig((prev) => {
-      if (prev.key !== col) return { key: col, direction: "asc" };
+      if (prev.key != col) return { key: col, direction: "asc" };
       if (prev.direction === "asc") return { key: col, direction: "desc" };
       return { key: null, direction: "asc" }; // third click resets to initial sorting (unsorted?) //TODO check if default is unsorted or sorted when connected to API.
     });

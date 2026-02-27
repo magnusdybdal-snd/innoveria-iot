@@ -70,7 +70,7 @@ export default function Menu() {
               title={category}
               mainPage={page}
               subPages={SubPages.get(category) ?? []}
-              add={category !== "Devices"} // example logic
+              add={category != "Devices"} // example logic
             />
           ))}
         </nav>
