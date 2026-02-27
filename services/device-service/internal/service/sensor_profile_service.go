@@ -19,8 +19,8 @@ func NewSensorProfileService(cc *chirpstackrest.Client) *SensorProfileServiceImp
 }
 
 // GetAll returns a list of the domain sensor profiles
-func (s *SensorProfileServiceImpl) GetAll(ctx context.Context) ([]domain.SensorProfile, error) {
-	resp, err := s.cc.GetAllSensorProfiles(ctx)
+func (s *SensorProfileServiceImpl) GetAll(ctx context.Context, limit int) ([]domain.SensorProfile, error) {
+	resp, err := s.cc.GetAllSensorProfiles(ctx, limit)
 	if err != nil {
 		return nil, err
 	}

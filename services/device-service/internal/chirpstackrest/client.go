@@ -259,8 +259,8 @@ func (c *Client) GetAllSensors(ctx context.Context, limit int, applicationID str
 	return resp, nil
 }
 
-func (c *Client) GetAllSensorProfiles(ctx context.Context) (DeviceProfileListResponse, error) {
-	url := fmt.Sprintf("%s/api/device-profiles?limit=10", c.baseURL)
+func (c *Client) GetAllSensorProfiles(ctx context.Context, limit int) (DeviceProfileListResponse, error) {
+	url := fmt.Sprintf("%s/api/device-profiles?limit=%d", c.baseURL, limit)
 	resp, err := httpclient.DoRequest[DeviceProfileListResponse](
 		c.httpClient,
 		ctx,

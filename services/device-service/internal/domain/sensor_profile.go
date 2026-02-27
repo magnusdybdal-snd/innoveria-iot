@@ -13,6 +13,6 @@ type SensorProfile struct {
 }
 
 type SensorProfileService interface {
-	GetAll(ctx context.Context) ([]SensorProfile, error)
+	GetAll(ctx context.Context, limit int) ([]SensorProfile, error)
 	GetOne(ctx context.Context) (SensorProfile, error)
 }

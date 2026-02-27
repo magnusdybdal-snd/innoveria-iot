@@ -5,6 +5,7 @@ import (
 	"innoveria-iot/device-service/internal/handlers/dto"
 	"innoveria-iot/pkg/json"
 	"net/http"
+	"strconv"
 )
 
 // GetAllSensorProfiles returns all available sensor profiles we provide
@@ -13,7 +14,14 @@ func GetAllSensorProfiles(svc domain.SensorProfileService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
-		data, err := svc.GetAll(ctx)
+		limitStr := r.URL.Query().Get("limit")
+		limit, err := strconv.Atoi(limitStr)
+		if err != nil {
+			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			return
+		}
+
+		data, err := svc.GetAll(ctx, limit)
 		if err != nil {
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
 			return
