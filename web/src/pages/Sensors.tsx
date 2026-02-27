@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
 
 import { fetchSensors } from "@/API/fetch/fetchSensors";
 import { AddDevice } from "@/components/addDevicePopup";
@@ -50,6 +51,7 @@ export default function Sensors() {
   const [sensors, setSensors] = useState<Sensor[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [sensorsMocked, setMockSensors] = useState<Sensor[]>(mockSensors);
+  const [show, setShow] = useState(false);
 
   useEffect(() => {
     fetchSensors().then((data) => {
@@ -144,7 +146,7 @@ export default function Sensors() {
         <PageDivider />
         <CategoryHeader
           categories={sensorDetails}
-          columns={sensorDetails.length + 1}
+          columns={sensorDetails.length + 2}
           sortableColumns={sortableColumns}
           sortConfig={sortConfig}
           onSort={handleSort}
@@ -173,6 +175,8 @@ export default function Sensors() {
                 appKey={sensor.appKey}
                 devProf={sensor.devProf}
               />
+              <button onClick={() => setShow((prev) => !prev)}>Expand</button>
+              {show && <Typography>This is your component</Typography>}
             </DeviceRow>
           ))}
         </CategoryHeader>
