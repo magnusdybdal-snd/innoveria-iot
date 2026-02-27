@@ -7,7 +7,7 @@ import (
 type Sensor struct {
 	Id              string
 	Name            string
-	DeviceEUI       string
+	DeviceEUI       string // how chirpstack handles id
 	GatewayEUI      string
 	Status          Status // 0=online, 1=never_seen, 2=offline
 	SensorProfileId string // LoRaWAN templates to describe device model
