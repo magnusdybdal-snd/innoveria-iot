@@ -10,6 +10,7 @@ import (
 func NewRouter(
 	gatewaySvc domain.GatewayService,
 	sensorSvc domain.SensorService,
+	sensorProfileSvc domain.SensorProfileService,
 ) *http.ServeMux {
 	mux := http.NewServeMux()
 
@@ -23,6 +24,9 @@ func NewRouter(
 
 	// Sensor Routes:
 	mux.HandleFunc("GET "+SENSOR_ROUTE, handlers.GetSensors(sensorSvc))
+
+	// Sensor profile routes:
+	mux.HandleFunc("GET "+SENSOR_PROFILE_ROUTE, handlers.GetAllSensorProfiles(sensorProfileSvc))
 
 	return mux
 }
