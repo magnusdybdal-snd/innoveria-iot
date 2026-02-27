@@ -57,7 +57,7 @@ is installed on';
 COMMENT ON COLUMN "device"."sensor"."factory_area_id" IS 'References auth.factory_area — loose cross-service ref';
 
 CREATE TABLE "device"."sensor_metric" (
-  "sensor_id"        uuid NOT NULL REFERENCES "device"."sensor"("sensor_id"),
+  "sensor_id"        uuid NOT NULL REFERENCES "device"."sensor"("sensor_id") ON DELETE CASCADE,
   "measurement_type" varchar NOT NULL,
   "unit"             varchar,
   PRIMARY KEY ("sensor_id", "measurement_type")

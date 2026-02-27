@@ -43,7 +43,7 @@ Table device.sensor {
 }
 
 Table device.sensor_metric {
-    sensor_id        uuid    [not null, ref: > device.sensor.sensor_id]
+    sensor_id        uuid    [not null]
     measurement_type varchar [not null, note: 'e.g. temperature, humidity, electric_current']
     unit             varchar [note: 'e.g. °C, %RH, A']
 
@@ -51,3 +51,5 @@ Table device.sensor_metric {
         (sensor_id, measurement_type) [pk]
     }
 }
+
+Ref: device.sensor_metric.sensor_id > device.sensor.sensor_id [delete: cascade]
