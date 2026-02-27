@@ -48,11 +48,11 @@ export function AddDevice(props: AddDeviceProps) {
     }
 
     props.onAdd({
-      name: values["Name"] ?? "",
-      euid: values["DeviceEUI"] ?? "",
-      machine: values["Machine"] ?? "",
-      appKey: values["Application key"] ?? "",
-      devProf: values["Device profile"] ?? "",
+      name: values["Name"],
+      euid: values["DeviceEUI"],
+      machine: values["Machine"],
+      appKey: values["Application key"],
+      devProf: values["Device profile"],
     });
 
     setFillError(false);
@@ -131,12 +131,12 @@ export function AddDevice(props: AddDeviceProps) {
                   }}
                   fullWidth
                   key={option}
-                  placeholder={inputLength[option] ?? ""}
+                  placeholder={inputLength[option]}
                   helperText={
-                    lengthErrors[option] ? (inputLengthError[option] ?? "") : ""
+                    lengthErrors[option] ? inputLengthError[option] : ""
                   }
                   error={!!lengthErrors[option]}
-                  value={values[option] ?? ""}
+                  value={values[option]}
                   onChange={(e) => {
                     let value = e.target.value;
 
@@ -176,7 +176,7 @@ export function AddDevice(props: AddDeviceProps) {
                 }}
                 fullWidth
                 key={option}
-                value={values[option] ?? ""}
+                value={values[option]}
                 displayEmpty
                 onChange={(e) =>
                   setValues((prev) => ({
