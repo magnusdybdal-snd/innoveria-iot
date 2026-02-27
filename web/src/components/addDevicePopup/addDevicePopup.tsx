@@ -35,6 +35,14 @@ export function AddDevice(props: AddDeviceProps) {
   };
 
   const handleSafeClose = () => {
+    const allFilled = addOptions.every(
+      (option) => (values[option] ?? "").trim() != "",
+    );
+
+    const newLengthErrors = {
+      DeviceEUI: (values["DeviceEUI"] ?? "").length != 16,
+      "Application key": (values["Application key"] ?? "").length != 32,
+    };
     if (!allFilled) {
       setFillError(true);
       return;
@@ -70,15 +78,6 @@ export function AddDevice(props: AddDeviceProps) {
     "OutdoorWeatherNode",
     "GPSTrackerLowPower",
   ];
-
-  const allFilled = addOptions.every(
-    (option) => (values[option] ?? "").trim() != "",
-  );
-
-  const newLengthErrors = {
-    DeviceEUI: (values["DeviceEUI"] ?? "").length != 16,
-    "Application key": (values["Application key"] ?? "").length != 32,
-  };
 
   const inputLength: Record<string, string> = {
     DeviceEUI: "16 characters",
