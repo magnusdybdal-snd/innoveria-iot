@@ -1,15 +1,16 @@
 package mappers
 
 import (
-	"innoveria-iot/device-service/internal/chirpstackrest"
-	"innoveria-iot/device-service/internal/domain"
 	"time"
+
+	"innoveria-iot/device-service/internal/chirpstackrest/dto"
+	"innoveria-iot/device-service/internal/domain"
 )
 
 /*
 Sensor mapping
 */
-func MapChirpstackSensor(from chirpstackrest.ChirpstackSensor) domain.Sensor {
+func MapChirpstackSensor(from dto.ChirpstackSensor) domain.Sensor {
 	return domain.Sensor{
 		Id:         from.DeviceEUI, // TODO: Change this to internal database id
 		Name:       from.Name,

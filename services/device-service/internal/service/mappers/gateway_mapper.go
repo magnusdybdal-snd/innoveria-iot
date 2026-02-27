@@ -1,16 +1,17 @@
 package mappers
 
 import (
-	"innoveria-iot/device-service/internal/chirpstackrest"
-	"innoveria-iot/device-service/internal/domain"
 	"time"
+
+	"innoveria-iot/device-service/internal/chirpstackrest/dto"
+	"innoveria-iot/device-service/internal/domain"
 )
 
 /*
 	Gateway mapping
 */
 // Mapping for the chirpstack gateway domain to device service gateway domain
-func MapChirpstackGateway(from chirpstackrest.ChirpstackGateway) domain.Gateway {
+func MapChirpstackGateway(from dto.ChirpstackGateway) domain.Gateway {
 	return domain.Gateway{
 		Id:         from.GatewayEUI, // TODO: Change this to internal database id
 		CompanyId:  from.TenantID,   // TODO: look up company mapping in DB
@@ -23,9 +24,9 @@ func MapChirpstackGateway(from chirpstackrest.ChirpstackGateway) domain.Gateway 
 
 // Mapping for gateway domain to chirpstack post and put requests
 // Tennant id is chirpstacks internal understanding of companies
-func MapCreateChirpstackGateway(from domain.Gateway, chirpstackTennantId string) chirpstackrest.CreateChirpstackGatewayRequest {
-	return chirpstackrest.CreateChirpstackGatewayRequest{
-		CreateGatewayPayload: chirpstackrest.CreateGatewayPayload{
+func MapCreateChirpstackGateway(from domain.Gateway, chirpstackTennantId string) dto.CreateChirpstackGatewayRequest {
+	return dto.CreateChirpstackGatewayRequest{
+		CreateGatewayPayload: dto.CreateGatewayPayload{
 			GatewayEUI: from.GatewayEUI,
 			Name:       from.Name,
 			TenantID:   chirpstackTennantId,

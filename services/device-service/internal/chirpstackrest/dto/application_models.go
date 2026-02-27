@@ -1,4 +1,4 @@
-package chirpstackrest
+package dto
 
 // Chirpstack v4 model for applications
 import "time"

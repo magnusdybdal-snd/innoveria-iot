@@ -1,4 +1,4 @@
-package chirpstackrest
+package dto
 
 import "time"
 
