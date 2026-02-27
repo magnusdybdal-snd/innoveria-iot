@@ -14,7 +14,7 @@ import (
 func mapChirpstackGateway(from chirpstackrest.ChirpstackGateway) domain.Gateway {
 	return domain.Gateway{
 		Id:         from.GatewayEUI, // TODO: Change this to internal database id
-		CompanyId:  "",              // TODO: look up company mapping in DB
+		CompanyId:  from.TenantID,   // TODO: look up company mapping in DB
 		GatewayEUI: from.GatewayEUI,
 		Name:       from.Name,
 		Status:     mapStatus(from.State, from.LastSeenAt),
