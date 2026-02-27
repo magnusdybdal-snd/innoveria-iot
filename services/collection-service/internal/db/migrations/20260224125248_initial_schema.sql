@@ -1,3 +1,4 @@
+-- +goose Up
 CREATE SCHEMA "collection";
 
 CREATE TABLE "collection"."tenant_mapping" (
@@ -28,3 +29,6 @@ COMMENT ON COLUMN "collection"."sensor_measurement"."measurement_id" IS 'Not PK 
 COMMENT ON COLUMN "collection"."sensor_measurement"."device_eui" IS 'Identifies the sensor — matches device.sensor.device_eui';
 COMMENT ON COLUMN "collection"."sensor_measurement"."timestamp" IS 'Hypertable partition key';
 COMMENT ON COLUMN "collection"."sensor_measurement"."company_id" IS 'Mapped from chirpstackTenantId via collection.tenant_mapping at ingest time';
+
+-- +goose Down
+DROP SCHEMA "collection" CASCADE;
