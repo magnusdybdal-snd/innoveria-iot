@@ -36,12 +36,12 @@ export function AddDevice(props: AddDeviceProps) {
 
   const handleSafeClose = () => {
     const allFilled = addOptions.every(
-      (option) => (values[option] ?? "").trim() != "",
+      (option) => (values[option] ?? "").trim() !== "",
     );
 
     const newLengthErrors = {
-      DeviceEUI: (values["DeviceEUI"] ?? "").length != 16,
-      "Application key": (values["Application key"] ?? "").length != 32,
+      DeviceEUI: (values["DeviceEUI"] ?? "").length !== 16,
+      "Application key": (values["Application key"] ?? "").length !== 32,
     };
     if (!allFilled) {
       setFillError(true);
@@ -111,7 +111,7 @@ export function AddDevice(props: AddDeviceProps) {
         <CategoryHeader categories={addOptions} columns={addOptions.length}>
           {addOptions.map((option) => {
             // Textfield for all other than DevProf
-            if (option != "Device profile") {
+            if (option !== "Device profile") {
               return (
                 <TextField
                   sx={{
