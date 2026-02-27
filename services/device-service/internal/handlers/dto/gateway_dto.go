@@ -8,7 +8,7 @@ GET Request
 type GatewayResponse struct {
 	ID         string `json:"id"`
 	CompanyId  string `json:"company_id"`
-	DeviceEUI  string `json:"device_eui"`
+	GatewayEUI string `json:"gateway_eui"`
 	Name       string `json:"name"`
 	Status     int    `json:"status"`
 	LastSeenAt string `json:"lastSeenAt"`

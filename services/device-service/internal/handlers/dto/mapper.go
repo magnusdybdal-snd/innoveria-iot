@@ -29,7 +29,7 @@ func mapGateway(from domain.Gateway) GatewayResponse {
 	return GatewayResponse{
 		ID:         from.Id,
 		CompanyId:  from.CompanyId,
-		DeviceEUI:  from.GatewayEUI,
+		GatewayEUI: from.GatewayEUI,
 		Name:       from.Name,
 		Status:     int(from.Status),
 		LastSeenAt: from.LastSeenAt,
