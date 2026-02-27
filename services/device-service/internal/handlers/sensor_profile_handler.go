@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"innoveria-iot/device-service/internal/domain"
+	"innoveria-iot/device-service/internal/handlers/dto"
 	"innoveria-iot/pkg/json"
 	"net/http"
 )
@@ -17,8 +18,9 @@ func GetAllSensorProfiles(svc domain.SensorProfileService) http.HandlerFunc {
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
 			return
 		}
+		resp := dto.MapSensorProfileDomainToDTO(data)
 
-		if err := json.Encode(w, http.StatusOK, data); err != nil {
+		if err := json.Encode(w, http.StatusOK, resp); err != nil {
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
 			return
 		}

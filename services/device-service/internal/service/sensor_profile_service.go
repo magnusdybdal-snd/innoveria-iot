@@ -5,6 +5,7 @@ import (
 
 	"innoveria-iot/device-service/internal/chirpstackrest"
 	"innoveria-iot/device-service/internal/domain"
+	"innoveria-iot/device-service/internal/service/mappers"
 )
 
 type SensorProfileServiceImpl struct {
@@ -17,8 +18,18 @@ func NewSensorProfileService(cc *chirpstackrest.Client) *SensorProfileServiceImp
 	}
 }
 
+// GetAll returns a list of the domain sensor profiles
 func (s *SensorProfileServiceImpl) GetAll(ctx context.Context) ([]domain.SensorProfile, error) {
-	return nil, nil
+	resp, err := s.cc.GetAllSensorProfiles(ctx)
+	if err != nil {
+		return nil, err
+	}
+	var result []domain.SensorProfile
+	for _, sp := range resp.Result {
+		result = append(result, mappers.MapChirpstackDeviceProfilesToDomain(sp))
+	}
+
+	return result, nil
 }
 
 func (s *SensorProfileServiceImpl) GetOne(ctx context.Context) (domain.SensorProfile, error) {

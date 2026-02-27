@@ -15,7 +15,7 @@ type GatewayResponse struct {
 }
 
 type GatewayListResponse struct {
-	TotalCount int               `json:"totalCount"`
+	TotalCount int               `json:"total_count"`
 	Gateways   []GatewayResponse `json:"gateways"`
 }
 

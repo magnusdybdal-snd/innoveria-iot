@@ -10,6 +10,6 @@ type SensorResponse struct {
 }
 
 type SensorListResponse struct {
-	TotalCount int              `json:"totalCount"`
+	TotalCount int              `json:"total_count"`
 	Sensors    []SensorResponse `json:"sensors"`
 }

@@ -75,3 +75,27 @@ func mapSensors(from domain.Sensor) SensorResponse {
 		LastSeenAt: from.LastSeenAt,
 	}
 }
+
+func MapSensorProfileDomainToDTO(from []domain.SensorProfile) SensorProfileListResponse {
+	tot := len(from)
+	sensorProfiles := make([]SensorProfileResponse, tot)
+
+	for i, sp := range from {
+		sensorProfiles[i] = mapSensorProfiles(sp)
+	}
+	return SensorProfileListResponse{
+		TotalCount:     tot,
+		SensorProfiles: sensorProfiles,
+	}
+}
+
+func mapSensorProfiles(from domain.SensorProfile) SensorProfileResponse {
+	return SensorProfileResponse{
+		Id:         from.Id,
+		Name:       from.Name,
+		Region:     from.Region,
+		MACVersion: from.MACVersion,
+		VendorId:   from.VendorId,
+		VendorName: from.VendorName,
+	}
+}
