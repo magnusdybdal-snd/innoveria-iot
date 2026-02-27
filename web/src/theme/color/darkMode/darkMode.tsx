@@ -3,6 +3,7 @@ import { createTheme } from "@mui/material/styles";
 
 export const DarkMode = createTheme({
   palette: {
+    mode: "dark", // Lets MUI apply dark backgrounds to all surface components by default.
     primary: {
       main: "#ffffff",
       dark: "#131313", // main site background
