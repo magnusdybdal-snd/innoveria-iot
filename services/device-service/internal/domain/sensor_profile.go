@@ -8,7 +8,7 @@ type SensorProfile struct {
 	Name           string
 	Region         string
 	Vendor         string
-	IsCustom       bool // TODO: add a custom device profiles
+	// IsCustom       bool // TODO: add a custom device profiles
 }
 
 type SensorProfileService interface {

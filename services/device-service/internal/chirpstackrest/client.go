@@ -258,3 +258,22 @@ func (c *Client) GetAllSensors(ctx context.Context, limit int, applicationID str
 
 	return resp, nil
 }
+
+func (c *Client) GetAllSensorProfiles(ctx context.Context) (DeviceProfileListResponse, error) {
+	url := fmt.Sprintf("%s/api/device-profiles", c.baseURL)
+	resp, err := httpclient.DoRequest[DeviceProfileListResponse](
+		c.httpClient,
+		ctx,
+		url,
+		http.MethodGet,
+		nil,
+		map[string]string{
+			"Authorization": "Bearer " + c.token,
+		},
+	)
+	if err != nil {
+		return DeviceProfileListResponse{}, handleChirpstackError(err)
+	}
+
+	return resp, nil
+}

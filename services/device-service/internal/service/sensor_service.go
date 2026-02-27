@@ -4,6 +4,7 @@ import (
 	"context"
 	"innoveria-iot/device-service/internal/chirpstackrest"
 	"innoveria-iot/device-service/internal/domain"
+	"innoveria-iot/device-service/internal/service/mappers"
 )
 
 type SensorServiceImpl struct {
@@ -29,7 +30,7 @@ func (s *SensorServiceImpl) GetAll(ctx context.Context) ([]domain.Sensor, error)
 	var result []domain.Sensor
 
 	for _, sensor := range resp.Result {
-		result = append(result, mapChirpstackSensor(sensor))
+		result = append(result, mappers.MapChirpstackSensor(sensor))
 	}
 	// 3. merge to sensor domain
 

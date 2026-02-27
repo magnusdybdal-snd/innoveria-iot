@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"innoveria-iot/device-service/internal/domain"
+	"innoveria-iot/pkg/json"
 	"net/http"
 )
 
@@ -9,6 +10,19 @@ import (
 // This is not checked with authentication so every user can utilize this library
 func GetAllSensorProfiles(svc domain.SensorProfileService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 
+		data, err := svc.GetAll(ctx)
+		if err != nil {
+			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			return
+		}
+
+		if err := json.Encode(w, http.StatusOK, data); err != nil {
+			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			return
+		}
 	}
 }
+
+// TODO: Handle custom device profiles

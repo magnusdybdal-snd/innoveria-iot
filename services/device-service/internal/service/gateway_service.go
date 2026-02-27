@@ -5,6 +5,7 @@ import (
 
 	"innoveria-iot/device-service/internal/chirpstackrest"
 	"innoveria-iot/device-service/internal/domain"
+	"innoveria-iot/device-service/internal/service/mappers"
 )
 
 type GatewayServiceImpl struct {
@@ -22,7 +23,7 @@ func (g *GatewayServiceImpl) Create(ctx context.Context, payload domain.Gateway)
 	// TODO: DB generates the gateway Id, which is not the same as gatewayEUI
 
 	// Sending post request to chirpstack
-	gatewayReq := mapCreateChirpstackGateway(payload, payload.CompanyId) // TODO: Change this to chirpstack tennant id in db
+	gatewayReq := mappers.MapCreateChirpstackGateway(payload, payload.CompanyId) // TODO: Change this to chirpstack tennant id in db
 	// call chirpstack
 	err := g.cc.CreateGateway(ctx, gatewayReq)
 	if err != nil {
@@ -39,7 +40,7 @@ func (g *GatewayServiceImpl) Update(ctx context.Context, gatewayId string, paylo
 	// check database for tennant id (chirpstack tennant id)
 
 	// Chirpstack put request, Chirpstack dont need gatewayID, just gatewayEUI
-	gatewayReq := mapCreateChirpstackGateway(payload, payload.CompanyId) // TODO: Change this to chirpstack tennant id in db
+	gatewayReq := mappers.MapCreateChirpstackGateway(payload, payload.CompanyId) // TODO: Change this to chirpstack tennant id in db
 	err := g.cc.RenameGateway(ctx, gatewayReq)
 	if err != nil {
 		return err
@@ -63,7 +64,7 @@ func (g *GatewayServiceImpl) GetAll(ctx context.Context) ([]domain.Gateway, erro
 	var result []domain.Gateway
 
 	for _, gw := range resp.Result {
-		result = append(result, mapChirpstackGateway(gw))
+		result = append(result, mappers.MapChirpstackGateway(gw))
 	}
 
 	// 3. Merge status and gateway data

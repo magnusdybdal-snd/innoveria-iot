@@ -1,17 +1,16 @@
-package service
+package mappers
 
 import (
-	"time"
-
 	"innoveria-iot/device-service/internal/chirpstackrest"
 	"innoveria-iot/device-service/internal/domain"
+	"time"
 )
 
 /*
 	Gateway mapping
 */
 // Mapping for the chirpstack gateway domain to device service gateway domain
-func mapChirpstackGateway(from chirpstackrest.ChirpstackGateway) domain.Gateway {
+func MapChirpstackGateway(from chirpstackrest.ChirpstackGateway) domain.Gateway {
 	return domain.Gateway{
 		Id:         from.GatewayEUI, // TODO: Change this to internal database id
 		CompanyId:  from.TenantID,   // TODO: look up company mapping in DB
@@ -24,7 +23,7 @@ func mapChirpstackGateway(from chirpstackrest.ChirpstackGateway) domain.Gateway 
 
 // Mapping for gateway domain to chirpstack post and put requests
 // Tennant id is chirpstacks internal understanding of companies
-func mapCreateChirpstackGateway(from domain.Gateway, chirpstackTennantId string) chirpstackrest.CreateChirpstackGatewayRequest {
+func MapCreateChirpstackGateway(from domain.Gateway, chirpstackTennantId string) chirpstackrest.CreateChirpstackGatewayRequest {
 	return chirpstackrest.CreateChirpstackGatewayRequest{
 		CreateGatewayPayload: chirpstackrest.CreateGatewayPayload{
 			GatewayEUI: from.GatewayEUI,
@@ -51,26 +50,4 @@ func mapStatus(status string, lastSeen time.Time) domain.Status {
 		}
 		return domain.StatusOffline
 	}
-}
-
-/*
-Sensor mapping
-*/
-func mapChirpstackSensor(from chirpstackrest.ChirpstackSensor) domain.Sensor {
-	return domain.Sensor{
-		Id:         from.DeviceEUI, // TODO: Change this to internal database id
-		Name:       from.Name,
-		DeviceEUI:  from.DeviceEUI,
-		GatewayEUI: "1234", // TODO: Handle in database
-		Status:     mapStatusSensor(from.LastSeenAt),
-		LastSeenAt: from.LastSeenAt.Format(time.RFC1123),
-	}
-}
-
-// TODO: Find a better way to handle sensor status
-func mapStatusSensor(lastSeen time.Time) domain.Status {
-	if time.Since(lastSeen) < 5*time.Minute {
-		return domain.StatusOnline
-	}
-	return domain.StatusOffline
 }
