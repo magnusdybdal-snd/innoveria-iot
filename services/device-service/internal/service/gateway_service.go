@@ -70,3 +70,16 @@ func (g *GatewayServiceImpl) GetAll(ctx context.Context) ([]domain.Gateway, erro
 
 	return result, nil
 }
+
+func (g *GatewayServiceImpl) Delete(ctx context.Context, gatewayID string) error {
+	// delete from database
+
+	// delete in chirpstack
+	err := g.cc.DeleteGateway(ctx, gatewayID) // TODO: Change this to gateway eui
+	if err != nil {
+		return err
+	}
+
+	// No error return nil
+	return nil
+}

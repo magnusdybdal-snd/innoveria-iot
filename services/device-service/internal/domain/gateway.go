@@ -18,4 +18,5 @@ type GatewayService interface {
 	Create(ctx context.Context, payload Gateway) error
 	Update(ctx context.Context, gatewayId string, payload Gateway) error
 	GetAll(ctx context.Context) ([]Gateway, error)
+	Delete(ctx context.Context, gatewayID string) error
 }

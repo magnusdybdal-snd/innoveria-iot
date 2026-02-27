@@ -214,6 +214,28 @@ func (c *Client) RenameGateway(ctx context.Context, body CreateChirpstackGateway
 	return nil
 }
 
+func (c *Client) DeleteGateway(ctx context.Context, gatewayEUI string) error {
+	url := fmt.Sprintf("%s/api/gateways/%s", c.baseURL, gatewayEUI)
+	resp, err := httpclient.DoRaw(
+		c.httpClient,
+		ctx,
+		url,
+		http.MethodDelete,
+		nil,
+		map[string]string{
+			"Authorization": "Bearer " + c.token,
+		},
+	)
+	if err != nil {
+		return handleChirpstackError(err)
+	}
+
+	if err := resp.Body.Close(); err != nil {
+		return err
+	}
+	return nil
+}
+
 /*
 	Sensor Requests
 */

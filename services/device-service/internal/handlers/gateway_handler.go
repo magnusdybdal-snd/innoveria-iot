@@ -78,3 +78,22 @@ func PutGateway(svc domain.GatewayService) http.HandlerFunc {
 		w.WriteHeader(http.StatusNoContent)
 	}
 }
+
+func DeleteGateway(svc domain.GatewayService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+
+		id := r.PathValue("id")
+		if id == "" {
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("no gateway id found"), "bad request")
+			return
+		}
+
+		if err := svc.Delete(ctx, id); err != nil {
+			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			return
+		}
+
+		w.WriteHeader(http.StatusNoContent)
+	}
+}
