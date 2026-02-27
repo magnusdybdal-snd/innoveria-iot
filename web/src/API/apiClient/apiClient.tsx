@@ -62,6 +62,9 @@ export interface SensorApiResponse {
   name: string;
   status: number;
   machine: string;
+  lastReading: string;
+  appKey: string;
+  devProf: string;
 }
 
 export interface SensorListApiResponse {
