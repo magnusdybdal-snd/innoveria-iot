@@ -19,14 +19,13 @@ if [ -n "$STAGED_GO" ]; then
   echo "$STAGED_GO" | xargs gofmt -w
   echo "$STAGED_GO" | xargs git add
 
-  # Add new Go services here to include them in pre-commit linting.
-  GO_SERVICES="services/api-gateway services/collection-service services/device-service pkg/"
+  # Add new Go services here. pkg/ must be first — services depend on it via replace directive.
+  GO_SERVICES="pkg/ services/api-gateway services/collection-service services/device-service"
 
-  # `go tool golangci-lint` uses the version pinned in go.mod
   for dir in $GO_SERVICES; do
     if [ -d "$dir" ]; then
-      echo "  Linting $dir..."
-      (cd "$dir" && go tool golangci-lint run ./...)
+      echo "  Tidying and linting $dir..."
+      (cd "$dir" && go mod tidy && git add go.mod go.sum 2>/dev/null; go tool golangci-lint run ./...)
     fi
   done
 else
