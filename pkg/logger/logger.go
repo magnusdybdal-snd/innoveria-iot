@@ -10,8 +10,9 @@ import (
 
 // NewLogger configure a slog logger for a specific service
 // env:
-// 	LOG_LEVEL: debug, warn, error, info (default: info)
-// 	LOG_FORMAT: json, text (default: json)
+//
+//	LOG_LEVEL: debug, warn, error, info (default: info)
+//	LOG_FORMAT: json, text (default: json)
 func NewLogger(service string) *slog.Logger {
 	level := parseLevel(env.Get("LOG_LEVEL", "info"))
 	format := strings.ToLower(strings.TrimSpace(env.Get("LOG_FORMAT", "json")))
