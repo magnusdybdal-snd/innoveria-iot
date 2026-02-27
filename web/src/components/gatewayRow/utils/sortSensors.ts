@@ -18,18 +18,25 @@ export function sortSensors(
   if (!key) return sensors;
   return [...sensors].sort((a, b) => {
     let cmp = 0;
-    if (key === "Name") {
-      cmp = a.name.localeCompare(b.name);
-    } else if (key === "Status") {
-      cmp = a.status - b.status;
-    } else if (key === "Machine") {
-      cmp = a.machine.localeCompare(b.machine);
-    } else if (key === "Last reading") {
-      cmp = a.lastReading.localeCompare(b.lastReading);
-    } else if (key === "Application key") {
-      cmp = a.appKey.localeCompare(b.appKey);
-    } else if (key === "Device profile") {
-      cmp = a.devProf.localeCompare(b.devProf);
+    switch (key) {
+      case "Name":
+        cmp = a.name.localeCompare(b.name);
+        break;
+      case "Status":
+        cmp = a.status - b.status;
+        break;
+      case "Machine":
+        cmp = a.machine.localeCompare(b.machine);
+        break;
+      case "Last reading":
+        cmp = a.lastReading.localeCompare(b.lastReading);
+        break;
+      case "Application key":
+        cmp = a.appKey.localeCompare(b.appKey);
+        break;
+      case "Device profile":
+        cmp = a.devProf.localeCompare(b.devProf);
+        break;
     }
     return direction === "asc" ? cmp : -cmp;
   });
