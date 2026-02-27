@@ -4,6 +4,8 @@ ALTER TYPE "device"."device_status"
 
 ALTER TABLE "device"."company_config"
     ADD COLUMN "chirpstack_application_id" varchar UNIQUE NOT NULL;
+ALTER TABLE "device"."company_config"
+    COMMENT ON COLUMN "chirpstack_application_id" IS 'One ChirpStack application per company — created during onboarding';
 
 ALTER TABLE "device"."gateway"
     ADD COLUMN "description" varchar;

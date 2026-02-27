@@ -1,6 +1,6 @@
 CREATE SCHEMA "device";
 
-CREATE TYPE "device"."device_status" AS ENUM (
+CREATE TYPE "device"."device_state" AS ENUM (
   'ACTIVE',
   'INACTIVE'
 );
@@ -8,11 +8,13 @@ CREATE TYPE "device"."device_status" AS ENUM (
 CREATE TABLE "device"."company_config" (
   "company_id"           uuid PRIMARY KEY,
   "chirpstack_tenant_id" varchar UNIQUE NOT NULL,
+  "chirpstack_application_id" varchar UNIQUE NOT NULL,
   "created_at"           timestamptz NOT NULL DEFAULT (now())
 );
 
 COMMENT ON COLUMN "device"."company_config"."company_id" IS 'Same UUID as auth.company — populated during onboarding';
 COMMENT ON COLUMN "device"."company_config"."chirpstack_tenant_id" IS 'Created by Device Service via ChirpStack API';
+COMMENT ON COLUMN "device"."company_config"."chirpstack_application_id" IS 'One ChirpStack application per company — created during onboarding';
 
 CREATE TABLE "device"."gateway" (
   "gateway_id"            uuid PRIMARY KEY DEFAULT (gen_random_uuid()),
@@ -20,7 +22,8 @@ CREATE TABLE "device"."gateway" (
   "gateway_eui"           varchar UNIQUE NOT NULL,
   "chirpstack_gateway_id" varchar,
   "name"                  varchar NOT NULL,
-  "status"                device.device_status NOT NULL DEFAULT 'ACTIVE',
+  "state"                device.device_state NOT NULL DEFAULT 'ACTIVE',
+  "description"           varchar,
   "factory_area_id"       uuid,
   "created_at"            timestamptz NOT NULL DEFAULT (now()),
   "updated_at"            timestamptz NOT NULL DEFAULT (now())
@@ -39,7 +42,8 @@ CREATE TABLE "device"."sensor" (
   "production_resource_id" uuid,
   "factory_area_id"       uuid,
   "name"                  varchar NOT NULL,
-  "status"                device.device_status NOT NULL DEFAULT 'ACTIVE',
+  "state"                device.device_state NOT NULL DEFAULT 'ACTIVE',
+  "description"           varchar,
   "created_at"            timestamptz NOT NULL DEFAULT (now()),
   "updated_at"            timestamptz NOT NULL DEFAULT (now())
 );
