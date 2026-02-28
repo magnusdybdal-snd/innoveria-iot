@@ -1,9 +1,9 @@
-# CI for Go services (api-gateway, collection-service)
+# CI for Go services and shared pkg/
 variables:
   # golangci-lint version must match the version in each service's go.mod
   GOLANGCI_LINT_VERSION: "v2.9.0"
-  # All Go services to lint and build — seperate by space.
-  GO_SERVICES: "services/api-gateway services/collection-service services/device-service"
+  # pkg/ must be first — services depend on it via replace directive.
+  GO_SERVICES: "pkg/ services/api-gateway services/collection-service services/device-service"
 
 go-check:
   stage: check
@@ -17,8 +17,9 @@ go-check:
   script:
     - |
       for dir in $GO_SERVICES; do
-        echo "Linting $dir..."
+        echo "Tidying and linting $dir..."
         cd "$CI_PROJECT_DIR/$dir"
+        go mod tidy
         golangci-lint run ./...
       done
   rules:
