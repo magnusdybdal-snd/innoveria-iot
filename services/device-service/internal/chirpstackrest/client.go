@@ -74,7 +74,7 @@ func (c *Client) GetAllApplication(ctx context.Context, limit int) (dto.Chirpsta
 }
 
 // Creates a new application in chirpstack
-func (c *Client) CreateApplication(ctx context.Context, body dto.ChirpstackApplicationList) error {
+func (c *Client) CreateApplication(ctx context.Context, body dto.CreateChirpstackApplication) error {
 	url := fmt.Sprintf("%s/api/applications", c.baseURL)
 
 	resp, err := httpclient.DoRaw(

@@ -25,11 +25,13 @@ func NewRouter(
 
 	// Sensor Routes:
 	mux.HandleFunc("GET "+SENSOR_ROUTE, handlers.GetSensors(sensorSvc))
+	mux.HandleFunc("POST "+SENSOR_ROUTE_ID, handlers.GetSensors(sensorSvc))
 
 	// Sensor profile routes:
 	mux.HandleFunc("GET "+SENSOR_PROFILE_ROUTE, handlers.GetAllSensorProfiles(sensorProfileSvc))
 
 	// SensorGroup routes
+	mux.HandleFunc("POST "+SENSOR_GROUP_ROUTE, handlers.PostSensorGroup(sensorGroupSvc))
 
 	return mux
 }

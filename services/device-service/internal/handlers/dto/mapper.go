@@ -99,3 +99,12 @@ func mapSensorProfiles(from domain.SensorProfile) SensorProfileResponse {
 		VendorName: from.VendorName,
 	}
 }
+
+func MapSensorGroupToDomain(from CreateSensorGroup) domain.SensorGroup {
+	return domain.SensorGroup{
+		Id:        "", // converted in chirpstack
+		Name:      from.Name,
+		CompanyId: from.CompanyId, // TODO: Change this to tennant id
+		Location:  "",             // TODO: handle this somewhere
+	}
+}

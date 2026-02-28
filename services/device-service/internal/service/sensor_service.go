@@ -36,3 +36,7 @@ func (s *SensorServiceImpl) GetAll(ctx context.Context) ([]domain.Sensor, error)
 
 	return result, nil
 }
+
+func (s *SensorServiceImpl) Create(ctx context.Context) error {
+	return nil
+}

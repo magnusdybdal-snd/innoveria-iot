@@ -2,6 +2,9 @@ package domain
 
 import "context"
 
+// SensorProfile is the LoRaWAN device profile template
+// used when register sensors in the network
+// It defines the network configuration for a specific hardware model
 type SensorProfile struct {
 	Id         string // device profile id
 	Name       string

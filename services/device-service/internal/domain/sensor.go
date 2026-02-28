@@ -17,4 +17,5 @@ type Sensor struct {
 
 type SensorService interface {
 	GetAll(ctx context.Context) ([]Sensor, error)
+	Create(ctx context.Context) error
 }

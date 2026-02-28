@@ -22,7 +22,6 @@ type CreateChirpstackApplication struct {
 }
 
 type ApplicationPayload struct {
-	ID          string            `json:"id"`
 	Name        string            `json:"name"`
 	TenantID    string            `json:"tenantId"`
 	Description string            `json:"description,omitempty"` // Not using description
