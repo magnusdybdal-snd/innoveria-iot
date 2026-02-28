@@ -30,6 +30,8 @@ func PostSensorGroup(svc domain.SensorGroupService) http.HandlerFunc {
 	}
 }
 
+// TODO: fix issues with length parameter
+// Seems to be some problems with how the tennant system is working here
 func GetAllSensorGroups(svc domain.SensorGroupService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
