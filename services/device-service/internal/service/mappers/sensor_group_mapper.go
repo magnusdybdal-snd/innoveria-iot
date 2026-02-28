@@ -14,3 +14,12 @@ func MapCreateChirpstackApplication(from domain.SensorGroup) dto.CreateChirpstac
 		},
 	}
 }
+
+func MapChirpstackSensorGroupDtoToDomain(from dto.ChirpstackApplication) domain.SensorGroup {
+	return domain.SensorGroup{
+		Id:        from.ID,
+		Name:      from.Name,
+		CompanyId: "", // TODO: Fill from databse
+		Location:  "", // Handle elsewhere
+	}
+}

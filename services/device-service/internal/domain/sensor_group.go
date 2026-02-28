@@ -15,6 +15,6 @@ type SensorGroup struct {
 type SensorGroupService interface {
 	Create(ctx context.Context, payload SensorGroup) error
 	Update(ctx context.Context, sensorGroupId string, payload SensorGroup) error
-	GetAll(ctx context.Context) ([]SensorGroup, error)
+	GetAll(ctx context.Context, limit int) ([]SensorGroup, error)
 	Delete(ctx context.Context, sensorGroupId string) error
 }

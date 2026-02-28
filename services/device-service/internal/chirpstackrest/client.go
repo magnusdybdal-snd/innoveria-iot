@@ -28,7 +28,7 @@ func New(cfg config.Config) *Client {
 // TODO: Add tennant authentication, so add tennantID as query
 
 /*
-	Application requests (factory area)
+	Application requests (sensor groups)
 */
 
 // Returns all availabe application (factory areas)

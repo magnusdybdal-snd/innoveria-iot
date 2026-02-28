@@ -17,7 +17,7 @@ func GetAllSensorProfiles(svc domain.SensorProfileService) http.HandlerFunc {
 		limitStr := r.URL.Query().Get("limit")
 		limit, err := strconv.Atoi(limitStr)
 		if err != nil {
-			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			json.HandleError(w, http.StatusBadRequest, err, "bad request")
 			return
 		}
 

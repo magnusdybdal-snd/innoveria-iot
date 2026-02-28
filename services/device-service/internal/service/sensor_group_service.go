@@ -35,8 +35,18 @@ func (d *SensorGroupServiceImpl) Update(ctx context.Context, deviceGroupId strin
 }
 
 // TODO
-func (d *SensorGroupServiceImpl) GetAll(ctx context.Context) ([]domain.SensorGroup, error) {
-	return nil, nil
+func (d *SensorGroupServiceImpl) GetAll(ctx context.Context, limit int) ([]domain.SensorGroup, error) {
+	resp, err := d.cc.GetAllApplication(ctx, limit)
+	if err != nil {
+		return nil, err
+	}
+
+	var result []domain.SensorGroup
+	for _, sg := range resp.Result {
+		result = append(result, mappers.MapChirpstackSensorGroupDtoToDomain(sg))
+	}
+
+	return result, nil
 }
 
 // TODO
