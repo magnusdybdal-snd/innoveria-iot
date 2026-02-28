@@ -36,13 +36,14 @@ COMMENT ON COLUMN "device"."gateway"."factory_area_id" IS 'References auth.facto
 CREATE TABLE "device"."sensor" (
   "sensor_id"             uuid PRIMARY KEY DEFAULT (gen_random_uuid()),
   "company_id"            uuid NOT NULL,
-  "gateway_id"            uuid REFERENCES "device"."gateway"("gateway_id"),
+  "gateway_id"            uuid,
   "device_eui"            varchar UNIQUE NOT NULL,
   "chirpstack_device_id"  varchar,
   "production_resource_id" uuid,
   "factory_area_id"       uuid,
   "name"                  varchar NOT NULL,
-  "state"                device.device_state NOT NULL DEFAULT 'ACTIVE',
+  "chirpstack_profile_id" varchar,
+  "state"                 device.device_state NOT NULL DEFAULT 'ACTIVE',
   "description"           varchar,
   "created_at"            timestamptz NOT NULL DEFAULT (now()),
   "updated_at"            timestamptz NOT NULL DEFAULT (now())
@@ -52,6 +53,7 @@ COMMENT ON COLUMN "device"."sensor"."company_id" IS 'Tenant isolation — refere
 COMMENT ON COLUMN "device"."sensor"."gateway_id" IS 'Gateway this sensor is administered under — nullable until assigned';
 COMMENT ON COLUMN "device"."sensor"."device_eui" IS 'Shared key with ChirpStack. Bound to sensor hardware';
 COMMENT ON COLUMN "device"."sensor"."chirpstack_device_id" IS 'ChirpStack internal ID for API calls';
+COMMENT ON COLUMN "device"."sensor"."chirpstack_profile_id" IS 'ChirpStack device profile ID — selected during sensor registration';
 COMMENT ON COLUMN "device"."sensor"."production_resource_id" IS 'References erp.production_resource — references the machine sensor
 is installed on';
 COMMENT ON COLUMN "device"."sensor"."factory_area_id" IS 'References auth.factory_area — loose cross-service ref';
