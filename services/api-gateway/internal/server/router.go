@@ -22,6 +22,8 @@ func NewRouter(cfg *config.Config) *http.ServeMux {
 	handlers.RegisterProxyService(mux, DEVICE_ROUTE, "device-service", cfg.DeviceSvcURL, []string{
 		"/gateways",
 		"/sensors",
+		"/sensor-profiles",
+		"/sensor-group",
 	})
 
 	// Collection service
