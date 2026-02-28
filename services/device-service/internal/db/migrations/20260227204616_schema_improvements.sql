@@ -15,6 +15,8 @@ ALTER TABLE "device"."gateway"
     ADD COLUMN "description" varchar;
 ALTER TABLE "device"."gateway"
     RENAME COLUMN "status" TO "state";
+ALTER TABLE "device"."gateway"
+    DROP COLUMN "chirpstack_gateway_id";
 
 -- sensor: add description, rename status to state, add chirpstack profile id.
 ALTER TABLE "device"."sensor"
@@ -23,6 +25,8 @@ ALTER TABLE "device"."sensor"
     RENAME COLUMN "status" TO "state";
 ALTER TABLE "device"."sensor"
     ADD COLUMN "chirpstack_profile_id" varchar;
+ALTER TABLE "device"."sensor"
+    DROP COLUMN "chirpstack_device_id";
 
 COMMENT ON COLUMN "device"."sensor"."chirpstack_profile_id" IS 'The ChirpStack profile ID associated with this sensor, selected during sensor registration';
 
@@ -56,6 +60,9 @@ ALTER TABLE "device"."sensor"
     FOREIGN KEY ("gateway_id")
     REFERENCES "device"."gateway"("gateway_id");
 
+
+ALTER TABLE "device"."sensor"
+    ADD COLUMN "chirpstack_device_id" varchar;
 ALTER TABLE "device"."sensor"
     DROP COLUMN "chirpstack_profile_id";
 ALTER TABLE "device"."sensor"
@@ -63,6 +70,8 @@ ALTER TABLE "device"."sensor"
 ALTER TABLE "device"."sensor"
     DROP COLUMN "description";
 
+ALTER TABLE "device"."gateway"
+    ADD COLUMN "chirpstack_gateway_id" varchar;
 ALTER TABLE "device"."gateway"
     RENAME COLUMN "state" TO "status";
 ALTER TABLE "device"."gateway"
