@@ -1,1 +1,1 @@
-export { SensorInfo } from "./sensorInfo.tsx";
+export { SensorMainInfo, SensorExtraInfo } from "./sensorInfo.tsx";

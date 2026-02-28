@@ -12,28 +12,23 @@ import Typography from "@mui/material/Typography";
 
 import { ActionMenu } from "@/components/actionMenu";
 
-type InfoProps = {
+type MainInfoProps = {
   name: string;
   status: number;
+  lastReading: string;
+};
+
+type ExtraInfoProps = {
   euid: string;
   machine: string;
-  lastReading: string;
   appKey: string;
   devProf: string;
 };
 
 {
-  /*Format for single sensor info*/
+  /*Format for main single sensor info*/
 }
-export function SensorInfo({
-  name,
-  status,
-  euid,
-  machine,
-  lastReading,
-  appKey,
-  devProf,
-}: InfoProps) {
+export function SensorMainInfo({ name, status, lastReading }: MainInfoProps) {
   const theme = useTheme();
   const [currentName, setCurrentName] = useState(name);
   const [editOpen, setEditOpen] = useState(false);
@@ -78,11 +73,7 @@ export function SensorInfo({
         }}
       />
       <Typography>{currentName}</Typography>
-      <Typography>{euid}</Typography>
-      <Typography>{machine}</Typography>
       <Typography>{lastReading}</Typography>
-      <Typography>{appKey}</Typography>
-      <Typography>{devProf}</Typography>
       <ActionMenu items={menuItems} />
       <Dialog open={editOpen} onClose={() => setEditOpen(false)}>
         <DialogTitle>Rename sensor</DialogTitle>
@@ -103,6 +94,25 @@ export function SensorInfo({
           </Button>
         </DialogActions>
       </Dialog>
+    </>
+  );
+}
+
+{
+  /*Format for main single sensor info*/
+}
+export function SensorExtraInfo({
+  euid,
+  machine,
+  appKey,
+  devProf,
+}: ExtraInfoProps) {
+  return (
+    <>
+      <Typography>{euid}</Typography>
+      <Typography>{machine}</Typography>
+      <Typography>{appKey}</Typography>
+      <Typography>{devProf}</Typography>
     </>
   );
 }

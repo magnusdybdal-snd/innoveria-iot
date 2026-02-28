@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 
 import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
 
 import { fetchSensors } from "@/API/fetch/fetchSensors";
 import { AddDevice } from "@/components/addDevicePopup";
@@ -15,18 +14,16 @@ import {
 import { NoDeviceFoundCard } from "@/components/noDeviceFoundCard";
 import { PageContent } from "@/components/pageContent";
 import { PageDivider } from "@/components/pageDivider";
-import { SensorInfo } from "@/components/sensorInfo";
+import { SensorExtraInfo, SensorMainInfo } from "@/components/sensorInfo";
 import { SensorsGenInfo } from "@/components/sensorsGenInfo";
 import { SubPageHeader } from "@/components/subPageHeader";
 import Menu from "@/Menu.tsx";
 import { mockSensors, type Sensor } from "@/mocks/sensors.ts";
 
-const sensorDetails: string[] = [
-  "Status",
-  "Name",
+const sensorMainDetails: string[] = ["Status", "Name", "Last reading"];
+const sensorExtraDetails: string[] = [
   "DeviceEUI",
   "Machine",
-  "Last reading",
   "Application key",
   "Device profile",
 ];
@@ -145,38 +142,86 @@ export default function Sensors() {
         </div>
         <PageDivider />
         <CategoryHeader
-          categories={sensorDetails}
-          columns={sensorDetails.length + 2}
+          categories={sensorMainDetails}
+          columns={sensorMainDetails.length + 2}
           sortableColumns={sortableColumns}
           sortConfig={sortConfig}
           onSort={handleSort}
         >
           {sorted.map((sensor) => (
             <DeviceRow key={sensor.id}>
-              <SensorInfo
+              <SensorMainInfo
                 name={sensor.name}
                 status={sensor.status}
-                euid={sensor.euid}
-                machine={sensor.machine}
                 lastReading={sensor.lastReading}
-                appKey={sensor.appKey}
-                devProf={sensor.devProf}
               />
+              <Button
+                onClick={() => setShow((prev) => !prev)}
+                sx={{
+                  backgroundColor: "primary.main",
+                  color: "primary.dark",
+                  "&:hover": { backgroundColor: "primary.main" },
+                  borderRadius: 2,
+                  textTransform: "none",
+                  fontSize: 20,
+                }}
+              >
+                Expand
+              </Button>
+              {show && (
+                <CategoryHeader
+                  categories={sensorExtraDetails}
+                  columns={sensorExtraDetails.length}
+                  sortableColumns={sortableColumns}
+                  sortConfig={sortConfig}
+                  onSort={handleSort}
+                >
+                  <SensorExtraInfo
+                    euid={sensor.euid}
+                    machine={sensor.machine}
+                    appKey={sensor.appKey}
+                    devProf={sensor.devProf}
+                  />
+                </CategoryHeader>
+              )}
             </DeviceRow>
           ))}
           {sortedMock.map((sensor) => (
             <DeviceRow key={sensor.id}>
-              <SensorInfo
+              <SensorMainInfo
                 name={sensor.name}
                 status={sensor.status}
-                euid={sensor.euid}
-                machine={sensor.machine}
                 lastReading={sensor.lastReading}
-                appKey={sensor.appKey}
-                devProf={sensor.devProf}
               />
-              <button onClick={() => setShow((prev) => !prev)}>Expand</button>
-              {show && <Typography>This is your component</Typography>}
+              <Button
+                onClick={() => setShow((prev) => !prev)}
+                sx={{
+                  backgroundColor: "primary.main",
+                  color: "primary.dark",
+                  "&:hover": { backgroundColor: "primary.main" },
+                  borderRadius: 2,
+                  textTransform: "none",
+                  fontSize: 20,
+                }}
+              >
+                Expand
+              </Button>
+              {show && (
+                <CategoryHeader
+                  categories={sensorExtraDetails}
+                  columns={sensorExtraDetails.length}
+                  sortableColumns={sortableColumns}
+                  sortConfig={sortConfig}
+                  onSort={handleSort}
+                >
+                  <SensorExtraInfo
+                    euid={sensor.euid}
+                    machine={sensor.machine}
+                    appKey={sensor.appKey}
+                    devProf={sensor.devProf}
+                  />
+                </CategoryHeader>
+              )}
             </DeviceRow>
           ))}
         </CategoryHeader>
