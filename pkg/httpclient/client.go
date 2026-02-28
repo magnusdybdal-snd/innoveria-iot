@@ -51,7 +51,7 @@ func DoRequest[T any](
 	if err != nil {
 		return zero, fmt.Errorf("error doing the request: %w", err)
 	}
-	defer resp.Body.Close()
+	defer resp.Body.Close() //nolint:errcheck // TODO(vinjar): handle or wrap Body.Close error properly
 
 	// error handling for status codes
 	if resp.StatusCode >= http.StatusBadRequest {
