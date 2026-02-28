@@ -22,9 +22,6 @@ export function DeviceRow({ children, onClick }: DeviceRowProps) {
         marginTop: 1,
         marginBottom: 1,
 
-        cursor: onClick ? "pointer" : "default",
-        transition: "background-color 0.15s ease",
-
         "&:hover": onClick ? { backgroundColor: "primary.dark" } : undefined,
       }}
     >

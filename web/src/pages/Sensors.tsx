@@ -162,13 +162,15 @@ export default function Sensors() {
             </DeviceRow>
           ))}
           {sortedMock.map((sensor) => (
-            <DeviceRow key={sensor.id} onClick={() => handleRowClick(sensor)}>
-              <SensorMainInfo
-                name={sensor.name}
-                status={sensor.status}
-                lastReading={sensor.lastReading}
-              />
-            </DeviceRow>
+            <>
+              <DeviceRow key={sensor.id} onClick={() => handleRowClick(sensor)}>
+                <SensorMainInfo
+                  name={sensor.name}
+                  status={sensor.status}
+                  lastReading={sensor.lastReading}
+                />
+              </DeviceRow>
+            </>
           ))}
         </CategoryHeader>
         {selectedSensor && (

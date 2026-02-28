@@ -82,9 +82,9 @@ export function SensorAllInfoPopUp(props: AddDeviceProps) {
   const sensorAllDetails: string[] = [
     "Status",
     "Name",
-    "Last reading",
     "DeviceEUI",
     "Machine",
+    "Last reading",
     "Application key",
     "Device profile",
   ];
