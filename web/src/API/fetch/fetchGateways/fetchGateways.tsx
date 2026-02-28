@@ -15,6 +15,7 @@ export const fetchGateways = async (): Promise<Gateway[]> => {
 
     return data.gateways.map((gw) => ({
       id: gw.id,
+      company_id: gw.company_id,
       name: gw.name,
       status: gw.status,
       euid: gw.device_eui,
