@@ -29,13 +29,7 @@ const addSensorDetails: string[] = [
   "Application key",
   "Device profile",
 ];
-const sortableColumns: SensorSortKey[] = [
-  "Status",
-  "Name",
-  "Machine",
-  "Last reading",
-  "Device profile",
-];
+const sortableColumns: SensorSortKey[] = ["Status", "Name", "Last reading"];
 type NewSensor = Omit<Sensor, "id" | "status" | "lastReading">;
 
 export default function Sensors() {
@@ -153,7 +147,7 @@ export default function Sensors() {
           onSort={handleSort}
         >
           {sorted.map((sensor) => (
-            <DeviceRow key={sensor.id} onClick={() => handleRowClick(sensor)}>
+            <DeviceRow key={sensor.id}>
               <SensorMainInfo
                 name={sensor.name}
                 status={sensor.status}
@@ -163,16 +157,14 @@ export default function Sensors() {
             </DeviceRow>
           ))}
           {sortedMock.map((sensor) => (
-            <>
-              <DeviceRow key={sensor.id}>
-                <SensorMainInfo
-                  name={sensor.name}
-                  status={sensor.status}
-                  lastReading={sensor.lastReading}
-                  onClick={() => handleRowClick(sensor)}
-                />
-              </DeviceRow>
-            </>
+            <DeviceRow key={sensor.id}>
+              <SensorMainInfo
+                name={sensor.name}
+                status={sensor.status}
+                lastReading={sensor.lastReading}
+                onClick={() => handleRowClick(sensor)}
+              />
+            </DeviceRow>
           ))}
         </CategoryHeader>
         {selectedSensor && (
