@@ -20,5 +20,5 @@ const (
 	SENSOR_PROFILE_ROUTE_ID = DEVICE_ROUTE + "/sensor-profiles/{id}"
 
 	// Sensor Group routes
-	SENSOR_GROUP_ROUTE = DEVICE_ROUTE + "/sensor-group"
+	SENSOR_GROUP_ROUTE = DEVICE_ROUTE + "/sensor-groups"
 )

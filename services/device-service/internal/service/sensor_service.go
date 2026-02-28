@@ -19,6 +19,8 @@ func NewSensorService(cc *chirpstackrest.Client) *SensorServiceImpl {
 
 func (s *SensorServiceImpl) GetAll(ctx context.Context) ([]domain.Sensor, error) {
 	// 1. get sensor meta data from database
+
+	// TODO: fix this when tennant system is working
 	limit := 1
 	applicationId := ""
 

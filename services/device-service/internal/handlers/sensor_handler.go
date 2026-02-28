@@ -30,7 +30,7 @@ func GetSensors(svc domain.SensorService) http.HandlerFunc {
 	}
 }
 
-func PostSensor(svc domain.Sensor) http.HandlerFunc {
+func PostSensor(svc domain.SensorService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		_ = r.Context()
 

@@ -32,6 +32,8 @@ func (s *SensorProfileServiceImpl) GetAll(ctx context.Context, limit int) ([]dom
 	return result, nil
 }
 
+// TODO: fix id parameter
+// has no handler as of yet
 func (s *SensorProfileServiceImpl) GetOne(ctx context.Context) (domain.SensorProfile, error) {
 	return domain.SensorProfile{}, nil
 }

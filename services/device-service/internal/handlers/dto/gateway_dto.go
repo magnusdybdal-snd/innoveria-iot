@@ -11,7 +11,7 @@ type GatewayResponse struct {
 	GatewayEUI string `json:"gateway_eui"`
 	Name       string `json:"name"`
 	Status     int    `json:"status"`
-	LastSeenAt string `json:"lastSeenAt"`
+	LastSeenAt string `json:"last_seen_at"`
 }
 
 type GatewayListResponse struct {
