@@ -41,9 +41,10 @@ func Run() error {
 	gatewaySvc := service.NewGatewayService(chirpstackClient)
 	sensorSvc := service.NewSensorService(chirpstackClient)
 	sensorProfileSvc := service.NewSensorProfileService(chirpstackClient)
+	sensorGroupService := service.NewDeviceGroupService(chirpstackClient)
 
 	// Setting up mux and http server
-	mux := NewRouter(gatewaySvc, sensorSvc, sensorProfileSvc)
+	mux := NewRouter(gatewaySvc, sensorSvc, sensorProfileSvc, sensorGroupService)
 	server := &http.Server{
 		Addr:              cfg.Addr,
 		Handler:           mux,
