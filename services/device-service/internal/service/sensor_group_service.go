@@ -28,13 +28,6 @@ func (d *SensorGroupServiceImpl) Create(ctx context.Context, payload domain.Sens
 	return nil
 }
 
-// These are not important for mvp
-// TODO
-func (d *SensorGroupServiceImpl) Update(ctx context.Context, deviceGroupId string, payload domain.SensorGroup) error {
-	return nil
-}
-
-// TODO
 func (d *SensorGroupServiceImpl) GetAll(ctx context.Context, limit int) ([]domain.SensorGroup, error) {
 	resp, err := d.cc.GetAllApplication(ctx, limit)
 	if err != nil {
@@ -47,6 +40,12 @@ func (d *SensorGroupServiceImpl) GetAll(ctx context.Context, limit int) ([]domai
 	}
 
 	return result, nil
+}
+
+// These are not important for mvp
+// TODO
+func (d *SensorGroupServiceImpl) Update(ctx context.Context, deviceGroupId string, payload domain.SensorGroup) error {
+	return nil
 }
 
 // TODO
