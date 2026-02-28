@@ -147,7 +147,7 @@ export default function Sensors() {
         <PageDivider />
         <CategoryHeader
           categories={sensorMainDetails}
-          columns={sensorMainDetails.length + 1}
+          columns={sensorMainDetails.length + 2}
           sortableColumns={sortableColumns}
           sortConfig={sortConfig}
           onSort={handleSort}
@@ -158,16 +158,18 @@ export default function Sensors() {
                 name={sensor.name}
                 status={sensor.status}
                 lastReading={sensor.lastReading}
+                onClick={() => handleRowClick(sensor)}
               />
             </DeviceRow>
           ))}
           {sortedMock.map((sensor) => (
             <>
-              <DeviceRow key={sensor.id} onClick={() => handleRowClick(sensor)}>
+              <DeviceRow key={sensor.id}>
                 <SensorMainInfo
                   name={sensor.name}
                   status={sensor.status}
                   lastReading={sensor.lastReading}
+                  onClick={() => handleRowClick(sensor)}
                 />
               </DeviceRow>
             </>

@@ -16,12 +16,18 @@ type InfoMainProps = {
   name: string;
   status: number;
   lastReading: string;
+  onClick: () => void;
 };
 
 {
   /*Format for main single sensor info*/
 }
-export function SensorMainInfo({ name, status, lastReading }: InfoMainProps) {
+export function SensorMainInfo({
+  name,
+  status,
+  lastReading,
+  onClick,
+}: InfoMainProps) {
   const theme = useTheme();
   const [currentName, setCurrentName] = useState(name);
   const [editOpen, setEditOpen] = useState(false);
@@ -67,6 +73,21 @@ export function SensorMainInfo({ name, status, lastReading }: InfoMainProps) {
       />
       <Typography>{currentName}</Typography>
       <Typography>{lastReading}</Typography>
+      <Button
+        variant="outlined"
+        sx={{
+          backgroundColor: "primary.main",
+          color: "primary.dark",
+          "&:hover": { backgroundColor: "primary.main" },
+          borderRadius: 2,
+          textTransform: "none",
+          fontSize: 15,
+          marginX: 7,
+        }}
+        onClick={onClick}
+      >
+        Extra sensor info
+      </Button>
       <ActionMenu items={menuItems} />
       <Dialog open={editOpen} onClose={() => setEditOpen(false)}>
         <DialogTitle>Rename sensor</DialogTitle>

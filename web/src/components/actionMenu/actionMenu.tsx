@@ -7,7 +7,6 @@ import MenuItem from "@mui/material/MenuItem";
 
 export type ActionMenuItem = {
   label: string;
-  onClick: () => void;
   disabled?: boolean;
 };
 
@@ -61,14 +60,7 @@ export function ActionMenu({ items, icon }: ActionMenuProps) {
         }}
       >
         {items.map((item) => (
-          <MenuItem
-            key={item.label}
-            disabled={item.disabled}
-            onClick={() => {
-              item.onClick();
-              handleClose();
-            }}
-          >
+          <MenuItem key={item.label} disabled={item.disabled}>
             {item.label}
           </MenuItem>
         ))}
