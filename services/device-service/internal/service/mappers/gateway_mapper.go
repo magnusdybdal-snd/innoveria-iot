@@ -1,9 +1,9 @@
-package service
+package mappers
 
 import (
 	"time"
 
-	"innoveria-iot/device-service/internal/chirpstackrest"
+	"innoveria-iot/device-service/internal/chirpstackrest/dto"
 	"innoveria-iot/device-service/internal/domain"
 )
 
@@ -11,13 +11,26 @@ import (
 	Gateway mapping
 */
 // Mapping for the chirpstack gateway domain to device service gateway domain
-func mapGateway(from chirpstackrest.ChirpstackGateway) domain.Gateway {
+func MapChirpstackGateway(from dto.ChirpstackGateway) domain.Gateway {
 	return domain.Gateway{
 		Id:         from.GatewayEUI, // TODO: Change this to internal database id
-		DeviceEUI:  from.GatewayEUI,
+		CompanyId:  from.TenantID,   // TODO: look up company mapping in DB
+		GatewayEUI: from.GatewayEUI,
 		Name:       from.Name,
 		Status:     mapStatus(from.State, from.LastSeenAt),
 		LastSeenAt: from.LastSeenAt.Format(time.RFC1123),
+	}
+}
+
+// Mapping for gateway domain to chirpstack post and put requests
+// Tennant id is chirpstacks internal understanding of companies
+func MapCreateChirpstackGateway(from domain.Gateway, chirpstackTennantId string) dto.CreateChirpstackGatewayRequest {
+	return dto.CreateChirpstackGatewayRequest{
+		CreateGatewayPayload: dto.CreateGatewayPayload{
+			GatewayEUI: from.GatewayEUI,
+			Name:       from.Name,
+			TenantID:   chirpstackTennantId,
+		},
 	}
 }
 
@@ -38,26 +51,4 @@ func mapStatus(status string, lastSeen time.Time) domain.Status {
 		}
 		return domain.StatusOffline
 	}
-}
-
-/*
-Sensor mapping
-*/
-func mapSensor(from chirpstackrest.ChirpstackSensor) domain.Sensor {
-	return domain.Sensor{
-		Id:         from.DeviceEUI, // TODO: Change this to internal database id
-		Name:       from.Name,
-		DeviceEUI:  from.DeviceEUI,
-		GatewayEUI: "1234", // TODO: Handle in database
-		Status:     mapStatusSensor(from.LastSeenAt),
-		LastSeenAt: from.LastSeenAt.Format(time.RFC1123),
-	}
-}
-
-// TODO: Find a better way to handle sensor status
-func mapStatusSensor(lastSeen time.Time) domain.Status {
-	if time.Since(lastSeen) < 5*time.Minute {
-		return domain.StatusOnline
-	}
-	return domain.StatusOffline
 }

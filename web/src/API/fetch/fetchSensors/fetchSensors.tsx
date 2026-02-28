@@ -19,6 +19,9 @@ export const fetchSensors = async (): Promise<Sensor[]> => {
       status: sensor.status,
       euid: sensor.device_eui,
       machine: sensor.machine,
+      lastReading: sensor.lastReading,
+      appKey: sensor.appKey,
+      devProf: sensor.devProf,
     }));
   } catch (error) {
     console.error("Failed to fetch sensors:", error);

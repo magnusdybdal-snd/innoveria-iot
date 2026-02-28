@@ -5,6 +5,12 @@ import (
 )
 
 // Domain to dto mapping. So the response has the json tag and shows the total count
+
+/*
+	Gateway mapping
+*/
+
+// Gateway Domain -> DTO
 func MapGatewayDomainToDTO(from []domain.Gateway) GatewayListResponse {
 	tot := len(from)
 	gateways := make([]GatewayResponse, tot)
@@ -22,13 +28,29 @@ func MapGatewayDomainToDTO(from []domain.Gateway) GatewayListResponse {
 func mapGateway(from domain.Gateway) GatewayResponse {
 	return GatewayResponse{
 		ID:         from.Id,
-		DeviceEUI:  from.DeviceEUI,
+		CompanyId:  from.CompanyId,
+		GatewayEUI: from.GatewayEUI,
 		Name:       from.Name,
 		Status:     int(from.Status),
 		LastSeenAt: from.LastSeenAt,
 	}
 }
 
+// Post requests Gateway DTO -> domain
+func MapGatewayDTOToDomain(from CreateGatewayRequest) domain.Gateway {
+	return domain.Gateway{
+		Id:         "", // converted later in db
+		CompanyId:  from.CompanyId,
+		GatewayEUI: from.GatewayEUI,
+		Name:       from.Name,
+		Status:     domain.StatusNeverSeen,
+		LastSeenAt: "", // converted later after chirpstack
+	}
+}
+
+/*
+Sensors mapping
+*/
 func MapSensorDomainToDTO(from []domain.Sensor) SensorListResponse {
 	tot := len(from)
 	sensors := make([]SensorResponse, tot)
@@ -51,5 +73,67 @@ func mapSensors(from domain.Sensor) SensorResponse {
 		GatewayEUI: from.GatewayEUI,
 		Status:     int(from.Status),
 		LastSeenAt: from.LastSeenAt,
+	}
+}
+
+/*
+Sensor profiles
+*/
+func MapSensorProfileDomainToDTO(from []domain.SensorProfile) SensorProfileListResponse {
+	tot := len(from)
+	sensorProfiles := make([]SensorProfileResponse, tot)
+
+	for i, sp := range from {
+		sensorProfiles[i] = mapSensorProfiles(sp)
+	}
+	return SensorProfileListResponse{
+		TotalCount:     tot,
+		SensorProfiles: sensorProfiles,
+	}
+}
+
+func mapSensorProfiles(from domain.SensorProfile) SensorProfileResponse {
+	return SensorProfileResponse{
+		Id:         from.Id,
+		Name:       from.Name,
+		Region:     from.Region,
+		MACVersion: from.MACVersion,
+		VendorId:   from.VendorId,
+		VendorName: from.VendorName,
+	}
+}
+
+/*
+Sensor group
+*/
+func MapSensorGroupToDomain(from CreateSensorGroup) domain.SensorGroup {
+	return domain.SensorGroup{
+		Id:        "", // converted in chirpstack
+		Name:      from.Name,
+		CompanyId: from.CompanyId, // TODO: Change this to tennant id
+		Location:  "",             // TODO: handle this somewhere
+	}
+}
+
+func MapSensorGroupToDTO(from []domain.SensorGroup) SensorGroupListResponse {
+	tot := len(from)
+
+	sensorGroups := make([]SensorGroupResponse, tot)
+
+	for i, sg := range from {
+		sensorGroups[i] = mapSensorGroup(sg)
+	}
+	return SensorGroupListResponse{
+		TotalCount:   tot,
+		SensorGroups: sensorGroups,
+	}
+}
+
+func mapSensorGroup(from domain.SensorGroup) SensorGroupResponse {
+	return SensorGroupResponse{
+		Id:        from.Id,
+		Name:      from.Name,
+		CompanyId: from.CompanyId,
+		Location:  from.Location,
 	}
 }

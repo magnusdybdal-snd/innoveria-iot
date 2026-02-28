@@ -32,6 +32,7 @@ export const apiRequest = async <T,>(
   return response.data;
 };
 
+// TODO: move ALL data shapes to their own layer (issue #106)
 // Data shape
 export interface Joke {
   categories: [];
@@ -45,14 +46,15 @@ export interface Joke {
 
 export interface GatewayApiResponse {
   id: string;
+  company_id: string;
   device_eui: string;
   name: string;
   status: number;
-  lastSeenAt: string; // RFC1123 string from go - check format
+  lastSeenAt: string; // RFC1123 - directly parsable in JS.
 }
 
 export interface GatewayListApiResponse {
-  totalCount: number;
+  totalCount: number; // TODO: check id backens uses batching of max fetched in one fetch - if so update logic to fetch again. (pagination)
   gateways: GatewayApiResponse[];
 }
 
@@ -62,6 +64,9 @@ export interface SensorApiResponse {
   name: string;
   status: number;
   machine: string;
+  lastReading: string;
+  appKey: string;
+  devProf: string;
 }
 
 export interface SensorListApiResponse {

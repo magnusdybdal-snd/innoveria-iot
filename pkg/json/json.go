@@ -13,7 +13,7 @@ func Encode[T any](w http.ResponseWriter, code int, v T) error {
 		w.WriteHeader(code)
 	}
 	if err := json.NewEncoder(w).Encode(v); err != nil {
-		return fmt.Errorf("error: encoding json: %w",err)
+		return fmt.Errorf("error: encoding json: %w", err)
 	}
 	return nil
 }
@@ -22,7 +22,7 @@ func Encode[T any](w http.ResponseWriter, code int, v T) error {
 func Decode[T any](r *http.Request) (T, error) {
 	var data T
 	if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
-		return data, fmt.Errorf("error: decoding json: %w",err)
+		return data, fmt.Errorf("error: decoding json: %w", err)
 	}
-	return data, nil 
+	return data, nil
 }
