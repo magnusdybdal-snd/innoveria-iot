@@ -6,13 +6,17 @@ import (
 
 type Gateway struct {
 	Id         string
-	DeviceEUI  string
+	CompanyId  string
+	GatewayEUI string
 	Name       string
 	Status     Status // 0=online, 1=never_seen, 2=offline
+	// TODO: Add state (active or inactive)
 	LastSeenAt string
 }
 
 type GatewayService interface {
-	Create()
+	Create(ctx context.Context, payload Gateway) error
+	Update(ctx context.Context, gatewayId string, payload Gateway) error
 	GetAll(ctx context.Context) ([]Gateway, error)
+	Delete(ctx context.Context, gatewayID string) error
 }

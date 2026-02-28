@@ -36,11 +36,15 @@ func Run() error {
 		return fmt.Errorf("seeds: %w", err)
 	}
 
+	// Service init
 	chirpstackClient := chirpstackrest.New(*cfg)
 	gatewaySvc := service.NewGatewayService(chirpstackClient)
 	sensorSvc := service.NewSensorService(chirpstackClient)
+	sensorProfileSvc := service.NewSensorProfileService(chirpstackClient)
+	sensorGroupService := service.NewDeviceGroupService(chirpstackClient)
 
-	mux := NewRouter(gatewaySvc, sensorSvc)
+	// Setting up mux and http server
+	mux := NewRouter(gatewaySvc, sensorSvc, sensorProfileSvc, sensorGroupService)
 	server := &http.Server{
 		Addr:              cfg.Addr,
 		Handler:           mux,
