@@ -15,30 +15,27 @@ Table device.company_config {
 }
 
 Table device.gateway {
-    gateway_id            uuid    [primary key, default: `gen_random_uuid()`]
-    company_id            uuid    [not null, note: 'Tenant isolation — references auth.company but no FK across DBs']
-    gateway_eui           varchar [unique, not null, note: 'Shared key with ChirpStack']
-    chirpstack_gateway_id varchar [note: 'ChirpStack internal ID for API calls']
-    name                  varchar [not null]
-    description           varchar
-    state                 device.device_state [not null, default: 'ACTIVE']
-    factory_area_id       uuid    [note: 'References auth.factory_area — loose cross-service ref']
-    created_at            timestamptz [not null, default: `now()`]
-    updated_at            timestamptz [not null, default: `now()`]
+    gateway_id      uuid    [primary key, default: `gen_random_uuid()`]
+    company_id      uuid    [not null, note: 'Tenant isolation — references auth.company but no FK across DBs']
+    gateway_eui     varchar [unique, not null, note: 'Shared key with ChirpStack — EUI is the ChirpStack identifier']
+    name            varchar [not null]
+    description     varchar
+    state           device.device_state [not null, default: 'ACTIVE']
+    factory_area_id uuid    [note: 'References auth.factory_area — loose cross-service ref']
+    created_at      timestamptz [not null, default: `now()`]
+    updated_at      timestamptz [not null, default: `now()`]
 }
 
 Table device.sensor {
     sensor_id              uuid    [primary key, default: `gen_random_uuid()`]
     company_id             uuid    [not null, note: 'Tenant isolation — references auth.company but no FK across DBs']
-    gateway_id             uuid    [note: 'Gateway this sensor is administered under — loose ref, no FK']
-    device_eui             varchar [unique, not null, note: 'Shared key with ChirpStack. Bound to sensor hardware']
-    chirpstack_device_id   varchar [note: 'ChirpStack internal ID for API calls']
-    chirpstack_profile_id  varchar [note: 'ChirpStack device profile ID — selected during sensor registration']
-    production_resource_id uuid    [note: 'References erp.production_resource — loose cross-service ref']
-    factory_area_id        uuid    [note: 'References auth.factory_area — loose cross-service ref']
+    device_eui             varchar [unique, not null, note: 'Shared key with ChirpStack — EUI is the ChirpStack identifier, bound to sensor hardware']
     name                   varchar [not null]
     description            varchar
     state                  device.device_state [not null, default: 'ACTIVE']
+    chirpstack_profile_id  varchar [not null, note: 'ChirpStack device profile ID — required at registration, describes device model and codec']
+    production_resource_id uuid    [note: 'References erp.production_resource — loose cross-service ref']
+    factory_area_id        uuid    [note: 'References auth.factory_area — loose cross-service ref']
     created_at             timestamptz [not null, default: `now()`]
     updated_at             timestamptz [not null, default: `now()`]
 }

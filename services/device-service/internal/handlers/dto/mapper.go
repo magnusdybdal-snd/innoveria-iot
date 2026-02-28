@@ -70,7 +70,6 @@ func mapSensors(from domain.Sensor) SensorResponse {
 		ID:         from.Id,
 		Name:       from.Name,
 		DeviceEUI:  from.DeviceEUI,
-		GatewayEUI: from.GatewayEUI,
 		Status:     int(from.Status),
 		LastSeenAt: from.LastSeenAt,
 	}

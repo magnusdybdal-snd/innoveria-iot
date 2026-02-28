@@ -24,15 +24,17 @@ ALTER TABLE "device"."sensor"
 ALTER TABLE "device"."sensor"
     RENAME COLUMN "status" TO "state";
 ALTER TABLE "device"."sensor"
-    ADD COLUMN "chirpstack_profile_id" varchar;
+    ADD COLUMN "chirpstack_profile_id" varchar NOT NULL;
 ALTER TABLE "device"."sensor"
     DROP COLUMN "chirpstack_device_id";
 
 COMMENT ON COLUMN "device"."sensor"."chirpstack_profile_id" IS 'The ChirpStack profile ID associated with this sensor, selected during sensor registration';
 
--- sensor: remove FK constraint on gateway_id (gateways are infrastructure)
+-- sensor: remove FK constraint and drop gateway_id (gateways are infrastructure)
 ALTER TABLE "device"."sensor"
     DROP CONSTRAINT "sensor_gateway_id_fkey";
+ALTER TABLE "device"."sensor"
+    DROP COLUMN "gateway_id";
 
 -- Adding on delete cascade to sensor_metric, so when a sensor is deleted, its metrics are also deleted
 ALTER TABLE "device"."sensor_metric"
@@ -55,6 +57,8 @@ ALTER TABLE "device"."sensor_metric"
     FOREIGN KEY ("sensor_id")
     REFERENCES "device"."sensor"("sensor_id");
 
+ALTER TABLE "device"."sensor"
+    ADD COLUMN "gateway_id" uuid;
 ALTER TABLE "device"."sensor"
     ADD CONSTRAINT "sensor_gateway_id_fkey"
     FOREIGN KEY ("gateway_id")
