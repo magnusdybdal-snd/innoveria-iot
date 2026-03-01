@@ -5,8 +5,12 @@ ALTER TYPE "device"."device_status"
     RENAME TO "device_state";
 
 -- company config: add chirpstack application id (one application per company, created during onboarding)
+-- Add with a temporary default so existing rows are not rejected, then drop the default
+-- so future inserts are required to supply a real value.
 ALTER TABLE "device"."company_config"
-    ADD COLUMN "chirpstack_application_id" varchar UNIQUE NOT NULL;
+    ADD COLUMN "chirpstack_application_id" varchar UNIQUE NOT NULL DEFAULT 'dev-placeholder';
+ALTER TABLE "device"."company_config"
+    ALTER COLUMN "chirpstack_application_id" DROP DEFAULT;
 
 COMMENT ON COLUMN "device"."company_config"."chirpstack_application_id" IS 'One ChirpStack application per company — created during onboarding';
 
@@ -23,8 +27,11 @@ ALTER TABLE "device"."sensor"
     ADD COLUMN "description" varchar;
 ALTER TABLE "device"."sensor"
     RENAME COLUMN "status" TO "state";
+-- Same pattern: temporary default for existing rows, then drop it.
 ALTER TABLE "device"."sensor"
-    ADD COLUMN "chirpstack_profile_id" varchar NOT NULL;
+    ADD COLUMN "chirpstack_profile_id" varchar NOT NULL DEFAULT 'dev-placeholder';
+ALTER TABLE "device"."sensor"
+    ALTER COLUMN "chirpstack_profile_id" DROP DEFAULT;
 ALTER TABLE "device"."sensor"
     DROP COLUMN "chirpstack_device_id";
 
