@@ -39,4 +39,5 @@ type GatewayRepository interface {
 	FindAllByCompanyID(ctx context.Context, companyID string) ([]Gateway, error)
 	FindByEUI(ctx context.Context, gatewayEUI string) (Gateway, error)
 	UpdateState(ctx context.Context, gatewayID string, state DeviceState) error
+	Delete(ctx context.Context, gatewayID string) error
 }

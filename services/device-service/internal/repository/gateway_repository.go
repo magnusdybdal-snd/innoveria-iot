@@ -175,3 +175,23 @@ func (r *GatewayRepository) UpdateState(ctx context.Context, gatewayID string, s
 
 	return nil
 }
+
+// Delete tries to delete a gateway from the database.
+// Returns an error if deletion fails or no gateway is found.
+func (r *GatewayRepository) Delete(ctx context.Context, gatewayID string) error {
+	const query = `
+		DELETE FROM device.gateway 
+		WHERE gateway_id = $1
+	`
+
+	tag, err := r.db.Pool.Exec(ctx, query, gatewayID)
+	if err != nil {
+		return fmt.Errorf("delete gateway %s: %w", gatewayID, err)
+	}
+
+	if tag.RowsAffected() == 0 {
+		return fmt.Errorf("gateway not found: %s", gatewayID)
+	}
+
+	return nil
+}
