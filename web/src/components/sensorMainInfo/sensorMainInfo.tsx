@@ -12,28 +12,22 @@ import Typography from "@mui/material/Typography";
 
 import { ActionMenu } from "@/components/actionMenu";
 
-type InfoProps = {
+type InfoMainProps = {
   name: string;
   status: number;
-  euid: string;
-  machine: string;
   lastReading: string;
-  appKey: string;
-  devProf: string;
+  onClick: () => void;
 };
 
 {
-  /*Format for single sensor info*/
+  /*Format for main single sensor info*/
 }
-export function SensorInfo({
+export function SensorMainInfo({
   name,
   status,
-  euid,
-  machine,
   lastReading,
-  appKey,
-  devProf,
-}: InfoProps) {
+  onClick,
+}: InfoMainProps) {
   const theme = useTheme();
   const [currentName, setCurrentName] = useState(name);
   const [editOpen, setEditOpen] = useState(false);
@@ -78,11 +72,22 @@ export function SensorInfo({
         }}
       />
       <Typography>{currentName}</Typography>
-      <Typography>{euid}</Typography>
-      <Typography>{machine}</Typography>
       <Typography>{lastReading}</Typography>
-      <Typography>{appKey}</Typography>
-      <Typography>{devProf}</Typography>
+      <Button
+        variant="outlined"
+        sx={{
+          backgroundColor: "primary.main",
+          color: "primary.dark",
+          "&:hover": { backgroundColor: "primary.main" },
+          borderRadius: 2,
+          textTransform: "none",
+          fontSize: 15,
+          marginX: 7,
+        }}
+        onClick={onClick}
+      >
+        Extra sensor info
+      </Button>
       <ActionMenu items={menuItems} />
       <Dialog open={editOpen} onClose={() => setEditOpen(false)}>
         <DialogTitle>Rename sensor</DialogTitle>
