@@ -15,7 +15,6 @@ func MapChirpstackSensor(from dto.ChirpstackSensor) domain.Sensor {
 		Id:         from.DeviceEUI, // TODO: Change this to internal database id
 		Name:       from.Name,
 		DeviceEUI:  from.DeviceEUI,
-		GatewayEUI: "1234", // TODO: Handle in database
 		Status:     mapStatusSensor(from.LastSeenAt),
 		LastSeenAt: from.LastSeenAt.Format(time.RFC1123),
 	}
