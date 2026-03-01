@@ -7,7 +7,7 @@ import (
 	"innoveria-iot/pkg/dbutil"
 )
 
-// GatewayRepository handles persistance of gateway metadata stored in the database.
+// GatewayRepository handles persistence of gateway metadata stored in the database.
 type GatewayRepository struct {
 	db *dbutil.DB
 }
@@ -17,7 +17,7 @@ func NewGatewayRepository(db *dbutil.DB) *GatewayRepository {
 	return &GatewayRepository{db: db}
 }
 
-// Create inserts a new gateway into the databse.
+// Create inserts a new gateway into the database.
 // Returns the newly created gateway with database generated fields.
 func (r *GatewayRepository) Create(ctx context.Context, gateway domain.Gateway) (domain.Gateway, error) {
 	const query = `
@@ -91,7 +91,7 @@ func (r *GatewayRepository) FindAllByCompanyID(ctx context.Context, companyID st
 	// Query the database to collect all rows
 	rows, err := r.db.Pool.Query(ctx, query, companyID)
 	if err != nil {
-		return nil, fmt.Errorf("find gateway by company id: %w", err)
+		return nil, fmt.Errorf("find all gateways by company id: %w", err)
 	}
 	defer rows.Close()
 
@@ -157,7 +157,7 @@ func (r *GatewayRepository) FindByEUI(ctx context.Context, gatewayEUI string) (d
 }
 
 // UpdateState sets the administrative state of a gateway and updates the updated at timestamp.
-// Retirns an error if no gateway with the given ID exists.
+// Returns an error if no gateway with the given ID exists.
 func (r *GatewayRepository) UpdateState(ctx context.Context, gatewayID string, state domain.DeviceState) error {
 	const query = `
 		UPDATE device.gateway
