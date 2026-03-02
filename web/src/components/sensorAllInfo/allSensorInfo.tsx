@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 import CircleIcon from "@mui/icons-material/Circle";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
@@ -5,6 +7,8 @@ import DialogTitle from "@mui/material/DialogTitle";
 import { useTheme } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 
+import type { SensorReadingApiResponse } from "@/API/apiClient";
+import { fetchSensorReading } from "@/API/fetchSensorReading";
 import { CategoryHeader } from "@/components/CategoryHeader";
 import { DeviceRow } from "@/components/gatewayRow";
 import type { Sensor } from "@/mocks/sensors.ts";
@@ -74,6 +78,12 @@ function SensorAllInfo({
 
 export function SensorAllInfoPopUp(props: AddDeviceProps) {
   const { onClose, open, sensor } = props;
+  const [reading, setReading] = useState<SensorReadingApiResponse | null>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    fetchSensorReading("e112f47bdd366c03").then(setReading); // TODO: replace hardcoded value with 'sensor.euid'
+  }, [open, sensor.euid]);
 
   const handleClose = () => {
     onClose();
@@ -124,6 +134,38 @@ export function SensorAllInfoPopUp(props: AddDeviceProps) {
             />
           </DeviceRow>
         </CategoryHeader>
+
+        {reading && (
+          <>
+            <Typography
+              sx={{ color: "primary.main", mt: 3, mb: 1, fontWeight: "bold" }}
+            >
+              Latest reading
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{ mb: 1, opacity: 0.7, color: "primary.main" }}
+            >
+              {new Date(reading.timestamp).toLocaleString()}
+            </Typography>
+            <CategoryHeader
+              categories={Object.keys(reading.payload)}
+              columns={Object.keys(reading.payload).length}
+            >
+              <DeviceRow key="reading">
+                {Object.values(reading.payload).map((value, i) => (
+                  <Typography key={i}>{String(value)}</Typography>
+                ))}
+              </DeviceRow>
+            </CategoryHeader>
+          </>
+        )}
+
+        {reading === null && (
+          <Typography sx={{ mt: 2, opacity: 0.5, color: "primary.main" }}>
+            No reading available
+          </Typography>
+        )}
       </DialogContent>
     </Dialog>
   );
