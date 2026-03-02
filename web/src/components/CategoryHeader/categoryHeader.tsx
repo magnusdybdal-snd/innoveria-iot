@@ -85,9 +85,10 @@ export function CategoryHeader({
             fontWeight={"bold"}
             className="px-4 py-2"
             onClick={isSortable && onSort ? () => onSort(category) : undefined}
-            sx={
-              isSortable ? { cursor: "pointer", userSelect: "none" } : undefined
-            }
+            sx={{
+              whiteSpace: "nowrap",
+              ...(isSortable && { cursor: "pointer", userSelect: "none" }),
+            }}
           >
             <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
               {category}

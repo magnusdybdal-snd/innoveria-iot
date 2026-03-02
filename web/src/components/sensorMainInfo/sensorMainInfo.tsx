@@ -82,7 +82,6 @@ export function SensorMainInfo({
           borderRadius: 2,
           textTransform: "none",
           fontSize: 15,
-          marginX: 7,
         }}
         onClick={onClick}
       >
