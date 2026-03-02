@@ -1,9 +1,10 @@
 package server
 
 import (
+	"net/http"
+
 	"innoveria-iot/api-gateway/internal/config"
 	"innoveria-iot/api-gateway/internal/handlers"
-	"net/http"
 )
 
 // NewRouter configures the HTTP router
@@ -11,21 +12,25 @@ import (
 func NewRouter(cfg *config.Config) *http.ServeMux {
 	mux := http.NewServeMux()
 
-	// Routes:
+	// Root handler
 	mux.HandleFunc(INDEX, handlers.Root)
-	collProxy, err := handlers.NewUpstreamProxy(cfg.CollSvcURL)
-	if err != nil {
-		handlers.RegisterServiceError(mux, COLLECTION_ROUTE, "collection-service")
-	} else {
-		handlers.RegisterServiceInfo(mux, COLLECTION_ROUTE, "collection-service", []string{
-			"/latest", // latest sensor info
-		})
-		mux.Handle(COLLECTION_ROUTE+"/", collProxy)
-	}
-	mux.HandleFunc(AUTHENTICATION_ROUTE, handlers.Authentication)
-	mux.HandleFunc(CONTEXT_ROUTE, handlers.Context)
 
-	// Collection proxy
+	/*
+		Proxy routes microservice:
+	*/
+	// Device service
+	handlers.RegisterProxyService(mux, DEVICE_ROUTE, "device-service", cfg.DeviceSvcURL, []string{
+		"/gateways",
+		"/sensors",
+		"/sensor-profiles",
+		"/sensor-group",
+	})
+
+	// Collection service
+	handlers.RegisterProxyService(mux, COLLECTION_ROUTE, "collection-service", cfg.CollSvcURL, []string{
+		"/latest",
+		"/measurements",
+	})
 
 	return mux
 }

@@ -58,17 +58,10 @@ func NewReverseProxy(base *url.URL) *httputil.ReverseProxy {
 	rp.ErrorHandler = func(w http.ResponseWriter, r *http.Request, err error) {
 		var mbe *http.MaxBytesError
 		if errors.As(err, &mbe) {
-			resp := map[string]string{
-				"error": "request to large",
-			}
-			_ = json.Encode(w, http.StatusRequestEntityTooLarge, resp)
+			json.HandleError(w, http.StatusRequestEntityTooLarge, err, "request to large")
 		}
 
-		resp := map[string]string{
-			"error": "bad gateway",
-		}
-
-		_ = json.Encode(w, http.StatusBadGateway, resp)
+		json.HandleError(w, http.StatusBadGateway, err, "bad gateway")
 	}
 	return rp
 }

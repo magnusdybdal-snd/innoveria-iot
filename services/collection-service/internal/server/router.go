@@ -1,17 +1,18 @@
 package server
 
 import (
+	"innoveria-iot/collection-service/internal/domain"
 	"innoveria-iot/collection-service/internal/handlers"
 	"net/http"
 )
 
-func NewRouter() *http.ServeMux {
+func NewRouter(svc domain.MeasurementService) *http.ServeMux {
 	mux := http.NewServeMux()
 
 	// Routes:
 	mux.HandleFunc("GET /", handlers.Root)
-	mux.HandleFunc("GET /collection", handlers.HelloProxy)
-	mux.HandleFunc("GET /api/v1/collection/latest", handlers.HelloProxy) // test for proxy
+	mux.HandleFunc("GET "+LATEST_MEASUREMENT, handlers.HandleLatestMeasurement(svc))
+	mux.HandleFunc("GET "+MEASUREMENTS_BY_TIME, handlers.HandleMeasurementsByTimeRange(svc))
 
 	return mux
 }

@@ -1,80 +1,188 @@
-import { useState } from "react";
-import Box from "@mui/material/Box";
-import Path from "../templates/path.tsx";
-import SensorsGenInfo from "../templates/sensorsGenInfo.tsx";
-import SensorInfo from "../templates/sensorInfo.tsx";
-import Menu from "../Menu.tsx";
-import Typography from "@mui/material/Typography";
-import Divider from "@mui/material/Divider";
+import { useEffect, useState } from "react";
+
 import Button from "@mui/material/Button";
 
-const sensorInfos = new Map<string, number>();
-sensorInfos.set("Total sensors", 0);
-sensorInfos.set("Online sensors", 0);
-sensorInfos.set("Offline sensors", 0);
-sensorInfos.set("Last seen 24hr", 0);
-sensorInfos.set("Error last 24hr", 0);
+import { fetchSensors } from "@/API/fetch/fetchSensors";
+import { AddDevice } from "@/components/addDevicePopup";
+import { CategoryHeader } from "@/components/CategoryHeader";
+import {
+  DeviceRow,
+  sortSensors,
+  type SensorSortKey,
+  type SortDirection,
+} from "@/components/gatewayRow";
+import { NoDeviceFoundCard } from "@/components/noDeviceFoundCard";
+import { PageContent } from "@/components/pageContent";
+import { PageDivider } from "@/components/pageDivider";
+import { SensorAllInfoPopUp } from "@/components/sensorAllInfo";
+import { SensorMainInfo } from "@/components/sensorMainInfo";
+import { SensorsGenInfo } from "@/components/sensorsGenInfo";
+import { SubPageHeader } from "@/components/subPageHeader";
+import Menu from "@/Menu.tsx";
+import { mockSensors, type Sensor } from "@/mocks/sensors.ts";
 
-export default function Home() {
-  const [count, setCount] = useState(0);
+const sensorMainDetails: string[] = ["Status", "Name", "Last reading"];
+const addSensorDetails: string[] = [
+  "Name",
+  "DeviceEUI",
+  "Machine",
+  "Application key",
+  "Device profile",
+];
+const sortableColumns: SensorSortKey[] = ["Status", "Name", "Last reading"];
+type NewSensor = Omit<Sensor, "id" | "status" | "lastReading">;
+
+export default function Sensors() {
+  const [sensors, setSensors] = useState<Sensor[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [sensorsMocked, setMockSensors] = useState<Sensor[]>(mockSensors);
+
+  useEffect(() => {
+    fetchSensors().then((data) => {
+      setSensors(data);
+      setIsLoading(false);
+    });
+  }, []);
+
+  const [openAdd, setOpenAdd] = useState(false);
+  const [selectedSensor, setSelectedSensor] = useState<Sensor | null>(null);
+
+  // Handler for opening and closing add sensor pop-up
+  const handleClickOpenAdd = () => {
+    setOpenAdd(true);
+  };
+
+  const handleCloseAdd = () => {
+    setOpenAdd(false);
+  };
+
+  // Handler for opening and closing all info pop-up
+  const handleRowClick = (sensor: Sensor) => {
+    setSelectedSensor(sensor);
+  };
+
+  const handleCloseInfo = () => {
+    setSelectedSensor(null);
+  };
+
+  const handleAddSensor = (sensorData: NewSensor) => {
+    setMockSensors((prev) => [
+      ...prev,
+      {
+        id: crypto.randomUUID(),
+        status: 0,
+        lastReading: "0 min",
+        ...sensorData,
+      },
+    ]);
+  };
+
+  const addButton = (
+    <Button
+      variant="outlined"
+      sx={{
+        backgroundColor: "primary.main",
+        color: "primary.dark",
+        "&:hover": { backgroundColor: "primary.main" },
+        borderRadius: 2,
+        textTransform: "none",
+        fontSize: 20,
+      }}
+      onClick={handleClickOpenAdd}
+    >
+      Add device +
+    </Button>
+  );
+
+  const [sortConfig, setSortConfig] = useState<{
+    key: SensorSortKey | null;
+    direction: SortDirection;
+  }>({ key: null, direction: "asc" });
+
+  function handleSort(column: string) {
+    const col = column as SensorSortKey;
+    setSortConfig((prev) =>
+      prev.key === col
+        ? { key: col, direction: prev.direction === "asc" ? "desc" : "asc" }
+        : { key: col, direction: "asc" },
+    );
+  }
+
+  const sorted = sortSensors(sensors, sortConfig.key, sortConfig.direction);
+  const sortedMock = sortSensors(
+    sensorsMocked,
+    sortConfig.key,
+    sortConfig.direction,
+  );
+
+  const sensorInfos = new Map<string, number>();
+  sensorInfos.set("Total sensors", sorted.length);
+  sensorInfos.set(
+    "Online sensors",
+    sorted.filter((sensor) => sensor.status === 0).length,
+  );
+  sensorInfos.set(
+    "Offline sensors",
+    sorted.filter((sensor) => sensor.status === 2).length,
+  );
+  sensorInfos.set("Last seen 24hr", 0);
+  sensorInfos.set("Error last 24hr", 0);
 
   return (
     <div className="flex h-screen">
       <Menu />
-      <Box
-        sx={{
-          backgroundColor: "primary.dark",
-          color: "primary.main",
-        }}
-        className="flex-1 overflow-auto"
-      >
-        <Box
-          sx={{
-            paddingLeft: 2,
-            paddingRight: 2,
-          }}
-          className="flex-1 overflow-auto"
-        >
-          <Path />
-          <div className="flex justify-between flex-wrap">
-            <Typography variant="h4">Sensor devices</Typography>
-            <Button
-              variant="outlined"
-              sx={{
-                backgroundColor: "primary.main",
-                color: "primary.dark",
-                "&:hover": {
-                  backgroundColor: "primary.main",
-                },
-                borderRadius: 2,
-                textTransform: "none",
-                fontSize: 20,
-              }}
-              onClick={() => setCount((count) => count + 1)}
-            >
-              Add device +
-            </Button>
-          </div>
-
-          <div className="flex justify-between flex-wrap">
-            {Array.from(sensorInfos.entries()).map(([key, value]) => (
-              <SensorsGenInfo key={key} title={key} count={value} />
-            ))}
-          </div>
-
-          <Divider
-            sx={{
-              backgroundColor: "primary.main",
-              marginTop: 2,
-              marginBottom: 5,
-            }}
-          />
-          {/*True or false for sensor to be enabled or disabled*/}
-          {Array.from({ length: count }).map((_, i) => (
-            <SensorInfo key={i} number={i + 1} online={true} />
+      <PageContent>
+        <SubPageHeader title="Sensor devices" action={addButton} />
+        <div className="flex justify-between flex-wrap">
+          {Array.from(sensorInfos.entries()).map(([key, value]) => (
+            <SensorsGenInfo key={key} title={key} count={value} />
           ))}
-        </Box>
-      </Box>
+        </div>
+        <PageDivider />
+        <CategoryHeader
+          categories={sensorMainDetails}
+          columns={sensorMainDetails.length + 2}
+          sortableColumns={sortableColumns}
+          sortConfig={sortConfig}
+          onSort={handleSort}
+        >
+          {sorted.map((sensor) => (
+            <DeviceRow key={sensor.id}>
+              <SensorMainInfo
+                name={sensor.name}
+                status={sensor.status}
+                lastReading={sensor.lastReading}
+                onClick={() => handleRowClick(sensor)}
+              />
+            </DeviceRow>
+          ))}
+          {sortedMock.map((sensor) => (
+            <DeviceRow key={sensor.id}>
+              <SensorMainInfo
+                name={sensor.name}
+                status={sensor.status}
+                lastReading={sensor.lastReading}
+                onClick={() => handleRowClick(sensor)}
+              />
+            </DeviceRow>
+          ))}
+        </CategoryHeader>
+        {selectedSensor && (
+          <SensorAllInfoPopUp
+            open={true}
+            onClose={handleCloseInfo}
+            sensor={selectedSensor}
+          />
+        )}
+        {!isLoading && sorted.length === 0 && <NoDeviceFoundCard />}
+      </PageContent>
+
+      <AddDevice
+        open={openAdd}
+        onClose={handleCloseAdd}
+        addOptions={addSensorDetails}
+        onAdd={handleAddSensor}
+      />
     </div>
   );
 }

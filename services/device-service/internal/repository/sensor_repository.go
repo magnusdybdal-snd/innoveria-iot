@@ -1,0 +1,189 @@
+package repository
+
+import (
+	"context"
+	"fmt"
+	"innoveria-iot/device-service/internal/domain"
+	"innoveria-iot/pkg/dbutil"
+)
+
+// SensorRepository handles persistence of sensor metadata stored in the database.
+type SensorRepository struct {
+	db *dbutil.DB
+}
+
+// NewSensorRepository creates a new SensorRepository with the given database.
+func NewSensorRepository(db *dbutil.DB) *SensorRepository {
+	return &SensorRepository{db: db}
+}
+
+// Create inserts a new sensor into the database.
+// Returns the newly created sensor with database generated fields.
+func (r *SensorRepository) Create(ctx context.Context, sensor domain.Sensor) (domain.Sensor, error) {
+	const query = `
+		INSERT INTO device.sensor (company_id, device_eui, name, description, state, factory_area_id, production_resource_id, chirpstack_profile_id)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+		RETURNING sensor_id, company_id, device_eui, name, description, state, factory_area_id, production_resource_id, chirpstack_profile_id, created_at, updated_at
+	`
+
+	var out domain.Sensor
+	err := r.db.Pool.QueryRow(ctx, query,
+		sensor.CompanyID,
+		sensor.DeviceEUI,
+		sensor.Name,
+		sensor.Description,
+		sensor.State,
+		sensor.FactoryAreaID,
+		sensor.ProductionResource,
+		sensor.ChirpstackProfileID,
+	).Scan(
+		&out.Id,
+		&out.CompanyID,
+		&out.DeviceEUI,
+		&out.Name,
+		&out.Description,
+		&out.State,
+		&out.FactoryAreaID,
+		&out.ProductionResource,
+		&out.ChirpstackProfileID,
+		&out.CreatedAt,
+		&out.UpdatedAt,
+	)
+	if err != nil {
+		return domain.Sensor{}, fmt.Errorf("create sensor: %w", err)
+	}
+
+	return out, nil
+}
+
+// FindByID retrieves a sensor by its internal UUID
+func (r *SensorRepository) FindByID(ctx context.Context, sensorID string) (domain.Sensor, error) {
+	const query = `
+		SELECT sensor_id, company_id, device_eui, name, description, state, factory_area_id, production_resource_id, chirpstack_profile_id, created_at, updated_at
+		FROM device.sensor
+		WHERE sensor_id = $1
+	`
+
+	var out domain.Sensor
+	err := r.db.Pool.QueryRow(ctx, query, sensorID).Scan(
+		&out.Id,
+		&out.CompanyID,
+		&out.DeviceEUI,
+		&out.Name,
+		&out.Description,
+		&out.State,
+		&out.FactoryAreaID,
+		&out.ProductionResource,
+		&out.ChirpstackProfileID,
+		&out.CreatedAt,
+		&out.UpdatedAt,
+	)
+	if err != nil {
+		return domain.Sensor{}, fmt.Errorf("find sensor by sensor id: %w", err)
+	}
+
+	return out, nil
+
+}
+
+// FindAllByCompanyID retrieves all sensors belonging to the given company, ordered by creation date.
+func (r *SensorRepository) FindAllByCompanyID(ctx context.Context, companyID string) ([]domain.Sensor, error) {
+	const query = `
+		SELECT sensor_id, company_id, device_eui, name, description, state, factory_area_id, production_resource_id, chirpstack_profile_id, created_at, updated_at
+		FROM device.sensor
+		WHERE company_id = $1
+		ORDER BY created_at ASC
+	`
+
+	// Query the database to collect all rows
+	rows, err := r.db.Pool.Query(ctx, query, companyID)
+	if err != nil {
+		return nil, fmt.Errorf("find all sensors by company id: %w", err)
+	}
+	defer rows.Close()
+
+	// The slice of sensors to be returned
+	var out []domain.Sensor
+
+	for rows.Next() {
+		var sensor domain.Sensor
+
+		err := rows.Scan(
+			&sensor.Id,
+			&sensor.CompanyID,
+			&sensor.DeviceEUI,
+			&sensor.Name,
+			&sensor.Description,
+			&sensor.State,
+			&sensor.FactoryAreaID,
+			&sensor.ProductionResource,
+			&sensor.ChirpstackProfileID,
+			&sensor.CreatedAt,
+			&sensor.UpdatedAt,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("scan sensor: %w", err)
+		}
+
+		// Add the sensor to the slice
+		out = append(out, sensor)
+	}
+
+	// Sanity check if the loop ended due to an error
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("rows error: %w", err)
+	}
+
+	return out, nil
+
+}
+
+// FindByEUI retrieves a sensor by its hardware EUI. Used for deduplication checks before registration.
+func (r *SensorRepository) FindByEUI(ctx context.Context, deviceEUI string) (domain.Sensor, error) {
+	const query = `
+		SELECT sensor_id, company_id, device_eui, name, description, state, factory_area_id, production_resource_id, chirpstack_profile_id, created_at, updated_at
+		FROM device.sensor
+		WHERE device_eui = $1
+	`
+
+	var out domain.Sensor
+	err := r.db.Pool.QueryRow(ctx, query, deviceEUI).Scan(
+		&out.Id,
+		&out.CompanyID,
+		&out.DeviceEUI,
+		&out.Name,
+		&out.Description,
+		&out.State,
+		&out.FactoryAreaID,
+		&out.ProductionResource,
+		&out.ChirpstackProfileID,
+		&out.CreatedAt,
+		&out.UpdatedAt,
+	)
+	if err != nil {
+		return domain.Sensor{}, fmt.Errorf("find sensor by eui: %w", err)
+	}
+
+	return out, nil
+
+}
+
+// UpdateState sets the administrative state of a sensor and updates the updated at timestamp.
+// Returns an error if no sensor with the given ID exists
+func (r *SensorRepository) UpdateState(ctx context.Context, sensorID string, state domain.DeviceState) error {
+	const query = `
+		UPDATE device.sensor
+		SET state = $1, updated_at = now()
+		WHERE sensor_id = $2
+	`
+	tag, err := r.db.Pool.Exec(ctx, query, state, sensorID)
+	if err != nil {
+		return fmt.Errorf("update sensor state: %w", err)
+	}
+
+	if tag.RowsAffected() == 0 {
+		return fmt.Errorf("sensor not found: %s", sensorID)
+	}
+
+	return nil
+}

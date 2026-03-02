@@ -1,12 +1,19 @@
-import innLogo from "../assets/innoveria.png";
+import { useContext } from "react";
+
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import TextField from "@mui/material/TextField";
-import Link from "@mui/material/Link";
 import Button from "@mui/material/Button";
 import { green } from "@mui/material/colors";
+import Link from "@mui/material/Link";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+
+import innLogoDark from "@/assets/innoveriaDark.png";
+import innLogoLight from "@/assets/innoveriaLight.png";
+import { ThemeContext } from "@/theme/color/themeContext";
 
 export default function Base() {
+  const { mode } = useContext(ThemeContext);
+
   return (
     <div className="flex h-screen">
       <Box
@@ -37,7 +44,7 @@ export default function Base() {
         >
           <div className="w-64 text-white flex flex-col">
             <img
-              src={innLogo}
+              src={mode ? innLogoDark : innLogoLight}
               alt="Innoveria logo"
               style={{
                 width: "310px",

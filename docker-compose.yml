@@ -6,12 +6,14 @@ services:
     build:
       context: .
       dockerfile: infra/development/chirpstack.Dockerfile
+    user: root
     entrypoint: ["/bin/sh", "/scripts/startChirpstack.sh"]
     restart: unless-stopped
     volumes:
       - ./infra/config/chirpstack:/etc/chirpstack
       - ./infra/config/chirpstack-device-profiles:/profiles
       - ./scripts/startChirpstack.sh:/scripts/startChirpstack.sh
+      - chirpstack-secrets:/secrets
     depends_on:
       - chirpstack-postgres
       - mosquitto
@@ -47,7 +49,7 @@ services:
       - chirpstack
 
   chirpstack-postgres:
-    image: postgres:14-alpine
+    image: postgres:16-alpine
     restart: unless-stopped
     volumes:
       - ./infra/config/postgresql/initdb:/docker-entrypoint-initdb.d
@@ -115,9 +117,12 @@ services:
       - ./pkg:/pkg
     environment:
       - GO_ENV=development
+    depends_on:
+      - mosquitto
+      - collection-db 
 
   collection-db:
-    image: timescale/timescaledb:2.14.2-pg14
+    image: timescale/timescaledb:2.17.2-pg16
     restart: unless-stopped
     ports:
       - "5433:5432"
@@ -135,6 +140,35 @@ services:
     volumes:
       - ./services/collection-simulator:/app
       - ./pkg:/pkg
+    depends_on:
+      - mosquitto
+
+  device-service:
+    build:
+      context: .
+      dockerfile: infra/development/device-service.Dockerfile
+    ports:
+      - "8083:8080"
+    volumes:
+      - ./services/device-service:/app
+      - ./pkg:/pkg
+      - chirpstack-secrets:/secrets
+    environment:
+      - GO_ENV=development
+    depends_on:
+      - device-db
+
+  device-db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    ports:
+      - "5434:5432"
+    volumes:
+      - devicedata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=device
+      - POSTGRES_PASSWORD=device
+      - POSTGRES_DB=device
       
 
 #
@@ -144,3 +178,5 @@ volumes:
   collectiondata:
   postgresqldata:
   redisdata:
+  devicedata:
+  chirpstack-secrets: # for api key

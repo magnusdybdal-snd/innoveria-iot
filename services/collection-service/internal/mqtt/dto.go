@@ -2,19 +2,20 @@ package mqtt
 
 // Chirpstack v4 MQTT uplink event
 type ChirpstackUpEvent struct {
-	DeduplicationID string     `json:"deduplicationId"`
-	Time            string     `json:"time"`
-	DeviceInfo      DeviceInfo `json:"deviceInfo"`
-	DevAddr         string     `json:"devAddr"`
-	ADR             bool       `json:"adr"`
-	DR              int        `json:"dr"`
-	FCnt            int        `json:"fCnt"`
-	FPort           int        `json:"fPort"`
-	Confirmed       bool       `json:"confirmed"`
-	Data            string     `json:"data"` // base64 encoded
-	RxInfo          []RxInfo   `json:"rxInfo"`
-	TxInfo          TxInfo     `json:"txInfo"`
-	RegionConfigID  string     `json:"regionConfigId"`
+	DeduplicationID string         `json:"deduplicationId"`
+	Time            string         `json:"time"`
+	DeviceInfo      DeviceInfo     `json:"deviceInfo"`
+	DevAddr         string         `json:"devAddr"`
+	ADR             bool           `json:"adr"`
+	DR              int            `json:"dr"`
+	FCnt            int            `json:"fCnt"`
+	FPort           int            `json:"fPort"`
+	Confirmed       bool           `json:"confirmed"`
+	Data            string         `json:"data"`   // base64 encoded
+	Object          map[string]any `json:"object"` // decoded payload from codec
+	RxInfo          []RxInfo       `json:"rxInfo"`
+	TxInfo          TxInfo         `json:"txInfo"`
+	RegionConfigID  string         `json:"regionConfigId"`
 }
 
 type DeviceInfo struct {
