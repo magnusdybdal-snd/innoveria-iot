@@ -21,6 +21,8 @@ export function DeviceRow({ children, onClick }: DeviceRowProps) {
         borderRadius: 2,
         marginTop: 1,
         marginBottom: 1,
+        whiteSpace: "nowrap", // Prevent wrapping
+        overflow: "hidden", // Hide overflow text
 
         "&:hover": onClick ? { backgroundColor: "primary.dark" } : undefined,
       }}
