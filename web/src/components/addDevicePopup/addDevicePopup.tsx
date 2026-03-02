@@ -70,13 +70,13 @@ export function AddDevice(props: AddDeviceProps) {
 
   const deviceProfiles = [
     "Milesight EM300-CL",
-    "HumiditySensor",
-    "CO2SensorIndoor",
-    "WaterLeakDetector",
-    "SmartMeterBasic",
-    "IndustrialVibrationSensor",
-    "OutdoorWeatherNode",
-    "GPSTrackerLowPower",
+    "Milesight EM300-DI",
+    "Milesight EM300-MCS",
+    "Milesight EM300-MLD",
+    "Milesight EM300-SLD-ZLD",
+    "Milesight EM300-TH",
+    "Milesight EM310-TILT",
+    "Milesight EM320-TH",
   ];
 
   const inputLength: Record<string, string> = {

@@ -21,7 +21,7 @@ export const mockSensors: Sensor[] = [
     machine: "Machine 1",
     lastReading: "2 min",
     appKey: "a9k3m7x2c5b8d1q4f6h2j9l3p7r5t8v",
-    senProf: "TemperatureSensor",
+    senProf: "Milesight EM300-MLD",
   },
   {
     id: "2",
@@ -31,7 +31,7 @@ export const mockSensors: Sensor[] = [
     machine: "Machine 2",
     lastReading: "2 min",
     appKey: "3f8k1a7m2q5c9x4d6b8h2j1l7p3r5t9",
-    senProf: "HumiditySensor",
+    senProf: "Milesight EM310-TILT",
   },
   {
     id: "3",
@@ -41,6 +41,6 @@ export const mockSensors: Sensor[] = [
     machine: "Machine 3",
     lastReading: "50 min",
     appKey: "d7m3a1x9c5k8q2b4f6h1j8l3p7r2t5v",
-    senProf: "IndustrialVibrationSensor",
+    senProf: "Milesight EM300-CL",
   },
 ];
