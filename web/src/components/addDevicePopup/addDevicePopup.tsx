@@ -20,7 +20,7 @@ export interface AddDeviceProps {
     euid: string;
     machine: string;
     appKey: string;
-    devProf: string;
+    senProf: string;
   }) => void;
 }
 
@@ -60,7 +60,7 @@ export function AddDevice(props: AddDeviceProps) {
       euid: values["DeviceEUI"],
       machine: values["Machine"],
       appKey: values["Application key"],
-      devProf: values["Device profile"],
+      senProf: values["Sensor profile"],
     });
 
     setFillError(false);
@@ -69,7 +69,7 @@ export function AddDevice(props: AddDeviceProps) {
   };
 
   const deviceProfiles = [
-    "TemperatureSensor",
+    "Milesight EM300-CL",
     "HumiditySensor",
     "CO2SensorIndoor",
     "WaterLeakDetector",
@@ -110,8 +110,8 @@ export function AddDevice(props: AddDeviceProps) {
       <DialogContent>
         <CategoryHeader categories={addOptions} columns={addOptions.length}>
           {addOptions.map((option) => {
-            // Textfield for all other than DevProf
-            if (option !== "Device profile") {
+            // Textfield for all other than SenProf
+            if (option !== "Sensor profile") {
               return (
                 <TextField
                   sx={{
@@ -155,7 +155,7 @@ export function AddDevice(props: AddDeviceProps) {
                 />
               );
             }
-            // Dropdown selection for device profile
+            // Dropdown selection for sensor profile
             return (
               <Select
                 sx={{

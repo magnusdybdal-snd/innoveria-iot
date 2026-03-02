@@ -27,7 +27,7 @@ const addSensorDetails: string[] = [
   "DeviceEUI",
   "Machine",
   "Application key",
-  "Device profile",
+  "Sensor profile",
 ];
 const sortableColumns: SensorSortKey[] = ["Status", "Name", "Last reading"];
 type NewSensor = Omit<Sensor, "id" | "status" | "lastReading">;
