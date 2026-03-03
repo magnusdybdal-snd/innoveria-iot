@@ -7,6 +7,20 @@ import (
 	"innoveria-iot/pkg/dbutil"
 )
 
+const (
+	createCompanyConfigQuery = `
+		INSERT INTO device.company_config (company_id, chirpstack_tenant_id, chirpstack_application_id)
+		VALUES ($1, $2, $3)
+		RETURNING company_id, chirpstack_tenant_id, chirpstack_application_id, created_at
+	`
+
+	findCompanyConfigByCompanyIDQuery = `
+		SELECT company_id, chirpstack_tenant_id, chirpstack_application_id, created_at
+		FROM device.company_config
+		WHERE company_id = $1
+	`
+)
+
 // CompanyConfigRepository handles persistance of company configuration in the database.
 // It stores Chirpstack tenant and application ID's that are created during onboarding for each company.
 type CompanyConfigRepository struct {
@@ -22,14 +36,9 @@ func NewCompanyConfigRepository(db *dbutil.DB) *CompanyConfigRepository {
 // Called once during onboarding when the Chirpstack tenant and application ID are created.
 // Returns the newly inserted company config or an error if failed.
 func (r *CompanyConfigRepository) Create(ctx context.Context, config domain.CompanyConfig) (domain.CompanyConfig, error) {
-	const query = `
-			INSERT INTO device.company_config (company_id, chirpstack_tenant_id, chirpstack_application_id)
-			VALUES ($1, $2, $3)
-			RETURNING company_id, chirpstack_tenant_id, chirpstack_application_id, created_at		
-	`
 
 	var out domain.CompanyConfig
-	err := r.db.Pool.QueryRow(ctx, query,
+	err := r.db.Pool.QueryRow(ctx, createCompanyConfigQuery,
 		config.CompanyID,
 		config.ChirpstackTenantID,
 		config.ChirpstackApplicationID,
@@ -49,14 +58,9 @@ func (r *CompanyConfigRepository) Create(ctx context.Context, config domain.Comp
 // FindByCompanyID retrieves the company config for the given company ID.
 // Returns an error of no config exist for the given company ID.
 func (r *CompanyConfigRepository) FindByCompanyID(ctx context.Context, companyID string) (domain.CompanyConfig, error) {
-	const query = `
-		SELECT company_id, chirpstack_tenant_id, chirpstack_application_id, created_at
-		FROM device.company_config
-		WHERE company_id = $1
-	`
 
 	var out domain.CompanyConfig
-	err := r.db.Pool.QueryRow(ctx, query, companyID).Scan(
+	err := r.db.Pool.QueryRow(ctx, findCompanyConfigByCompanyIDQuery, companyID).Scan(
 		&out.CompanyID,
 		&out.ChirpstackTenantID,
 		&out.ChirpstackApplicationID,
