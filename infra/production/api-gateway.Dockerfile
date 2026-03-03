@@ -25,6 +25,4 @@ COPY --from=builder /app/services/api-gateway/server /app/server
 
 USER nonroot:nonroot
 
-EXPOSE 8080
-
 CMD ["/app/server"]

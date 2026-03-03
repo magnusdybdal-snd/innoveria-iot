@@ -2,6 +2,13 @@
 # Docker compose for: PRODUCTION 
 #
 services:
+  mosquitto:
+    image: eclipse-mosquitto:2
+    restart: unless-stopped
+    ports:
+      - "${MQTT_PORT}:${MQTT_PORT}"
+    volumes: 
+      - ./infra/config/mosquitto/config:/mosquitto/config/
   web:
     build:
       context: .
@@ -27,3 +34,38 @@ services:
       - DEVICE_SERVICE=${DEVICE_SERVICE}
       - GO_ENV=${GO_ENV}
     restart: unless-stopped
+
+  collection-service:
+    build:
+      context: .
+      dockerfile: infra/production/collection-service.Dockerfile
+    environment:
+      - PORT=${COLLECTION_SERVICE_PORT}
+      - GO_ENV=${GO_ENV}
+      - MQTT_BROKER_URL=${MQTT_BROKER_URL}
+      - MQTT_BROKER_USERNAME=${MQTT_USERNAME}
+      - MQTT_BROKER_PASSWORD=${MQTT_BROKER_PASSWORD}
+      - MQTT_BROKER_TOPIC=${MQTT_BROKER_TOPIC}
+      - DB_HOST=${COLLECTION_DB_HOST}
+      - DB_PORT=${COLLECTION_DB_PORT}
+      - DB_USER=${COLLECTION_DB_USER}
+      - DB_PASSWORD=${COLLECTION_DB_PASSWORD}
+      - DB_NAME=${COLLECTION_DB_NAME}
+      - DB_SSLMODE=${COLLECTION_DB_SSLMODE}
+    depends_on:
+      - mosquitto
+      - collection-db 
+    restart: unless-stopped
+
+  collection-db:
+    image: timescale/timescaledb:2.17.2-pg16
+    restart: unless-stopped
+    volumes:
+      - collection-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=${COLLECTION_DB_USER}
+      - POSTGRES_PASSWORD=${COLLECTION_DB_PASSWORD}
+      - POSTGRES_DB=${COLLECTION_DB_NAME}
+
+volumes:
+  collection-data:

@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"strconv"
 
 	"innoveria-iot/pkg/env"
@@ -31,10 +32,25 @@ func Load() *Config {
 	if err != nil {
 		workerCount = 10
 	}
+	// database config
+	dbHost := env.Get("DB_HOST", "collection-db")
+	dbPort := env.Get("DB_PORT", "5432")
+	dbUser := env.Get("DB_USER", "collection")
+	dbPassword := env.Get("DB_PASSWORD", "collection")
+	dbName := env.Get("DB_NAME", "collection")
+	sslmode := env.Get("DB_SSLMODE", "disable")
 
 	cfg := Config{
-		Addr:   ":" + env.Get("PORT", "8080"),
-		DB_url: env.Get("DB_url", "postgres://collection:collection@collection-db:5432/collection?sslmode=disable"),
+		Addr: ":" + env.Get("PORT", "8080"),
+		DB_url: fmt.Sprintf(
+			"postgres://%s:%s@%s:%s/%s?sslmode=%s",
+			dbUser,
+			dbPassword,
+			dbHost,
+			dbPort,
+			dbName,
+			sslmode,
+		),
 
 		MQTTBrokerURL:   env.Get("MQTT_BROKER_URL", "tcp://mosquitto:1883"), // Mqtt broker
 		MQTTClientId:    clientID,

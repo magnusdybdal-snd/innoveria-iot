@@ -19,6 +19,8 @@ export default defineConfig({
     host: true,
     strictPort: true,
     port: 3000,
+
+    // caddy proxies the api route for doing internal http requests
     proxy: {
       "/api": {
         target: "http://localhost:8081/api",
