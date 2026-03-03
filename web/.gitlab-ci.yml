@@ -14,7 +14,7 @@ sql-check:
   script:
     - |
       FAILED=0
-      for file in $(find "$CI_PROJECT_DIR" -name "*.sql"); do
+      for file in $(find "$CI_PROJECT_DIR" -name "*.sql" -not -path "*/node_modules/*"); do
         echo "  Checking $file..."
         OUTPUT=$(bunx sql-lint --driver postgres "$file")
         if [ -n "$OUTPUT" ]; then
