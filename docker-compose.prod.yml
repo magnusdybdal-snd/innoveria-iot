@@ -103,9 +103,8 @@ services:
       - MQTT_BROKER_URL=${MQTT_BROKER_URL}
       - MQTT_BROKER_USERNAME=${MQTT_USERNAME}
       - MQTT_BROKER_PASSWORD=${MQTT_BROKER_PASSWORD}
-      - MQTT_BROKER_TOPIC=${MQTT_BROKER_TOPIC}
-      - DB_HOST=${COLLECTION_DB_HOST}
-      - DB_PORT=${COLLECTION_DB_PORT}
+      - MQTT_TOPIC=${MQTT_BROKER_TOPIC}
+      - DB_HOST=collection-db
       - DB_USER=${COLLECTION_DB_USER}
       - DB_PASSWORD=${COLLECTION_DB_PASSWORD}
       - DB_NAME=${COLLECTION_DB_NAME}
@@ -123,7 +122,7 @@ services:
     environment:
       - POSTGRES_USER=${COLLECTION_DB_USER}
       - POSTGRES_PASSWORD=${COLLECTION_DB_PASSWORD}
-      - POSTGRES_DB=${COLLECTION_DB_NAME}docker system prune -a --volumes
+      - POSTGRES_DB=collection-db
 
   device-service:
     build:
@@ -133,7 +132,7 @@ services:
       - chirpstack-secrets:/secrets
     environment:
       - GO_ENV=${GO_ENV}
-      - DB_HOST=${DEVICE_DB_HOST}
+      - DB_HOST=device-db
       - DB_PORT=${DEVICE_DB_PORT}
       - DB_USER=${DEVICE_DB_USER}
       - DB_PASSWORD=${DEVICE_DB_PASSWORD}
