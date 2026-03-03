@@ -10,15 +10,20 @@ import (
 /*
 	Gateway mapping
 */
-// Mapping for the chirpstack gateway domain to device service gateway domain
-func MapChirpstackGateway(from dto.ChirpstackGateway) domain.Gateway {
+// MergeGateway merges Chirpstack runtime data with DB domain data into a domain gateway
+func MergeGateway(cs dto.ChirpstackGateway, db domain.Gateway) domain.Gateway {
 	return domain.Gateway{
-		Id:         from.GatewayEUI, // TODO: Change this to internal database id
-		CompanyId:  from.TenantID,   // TODO: look up company mapping in DB
-		GatewayEUI: from.GatewayEUI,
-		Name:       from.Name,
-		Status:     mapStatus(from.State, from.LastSeenAt),
-		LastSeenAt: from.LastSeenAt.Format(time.RFC1123),
+		Id:            db.Id,
+		CompanyId:     db.CompanyId,
+		GatewayEUI:    db.GatewayEUI,
+		Name:          db.Name,
+		Description:   db.Description,
+		State:         db.State,
+		FactoryAreaID: db.FactoryAreaID,
+		CreatedAt:     db.CreatedAt,
+		UpdatedAt:     db.UpdatedAt,
+		Status:        mapStatus(cs.State, cs.LastSeenAt),
+		LastSeenAt:    cs.LastSeenAt.Format(time.RFC3339),
 	}
 }
 

@@ -90,7 +90,7 @@ func (g *GatewayServiceImpl) GetAll(ctx context.Context) ([]domain.Gateway, erro
 	var result []domain.Gateway
 
 	for _, gw := range resp.Result {
-		result = append(result, mappers.MapChirpstackGateway(gw))
+		result = append(result, mappers.MergeGateway(gw, domain.Gateway{})) // TODO: replace empty gw
 	}
 
 	// 3. Merge status and gateway data
