@@ -9,12 +9,16 @@ import (
 )
 
 type GatewayServiceImpl struct {
-	cc *chirpstackrest.Client
+	cc             *chirpstackrest.Client
+	gatewayRepo    domain.GatewayRepository
+	companycfgRepo domain.CompanyConfigRepository
 }
 
-func NewGatewayService(cc *chirpstackrest.Client) *GatewayServiceImpl {
+func NewGatewayService(cc *chirpstackrest.Client, gatewayRepo domain.GatewayRepository, companyCfgRepo domain.CompanyConfigRepository) *GatewayServiceImpl {
 	return &GatewayServiceImpl{
-		cc: cc,
+		cc:             cc,
+		gatewayRepo:    gatewayRepo,
+		companycfgRepo: companyCfgRepo,
 	}
 }
 

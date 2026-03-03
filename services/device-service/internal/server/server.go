@@ -40,8 +40,10 @@ func Run() error {
 	// Service init
 	chirpstackClient := chirpstackrest.New(*cfg)
 	companyConfigRepo := repository.NewCompanyConfigRepository(database)
-	gatewaySvc := service.NewGatewayService(chirpstackClient)
-	sensorSvc := service.NewSensorService(chirpstackClient, companyConfigRepo)
+	gatewayRepo := repository.NewGatewayRepository(database)
+	sensorRepo := repository.NewSensorRepository(database)
+	gatewaySvc := service.NewGatewayService(chirpstackClient, gatewayRepo, companyConfigRepo)
+	sensorSvc := service.NewSensorService(chirpstackClient, sensorRepo, companyConfigRepo)
 	sensorProfileSvc := service.NewSensorProfileService(chirpstackClient)
 	sensorGroupService := service.NewDeviceGroupService(chirpstackClient)
 

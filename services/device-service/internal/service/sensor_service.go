@@ -10,11 +10,13 @@ import (
 type SensorServiceImpl struct {
 	cc          *chirpstackrest.Client
 	companyRepo domain.CompanyConfigRepository
+	sensorRepo  domain.SensorRepository
 }
 
-func NewSensorService(cc *chirpstackrest.Client, companyRepo domain.CompanyConfigRepository) *SensorServiceImpl {
+func NewSensorService(cc *chirpstackrest.Client, sensorRepo domain.SensorRepository, companyRepo domain.CompanyConfigRepository) *SensorServiceImpl {
 	return &SensorServiceImpl{
 		cc:          cc,
+		sensorRepo:  sensorRepo,
 		companyRepo: companyRepo,
 	}
 }
