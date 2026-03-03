@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
-	"log"
+	"log/slog"
 
 	"innoveria-iot/device-service/internal/chirpstackrest"
 	"innoveria-iot/device-service/internal/domain"
@@ -47,7 +47,7 @@ func (g *GatewayServiceImpl) Create(ctx context.Context, payload domain.Gateway)
 		return fmt.Errorf("create gateway: add to database: %w", err)
 	}
 
-	log.Printf("successfully created gateway: %s", gateway.Id)
+	slog.Info("successfully created gateway", "id", gateway.Id)
 	return nil
 }
 
@@ -71,29 +71,34 @@ func (g *GatewayServiceImpl) Update(ctx context.Context, gatewayId string, paylo
 		return fmt.Errorf("update gateway: update in chirpstack: %w", err)
 	}
 
-	log.Printf("successfully updated gateway: %s", gateway.Id)
+	slog.Info("successfully updated gateway", "id", gateway.Id)
 	return nil
 }
 
-// Returns all gateway meta data with gateway status
+// GetAll retrieves all gateways belonging to a companyID from the database and merges
+// it with the status from Chirpstack (status and last seen).
 func (g *GatewayServiceImpl) GetAll(ctx context.Context) ([]domain.Gateway, error) {
-	// 1. Get gateway from database
-	limit := 1 // TODO: Get the actual gateway total count from database
 
-	// 2. Get status from chirpstack
-	// TODO: get only the status
-	resp, err := g.cc.GetAllGateways(ctx, limit) // limit is needed for chirpstack
+	// Fetch all gateways belonging to the company in DB
+	gateways, err := g.gatewayRepo.FindAllByCompanyID(ctx, "a0000000-0000-0000-0000-000000000001") // TODO: REPLACE HARDCODED COMPANYID WITH PROPER AUTH
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("get all gateways: getting gateways from db: %w", err)
 	}
 
+	// Gateways to be returned
 	var result []domain.Gateway
 
-	for _, gw := range resp.Result {
-		result = append(result, mappers.MergeGateway(gw, domain.Gateway{})) // TODO: replace empty gw
+	// Loop over gateways, get their chirpstack status, merge and append response
+	for _, gw := range gateways {
+		status, err := g.cc.GetOneGateway(ctx, gw.GatewayEUI)
+		if err != nil {
+			// If no status from Chirpstack, append gateway without status / last seen
+			slog.Warn("failed to fetch gateway status from chirpstack", "error", err)
+			result = append(result, gw)
+			continue
+		}
+		result = append(result, mappers.MergeGateway(status, gw))
 	}
-
-	// 3. Merge status and gateway data
 
 	return result, nil
 }
@@ -120,6 +125,6 @@ func (g *GatewayServiceImpl) Delete(ctx context.Context, gatewayID string) error
 		return fmt.Errorf("delete gateway: delete in database: %w", err)
 	}
 
-	log.Printf("successfully deleted gateway %s.", gatewayID)
+	slog.Info("successfully deleted gateway", "id", gatewayID)
 	return nil
 }
