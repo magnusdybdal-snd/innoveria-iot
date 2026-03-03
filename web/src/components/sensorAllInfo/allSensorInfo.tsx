@@ -26,7 +26,7 @@ type InfoAllProps = {
   machine: string;
   lastReading: string;
   appKey: string;
-  devProf: string;
+  senProf: string;
 };
 
 {
@@ -39,7 +39,7 @@ function SensorAllInfo({
   machine,
   lastReading,
   appKey,
-  devProf,
+  senProf,
 }: InfoAllProps) {
   const theme = useTheme();
 
@@ -71,7 +71,7 @@ function SensorAllInfo({
       <Typography>{machine}</Typography>
       <Typography>{lastReading}</Typography>
       <Typography>{appKey}</Typography>
-      <Typography>{devProf}</Typography>
+      <Typography>{senProf}</Typography>
     </>
   );
 }
@@ -96,7 +96,7 @@ export function SensorAllInfoPopUp(props: AddDeviceProps) {
     "Machine",
     "Last reading",
     "Application key",
-    "Device profile",
+    "Sensor profile",
   ];
 
   return (
@@ -130,7 +130,7 @@ export function SensorAllInfoPopUp(props: AddDeviceProps) {
               euid={sensor.euid}
               machine={sensor.machine}
               appKey={sensor.appKey}
-              devProf={sensor.devProf}
+              senProf={sensor.senProf}
             />
           </DeviceRow>
         </CategoryHeader>
