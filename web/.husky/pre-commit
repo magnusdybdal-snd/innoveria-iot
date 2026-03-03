@@ -31,3 +31,24 @@ if [ -n "$STAGED_GO" ]; then
 else
   echo "No staged .go files found — skipping Go linting."
 fi
+
+### SQL linting ###
+
+# Only run when .sql files are staged.
+STAGED_SQL=$(git diff --staged --name-only --diff-filter=ACM -- '*.sql')
+
+if [ -n "$STAGED_SQL" ]; then
+  echo "SQL files staged — running sql-lint..."
+  FAILED=0
+  for file in $STAGED_SQL; do
+    echo "  Checking $file..."
+    OUTPUT=$(cd web && bunx sql-lint --driver postgres "../$file")
+    if [ -n "$OUTPUT" ]; then
+      echo "$OUTPUT"
+      FAILED=1
+    fi
+  done
+  if [ "$FAILED" -eq 1 ]; then exit 1; fi
+else
+  echo "No staged .sql files found — skipping SQL linting."
+fi
