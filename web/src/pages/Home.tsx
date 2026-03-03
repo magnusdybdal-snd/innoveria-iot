@@ -5,13 +5,13 @@ import Menu2 from "@/Menu2.tsx";
 
 export default function Home() {
   return (
-    <div className="flex h-screen">
-      <Menu2>
+    <Menu2>
+      <div className="flex h-screen">
         <PageContent>
           <SubPageHeader />
           <JokeViewer />
         </PageContent>
-      </Menu2>
-    </div>
+      </div>
+    </Menu2>
   );
 }

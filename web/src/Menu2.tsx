@@ -1,7 +1,11 @@
 import { useContext, type ReactNode } from "react";
 
 import DarkModeIcon from "@mui/icons-material/DarkMode";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import LightModeIcon from "@mui/icons-material/LightMode";
+import Accordion from "@mui/material/Accordion";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import AccordionSummary from "@mui/material/AccordionSummary";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -62,6 +66,7 @@ export default function Menu2({ children }: MenuProps) {
         </Toolbar>
         <Divider />
         <List sx={{ flexGrow: 1 }}>
+          {/* User info */}
           <ListItem>
             <div className="flex items-center gap-3 p-4">
               <Avatar
@@ -84,29 +89,54 @@ export default function Menu2({ children }: MenuProps) {
               />
             </div>
           </ListItem>
+          {/* Menu navigation */}
           {Array.from(MainPages.entries()).map(([category, page]) => {
             const subPagesForCategory = SubPages.get(category) ?? [];
 
+            // If no subpages → normal link
+            if (subPagesForCategory.length === 0) {
+              return (
+                <ListItem key={category} disablePadding>
+                  <ListItemButton component={RouterLink} to={page}>
+                    <ListItemText primary={category} />
+                  </ListItemButton>
+                </ListItem>
+              );
+            }
+
             return (
               <ListItem key={category} disablePadding sx={{ display: "block" }}>
-                <ListItemButton component={RouterLink} to={page}>
-                  <ListItemText primary={category} />
-                </ListItemButton>
+                <Accordion
+                  disableGutters
+                  elevation={0}
+                  sx={{
+                    backgroundColor: "transparent",
+                    "&:before": { display: "none" },
+                  }}
+                >
+                  <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    sx={{ px: 2 }}
+                  >
+                    <Typography>{category}</Typography>
+                  </AccordionSummary>
 
-                {subPagesForCategory.length > 0 && (
-                  <List component="div" disablePadding sx={{ pl: 4 }}>
-                    {subPagesForCategory.map((subPage) => (
-                      <ListItem key={subPage.path} disablePadding>
-                        <ListItemButton
-                          component={RouterLink}
-                          to={subPage.path}
-                        >
-                          <ListItemText primary={subPage.name} />
-                        </ListItemButton>
-                      </ListItem>
-                    ))}
-                  </List>
-                )}
+                  <AccordionDetails sx={{ p: 0 }}>
+                    <List component="div" disablePadding>
+                      {subPagesForCategory.map((subPage) => (
+                        <ListItem key={subPage.path} disablePadding>
+                          <ListItemButton
+                            component={RouterLink}
+                            to={subPage.path}
+                            sx={{ pl: 4 }}
+                          >
+                            <ListItemText primary={subPage.name} />
+                          </ListItemButton>
+                        </ListItem>
+                      ))}
+                    </List>
+                  </AccordionDetails>
+                </Accordion>
               </ListItem>
             );
           })}
