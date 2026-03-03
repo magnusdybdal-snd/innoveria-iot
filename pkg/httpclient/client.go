@@ -1,3 +1,4 @@
+// Package httpclient TODO(@vinjar): add proper documentation.
 package httpclient
 
 import (
@@ -11,6 +12,7 @@ import (
 	"time"
 )
 
+// Client TODO(@vinjar): add proper documentation.
 type Client struct {
 	http *http.Client
 }

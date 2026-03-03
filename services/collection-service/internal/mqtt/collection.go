@@ -1,3 +1,4 @@
+// Package mqtt TODO(@vinjar): add proper documentation.
 package mqtt
 
 import (
@@ -10,6 +11,7 @@ import (
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 )
 
+// Collector TODO(@vinjar): add proper documentation.
 type Collector struct {
 	workers []chan ChirpstackUpEvent
 	service domain.MeasurementService

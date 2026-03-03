@@ -1,10 +1,14 @@
 package domain
 
+// Status TODO(@Magnus Dybdal): add proper documentation.
 type Status int
 
 const (
+	// StatusOnline TODO(@Magnus Dybdal): add proper documentation.
 	StatusOnline Status = iota
+	// StatusNeverSeen TODO(@Magnus Dybdal): add proper documentation.
 	StatusNeverSeen
+	// StatusOffline TODO(@Magnus Dybdal): add proper documentation.
 	StatusOffline
 )
 
@@ -13,6 +17,8 @@ const (
 type DeviceState string
 
 const (
-	DeviceStateActive   DeviceState = "ACTIVE"
+	// DeviceStateActive TODO(@Magnus Dybdal): add proper documentation.
+	DeviceStateActive DeviceState = "ACTIVE"
+	// DeviceStateInactive TODO(@Magnus Dybdal): add proper documentation.
 	DeviceStateInactive DeviceState = "INACTIVE"
 )

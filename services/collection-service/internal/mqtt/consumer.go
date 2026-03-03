@@ -10,6 +10,7 @@ import (
 
 const disconnectTime = 250 // in millis
 
+// Client TODO(@vinjar): add proper documentation.
 type Client struct {
 	client mqtt.Client
 }

@@ -18,6 +18,7 @@ type ChirpstackUpEvent struct {
 	RegionConfigID  string         `json:"regionConfigId"`
 }
 
+// DeviceInfo TODO(@vinjar): add proper documentation.
 type DeviceInfo struct {
 	TenantID          string            `json:"tenantId"`
 	TenantName        string            `json:"tenantName"`
@@ -31,6 +32,7 @@ type DeviceInfo struct {
 	Tags              map[string]string `json:"tags"`
 }
 
+// RxInfo TODO(@vinjar): add proper documentation.
 type RxInfo struct {
 	GatewayID string   `json:"gatewayId"`
 	UplinkID  uint32   `json:"uplinkId"`
@@ -43,19 +45,23 @@ type RxInfo struct {
 	Context   string   `json:"context"`
 }
 
+// Location TODO(@vinjar): add proper documentation.
 type Location struct {
 	Source string `json:"source"`
 }
 
+// TxInfo TODO(@vinjar): add proper documentation.
 type TxInfo struct {
 	Frequency  int64      `json:"frequency"`
 	Modulation Modulation `json:"modulation"`
 }
 
+// Modulation TODO(@vinjar): add proper documentation.
 type Modulation struct {
 	LoRa LoRaModulation `json:"lora"`
 }
 
+// LoRaModulation TODO(@vinjar): add proper documentation.
 type LoRaModulation struct {
 	Bandwidth       int    `json:"bandwidth"`
 	SpreadingFactor int    `json:"spreadingFactor"`

@@ -1,3 +1,4 @@
+// Package env TODO(@vinjar): add proper documentation.
 package env
 
 import (

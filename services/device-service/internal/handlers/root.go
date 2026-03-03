@@ -7,7 +7,7 @@ import (
 	"innoveria-iot/pkg/json"
 )
 
-// Home route
+// Root TODO(@vinjar): add proper documentation.
 func Root(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
 		http.NotFound(w, r)

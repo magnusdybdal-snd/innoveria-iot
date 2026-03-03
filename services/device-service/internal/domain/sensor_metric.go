@@ -10,6 +10,7 @@ type SensorMetric struct {
 	Unit            *string // can be nil, not all measurements has a unit.
 }
 
+// SensorMetricRepository TODO(@Magnus Dybdal): add proper documentation.
 type SensorMetricRepository interface {
 	// Upsert inserts a metric or updates its unit if the combination (sensor_id, measurement_type)
 	// already exists. This handles reconfiguration cleanly

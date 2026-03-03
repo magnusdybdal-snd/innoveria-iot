@@ -1,3 +1,4 @@
+// Package repository TODO(@Magnus Dybdal): add proper documentation.
 package repository
 
 import (
@@ -9,14 +10,17 @@ import (
 	"time"
 )
 
+// MeasurementRepository TODO(@Magnus Dybdal): add proper documentation.
 type MeasurementRepository struct {
 	db *db.DB
 }
 
+// NewMeasurementRepository TODO(@Magnus Dybdal): add proper documentation.
 func NewMeasurementRepository(db *db.DB) *MeasurementRepository {
 	return &MeasurementRepository{db: db}
 }
 
+// Insert TODO(@Magnus Dybdal): add proper documentation.
 func (s *MeasurementRepository) Insert(ctx context.Context, measurement domain.SensorMeasurement, tenantID string) error {
 	// Marshal the payload into JSONB (json bytes) for storage in database
 	// The payload shape will vary depending on the sensor and codec in Chirpstack
@@ -51,6 +55,7 @@ func (s *MeasurementRepository) Insert(ctx context.Context, measurement domain.S
 	return nil
 }
 
+// FindLatest TODO(@Magnus Dybdal): add proper documentation.
 func (s *MeasurementRepository) FindLatest(ctx context.Context, deviceEUI string) (domain.SensorMeasurement, error) {
 
 	// Fetch the single most recent measurement for the given device.
@@ -92,6 +97,7 @@ func (s *MeasurementRepository) FindLatest(ctx context.Context, deviceEUI string
 
 }
 
+// FindByTimeRange TODO(@Magnus Dybdal): add proper documentation.
 func (s *MeasurementRepository) FindByTimeRange(ctx context.Context, deviceEUI string, from, to time.Time) ([]domain.SensorMeasurement, error) {
 
 	// Query to fetch all the measurements from one device within a time range

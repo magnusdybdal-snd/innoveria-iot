@@ -1,10 +1,7 @@
+// Package dto TODO(@vinjar): add proper documentation.
 package dto
 
-// How we format the gateway response
-
-/*
-GET Request
-*/
+// GatewayResponse TODO(@vinjar): add proper documentation.
 type GatewayResponse struct {
 	ID         string `json:"id"`
 	CompanyId  string `json:"company_id"`
@@ -14,14 +11,13 @@ type GatewayResponse struct {
 	LastSeenAt string `json:"last_seen_at"`
 }
 
+// GatewayListResponse TODO(@vinjar): add proper documentation.
 type GatewayListResponse struct {
 	TotalCount int               `json:"total_count"`
 	Gateways   []GatewayResponse `json:"gateways"`
 }
 
-/*
-POST Request
-*/
+// CreateGatewayRequest TODO(@vinjar): add proper documentation.
 type CreateGatewayRequest struct {
 	CompanyId  string `json:"company_id"`
 	GatewayEUI string `json:"gateway_eui"`

@@ -11,12 +11,14 @@ import (
 	"innoveria-iot/pkg/httpclient"
 )
 
+// Client TODO(@vinjar): add proper documentation.
 type Client struct {
 	baseURL    string
 	token      string
 	httpClient *httpclient.Client
 }
 
+// New TODO(@vinjar): add proper documentation.
 func New(cfg config.Config) *Client {
 	return &Client{
 		baseURL:    cfg.ChirpstackURL,
@@ -31,7 +33,7 @@ func New(cfg config.Config) *Client {
 	Application requests (sensor groups)
 */
 
-// Returns all availabe application (factory areas)
+// GetOneApplication TODO(@vinjar): add proper documentation.
 func (c *Client) GetOneApplication(ctx context.Context, applicationId string) (dto.ChirpstackApplication, error) {
 	url := fmt.Sprintf("%s/api/applications/%s", c.baseURL, applicationId)
 
@@ -52,7 +54,7 @@ func (c *Client) GetOneApplication(ctx context.Context, applicationId string) (d
 	return resp, nil
 }
 
-// Returns all chirpstack applications
+// GetAllApplication TODO(@vinjar): add proper documentation.
 func (c *Client) GetAllApplication(ctx context.Context, limit int) (dto.ChirpstackApplicationList, error) {
 	url := fmt.Sprintf("%s/api/applications?limit=%d", c.baseURL, limit)
 
@@ -73,7 +75,7 @@ func (c *Client) GetAllApplication(ctx context.Context, limit int) (dto.Chirpsta
 	return resp, nil
 }
 
-// Creates a new application in chirpstack
+// CreateApplication TODO(@vinjar): add proper documentation.
 func (c *Client) CreateApplication(ctx context.Context, body dto.CreateChirpstackApplication) error {
 	url := fmt.Sprintf("%s/api/applications", c.baseURL)
 
@@ -97,7 +99,7 @@ func (c *Client) CreateApplication(ctx context.Context, body dto.CreateChirpstac
 	return nil
 }
 
-// Renames the application name
+// RenameApplication TODO(@vinjar): add proper documentation.
 func (c *Client) RenameApplication(ctx context.Context, body dto.ChirpstackApplication) error {
 	url := fmt.Sprintf("%s/api/applications/%s", c.baseURL, body.ID)
 
@@ -125,7 +127,7 @@ func (c *Client) RenameApplication(ctx context.Context, body dto.ChirpstackAppli
 	Gateway requests
 */
 
-// Returns all gateways in chirpstack
+// GetAllGateways TODO(@vinjar): add proper documentation.
 func (c *Client) GetAllGateways(ctx context.Context, limit int) (dto.ChirpstackGatewayList, error) {
 	// Chirpstack needs a limit to send the correct response
 	url := fmt.Sprintf("%s/api/gateways?limit=%d", c.baseURL, limit)
@@ -169,6 +171,7 @@ func (c *Client) GetOneGateway(ctx context.Context, gatewayEUI string) (dto.Chir
 	return resp, nil
 }
 
+// CreateGateway TODO(@vinjar): add proper documentation.
 func (c *Client) CreateGateway(ctx context.Context, body dto.CreateChirpstackGatewayRequest) error {
 	url := fmt.Sprintf("%s/api/gateways", c.baseURL)
 	resp, err := httpclient.DoRaw(
@@ -192,6 +195,7 @@ func (c *Client) CreateGateway(ctx context.Context, body dto.CreateChirpstackGat
 	return nil
 }
 
+// RenameGateway TODO(@vinjar): add proper documentation.
 func (c *Client) RenameGateway(ctx context.Context, body dto.CreateChirpstackGatewayRequest) error {
 	url := fmt.Sprintf("%s/api/gateways/%s", c.baseURL, body.GatewayEUI)
 	resp, err := httpclient.DoRaw(
@@ -215,6 +219,7 @@ func (c *Client) RenameGateway(ctx context.Context, body dto.CreateChirpstackGat
 	return nil
 }
 
+// DeleteGateway TODO(@vinjar): add proper documentation.
 func (c *Client) DeleteGateway(ctx context.Context, gatewayEUI string) error {
 	url := fmt.Sprintf("%s/api/gateways/%s", c.baseURL, gatewayEUI)
 	resp, err := httpclient.DoRaw(
@@ -237,10 +242,7 @@ func (c *Client) DeleteGateway(ctx context.Context, gatewayEUI string) error {
 	return nil
 }
 
-/*
-	Sensor Requests
-*/
-// Returns all sensors in chirpstack
+// GetAllSensors TODO(@vinjar): add proper documentation.
 func (c *Client) GetAllSensors(ctx context.Context, limit int, applicationID string) (dto.ChirpstackSensorList, error) {
 	url := fmt.Sprintf("%s/api/devices?limit=%d&applicationId=%s", c.baseURL, limit, applicationID)
 	resp, err := httpclient.DoRequest[dto.ChirpstackSensorList](
@@ -260,6 +262,7 @@ func (c *Client) GetAllSensors(ctx context.Context, limit int, applicationID str
 	return resp, nil
 }
 
+// GetAllSensorProfiles TODO(@vinjar): add proper documentation.
 func (c *Client) GetAllSensorProfiles(ctx context.Context, limit int) (dto.DeviceProfileListResponse, error) {
 	url := fmt.Sprintf("%s/api/device-profiles?limit=%d", c.baseURL, limit)
 	resp, err := httpclient.DoRequest[dto.DeviceProfileListResponse](

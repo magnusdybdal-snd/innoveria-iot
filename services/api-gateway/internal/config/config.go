@@ -1,3 +1,4 @@
+// Package config TODO(@vinjar): add proper documentation.
 package config
 
 import (
@@ -6,6 +7,7 @@ import (
 	"innoveria-iot/pkg/env"
 )
 
+// Config TODO(@vinjar): add proper documentation.
 type Config struct {
 	Addr         string
 	CollSvcURL   string
