@@ -36,7 +36,7 @@ export default function Menu() {
             src={mode ? innLogoDark : innLogoLight}
             alt="Innoveria logo"
             style={{
-              width: "310px",
+              width: "250px",
               height: "auto",
             }}
           />

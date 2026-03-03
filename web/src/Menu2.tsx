@@ -1,0 +1,145 @@
+import { useContext, type ReactNode } from "react";
+
+import DarkModeIcon from "@mui/icons-material/DarkMode";
+import LightModeIcon from "@mui/icons-material/LightMode";
+import Avatar from "@mui/material/Avatar";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Divider from "@mui/material/Divider";
+import Drawer from "@mui/material/Drawer";
+import IconButton from "@mui/material/IconButton";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemText from "@mui/material/ListItemText";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import { Link as RouterLink } from "react-router";
+
+import innLogoDark from "@/assets/innoveriaDark.png";
+import innLogoLight from "@/assets/innoveriaLight.png";
+import MainPages from "@/pages/mainPageList.tsx";
+import SubPages from "@/pages/subPageList.tsx";
+import { ThemeContext } from "@/theme/color/themeContext";
+
+import viteLogo from "/vite.svg";
+
+interface MenuProps {
+  children: ReactNode;
+}
+
+export default function Menu2({ children }: MenuProps) {
+  const { mode, toggle } = useContext(ThemeContext);
+
+  return (
+    <Box sx={{ display: "flex" }}>
+      <Drawer
+        sx={{
+          width: 300,
+          flexShrink: 0,
+          "& .MuiDrawer-paper": {
+            width: "fit-content",
+            boxSizing: "border-box",
+            display: "flex",
+            flexDirection: "column",
+          },
+        }}
+        variant="permanent"
+        anchor="left"
+      >
+        <Toolbar>
+          {/* Top menu logo */}
+          <a href="/">
+            <img
+              src={mode ? innLogoDark : innLogoLight}
+              alt="Innoveria logo"
+              style={{
+                width: "220px",
+                height: "auto",
+              }}
+            />
+          </a>
+        </Toolbar>
+        <Divider />
+        <List sx={{ flexGrow: 1 }}>
+          <ListItem>
+            <div className="flex items-center gap-3 p-4">
+              <Avatar
+                alt="User"
+                src={viteLogo}
+                style={{
+                  width: "60px",
+                  height: "auto",
+                }}
+              />
+              <div>
+                <Typography variant="h4">Username</Typography>
+                <Typography variant="h6">email@email.com</Typography>
+              </div>
+              <Divider
+                sx={{
+                  backgroundColor: "primary.main",
+                }}
+                variant="middle"
+              />
+            </div>
+          </ListItem>
+          {Array.from(MainPages.entries()).map(([category, page]) => {
+            const subPagesForCategory = SubPages.get(category) ?? [];
+
+            return (
+              <ListItem key={category} disablePadding sx={{ display: "block" }}>
+                <ListItemButton component={RouterLink} to={page}>
+                  <ListItemText primary={category} />
+                </ListItemButton>
+
+                {subPagesForCategory.length > 0 && (
+                  <List component="div" disablePadding sx={{ pl: 4 }}>
+                    {subPagesForCategory.map((subPage) => (
+                      <ListItem key={subPage.path} disablePadding>
+                        <ListItemButton
+                          component={RouterLink}
+                          to={subPage.path}
+                        >
+                          <ListItemText primary={subPage.name} />
+                        </ListItemButton>
+                      </ListItem>
+                    ))}
+                  </List>
+                )}
+              </ListItem>
+            );
+          })}
+
+          <ListItem></ListItem>
+        </List>
+        <Box sx={{ p: 2, display: "flex", justifyContent: "space-between" }}>
+          <Button
+            component={RouterLink}
+            to="/Login"
+            variant="outlined"
+            sx={{
+              backgroundColor: "secondary.main",
+              color: "white",
+              "&:hover": {
+                backgroundColor: "secondary.dark",
+              },
+              borderRadius: 2,
+              margin: 0,
+            }}
+          >
+            Log out
+          </Button>
+          <IconButton aria-label="delete" size="large" onClick={toggle}>
+            {mode ? (
+              <DarkModeIcon sx={{ fontSize: 25, color: "primary.main" }} />
+            ) : (
+              <LightModeIcon sx={{ fontSize: 25, color: "primary.main" }} />
+            )}
+          </IconButton>
+        </Box>
+      </Drawer>
+      {children}
+    </Box>
+  );
+}
