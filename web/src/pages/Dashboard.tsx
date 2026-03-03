@@ -5,7 +5,8 @@ import { Path } from "@/components/path";
 import Menu from "@/Menu.tsx";
 
 /**
- *
+ * Dashboard page that displays the current breadcrumb path and a placeholder to add new dashboard components.
+ * @returns The rendered Dashboard page
  */
 export default function Home() {
   return (

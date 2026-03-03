@@ -11,10 +11,11 @@ export type SensorSortKey =
 
 // Sorting sensors based on Key (SensorSortkeys)
 /**
- *
- * @param sensors
- * @param key
- * @param direction
+ * Returns a sorted copy of the sensor array based on the given column and direction.
+ * @param sensors - Array of Sensor objects to sort
+ * @param key - Column to sort by, or null to return the array unsorted
+ * @param direction - Sort order: "asc" or "desc"
+ * @returns A new sorted Sensor array (does not mutate the input)
  */
 export function sortSensors(
   sensors: Sensor[],

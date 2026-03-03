@@ -6,7 +6,8 @@ import Link from "@mui/material/Link";
   /*Button to add new components*/
 }
 /**
- *
+ * Placeholder card that lets users add a new dashboard component.
+ * @returns The rendered add-component box
  */
 export function AddBox() {
   return (

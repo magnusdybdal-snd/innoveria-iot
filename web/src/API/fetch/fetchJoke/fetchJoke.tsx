@@ -2,7 +2,8 @@
 import { apiRequest, chuckApiClient, type Joke } from "@/API/apiClient";
 
 /**
- *
+ * Fetches a random Chuck Norris joke from the Chuck Norris API with safe error handling.
+ * @returns A Joke object on success, or null if the request fails
  */
 export const fetchJokeWithErrorHandling = async (): Promise<Joke | null> => {
   try {

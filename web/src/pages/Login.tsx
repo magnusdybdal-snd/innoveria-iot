@@ -12,7 +12,8 @@ import innLogoLight from "@/assets/innoveriaLight.png";
 import { ThemeContext } from "@/theme/color/themeContext";
 
 /**
- *
+ * Login page with username and password fields and a link to account registration.
+ * @returns The rendered Login page
  */
 export default function Base() {
   const { mode } = useContext(ThemeContext);

@@ -27,6 +27,7 @@ const sortableColumns: GatewaySortKey[] = ["Status", "Name", "Last seen"];
  *
  * Fetches live gateway data from the device-service on mount and manages
  * column sort state. Delegates row rendering to GatewayRow/GatewayInfo.
+ * @returns The rendered Gateways page
  */
 export default function Gateways() {
   const [gateways, setGateways] = useState<Gateway[]>([]);

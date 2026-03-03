@@ -17,7 +17,8 @@ import { LightMode } from "@/theme/color/lightMode";
 import { ThemeContext } from "@/theme/color/themeContext";
 
 /**
- *
+ * Application root that wires up theme persistence, MUI ThemeProvider, and the React Router route tree.
+ * @returns The rendered application root with all providers and routes
  */
 export default function Root() {
   // read saved theme on first load

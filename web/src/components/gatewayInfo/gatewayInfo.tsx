@@ -25,10 +25,9 @@ type InfoProps = {
  * Opens a Dialog to collect the new name on rename.
  * @param props - Component props
  * @param props.name - Display name of the gateway
- * @param props.online - Whether the gateway is currently online
- * @param props.status
+ * @param props.status - Numeric status code: 0 = online, 1 = warning, 2 = offline
  * @param props.euid - EUI (Extended Unique Identifier) of the gateway
- * @param props.lastSeen - Human-readable time since last contact (e.g. "2 min")
+ * @param props.lastSeen - Human-readable time since last contact (e.g. "2 min ago")
  * @returns A set of grid-aligned cells with an action menu and rename dialog
  */
 export function GatewayInfo({ name, status, euid, lastSeen }: InfoProps) {

@@ -10,10 +10,11 @@ type InfoProps = {
   /*Format for general sensors info*/
 }
 /**
- *
- * @param root0
- * @param root0.title
- * @param root0.count
+ * Summary card displaying a sensor statistic label and its numeric count.
+ * @param root0 - Component props
+ * @param root0.title - Label for the statistic (e.g. "Online sensors")
+ * @param root0.count - Numeric value of the statistic
+ * @returns The rendered summary card
  */
 export function SensorsGenInfo({ title, count }: InfoProps) {
   return (

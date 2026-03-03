@@ -6,7 +6,8 @@ import { useLocation } from "react-router";
   /*Path of current site + line divider*/
 }
 /**
- *
+ * Renders the current route as a breadcrumb path (e.g. "Home > Devices > Sensors") followed by a divider.
+ * @returns The rendered breadcrumb path with a divider
  */
 export function Path() {
   const location = useLocation();

@@ -1,7 +1,8 @@
 import Divider from "@mui/material/Divider";
 
 /**
- * Styled horizontal rule used to visually separate page sections.
+ * PageDivider
+ * @returns Styled horizontal ruler used to visually separate page sections.
  */
 export function PageDivider() {
   return (

@@ -25,8 +25,13 @@ export interface AddDeviceProps {
 }
 
 /**
- *
- * @param props
+ * Modal dialog for registering a new sensor device, with input validation for DeviceEUI and Application key lengths.
+ * @param props - Component props
+ * @param props.open - Whether the dialog is visible
+ * @param props.onClose - Called when the dialog should close without submitting
+ * @param props.addOptions - Field names to render as inputs inside the dialog
+ * @param props.onAdd - Called with the validated sensor data when the user confirms
+ * @returns The rendered add-device dialog
  */
 export function AddDevice(props: AddDeviceProps) {
   const { onClose, open, addOptions } = props;

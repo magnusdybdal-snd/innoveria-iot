@@ -16,13 +16,13 @@ export const serviceClient = axios.create({
   },
 });
 
-// Generic API helper
 /**
- *
- * @param client
- * @param url
- * @param method
- * @param data
+ * Sends a typed HTTP request through the given Axios instance and returns the response data.
+ * @param client - Axios instance to use for the request
+ * @param url - Request URL, relative to the instance's baseURL
+ * @param method - HTTP method to use
+ * @param data - Optional request body for POST/PUT requests
+ * @returns Parsed response body typed as T
  */
 export const apiRequest = async <T,>(
   client: AxiosInstance,

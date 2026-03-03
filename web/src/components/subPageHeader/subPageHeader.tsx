@@ -15,13 +15,12 @@ type SubPageHeaderProps = {
 };
 
 /**
- * Renders the top section of a sub-page, combining a breadcrumb path with an
- * optional title and action slot.
- * @param props.title - Page heading text; conditionally rendered when provided
- * @param root0
- * @param root0.title
- * @param props.action - Arbitrary action element aligned to the trailing edge of the header row
- * @param root0.action
+ * SubPageHeader renders the top section of a sub-page, combining a breadcrumb
+ * path with an optional title and action slot.
+ * @param root0 - Component props
+ * @param root0.title - Page heading text; conditionally rendered when provided
+ * @param root0.action - Arbitrary action element aligned to the trailing edge of the header row
+ * @returns The rendered sub-page header
  */
 export function SubPageHeader({ title, action }: SubPageHeaderProps) {
   return (
