@@ -1,10 +1,29 @@
+#
+# Docker compose for: PRODUCTION 
+#
 services:
+  web:
+    build:
+      context: .
+      dockerfile: infra/production/web.Dockerfile
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - DOMAIN=${DOMAIN}
+      - API_GATEWAY_PORT=${API_GATEWAY_PORT}
+    depends_on:
+      - api-gateway
+
   api-gateway:
     build:
       context: .
       dockerfile: infra/production/api-gateway.Dockerfile
-    ports:
-      - "8081:8080"
+    expose:
+      - ${API_GATEWAY_PORT}
     environment:
-      - GO_ENV=PRODUCTION
+      - PORT=${API_GATEWAY_PORT}
+      - COLLECTION_SERVICE=${COLLECTION_SERVICE}
+      - DEVICE_SERVICE=${DEVICE_SERVICE}
+      - GO_ENV=${GO_ENV}
     restart: unless-stopped

@@ -19,8 +19,11 @@ export default defineConfig({
     host: true,
     strictPort: true,
     port: 3000,
-    allowedHosts: [
-      "prog2900-lorawan.vm.iik.ntnu.no", // TODO remove when switching to production if required.
-    ],
+    proxy: {
+      "/api": {
+        target: "http://localhost:8081/api",
+        changeOrigin: true,
+      },
+    },
   },
 });

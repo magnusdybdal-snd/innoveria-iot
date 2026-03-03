@@ -9,7 +9,7 @@ export const fetchSensors = async (): Promise<Sensor[]> => {
   try {
     const data = await apiRequest<SensorListApiResponse>(
       serviceClient,
-      "/api/v1/device/sensors",
+      "/v1/device/sensors",
       "GET",
     );
 

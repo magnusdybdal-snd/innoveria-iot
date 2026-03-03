@@ -1,12 +1,15 @@
-FROM oven/bun:latest
+FROM oven/bun:latest AS builder
 
 WORKDIR /app
 
 COPY ./web/package.json ./web/bun.lock ./
-RUN bun install --production
+RUN bun install
 
 COPY ./web ./
 
-EXPOSE 3000
+RUN bun run build
 
-CMD ["bun", "run", "start"]
+FROM caddy:2-alpine
+
+COPY --from=builder /app/dist /usr/share/caddy
+COPY infra/production/Caddyfile /etc/caddy/Caddyfile

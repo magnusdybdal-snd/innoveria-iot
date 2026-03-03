@@ -10,7 +10,7 @@ export const chuckApiClient = axios.create({
 
 // Client for all microservice requests — routed through the api-gateway
 export const serviceClient = axios.create({
-  baseURL: "http://localhost:8081",
+  baseURL: import.meta.env.VITE_API_URL, // Imported api url from vite config
   headers: {
     "Content-Type": "application/json",
   },
