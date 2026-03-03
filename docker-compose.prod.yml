@@ -2,6 +2,69 @@
 # Docker compose for: PRODUCTION 
 #
 services:
+  #
+  # CHIRPSTACK / LoRaWAN Handling
+  #
+  chirpstack:
+    build:
+      context: .
+      dockerfile: infra/production/chirpstack.Dockerfile
+    user: root
+    entrypoint: ["/bin/sh", "/scripts/startChirpstack.sh"]
+    restart: unless-stopped
+    volumes:
+      - ./infra/config/chirpstack:/etc/chirpstack
+      - ./scripts/startChirpstack.sh:/scripts/startChirpstack.sh
+      #- chirpstack-secrets:/secrets
+    depends_on:
+      - chirpstack-db
+      - mosquitto
+      - redis
+    environment:
+      - MQTT_BROKER_HOST=mosquitto
+      - REDIS_HOST=redis
+      - POSTGRES_HOST=chirpstack-db
+      - POSTGRES_USER=${CHIRPSTACK_DB_USER}
+      - POSTGRES_PASSWORD=${CHIRPSTACK_DB_PASSWORD}
+
+  chirpstack-gateway-bridge:
+    image: chirpstack/chirpstack-gateway-bridge:4
+    restart: unless-stopped
+    ports:
+      - "1700:1700/udp"
+    volumes:
+      - ./infra/config/chirpstack-gateway-bridge:/etc/chirpstack-gateway-bridge
+    environment:
+      - INTEGRATION__MQTT__EVENT_TOPIC_TEMPLATE=eu868/gateway/{{ .GatewayID }}/event/{{ .EventType }}
+      - INTEGRATION__MQTT__STATE_TOPIC_TEMPLATE=eu868/gateway/{{ .GatewayID }}/state/{{ .StateType }}
+      - INTEGRATION__MQTT__COMMAND_TOPIC_TEMPLATE=eu868/gateway/{{ .GatewayID }}/command/#
+    depends_on:
+      - mosquitto
+
+  chirpstack-rest-api:
+    image: chirpstack/chirpstack-rest-api:4
+    restart: unless-stopped
+    command: --server chirpstack:8080 --bind 0.0.0.0:8090 --insecure
+    depends_on:
+      - chirpstack
+
+  chirpstack-db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    volumes:
+      - ./infra/config/postgresql/initdb:/docker-entrypoint-initdb.d
+      - chirpstack-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=${CHIRPSTACK_DB_USER}
+      - POSTGRES_PASSWORD=${CHIRPSTACK_DB_PASSWORD}
+      - POSTGRES_DB=chirpstack-db
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --save 300 1 --save 60 100 --appendonly no
+    volumes:
+      - redis-data:/data
+
   mosquitto:
     image: eclipse-mosquitto:2
     restart: unless-stopped
@@ -14,11 +77,10 @@ services:
       context: .
       dockerfile: infra/production/web.Dockerfile
     ports:
-      - "80:80"
-      - "443:443"
+      - "${HTTP_PORT}:${HTTP_PORT}"
+      - "${HTTPS_PORT}:${HTTPS_PORT}"
     environment:
       - DOMAIN=${DOMAIN}
-      - API_GATEWAY_PORT=${API_GATEWAY_PORT}
     depends_on:
       - api-gateway
 
@@ -26,10 +88,7 @@ services:
     build:
       context: .
       dockerfile: infra/production/api-gateway.Dockerfile
-    expose:
-      - ${API_GATEWAY_PORT}
     environment:
-      - PORT=${API_GATEWAY_PORT}
       - COLLECTION_SERVICE=${COLLECTION_SERVICE}
       - DEVICE_SERVICE=${DEVICE_SERVICE}
       - GO_ENV=${GO_ENV}
@@ -40,7 +99,6 @@ services:
       context: .
       dockerfile: infra/production/collection-service.Dockerfile
     environment:
-      - PORT=${COLLECTION_SERVICE_PORT}
       - GO_ENV=${GO_ENV}
       - MQTT_BROKER_URL=${MQTT_BROKER_URL}
       - MQTT_BROKER_USERNAME=${MQTT_USERNAME}
@@ -67,5 +125,35 @@ services:
       - POSTGRES_PASSWORD=${COLLECTION_DB_PASSWORD}
       - POSTGRES_DB=${COLLECTION_DB_NAME}
 
+  device-service:
+    build:
+      context: .
+      dockerfile: infra/production/device-service.Dockerfile
+    #volumes:
+      #- chirpstack-secrets:/secrets
+    environment:
+      - GO_ENV=${GO_ENV}
+      - DB_HOST=${DEVICE_DB_HOST}
+      - DB_PORT=${DEVICE_DB_PORT}
+      - DB_USER=${DEVICE_DB_USER}
+      - DB_PASSWORD=${DEVICE_DB_PASSWORD}
+      - DB_NAME=${DEVICE_DB_NAME}
+      - DB_SSLMODE=${DEVICE_DB_SSLMODE}
+    depends_on:
+      - device-db
+
+  device-db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    volumes:
+      - device-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=${DEVICE_DB_USER}
+      - POSTGRES_PASSWORD=${DEVICE_DB_PASSWORD}
+      - POSTGRES_DB=${DEVICE_DB_NAME}
+
 volumes:
+  chirpstack-data:
   collection-data:
+  device-data:
+  redis-data:

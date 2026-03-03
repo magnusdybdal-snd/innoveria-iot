@@ -6,7 +6,7 @@
 
     # Letting caddy safely handle http requests internally on backend
     handle_path /api/* {
-        reverse_proxy api-gateway:{$API_GATEWAY_PORT}
+        reverse_proxy api-gateway:8080
     }
 
     # if file does not exists run index.html

@@ -1,5 +1,8 @@
 FROM chirpstack/chirpstack:4
 
+# TODO: clone the forked version here
+# TODO: Handle stable commit version
+
 USER root
 
 RUN apk add --no-cache git \
