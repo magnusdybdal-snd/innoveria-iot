@@ -21,6 +21,9 @@ linters:
   settings:
     godoclint:
       default: basic
+      enable:
+        - require-doc     # exported symbols must have a doc comment
+       # - require-pkg-doc # every package must have a doc comment #TODO: enable if needed.
 
 formatters:
   enable:
