@@ -33,9 +33,6 @@
     ],
     "*.{json,css,md,html,yml}": [
       "prettier --write"
-    ],
-    "*.sql": [
-      "sql-lint --driver postgres"
     ]
   },
   "optionalDependencies": {
