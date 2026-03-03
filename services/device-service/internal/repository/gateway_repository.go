@@ -39,6 +39,12 @@ const (
 		WHERE gateway_id = $2
 	`
 
+	UpdateGatewayQuery = `
+		UPDATE device.gateway
+		SET name = $1, description = $2, factory_area_id = $3, updated_at = now()
+		WHERE gateway_id = $4
+	`
+
 	DeleteGatewayQuery = `
 		DELETE FROM device.gateway 
 		WHERE gateway_id = $1
@@ -180,6 +186,22 @@ func (r *GatewayRepository) UpdateState(ctx context.Context, gatewayID string, s
 	tag, err := r.db.Pool.Exec(ctx, UpdateGatewayStateQuery, state, gatewayID)
 	if err != nil {
 		return fmt.Errorf("update gateway state: %w", err)
+	}
+
+	if tag.RowsAffected() == 0 {
+		return fmt.Errorf("gateway not found: %s", gatewayID)
+	}
+
+	return nil
+}
+
+// Update updates the user editable db fields of a gateway and updates the updated at timestamp.
+// Returns an error if no gateway with the given ID exists.
+func (r *GatewayRepository) Update(ctx context.Context, gatewayID string, payload domain.Gateway) error {
+
+	tag, err := r.db.Pool.Exec(ctx, UpdateGatewayQuery, payload.Name, payload.Description, payload.FactoryAreaID, gatewayID)
+	if err != nil {
+		return fmt.Errorf("update gateway: %w", err)
 	}
 
 	if tag.RowsAffected() == 0 {

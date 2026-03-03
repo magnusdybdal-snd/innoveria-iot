@@ -51,24 +51,40 @@ func (g *GatewayServiceImpl) Create(ctx context.Context, payload domain.Gateway)
 	return nil
 }
 
-// TODO: UPDATE IN DATABASE
+// Update updates the gateways metadata in our database and the name in Chirpstack
+// DB is called before Chirpstack here because if Chirpstack fails we still want
+// to update the fields in the database.
 func (g *GatewayServiceImpl) Update(ctx context.Context, gatewayId string, payload domain.Gateway) error {
 	// Verify that the gateway exists in db
 	gateway, err := g.gatewayRepo.FindByID(ctx, gatewayId)
 	if err != nil {
 		return fmt.Errorf("update gateway: gateway %s not found in database: %w", gatewayId, err)
 	}
-	// check database for chirpstack tenant ID
-	companycfg, err := g.companycfgRepo.FindByCompanyID(ctx, gateway.CompanyId)
+
+	// Update the gateway in the database
+	err = g.gatewayRepo.Update(ctx, gatewayId, payload)
 	if err != nil {
-		return fmt.Errorf("update gateway: finding company tenant ID: %w", err)
+		return fmt.Errorf("update gateway: update in database: %w", err)
 	}
 
-	// Chirpstack put request, Chirpstack dont need gatewayID, just gatewayEUI
-	gatewayReq := mappers.MapCreateChirpstackGateway(payload, companycfg.ChirpstackTenantID)
-	err = g.cc.RenameGateway(ctx, gatewayReq)
-	if err != nil {
-		return fmt.Errorf("update gateway: update in chirpstack: %w", err)
+	// Only update in Chirpstack if the name has changed (Chirpstack only allows name updates)
+	if payload.Name != gateway.Name {
+
+		// check database for chirpstack tenant ID
+		companycfg, err := g.companycfgRepo.FindByCompanyID(ctx, gateway.CompanyId)
+		if err != nil {
+			return fmt.Errorf("update gateway: finding company tenant ID: %w", err)
+		}
+
+		// Ensure the payload EUI field is populated before mapping to Chirpstack
+		payload.GatewayEUI = gateway.GatewayEUI
+
+		// Chirpstack put request, Chirpstack dont need gatewayID, just gatewayEUI
+		gatewayReq := mappers.MapCreateChirpstackGateway(payload, companycfg.ChirpstackTenantID)
+		err = g.cc.RenameGateway(ctx, gatewayReq)
+		if err != nil {
+			return fmt.Errorf("update gateway: update in chirpstack: %w", err)
+		}
 	}
 
 	slog.Info("successfully updated gateway", "id", gateway.Id)
