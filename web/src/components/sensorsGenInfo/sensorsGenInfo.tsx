@@ -9,6 +9,12 @@ type InfoProps = {
 {
   /*Format for general sensors info*/
 }
+/**
+ *
+ * @param root0
+ * @param root0.title
+ * @param root0.count
+ */
 export function SensorsGenInfo({ title, count }: InfoProps) {
   return (
     <Box

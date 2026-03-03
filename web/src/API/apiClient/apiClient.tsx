@@ -17,6 +17,13 @@ export const serviceClient = axios.create({
 });
 
 // Generic API helper
+/**
+ *
+ * @param client
+ * @param url
+ * @param method
+ * @param data
+ */
 export const apiRequest = async <T,>(
   client: AxiosInstance,
   url: string,

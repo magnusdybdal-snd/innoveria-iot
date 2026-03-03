@@ -10,6 +10,12 @@ export type SensorSortKey =
   | "Sensor profile";
 
 // Sorting sensors based on Key (SensorSortkeys)
+/**
+ *
+ * @param sensors
+ * @param key
+ * @param direction
+ */
 export function sortSensors(
   sensors: Sensor[],
   key: SensorSortKey | null,

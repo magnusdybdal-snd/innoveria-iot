@@ -11,6 +11,12 @@ function parseLastSeenToMs(lastSeen: string): number {
 }
 
 // Sorting gateways based on Key (GatewaySortkeys)
+/**
+ *
+ * @param gateways
+ * @param key
+ * @param direction
+ */
 export function sortGateways(
   gateways: Gateway[],
   key: GatewaySortKey | null,

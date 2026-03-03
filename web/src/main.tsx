@@ -16,6 +16,9 @@ import { DarkMode } from "@/theme/color/darkMode";
 import { LightMode } from "@/theme/color/lightMode";
 import { ThemeContext } from "@/theme/color/themeContext";
 
+/**
+ *
+ */
 export default function Root() {
   // read saved theme on first load
   const [mode, setDark] = useState(() => {

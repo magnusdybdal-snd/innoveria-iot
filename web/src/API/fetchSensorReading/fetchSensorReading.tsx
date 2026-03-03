@@ -4,6 +4,10 @@ import {
   type SensorReadingApiResponse,
 } from "@/API/apiClient";
 
+/**
+ *
+ * @param deviceEUI
+ */
 export const fetchSensorReading = async (
   deviceEUI: string,
 ): Promise<SensorReadingApiResponse | null> => {

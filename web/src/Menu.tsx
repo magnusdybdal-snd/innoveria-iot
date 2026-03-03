@@ -19,6 +19,9 @@ import { ThemeContext } from "@/theme/color/themeContext";
 
 import viteLogo from "/vite.svg";
 
+/**
+ *
+ */
 export default function Menu() {
   const { mode, toggle } = useContext(ThemeContext);
 

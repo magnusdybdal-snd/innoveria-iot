@@ -5,6 +5,9 @@ import {
 } from "@/API/apiClient";
 import type { Sensor } from "@/mocks/sensors";
 
+/**
+ *
+ */
 export const fetchSensors = async (): Promise<Sensor[]> => {
   try {
     const data = await apiRequest<SensorListApiResponse>(

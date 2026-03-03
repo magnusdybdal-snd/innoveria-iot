@@ -7,6 +7,12 @@ type DeviceRowProps = {
   onClick?: () => void;
 };
 
+/**
+ *
+ * @param root0
+ * @param root0.children
+ * @param root0.onClick
+ */
 export function DeviceRow({ children, onClick }: DeviceRowProps) {
   return (
     <Box

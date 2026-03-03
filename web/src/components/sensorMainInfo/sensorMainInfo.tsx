@@ -22,6 +22,14 @@ type InfoMainProps = {
 {
   /*Format for main single sensor info*/
 }
+/**
+ *
+ * @param root0
+ * @param root0.name
+ * @param root0.status
+ * @param root0.lastReading
+ * @param root0.onClick
+ */
 export function SensorMainInfo({
   name,
   status,

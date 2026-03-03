@@ -76,6 +76,10 @@ function SensorAllInfo({
   );
 }
 
+/**
+ *
+ * @param props
+ */
 export function SensorAllInfoPopUp(props: AddDeviceProps) {
   const { onClose, open, sensor } = props;
   const [reading, setReading] = useState<SensorReadingApiResponse | null>(null);

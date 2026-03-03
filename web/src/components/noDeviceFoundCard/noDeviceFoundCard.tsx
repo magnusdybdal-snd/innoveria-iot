@@ -4,6 +4,9 @@ import Card from "@mui/material/Card";
 import { yellow } from "@mui/material/colors";
 
 // Card to display to user that no device has been found
+/**
+ *
+ */
 export function NoDeviceFoundCard() {
   return (
     <>

@@ -4,6 +4,9 @@ import { AddBox } from "@/components/addCompBox";
 import { Path } from "@/components/path";
 import Menu from "@/Menu.tsx";
 
+/**
+ *
+ */
 export default function Home() {
   return (
     <div className="flex h-screen">

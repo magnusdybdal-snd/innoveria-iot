@@ -32,6 +32,9 @@ const addSensorDetails: string[] = [
 const sortableColumns: SensorSortKey[] = ["Status", "Name", "Last reading"];
 type NewSensor = Omit<Sensor, "id" | "status" | "lastReading">;
 
+/**
+ *
+ */
 export default function Sensors() {
   const [sensors, setSensors] = useState<Sensor[]>([]);
   const [isLoading, setIsLoading] = useState(true);

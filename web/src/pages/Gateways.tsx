@@ -49,7 +49,6 @@ export default function Gateways() {
 
   /**
    * Updates sort state when a column header is clicked.
-   *
    * @param column - The column label passed up from CategoryHeader's onSort callback
    */
   function handleSort(column: string) {

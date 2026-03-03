@@ -24,6 +24,10 @@ export interface AddDeviceProps {
   }) => void;
 }
 
+/**
+ *
+ * @param props
+ */
 export function AddDevice(props: AddDeviceProps) {
   const { onClose, open, addOptions } = props;
   const [values, setValues] = useState<Record<string, string>>({});

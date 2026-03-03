@@ -5,6 +5,9 @@ import Link from "@mui/material/Link";
 {
   /*Button to add new components*/
 }
+/**
+ *
+ */
 export function AddBox() {
   return (
     <Box

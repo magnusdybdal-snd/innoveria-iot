@@ -19,7 +19,6 @@ type ActionMenuProps = {
  * A three-dot icon button that opens a dropdown context menu.
  * Accepts a list of labeled action items with optional disabled states.
  * The trigger icon defaults to MoreVertIcon but can be overridden.
- *
  * @param props - Component props
  * @param props.items - List of menu actions, each with a label, handler, and optional disabled flag
  * @param props.icon - Custom trigger icon; defaults to a vertical three-dot icon

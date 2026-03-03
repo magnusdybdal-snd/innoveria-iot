@@ -14,6 +14,14 @@ type MenuBoxProps = {
 {
   /*Box for menu components*/
 }
+/**
+ *
+ * @param root0
+ * @param root0.title
+ * @param root0.mainPage
+ * @param root0.subPages
+ * @param root0.add
+ */
 export function MenuBox({ title, mainPage, subPages, add }: MenuBoxProps) {
   return (
     <Box
