@@ -2,6 +2,11 @@
 
 We use [goose](https://github.com/pressly/goose) for database migrations. Migrations run automatically on service startup — no manual steps needed.
 
+Install the tool to make new migrations files
+```bash
+go install github.com/pressly/goose/v3/cmd/goose@v3.27.0
+```
+
 ## How it works
 
 - Each service manages its own migrations in `internal/db/migrations/`

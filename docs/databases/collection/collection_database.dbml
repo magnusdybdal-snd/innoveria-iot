@@ -1,0 +1,25 @@
+// ============================================
+// COLLECTION DB (timescaledb)
+// ============================================
+
+Table collection.tenant_mapping {
+  chirpstack_tenant_id varchar [primary key, note: 'Tenant ID from ChirpStack MQTT messages']
+  company_id           uuid    [not null, note: 'Our internal company ID']
+  created_at           timestamptz [not null, default: `now()`]
+}
+
+Table collection.sensor_measurement {
+  measurement_id uuid        [default: `gen_random_uuid()`, note: 'Not PK — TimescaleDB uses (timestamp, device_eui) for partitioning']
+  device_eui     text        [not null, note: 'Identifies the sensor — matches device.sensor.device_eui (cross-service, no FK)']
+  timestamp      timestamptz [not null, note: 'Hypertable partition key']
+  payload        jsonb       [not null]
+  company_id     uuid        [not null, note: 'Mapped from chirpstack_tenant_id via collection.tenant_mapping at ingest time']
+
+  indexes {
+    (timestamp, device_eui) [name: 'idx_measurement_time_device']
+    (company_id, timestamp)  [name: 'idx_measurement_company_time']
+    payload                  [type: gin, name: 'idx_measurement_payload']
+  }
+}
+
+Ref: collection.sensor_measurement.company_id > collection.tenant_mapping.company_id

@@ -1,0 +1,53 @@
+// ============================================
+// DEVICE DB (postgres:16)                                                                                                                                                                                                                                  
+// ============================================                                                                                                                                                                                                             
+                                                                                                                                                                                                                                                              
+Enum device.device_state {                                                                                                                                                                                                                                  
+    ACTIVE                               
+    INACTIVE
+}
+
+Table device.company_config {
+    company_id               uuid    [primary key, note: 'Same UUID as auth.company — populated during onboarding']
+    chirpstack_tenant_id     varchar [unique, not null, note: 'Created by Device Service via ChirpStack API']
+    chirpstack_application_id varchar [unique, not null, note: 'One ChirpStack application per company — created during onboarding']
+    created_at               timestamptz [not null, default: `now()`]
+}
+
+Table device.gateway {
+    gateway_id      uuid    [primary key, default: `gen_random_uuid()`]
+    company_id      uuid    [not null, note: 'Tenant isolation — references auth.company but no FK across DBs']
+    gateway_eui     varchar [unique, not null, note: 'Shared key with ChirpStack — EUI is the ChirpStack identifier']
+    name            varchar [not null]
+    description     varchar
+    state           device.device_state [not null, default: 'ACTIVE']
+    factory_area_id uuid    [note: 'References auth.factory_area — loose cross-service ref']
+    created_at      timestamptz [not null, default: `now()`]
+    updated_at      timestamptz [not null, default: `now()`]
+}
+
+Table device.sensor {
+    sensor_id              uuid    [primary key, default: `gen_random_uuid()`]
+    company_id             uuid    [not null, note: 'Tenant isolation — references auth.company but no FK across DBs']
+    device_eui             varchar [unique, not null, note: 'Shared key with ChirpStack — EUI is the ChirpStack identifier, bound to sensor hardware']
+    name                   varchar [not null]
+    description            varchar
+    state                  device.device_state [not null, default: 'ACTIVE']
+    chirpstack_profile_id  varchar [not null, note: 'ChirpStack device profile ID — required at registration, describes device model and codec']
+    production_resource_id uuid    [note: 'References erp.production_resource — loose cross-service ref']
+    factory_area_id        uuid    [note: 'References auth.factory_area — loose cross-service ref']
+    created_at             timestamptz [not null, default: `now()`]
+    updated_at             timestamptz [not null, default: `now()`]
+}
+
+Table device.sensor_metric {
+    sensor_id        uuid    [not null]
+    measurement_type varchar [not null, note: 'e.g. temperature, humidity, electric_current']
+    unit             varchar [note: 'e.g. °C, %RH, A']
+
+    indexes {
+        (sensor_id, measurement_type) [pk]
+    }
+}
+
+Ref: device.sensor_metric.sensor_id > device.sensor.sensor_id [delete: cascade]

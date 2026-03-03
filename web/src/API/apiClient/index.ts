@@ -7,4 +7,5 @@ export {
   type GatewayListApiResponse,
   type SensorApiResponse,
   type SensorListApiResponse,
+  type SensorReadingApiResponse,
 } from "./apiClient.tsx";
