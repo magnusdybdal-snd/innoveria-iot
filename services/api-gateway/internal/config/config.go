@@ -14,7 +14,7 @@ type Config struct {
 	// Some serviceAPIKEY?
 }
 
-// Loads the spesific enviroment variables
+// Load the spesific enviroment variables
 func Load() *Config {
 	cfg := Config{
 		Addr:         ":" + env.Get("PORT", "8080"),

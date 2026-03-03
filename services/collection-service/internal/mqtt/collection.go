@@ -79,7 +79,7 @@ func (c *Collector) StartWorkers() {
 	}
 }
 
-// Closing the queue with workers
+// Close is closing the queue with workers
 func (c *Collector) Close() {
 	for i := range c.workers {
 		close(c.workers[i])

@@ -20,7 +20,7 @@ type Config struct {
 	MQTTWorkerCount int
 }
 
-// Loads the spesific enviroment variables
+// Load the spesific enviroment variables
 func Load() *Config {
 	clientID := env.Get("MQTT_CLIENT_ID", "")
 	if clientID == "" {

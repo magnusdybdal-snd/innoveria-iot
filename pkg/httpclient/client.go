@@ -29,7 +29,7 @@ func New() *Client {
 	}
 }
 
-// HTTP Error handling
+// HTTPError handles HTTP Error handling
 type HTTPError struct {
 	StatusCode int
 	Status     string
@@ -111,8 +111,7 @@ func DoRequest[T any](
 	return data, nil
 }
 
-// Returns the request
-// to handle responses which only returns an status code
+// DoRaw returns the request to handle responses which only returns an status code
 func DoRaw(
 	client *Client,
 	ctx context.Context,

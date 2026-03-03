@@ -1,6 +1,6 @@
 package mqtt
 
-// Chirpstack v4 MQTT uplink event
+// ChirpstackUpEvent Chirpstack v4 MQTT uplink event
 type ChirpstackUpEvent struct {
 	DeduplicationID string         `json:"deduplicationId"`
 	Time            string         `json:"time"`

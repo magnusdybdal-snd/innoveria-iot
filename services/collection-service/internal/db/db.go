@@ -12,7 +12,7 @@ type DB struct {
 	Pool *pgxpool.Pool
 }
 
-// Uses pgxpool instead of pgx, for threadsafe database writing
+// New uses pgxpool instead of pgx, for threadsafe database writing
 func New(connString string) (*DB, error) {
 	cfg, err := pgxpool.ParseConfig(connString)
 	if err != nil {

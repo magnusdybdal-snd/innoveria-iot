@@ -16,6 +16,11 @@ linters:
     - ineffassign  # Detects assignments to variables that are never read afterwards
     - unused       # Finds unused constants, variables, functions, and types
     - gocritic     # Opinionated collection of checks not covered by other linters
+    - godoclint    # Little opionated doc-commenting enforcer ('basic' by default)
+
+  settings:
+    godoclint:
+      default: basic
 
 formatters:
   enable:

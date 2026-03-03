@@ -15,7 +15,7 @@ import (
 	"innoveria-iot/api-gateway/internal/config"
 )
 
-// Server entry point
+// Run is the server entry point
 func Run() error {
 	cfg := config.Load()
 	mux := NewRouter(cfg)

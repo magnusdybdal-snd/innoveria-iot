@@ -13,7 +13,7 @@ import (
 //go:embed migrations/*.sql
 var migrations embed.FS
 
-// Thin wrapper around RunMigrations in pkg/dbutil
+// RunMigrations is a thin wrapper around RunMigrations in pkg/dbutil
 func RunMigrations(pool *pgxpool.Pool) error {
 	return dbutil.RunMigrations(pool, migrations)
 }
