@@ -44,8 +44,8 @@ export default defineConfig([
           },
         },
       ],
-      "jsdoc/require-description": ["warn"],
-      "jsdoc/require-returns": ["warn", { checkGetters: false }],
+      "jsdoc/require-description": ["error"],
+      "jsdoc/require-returns": ["error", { checkGetters: false }],
       // These are handled by TypeScript — disable to avoid noise
       "jsdoc/require-param-type": "off",
       "jsdoc/require-returns-type": "off",
