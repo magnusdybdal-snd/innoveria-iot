@@ -15,7 +15,7 @@ services:
     volumes:
       - ./infra/config/chirpstack:/etc/chirpstack
       - ./scripts/startChirpstack.sh:/scripts/startChirpstack.sh
-      #- chirpstack-secrets:/secrets
+      - chirpstack-secrets:/secrets
     depends_on:
       - chirpstack-db
       - mosquitto
@@ -123,14 +123,14 @@ services:
     environment:
       - POSTGRES_USER=${COLLECTION_DB_USER}
       - POSTGRES_PASSWORD=${COLLECTION_DB_PASSWORD}
-      - POSTGRES_DB=${COLLECTION_DB_NAME}
+      - POSTGRES_DB=${COLLECTION_DB_NAME}docker system prune -a --volumes
 
   device-service:
     build:
       context: .
       dockerfile: infra/production/device-service.Dockerfile
-    #volumes:
-      #- chirpstack-secrets:/secrets
+    volumes:
+      - chirpstack-secrets:/secrets
     environment:
       - GO_ENV=${GO_ENV}
       - DB_HOST=${DEVICE_DB_HOST}
@@ -153,6 +153,7 @@ services:
       - POSTGRES_DB=${DEVICE_DB_NAME}
 
 volumes:
+  chirpstack-secrets:
   chirpstack-data:
   collection-data:
   device-data:
