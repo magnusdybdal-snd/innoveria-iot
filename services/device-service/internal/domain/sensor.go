@@ -26,6 +26,7 @@ type Sensor struct {
 	LastSeenAt string
 }
 
+// SensorService TODO(@Magnus Dybdal): add proper documentation.
 type SensorService interface {
 	GetAll(ctx context.Context) ([]Sensor, error)
 	Create(ctx context.Context) error

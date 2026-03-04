@@ -1,3 +1,4 @@
+// Package config TODO(@vinjar): add proper documentation.
 package config
 
 import (
@@ -6,6 +7,7 @@ import (
 	"innoveria-iot/pkg/env"
 )
 
+// Config TODO(@vinjar): add proper documentation.
 type Config struct {
 	Addr         string
 	CollSvcURL   string
@@ -14,7 +16,7 @@ type Config struct {
 	// Some serviceAPIKEY?
 }
 
-// Loads the spesific enviroment variables
+// Load the spesific enviroment variables
 func Load() *Config {
 	cfg := Config{
 		Addr:         ":" + env.Get("PORT", "8080"),

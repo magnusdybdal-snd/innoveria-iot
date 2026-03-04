@@ -1,3 +1,4 @@
+// Package logger TODO(@vinjar): add proper documentation.
 package logger
 
 import (

@@ -16,6 +16,14 @@ linters:
     - ineffassign  # Detects assignments to variables that are never read afterwards
     - unused       # Finds unused constants, variables, functions, and types
     - gocritic     # Opinionated collection of checks not covered by other linters
+    - godoclint    # Little opionated doc-commenting enforcer ('basic' by default)
+
+  settings:
+    godoclint:
+      default: basic
+      enable:
+        - require-doc     # exported symbols must have a doc comment
+        - require-pkg-doc # every package must have a doc comment 
 
 formatters:
   enable:

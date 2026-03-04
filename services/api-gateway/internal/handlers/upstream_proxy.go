@@ -7,6 +7,7 @@ import (
 	"innoveria-iot/api-gateway/internal/proxy"
 )
 
+// NewUpstreamProxy TODO(@vinjar): add proper documentation.
 func NewUpstreamProxy(baseURL string) (http.Handler, error) {
 	base, err := url.Parse(baseURL)
 	if err != nil {

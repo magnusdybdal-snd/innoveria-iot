@@ -45,6 +45,33 @@ bun run formatcheck  # Check formatting without modifying files
 
 ---
 
+## SQL
+
+### Overview
+
+SQL files (migrations, seeds) are checked for syntax errors using **sql-lint**:
+
+| Tool | Purpose |
+|------|---------|
+| **sql-lint** | Checks `.sql` files for PostgreSQL syntax errors |
+
+sql-lint is installed as a dev dependency in `web/package.json` and requires no separate installation step beyond `bun install`.
+
+### Configuration
+
+- **sql-lint:** `.sql-lintrc.json` at the repo root — currently ignores the `trailing-whitespace` rule
+- Syntax errors block commits; style-only rules are suppressed
+
+### Commands
+
+Run from the `web/` directory:
+
+```bash
+bunx sql-lint --driver postgres ../path/to/file.sql
+```
+
+---
+
 ## Backend (Go)
 
 ### Overview
@@ -55,6 +82,7 @@ We use golangci-lint (v2) for both linting and format checking of Go code:
 |------|---------|
 | **gofmt** | Standard Go formatter — enforces idiomatic formatting (like Prettier for Go) |
 | **golangci-lint** | Meta-linter that runs multiple linters in one pass (govet, errcheck, staticcheck, etc.) |
+| **godoclint** | Enforces GoDoc comments on exported symbols and packages (runs via golangci-lint) |
 
 golangci-lint is declared as a `tool` in each service's `go.mod` file (Go 1.24+ feature). This means **no manual installation is needed** — running `go tool golangci-lint` auto-downloads and caches the exact pinned version. All team members use the same version.
 
@@ -74,7 +102,7 @@ gofmt -w services/
 ### Configuration
 
 - **golangci-lint:** `/.golangci.yml` (v2 format) — auto-discovered from any subdirectory
-- **Enabled linters:** govet, staticcheck, errcheck, ineffassign, unused, gocritic
+- **Enabled linters:** govet, staticcheck, errcheck, ineffassign, unused, gocritic, godoclint
 - **Enabled formatters:** gofmt
 
 ### Adding a new Go service
@@ -102,8 +130,10 @@ The pre-commit hook (`web/.husky/pre-commit`) runs automatically on every `git c
    - `*.{json,css,md,html}` → Prettier
 4. **Go** (only when `.go` files are staged):
    - `gofmt -w` auto-formats the staged files and re-stages them
-   - `golangci-lint run ./...` runs on each service
-5. If any linter finds errors that cannot be auto-fixed, the **commit fails** and you must fix the errors manually
+   - `golangci-lint run` runs only on the packages that contain staged files (not the entire service)
+5. **SQL** (only when `.sql` files are staged):
+   - `sql-lint --driver postgres` checks each staged file for syntax errors
+6. If any linter finds errors that cannot be auto-fixed, the **commit fails** and you must fix the errors manually
 
 ### Bypassing the pre-commit hook
 
@@ -132,6 +162,7 @@ check → build → test
 | Job | Stage | Image | What it does |
 |-----|-------|-------|--------------|
 | `web-check` | check | `oven/bun:latest` | ESLint + Prettier format check |
+| `sql-check` | check | `oven/bun:latest` | sql-lint syntax check on all `.sql` files |
 | `web-build` | build | `oven/bun:latest` | TypeScript + Vite production build |
 | `web-test` | test | `oven/bun:latest` | `bun test` |
 | `go-check` | check | `golang:1.25` | golangci-lint on all Go services |

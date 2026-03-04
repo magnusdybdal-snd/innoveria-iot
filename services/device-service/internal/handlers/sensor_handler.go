@@ -8,6 +8,7 @@ import (
 	"innoveria-iot/pkg/json"
 )
 
+// GetSensors TODO(@vinjar): add proper documentation.
 func GetSensors(svc domain.SensorService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -30,6 +31,7 @@ func GetSensors(svc domain.SensorService) http.HandlerFunc {
 	}
 }
 
+// PostSensor TODO(@vinjar): add proper documentation.
 func PostSensor(svc domain.SensorService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		_ = r.Context()

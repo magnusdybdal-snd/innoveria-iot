@@ -15,6 +15,7 @@ func MapCreateChirpstackApplication(from domain.SensorGroup) dto.CreateChirpstac
 	}
 }
 
+// MapChirpstackSensorGroupDtoToDomain TODO(@vinjar): add proper documentation.
 func MapChirpstackSensorGroupDtoToDomain(from dto.ChirpstackApplication) domain.SensorGroup {
 	return domain.SensorGroup{
 		Id:        from.ID,

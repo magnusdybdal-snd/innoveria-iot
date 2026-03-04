@@ -7,6 +7,7 @@ import (
 	"innoveria-iot/device-service/internal/handlers"
 )
 
+// NewRouter TODO(@vinjar): add proper documentation.
 func NewRouter(
 	gatewaySvc domain.GatewayService,
 	sensorSvc domain.SensorService,

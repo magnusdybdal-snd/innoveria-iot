@@ -1,3 +1,4 @@
+// Package handlers TODO(@vinjar): add proper documentation.
 package handlers
 
 import (
@@ -9,7 +10,7 @@ import (
 	"innoveria-iot/pkg/json"
 )
 
-// GetGateway returns a json with all available gateways and their status from chirpstack
+// GetGateways TODO(@vinjar): add proper documentation.
 func GetGateways(svc domain.GatewayService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -32,6 +33,7 @@ func GetGateways(svc domain.GatewayService) http.HandlerFunc {
 	}
 }
 
+// PostGateway TODO(@vinjar): add proper documentation.
 func PostGateway(svc domain.GatewayService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -53,6 +55,7 @@ func PostGateway(svc domain.GatewayService) http.HandlerFunc {
 	}
 }
 
+// PutGateway TODO(@vinjar): add proper documentation.
 func PutGateway(svc domain.GatewayService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -79,6 +82,7 @@ func PutGateway(svc domain.GatewayService) http.HandlerFunc {
 	}
 }
 
+// DeleteGateway TODO(@vinjar): add proper documentation.
 func DeleteGateway(svc domain.GatewayService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()

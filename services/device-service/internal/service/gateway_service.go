@@ -1,3 +1,4 @@
+// Package service TODO(@vinjar): add proper documentation.
 package service
 
 import (
@@ -8,16 +9,19 @@ import (
 	"innoveria-iot/device-service/internal/service/mappers"
 )
 
+// GatewayServiceImpl TODO(@vinjar): add proper documentation.
 type GatewayServiceImpl struct {
 	cc *chirpstackrest.Client
 }
 
+// NewGatewayService TODO(@vinjar): add proper documentation.
 func NewGatewayService(cc *chirpstackrest.Client) *GatewayServiceImpl {
 	return &GatewayServiceImpl{
 		cc: cc,
 	}
 }
 
+// Create TODO(@vinjar): add proper documentation.
 func (g *GatewayServiceImpl) Create(ctx context.Context, payload domain.Gateway) error {
 	// Convert to chirpstack models
 	// TODO: DB generates the gateway Id, which is not the same as gatewayEUI
@@ -33,8 +37,7 @@ func (g *GatewayServiceImpl) Create(ctx context.Context, payload domain.Gateway)
 	return nil
 }
 
-// Handles the put request from handler
-// remember gatewayId is not gatewayEUI
+// Update TODO(@vinjar): add proper documentation.
 func (g *GatewayServiceImpl) Update(ctx context.Context, gatewayId string, payload domain.Gateway) error {
 	// TODO: check gatewayId in db
 	// check database for tennant id (chirpstack tennant id)
@@ -49,7 +52,7 @@ func (g *GatewayServiceImpl) Update(ctx context.Context, gatewayId string, paylo
 	return nil
 }
 
-// Returns all gateway meta data with gateway status
+// GetAll TODO(@vinjar): add proper documentation.
 func (g *GatewayServiceImpl) GetAll(ctx context.Context) ([]domain.Gateway, error) {
 	// 1. Get gateway from database
 	limit := 1 // TODO: Get the actual gateway total count from database
@@ -72,6 +75,7 @@ func (g *GatewayServiceImpl) GetAll(ctx context.Context) ([]domain.Gateway, erro
 	return result, nil
 }
 
+// Delete TODO(@vinjar): add proper documentation.
 func (g *GatewayServiceImpl) Delete(ctx context.Context, gatewayID string) error {
 	// delete from database
 

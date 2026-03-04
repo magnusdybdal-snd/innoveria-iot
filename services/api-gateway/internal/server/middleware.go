@@ -1,3 +1,4 @@
+// Package server TODO(@vinjar): add proper documentation.
 package server
 
 import "net/http"

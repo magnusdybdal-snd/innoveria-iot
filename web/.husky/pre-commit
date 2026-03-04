@@ -20,14 +20,40 @@ if [ -n "$STAGED_GO" ]; then
   echo "$STAGED_GO" | xargs git add
 
   # Add new Go services here. pkg/ must be first — services depend on it via replace directive.
-  GO_SERVICES="pkg/ services/api-gateway services/collection-service services/device-service"
+  GO_SERVICES="pkg services/api-gateway services/collection-service services/device-service"
 
   for dir in $GO_SERVICES; do
     if [ -d "$dir" ]; then
-      echo "  Tidying and linting $dir..."
-      (cd "$dir" && go mod tidy && git add go.mod go.sum 2>/dev/null; go tool golangci-lint run ./...)
+      # Only lint packages that contain staged files, not the entire service.
+      PKGS=$(echo "$STAGED_GO" | grep "^$dir/" | sed "s|^$dir/||" | xargs -I{} dirname {} | sort -u | sed 's|^|./|')
+      if [ -n "$PKGS" ]; then
+        echo "  Tidying and linting changed packages in $dir: $PKGS"
+        # shellcheck disable=SC2086
+        (cd "$dir" && go mod tidy && git add go.mod go.sum 2>/dev/null; go tool golangci-lint run $PKGS)
+      fi
     fi
   done
 else
   echo "No staged .go files found — skipping Go linting."
+fi
+
+### SQL linting ###
+
+# Only run when .sql files are staged.
+STAGED_SQL=$(git diff --staged --name-only --diff-filter=ACM -- '*.sql')
+
+if [ -n "$STAGED_SQL" ]; then
+  echo "SQL files staged — running sql-lint..."
+  FAILED=0
+  for file in $STAGED_SQL; do
+    echo "  Checking $file..."
+    OUTPUT=$(cd web && bunx sql-lint --driver postgres "../$file")
+    if [ -n "$OUTPUT" ]; then
+      echo "$OUTPUT"
+      FAILED=1
+    fi
+  done
+  if [ "$FAILED" -eq 1 ]; then exit 1; fi
+else
+  echo "No staged .sql files found — skipping SQL linting."
 fi

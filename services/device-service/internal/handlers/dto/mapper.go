@@ -4,13 +4,7 @@ import (
 	"innoveria-iot/device-service/internal/domain"
 )
 
-// Domain to dto mapping. So the response has the json tag and shows the total count
-
-/*
-	Gateway mapping
-*/
-
-// Gateway Domain -> DTO
+// MapGatewayDomainToDTO TODO(@Magnus Dybdal): add proper documentation.
 func MapGatewayDomainToDTO(from []domain.Gateway) GatewayListResponse {
 	tot := len(from)
 	gateways := make([]GatewayResponse, tot)
@@ -36,7 +30,7 @@ func mapGateway(from domain.Gateway) GatewayResponse {
 	}
 }
 
-// Post requests Gateway DTO -> domain
+// MapGatewayDTOToDomain TODO(@Magnus Dybdal): add proper documentation.
 func MapGatewayDTOToDomain(from CreateGatewayRequest) domain.Gateway {
 	return domain.Gateway{
 		Id:         "", // converted later in db
@@ -48,9 +42,7 @@ func MapGatewayDTOToDomain(from CreateGatewayRequest) domain.Gateway {
 	}
 }
 
-/*
-Sensors mapping
-*/
+// MapSensorDomainToDTO TODO(@Magnus Dybdal): add proper documentation.
 func MapSensorDomainToDTO(from []domain.Sensor) SensorListResponse {
 	tot := len(from)
 	sensors := make([]SensorResponse, tot)
@@ -75,9 +67,7 @@ func mapSensors(from domain.Sensor) SensorResponse {
 	}
 }
 
-/*
-Sensor profiles
-*/
+// MapSensorProfileDomainToDTO TODO(@Magnus Dybdal): add proper documentation.
 func MapSensorProfileDomainToDTO(from []domain.SensorProfile) SensorProfileListResponse {
 	tot := len(from)
 	sensorProfiles := make([]SensorProfileResponse, tot)
@@ -102,9 +92,7 @@ func mapSensorProfiles(from domain.SensorProfile) SensorProfileResponse {
 	}
 }
 
-/*
-Sensor group
-*/
+// MapSensorGroupToDomain TODO(@Magnus Dybdal): add proper documentation.
 func MapSensorGroupToDomain(from CreateSensorGroup) domain.SensorGroup {
 	return domain.SensorGroup{
 		Id:        "", // converted in chirpstack
@@ -114,6 +102,7 @@ func MapSensorGroupToDomain(from CreateSensorGroup) domain.SensorGroup {
 	}
 }
 
+// MapSensorGroupToDTO TODO(@Magnus Dybdal): add proper documentation.
 func MapSensorGroupToDTO(from []domain.SensorGroup) SensorGroupListResponse {
 	tot := len(from)
 

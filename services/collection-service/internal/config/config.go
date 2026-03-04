@@ -1,3 +1,4 @@
+// Package config TODO(@vinjar): add proper documentation.
 package config
 
 import (
@@ -6,6 +7,7 @@ import (
 	"innoveria-iot/pkg/env"
 )
 
+// Config TODO(@vinjar): add proper documentation.
 type Config struct {
 	// Server Configs
 	Addr   string
@@ -20,7 +22,7 @@ type Config struct {
 	MQTTWorkerCount int
 }
 
-// Loads the spesific enviroment variables
+// Load the spesific enviroment variables
 func Load() *Config {
 	clientID := env.Get("MQTT_CLIENT_ID", "")
 	if clientID == "" {

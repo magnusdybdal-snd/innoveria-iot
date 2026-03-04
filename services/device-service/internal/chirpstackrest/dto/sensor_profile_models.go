@@ -2,12 +2,13 @@ package dto
 
 import "time"
 
-// Chirpstack v4 model for device profiles (sensor profiles)
+// DeviceProfileListResponse TODO(@vinjar): add proper documentation.
 type DeviceProfileListResponse struct {
 	Result     []DeviceProfile `json:"result"`
 	TotalCount int             `json:"totalCount"`
 }
 
+// DeviceProfile TODO(@vinjar): add proper documentation.
 type DeviceProfile struct {
 	ID                string    `json:"id"`
 	Name              string    `json:"name"`

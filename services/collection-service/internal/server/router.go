@@ -1,3 +1,4 @@
+// Package server TODO(@Magnus Dybdal): add proper documentation.
 package server
 
 import (
@@ -6,6 +7,7 @@ import (
 	"net/http"
 )
 
+// NewRouter TODO(@Magnus Dybdal): add proper documentation.
 func NewRouter(svc domain.MeasurementService) *http.ServeMux {
 	mux := http.NewServeMux()
 

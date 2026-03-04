@@ -1,5 +1,8 @@
 package server
 
+// Suppress godoclint in this file. Const naming should be explanatory in themselves
+//godoclint:disable
+
 // Collection api routes
 const (
 	INDEX     = "/"
