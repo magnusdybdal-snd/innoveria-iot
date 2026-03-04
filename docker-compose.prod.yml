@@ -133,7 +133,6 @@ services:
     environment:
       - GO_ENV=${GO_ENV}
       - DB_HOST=device-db
-      - DB_PORT=${DEVICE_DB_PORT}
       - DB_USER=${DEVICE_DB_USER}
       - DB_PASSWORD=${DEVICE_DB_PASSWORD}
       - DB_NAME=${DEVICE_DB_NAME}
