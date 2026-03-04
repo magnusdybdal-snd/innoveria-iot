@@ -1,3 +1,4 @@
+// Package chirpstackrest TODO(@vinjar): add proper documentation.
 package chirpstackrest
 
 import (
@@ -7,19 +8,20 @@ import (
 	"innoveria-iot/pkg/httpclient"
 )
 
-// How chirpstack format the errors
+// ChirpstackError TODO(@vinjar): add proper documentation.
 type ChirpstackError struct {
 	Code    int           `json:"code"`
 	Message string        `json:"message"`
 	Details []ErrorDetail `json:"details"`
 }
 
+// ErrorDetail TODO(@vinjar): add proper documentation.
 type ErrorDetail struct {
 	Type  string            `json:"@type"`
 	Props map[string]string `json:"-"`
 }
 
-// For treating the chirpstack error struct as an error type
+// Error TODO(@vinjar): add proper documentation.
 func (e *ChirpstackError) Error() string {
 	return fmt.Sprintf("chirpstack error: %s (code=%d)", e.Message, e.Code)
 }

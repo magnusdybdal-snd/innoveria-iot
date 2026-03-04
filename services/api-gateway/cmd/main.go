@@ -1,3 +1,4 @@
+// Package main TODO(@vinjar): add proper documentation.
 package main
 
 import (

@@ -7,6 +7,7 @@ import (
 	"innoveria-iot/pkg/json"
 )
 
+// HandleLatestMeasurement TODO(@Magnus Dybdal): add proper documentation.
 func HandleLatestMeasurement(svc domain.MeasurementService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 

@@ -1,5 +1,6 @@
 package dto
 
+// SensorProfileResponse TODO(@vinjar): add proper documentation.
 type SensorProfileResponse struct {
 	Id         string `json:"id"`
 	Name       string `json:"name"`
@@ -10,6 +11,7 @@ type SensorProfileResponse struct {
 	// IsCustom bool   `json:"isCustom,omitempty"`
 }
 
+// SensorProfileListResponse TODO(@vinjar): add proper documentation.
 type SensorProfileListResponse struct {
 	TotalCount     int                     `json:"total_count"`
 	SensorProfiles []SensorProfileResponse `json:"sensor_profiles"`

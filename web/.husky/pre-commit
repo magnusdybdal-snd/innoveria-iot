@@ -20,12 +20,17 @@ if [ -n "$STAGED_GO" ]; then
   echo "$STAGED_GO" | xargs git add
 
   # Add new Go services here. pkg/ must be first — services depend on it via replace directive.
-  GO_SERVICES="pkg/ services/api-gateway services/collection-service services/device-service"
+  GO_SERVICES="pkg services/api-gateway services/collection-service services/device-service"
 
   for dir in $GO_SERVICES; do
     if [ -d "$dir" ]; then
-      echo "  Tidying and linting $dir..."
-      (cd "$dir" && go mod tidy && git add go.mod go.sum 2>/dev/null; go tool golangci-lint run ./...)
+      # Only lint packages that contain staged files, not the entire service.
+      PKGS=$(echo "$STAGED_GO" | grep "^$dir/" | sed "s|^$dir/||" | xargs -I{} dirname {} | sort -u | sed 's|^|./|')
+      if [ -n "$PKGS" ]; then
+        echo "  Tidying and linting changed packages in $dir: $PKGS"
+        # shellcheck disable=SC2086
+        (cd "$dir" && go mod tidy && git add go.mod go.sum 2>/dev/null; go tool golangci-lint run $PKGS)
+      fi
     fi
   done
 else

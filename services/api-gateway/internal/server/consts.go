@@ -1,5 +1,8 @@
 package server
 
+// Suppress godoclint here. Const naming should be explanatory in themselves
+//godoclint:disable
+
 // API gateway routes
 const (
 	INDEX     = "/"

@@ -1,3 +1,4 @@
+// Package mappers TODO(@vinjar): add proper documentation.
 package mappers
 
 import (
@@ -7,10 +8,7 @@ import (
 	"innoveria-iot/device-service/internal/domain"
 )
 
-/*
-	Gateway mapping
-*/
-// Mapping for the chirpstack gateway domain to device service gateway domain
+// MapChirpstackGateway TODO(@vinjar): add proper documentation.
 func MapChirpstackGateway(from dto.ChirpstackGateway) domain.Gateway {
 	return domain.Gateway{
 		Id:         from.GatewayEUI, // TODO: Change this to internal database id
@@ -22,8 +20,7 @@ func MapChirpstackGateway(from dto.ChirpstackGateway) domain.Gateway {
 	}
 }
 
-// Mapping for gateway domain to chirpstack post and put requests
-// Tennant id is chirpstacks internal understanding of companies
+// MapCreateChirpstackGateway TODO(@vinjar): add proper documentation.
 func MapCreateChirpstackGateway(from domain.Gateway, chirpstackTennantId string) dto.CreateChirpstackGatewayRequest {
 	return dto.CreateChirpstackGatewayRequest{
 		CreateGatewayPayload: dto.CreateGatewayPayload{

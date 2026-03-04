@@ -9,6 +9,7 @@ import (
 	"innoveria-iot/pkg/json"
 )
 
+// PostSensorGroup TODO(@vinjar): add proper documentation.
 func PostSensorGroup(svc domain.SensorGroupService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -30,8 +31,7 @@ func PostSensorGroup(svc domain.SensorGroupService) http.HandlerFunc {
 	}
 }
 
-// TODO: fix issues with length parameter
-// Seems to be some problems with how the tennant system is working here
+// GetAllSensorGroups TODO(@vinjar): add proper documentation.
 func GetAllSensorGroups(svc domain.SensorGroupService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()

@@ -8,10 +8,12 @@ import (
 	"innoveria-iot/device-service/internal/service/mappers"
 )
 
+// SensorProfileServiceImpl TODO(@vinjar): add proper documentation.
 type SensorProfileServiceImpl struct {
 	cc *chirpstackrest.Client
 }
 
+// NewSensorProfileService TODO(@vinjar): add proper documentation.
 func NewSensorProfileService(cc *chirpstackrest.Client) *SensorProfileServiceImpl {
 	return &SensorProfileServiceImpl{
 		cc: cc,
@@ -32,8 +34,7 @@ func (s *SensorProfileServiceImpl) GetAll(ctx context.Context, limit int) ([]dom
 	return result, nil
 }
 
-// TODO: fix id parameter
-// has no handler as of yet
+// GetOne TODO(@vinjar): add proper documentation.
 func (s *SensorProfileServiceImpl) GetOne(ctx context.Context) (domain.SensorProfile, error) {
 	return domain.SensorProfile{}, nil
 }
