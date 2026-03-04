@@ -1,3 +1,4 @@
+// Package db TODO(@vinjar): add proper documentation.
 package db
 
 import (
@@ -8,11 +9,12 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
+// DB TODO(@vinjar): add proper documentation.
 type DB struct {
 	Pool *pgxpool.Pool
 }
 
-// Uses pgxpool instead of pgx, for threadsafe database writing
+// New uses pgxpool instead of pgx, for threadsafe database writing
 func New(connString string) (*DB, error) {
 	cfg, err := pgxpool.ParseConfig(connString)
 	if err != nil {
@@ -40,6 +42,7 @@ func New(connString string) (*DB, error) {
 	return &DB{Pool: pool}, nil
 }
 
+// Close TODO(@vinjar): add proper documentation.
 func (d *DB) Close() {
 	d.Pool.Close()
 }

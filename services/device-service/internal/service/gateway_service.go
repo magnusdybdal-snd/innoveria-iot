@@ -1,3 +1,4 @@
+// Package service TODO(@vinjar): add proper documentation.
 package service
 
 import (
@@ -10,12 +11,14 @@ import (
 	"innoveria-iot/device-service/internal/service/mappers"
 )
 
+// GatewayServiceImpl TODO(@vinjar): add proper documentation.
 type GatewayServiceImpl struct {
 	cc             *chirpstackrest.Client
 	gatewayRepo    domain.GatewayRepository
 	companycfgRepo domain.CompanyConfigRepository
 }
 
+// NewGatewayService TODO(@vinjar): add proper documentation.
 func NewGatewayService(cc *chirpstackrest.Client, gatewayRepo domain.GatewayRepository, companyCfgRepo domain.CompanyConfigRepository) *GatewayServiceImpl {
 	return &GatewayServiceImpl{
 		cc:             cc,

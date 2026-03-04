@@ -1,6 +1,6 @@
 package dto
 
-// Get requests
+// SensorGroupResponse TODO(@vinjar): add proper documentation.
 type SensorGroupResponse struct {
 	Id        string `json:"id"`
 	Name      string `json:"name"`
@@ -8,12 +8,13 @@ type SensorGroupResponse struct {
 	Location  string `json:"location"`
 }
 
+// SensorGroupListResponse TODO(@vinjar): add proper documentation.
 type SensorGroupListResponse struct {
 	TotalCount   int                   `json:"total_count"`
 	SensorGroups []SensorGroupResponse `json:"sensor_groups"`
 }
 
-// Post requests
+// CreateSensorGroup TODO(@vinjar): add proper documentation.
 type CreateSensorGroup struct {
 	CompanyId string `json:"company_id"`
 	Name      string `json:"name"`

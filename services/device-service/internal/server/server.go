@@ -18,6 +18,7 @@ import (
 	"time"
 )
 
+// Run TODO(@vinjar): add proper documentation.
 func Run() error {
 	cfg := config.Load()
 

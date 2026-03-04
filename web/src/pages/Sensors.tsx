@@ -14,36 +14,22 @@ import {
 import { NoDeviceFoundCard } from "@/components/noDeviceFoundCard";
 import { PageContent } from "@/components/pageContent";
 import { PageDivider } from "@/components/pageDivider";
-import { SensorInfo } from "@/components/sensorInfo";
+import { SensorAllInfoPopUp } from "@/components/sensorAllInfo";
+import { SensorMainInfo } from "@/components/sensorMainInfo";
 import { SensorsGenInfo } from "@/components/sensorsGenInfo";
 import { SubPageHeader } from "@/components/subPageHeader";
 import Menu from "@/Menu.tsx";
 import { mockSensors, type Sensor } from "@/mocks/sensors.ts";
 
-const sensorDetails: string[] = [
-  "Status",
-  "Name",
-  "DeviceEUI",
-  "Machine",
-  "Last reading",
-  "Application key",
-  "Device profile",
-];
+const sensorMainDetails: string[] = ["Status", "Name", "Last reading"];
 const addSensorDetails: string[] = [
   "Name",
   "DeviceEUI",
   "Machine",
   "Application key",
-  "Device profile",
+  "Sensor profile",
 ];
-const sortableColumns: SensorSortKey[] = [
-  "Status",
-  "Name",
-  "Machine",
-  "Last reading",
-  "Application key",
-  "Device profile",
-];
+const sortableColumns: SensorSortKey[] = ["Status", "Name", "Last reading"];
 type NewSensor = Omit<Sensor, "id" | "status" | "lastReading">;
 
 export default function Sensors() {
@@ -58,14 +44,25 @@ export default function Sensors() {
     });
   }, []);
 
-  const [open, setOpen] = useState(false);
+  const [openAdd, setOpenAdd] = useState(false);
+  const [selectedSensor, setSelectedSensor] = useState<Sensor | null>(null);
 
-  const handleClickOpen = () => {
-    setOpen(true);
+  // Handler for opening and closing add sensor pop-up
+  const handleClickOpenAdd = () => {
+    setOpenAdd(true);
   };
 
-  const handleClose = () => {
-    setOpen(false);
+  const handleCloseAdd = () => {
+    setOpenAdd(false);
+  };
+
+  // Handler for opening and closing all info pop-up
+  const handleRowClick = (sensor: Sensor) => {
+    setSelectedSensor(sensor);
+  };
+
+  const handleCloseInfo = () => {
+    setSelectedSensor(null);
   };
 
   const handleAddSensor = (sensorData: NewSensor) => {
@@ -91,7 +88,7 @@ export default function Sensors() {
         textTransform: "none",
         fontSize: 20,
       }}
-      onClick={handleClickOpen}
+      onClick={handleClickOpenAdd}
     >
       Add device +
     </Button>
@@ -143,45 +140,46 @@ export default function Sensors() {
         </div>
         <PageDivider />
         <CategoryHeader
-          categories={sensorDetails}
-          columns={sensorDetails.length + 1}
+          categories={sensorMainDetails}
+          columns={sensorMainDetails.length + 2}
           sortableColumns={sortableColumns}
           sortConfig={sortConfig}
           onSort={handleSort}
         >
           {sorted.map((sensor) => (
             <DeviceRow key={sensor.id}>
-              <SensorInfo
+              <SensorMainInfo
                 name={sensor.name}
                 status={sensor.status}
-                euid={sensor.euid}
-                machine={sensor.machine}
                 lastReading={sensor.lastReading}
-                appKey={sensor.appKey}
-                devProf={sensor.devProf}
+                onClick={() => handleRowClick(sensor)}
               />
             </DeviceRow>
           ))}
           {sortedMock.map((sensor) => (
             <DeviceRow key={sensor.id}>
-              <SensorInfo
+              <SensorMainInfo
                 name={sensor.name}
                 status={sensor.status}
-                euid={sensor.euid}
-                machine={sensor.machine}
                 lastReading={sensor.lastReading}
-                appKey={sensor.appKey}
-                devProf={sensor.devProf}
+                onClick={() => handleRowClick(sensor)}
               />
             </DeviceRow>
           ))}
         </CategoryHeader>
+        {selectedSensor && (
+          <SensorAllInfoPopUp
+            open={true}
+            onClose={handleCloseInfo}
+            sensor={selectedSensor}
+          />
+        )}
         {!isLoading && sorted.length === 0 && <NoDeviceFoundCard />}
       </PageContent>
 
       <AddDevice
-        open={open}
-        onClose={handleClose}
+        open={openAdd}
+        onClose={handleCloseAdd}
         addOptions={addSensorDetails}
         onAdd={handleAddSensor}
       />

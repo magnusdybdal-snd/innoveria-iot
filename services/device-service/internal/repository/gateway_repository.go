@@ -33,19 +33,19 @@ const (
 		WHERE gateway_eui = $1
 	`
 
-	UpdateGatewayStateQuery = `
+	updateGatewayStateQuery = `
 		UPDATE device.gateway
 		SET state = $1, updated_at = now()
 		WHERE gateway_id = $2
 	`
 
-	UpdateGatewayQuery = `
+	updateGatewayQuery = `
 		UPDATE device.gateway
 		SET name = $1, description = $2, factory_area_id = $3, updated_at = now()
 		WHERE gateway_id = $4
 	`
 
-	DeleteGatewayQuery = `
+	deleteGatewayQuery = `
 		DELETE FROM device.gateway 
 		WHERE gateway_id = $1
 	`
@@ -183,7 +183,7 @@ func (r *GatewayRepository) FindByEUI(ctx context.Context, gatewayEUI string) (d
 // Returns an error if no gateway with the given ID exists.
 func (r *GatewayRepository) UpdateState(ctx context.Context, gatewayID string, state domain.DeviceState) error {
 
-	tag, err := r.db.Pool.Exec(ctx, UpdateGatewayStateQuery, state, gatewayID)
+	tag, err := r.db.Pool.Exec(ctx, updateGatewayStateQuery, state, gatewayID)
 	if err != nil {
 		return fmt.Errorf("update gateway state: %w", err)
 	}
@@ -199,7 +199,7 @@ func (r *GatewayRepository) UpdateState(ctx context.Context, gatewayID string, s
 // Returns an error if no gateway with the given ID exists.
 func (r *GatewayRepository) Update(ctx context.Context, gatewayID string, payload domain.Gateway) error {
 
-	tag, err := r.db.Pool.Exec(ctx, UpdateGatewayQuery, payload.Name, payload.Description, payload.FactoryAreaID, gatewayID)
+	tag, err := r.db.Pool.Exec(ctx, updateGatewayQuery, payload.Name, payload.Description, payload.FactoryAreaID, gatewayID)
 	if err != nil {
 		return fmt.Errorf("update gateway: %w", err)
 	}
@@ -215,7 +215,7 @@ func (r *GatewayRepository) Update(ctx context.Context, gatewayID string, payloa
 // Returns an error if deletion fails or no gateway is found.
 func (r *GatewayRepository) Delete(ctx context.Context, gatewayID string) error {
 
-	tag, err := r.db.Pool.Exec(ctx, DeleteGatewayQuery, gatewayID)
+	tag, err := r.db.Pool.Exec(ctx, deleteGatewayQuery, gatewayID)
 	if err != nil {
 		return fmt.Errorf("delete gateway %s: %w", gatewayID, err)
 	}

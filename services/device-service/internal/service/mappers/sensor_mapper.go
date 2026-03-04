@@ -7,9 +7,7 @@ import (
 	"innoveria-iot/device-service/internal/domain"
 )
 
-/*
-Sensor mapping
-*/
+// MapChirpstackSensor TODO(@Magnus Dybdal): add proper documentation.
 func MapChirpstackSensor(from dto.ChirpstackSensor) domain.Sensor {
 	return domain.Sensor{
 		Id:         from.DeviceEUI, // TODO: Change this to internal database id

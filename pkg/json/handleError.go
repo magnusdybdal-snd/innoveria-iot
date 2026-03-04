@@ -1,3 +1,4 @@
+// Package json TODO(@vinjar): add proper documentation.
 package json
 
 import (
@@ -5,15 +6,18 @@ import (
 	"net/http"
 )
 
+// ErrorResponse TODO(@vinjar): add proper documentation.
 type ErrorResponse struct {
 	Error ErrorDetail `json:"error"`
 }
 
+// ErrorDetail TODO(@vinjar): add proper documentation.
 type ErrorDetail struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
 }
 
+// HandleError TODO(@vinjar): add proper documentation.
 func HandleError(w http.ResponseWriter, code int, err error, msg string) {
 	if err != nil {
 		// Log error for server

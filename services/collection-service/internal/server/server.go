@@ -18,7 +18,7 @@ import (
 	"innoveria-iot/collection-service/internal/service"
 )
 
-// Server entry point
+// Run is the server entry point
 func Run() error {
 	cfg := config.Load()
 

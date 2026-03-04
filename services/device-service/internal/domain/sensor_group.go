@@ -12,6 +12,7 @@ type SensorGroup struct {
 	Location  string
 }
 
+// SensorGroupService TODO(@vinjar): add proper documentation.
 type SensorGroupService interface {
 	Create(ctx context.Context, payload SensorGroup) error
 	Update(ctx context.Context, sensorGroupId string, payload SensorGroup) error

@@ -1,3 +1,4 @@
+// Package repository TODO(@Magnus Dybdal): add proper documentation.
 package repository
 
 import (

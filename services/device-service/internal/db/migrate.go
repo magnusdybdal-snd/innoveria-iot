@@ -1,3 +1,4 @@
+// Package db TODO(@Magnus Dybdal): add proper documentation.
 package db
 
 import (
@@ -13,7 +14,7 @@ import (
 //go:embed migrations/*.sql
 var migrations embed.FS
 
-// Thin wrapper around RunMigrations in pkg/dbutil
+// RunMigrations TODO(@Magnus Dybdal): add proper documentation.
 func RunMigrations(pool *pgxpool.Pool) error {
 	return dbutil.RunMigrations(pool, migrations)
 }

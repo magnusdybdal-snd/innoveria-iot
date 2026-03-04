@@ -13,7 +13,7 @@ import (
 //go:embed seeds/*.sql
 var seeds embed.FS
 
-// Thin wrapper around RunSeeds in pkg/dbutil
+// RunSeeds TODO(@Magnus Dybdal): add proper documentation.
 func RunSeeds(pool *pgxpool.Pool) error {
 	return dbutil.RunSeeds(pool, seeds)
 }

@@ -66,10 +66,17 @@ export interface SensorApiResponse {
   machine: string;
   lastReading: string;
   appKey: string;
-  devProf: string;
+  senProf: string;
 }
 
 export interface SensorListApiResponse {
   totalCount: number;
   sensors: SensorApiResponse[];
+}
+
+export interface SensorReadingApiResponse {
+  device_eui: string;
+  timestamp: string;
+  payload: Record<string, unknown>;
+  company_id: string;
 }

@@ -1,3 +1,4 @@
+// Package mappers TODO(@vinjar): add proper documentation.
 package mappers
 
 import (
@@ -10,6 +11,7 @@ import (
 /*
 	Gateway mapping
 */
+
 // MergeGateway merges Chirpstack runtime data with DB domain data into a domain gateway
 func MergeGateway(cs dto.ChirpstackGateway, db domain.Gateway) domain.Gateway {
 	return domain.Gateway{
@@ -27,8 +29,7 @@ func MergeGateway(cs dto.ChirpstackGateway, db domain.Gateway) domain.Gateway {
 	}
 }
 
-// Mapping for gateway domain to chirpstack post and put requests
-// Tennant id is chirpstacks internal understanding of companies
+// MapCreateChirpstackGateway TODO(@vinjar): add proper documentation.
 func MapCreateChirpstackGateway(from domain.Gateway, chirpstackTennantId string) dto.CreateChirpstackGatewayRequest {
 	return dto.CreateChirpstackGatewayRequest{
 		CreateGatewayPayload: dto.CreateGatewayPayload{

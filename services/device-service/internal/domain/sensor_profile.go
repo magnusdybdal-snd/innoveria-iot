@@ -15,6 +15,7 @@ type SensorProfile struct {
 	// IsCustom       bool // TODO: add a custom device profiles
 }
 
+// SensorProfileService TODO(@vinjar): add proper documentation.
 type SensorProfileService interface {
 	GetAll(ctx context.Context, limit int) ([]SensorProfile, error)
 	GetOne(ctx context.Context) (SensorProfile, error)

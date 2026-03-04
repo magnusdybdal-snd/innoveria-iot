@@ -1,3 +1,4 @@
+// Package proxy TODO(@vinjar): add proper documentation.
 package proxy
 
 import (

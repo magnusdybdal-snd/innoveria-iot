@@ -1,3 +1,4 @@
+// Package handlers TODO(@Magnus Dybdal): add proper documentation.
 package handlers
 
 import (
@@ -8,6 +9,7 @@ import (
 	"innoveria-iot/pkg/json"
 )
 
+// HandleMeasurementsByTimeRange TODO(@Magnus Dybdal): add proper documentation.
 func HandleMeasurementsByTimeRange(svc domain.MeasurementService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		q := r.URL.Query()
