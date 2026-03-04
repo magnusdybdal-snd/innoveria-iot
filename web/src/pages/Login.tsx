@@ -9,7 +9,7 @@ import Typography from "@mui/material/Typography";
 
 import innLogoDark from "@/assets/innoveriaDark.png";
 import innLogoLight from "@/assets/innoveriaLight.png";
-import { ThemeContext } from "@/theme/color/themeContext";
+import { ThemeContext } from "@/shared/config/theme/themeContext";
 
 export default function Base() {
   const { mode } = useContext(ThemeContext);

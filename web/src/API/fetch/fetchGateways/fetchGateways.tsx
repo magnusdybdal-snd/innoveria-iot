@@ -13,6 +13,10 @@ export const fetchGateways = async (): Promise<Gateway[]> => {
       "GET",
     );
 
+    if (data.totalCount === 0) {
+      return [];
+    }
+
     return data.gateways.map((gw) => ({
       id: gw.id,
       company_id: gw.company_id,

@@ -15,7 +15,7 @@ import innLogoLight from "@/assets/innoveriaLight.png";
 import { MenuBox } from "@/components/menuBox";
 import MainPages from "@/pages/mainPageList.tsx";
 import SubPages from "@/pages/subPageList.tsx";
-import { ThemeContext } from "@/theme/color/themeContext";
+import { ThemeContext } from "@/shared/config/theme/themeContext";
 
 import viteLogo from "/vite.svg";
 
