@@ -1,8 +1,13 @@
-import { useContext, type ReactNode } from "react";
+import { useContext, type ComponentType, type ReactNode } from "react";
 
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import LightModeIcon from "@mui/icons-material/LightMode";
+import MemoryIcon from "@mui/icons-material/Memory";
+import RouterIcon from "@mui/icons-material/Router";
+import SettingsRemoteIcon from "@mui/icons-material/SettingsRemote";
+import SpaceDashboardIcon from "@mui/icons-material/SpaceDashboard";
+import SummarizeIcon from "@mui/icons-material/Summarize";
 import Accordion from "@mui/material/Accordion";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import AccordionSummary from "@mui/material/AccordionSummary";
@@ -15,7 +20,9 @@ import IconButton from "@mui/material/IconButton";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
+import type { SvgIconProps } from "@mui/material/SvgIcon";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import { Link as RouterLink } from "react-router";
@@ -31,6 +38,14 @@ import viteLogo from "/vite.svg";
 interface MenuProps {
   children: ReactNode;
 }
+
+const pageSymbol: Map<string, ComponentType<SvgIconProps>> = new Map([
+  ["Dashboard views", SpaceDashboardIcon],
+  ["Devices", MemoryIcon],
+  ["Gateways", RouterIcon],
+  ["Sensors", SettingsRemoteIcon],
+  ["Reports", SummarizeIcon],
+]);
 
 export default function Menu2({ children }: MenuProps) {
   const { mode, toggle } = useContext(ThemeContext);
@@ -92,12 +107,19 @@ export default function Menu2({ children }: MenuProps) {
           {/* Menu navigation */}
           {Array.from(MainPages.entries()).map(([category, page]) => {
             const subPagesForCategory = SubPages.get(category) ?? [];
+            const MainIcon = pageSymbol.get(category);
 
             // If no subpages → normal link
             if (subPagesForCategory.length === 0) {
               return (
                 <ListItem key={category} disablePadding>
                   <ListItemButton component={RouterLink} to={page}>
+                    {/*Add symbol if page has it*/}
+                    {MainIcon && (
+                      <ListItemIcon sx={{ minWidth: 28 }}>
+                        <MainIcon fontSize="small" />
+                      </ListItemIcon>
+                    )}
                     <ListItemText primary={category} />
                   </ListItemButton>
                 </ListItem>
@@ -118,22 +140,37 @@ export default function Menu2({ children }: MenuProps) {
                     expandIcon={<ExpandMoreIcon />}
                     sx={{ px: 2 }}
                   >
+                    {MainIcon && (
+                      <ListItemIcon sx={{ minWidth: 28 }}>
+                        <MainIcon fontSize="small" />
+                      </ListItemIcon>
+                    )}
                     <Typography>{category}</Typography>
                   </AccordionSummary>
 
                   <AccordionDetails sx={{ p: 0 }}>
                     <List component="div" disablePadding>
-                      {subPagesForCategory.map((subPage) => (
-                        <ListItem key={subPage.path} disablePadding>
-                          <ListItemButton
-                            component={RouterLink}
-                            to={subPage.path}
-                            sx={{ pl: 4 }}
-                          >
-                            <ListItemText primary={subPage.name} />
-                          </ListItemButton>
-                        </ListItem>
-                      ))}
+                      {subPagesForCategory.map((subPage) => {
+                        const SubIcon = pageSymbol.get(subPage.name);
+
+                        return (
+                          <ListItem key={subPage.path} disablePadding>
+                            <ListItemButton
+                              component={RouterLink}
+                              to={subPage.path}
+                              sx={{ pl: 4 }}
+                            >
+                              {/*Add symbol if page has it*/}
+                              {SubIcon && (
+                                <ListItemIcon sx={{ minWidth: 28 }}>
+                                  <SubIcon fontSize="small" />
+                                </ListItemIcon>
+                              )}
+                              <ListItemText primary={subPage.name} />
+                            </ListItemButton>
+                          </ListItem>
+                        );
+                      })}
                     </List>
                   </AccordionDetails>
                 </Accordion>
