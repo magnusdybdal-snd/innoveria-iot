@@ -37,6 +37,7 @@ func MapGatewayDTOToDomain(from CreateGatewayRequest) domain.Gateway {
 		CompanyId:  from.CompanyId,
 		GatewayEUI: from.GatewayEUI,
 		Name:       from.Name,
+		State:      domain.DeviceStateActive,
 		Status:     domain.StatusNeverSeen,
 		LastSeenAt: "", // converted later after chirpstack
 	}
