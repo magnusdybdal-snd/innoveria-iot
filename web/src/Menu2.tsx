@@ -54,10 +54,10 @@ export default function Menu2({ children }: MenuProps) {
     <Box sx={{ display: "flex" }}>
       <Drawer
         sx={{
-          width: 300,
+          width: 270,
           flexShrink: 0,
           "& .MuiDrawer-paper": {
-            width: "fit-content",
+            width: 270,
             boxSizing: "border-box",
             display: "flex",
             flexDirection: "column",
@@ -206,7 +206,10 @@ export default function Menu2({ children }: MenuProps) {
           </IconButton>
         </Box>
       </Drawer>
-      {children}
+
+      <Box component="main" sx={{ flexGrow: 1 }}>
+        {children}
+      </Box>
     </Box>
   );
 }
