@@ -1,3 +1,7 @@
+#
+# Docker compose for: Development
+#
+
 services:
   #
   # CHIRPSTACK / LoRaWAN Handling
@@ -21,7 +25,9 @@ services:
     environment:
       - MQTT_BROKER_HOST=mosquitto
       - REDIS_HOST=redis
-      - POSTGRESQL_HOST=chirpstack-postgres
+      - POSTGRES_HOST=chirpstack-db
+      - POSTGRES_USER=chirpstack
+      - POSTGRES_PASSWORD=chirpstack
     ports:
       - "8080:8080"
 
@@ -53,7 +59,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./infra/config/postgresql/initdb:/docker-entrypoint-initdb.d
-      - postgresqldata:/var/lib/postgresql/data
+      - chirpstackdata:/var/lib/postgresql/data
     environment:
       - POSTGRES_USER=chirpstack
       - POSTGRES_PASSWORD=chirpstack
@@ -176,7 +182,7 @@ services:
 #
 volumes:
   collectiondata:
-  postgresqldata:
+  chirpstackdata:
   redisdata:
   devicedata:
   chirpstack-secrets: # for api key

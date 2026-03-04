@@ -28,3 +28,20 @@ tilt down # stop
 ```
 
 # Production deployment
+Most important command (start production):
+
+NOTE: Its a prerequisite to set up enviroment variables in a file called .env.production
+    - See .env.example on how to set it up
+
+```bash
+docker compose --env-file .env.production -f docker-compose.prod.yml up -d --build
+```
+
+Useful commands:
+
+```bash
+docker compose -f docker-compose.prod.yml ps
+docker compose -f docker-compose.prod.yml logs -f
+docker compose -f docker-compose.prod.yml down
+docker compose -f docker-compose.prod.yml down -v # deletes volumes (database data)
+```
