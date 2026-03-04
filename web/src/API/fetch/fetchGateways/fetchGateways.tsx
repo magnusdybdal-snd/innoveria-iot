@@ -1,8 +1,5 @@
-import {
-  apiRequest,
-  serviceClient,
-  type GatewayListApiResponse,
-} from "@/API/apiClient";
+import { apiRequest, serviceClient } from "@/API/apiClient";
+import type { GatewayListApiResponse } from "@/entities/gateway/model";
 import type { Gateway } from "@/mocks/gateways";
 
 export const fetchGateways = async (): Promise<Gateway[]> => {
@@ -12,10 +9,6 @@ export const fetchGateways = async (): Promise<Gateway[]> => {
       "/api/v1/device/gateways",
       "GET",
     );
-
-    if (data.totalCount === 0) {
-      return [];
-    }
 
     return data.gateways.map((gw) => ({
       id: gw.id,

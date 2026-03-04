@@ -1,8 +1,5 @@
-import {
-  apiRequest,
-  serviceClient,
-  type SensorListApiResponse,
-} from "@/API/apiClient";
+import { apiRequest, serviceClient } from "@/API/apiClient";
+import type { SensorListApiResponse } from "@/entities/sensor/model";
 import type { Sensor } from "@/mocks/sensors";
 
 export const fetchSensors = async (): Promise<Sensor[]> => {
