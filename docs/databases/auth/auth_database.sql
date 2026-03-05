@@ -3,7 +3,7 @@ CREATE SCHEMA "auth";
 CREATE TYPE "auth"."role_type" AS ENUM (
   'FACTORY_WORKER',
   'FACTORY_SUPERUSER',
-  'PLATFORM_ADMIN'
+  'PLATFORM_ADMIN' -- Innoveria role, for helping with onboarding
 );
 
 CREATE TABLE "auth"."company" (
@@ -33,6 +33,17 @@ CREATE TABLE "auth"."user" (
   "last_logged_in" timestamptz,
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "updated_at" timestamptz NOT NULL DEFAULT (now())
+);
+
+CREATE TABLE "auth"."refresh_token" (
+  "token_id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  "user_id" uuid NOT NULL,
+  "token_hash" text NOT NULL,
+  "expires_at" timestamptz NOT NULL,
+  "revoked_at" timestamptz,
+  "created_at" timestamptz NOT NULL DEFAULT now(),
+  "device_info" text,
+  "ip_address" inet
 );
 
 ALTER TABLE "auth"."factory_area" ADD FOREIGN KEY ("company_id") REFERENCES "auth"."company" ("company_id");
