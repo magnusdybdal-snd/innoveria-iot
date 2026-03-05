@@ -4,6 +4,11 @@ import {
   type SensorReadingApiResponse,
 } from "@/API/apiClient";
 
+/**
+ * Fetches the latest sensor reading for a given device from the collection-service.
+ * @param deviceEUI - LoRaWAN Device EUI used to identify the sensor in ChirpStack
+ * @returns The latest SensorReadingApiResponse, or null if the request fails
+ */
 export const fetchSensorReading = async (
   deviceEUI: string,
 ): Promise<SensorReadingApiResponse | null> => {

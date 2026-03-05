@@ -19,6 +19,10 @@ import { ThemeContext } from "@/theme/color/themeContext";
 
 import viteLogo from "/vite.svg";
 
+/**
+ * Persistent sidebar navigation with logo, user info, page links, theme toggle, and logout.
+ * @returns The rendered sidebar menu component
+ */
 export default function Menu() {
   const { mode, toggle } = useContext(ThemeContext);
 

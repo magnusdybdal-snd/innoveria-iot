@@ -23,7 +23,6 @@ type CategoryHeaderProps = {
  * Renders a grid header row with column labels and optional sort controls.
  * Sortable columns show a pointer cursor and display an arrow (↑/↓) when active.
  * Child elements (e.g. data rows) are rendered inside the same grid below the header.
- *
  * @param props - Component props
  * @param props.categories - Ordered list of column label strings
  * @param props.columns - Total column count for the grid template; defaults to categories.length if omitted
