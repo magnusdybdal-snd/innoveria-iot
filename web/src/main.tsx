@@ -7,6 +7,7 @@ import "@/index.css";
 
 import { useState } from "react";
 
+import Companies from "@/pages/Companies.tsx";
 import Dashboard from "@/pages/Dashboard.tsx";
 import Gateways from "@/pages/Gateways";
 import Home from "@/pages/Home.tsx";
@@ -50,6 +51,9 @@ export default function Root() {
               <Route path="/Devices/Sensors" element={<Sensors />} />
               <Route path="/Devices/Gateways" element={<Gateways />} />
               <Route path="/Reports" element={<Home />} />
+              <Route path="/Admin/Companies" element={<Companies />} />
+              <Route path="/Admin/Factories" element={<Home />} />
+              <Route path="/Admin/Users" element={<Home />} />
             </Routes>
           </ThemeProvider>
         </StyledEngineProvider>
