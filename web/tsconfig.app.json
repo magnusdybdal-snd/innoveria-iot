@@ -18,7 +18,14 @@
 
     /* Barreling paths*/
     "baseUrl": ".",
-    "paths": { "@/*": ["./src/*"] },
+    "paths": {
+      "@/*": ["./src/*"],
+      "@entities/*": ["./src/entities/*"],
+      "@components/*": ["./src/components/*"],
+      "@widgets/*": ["./src/widgets/*"],
+      "@pages/*": ["./src/pages/*"],
+      "@app/*": ["./app/*"]
+    },
 
     /* Linting */
     "strict": true,
