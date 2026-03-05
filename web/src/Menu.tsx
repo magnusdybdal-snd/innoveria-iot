@@ -1,4 +1,9 @@
-import { useContext, type ComponentType, type ReactNode } from "react";
+import {
+  useContext,
+  useState,
+  type ComponentType,
+  type ReactNode,
+} from "react";
 
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -50,6 +55,13 @@ const pageSymbol: Map<string, ComponentType<SvgIconProps>> = new Map([
 export default function Menu({ children }: MenuProps) {
   const { mode, toggle } = useContext(ThemeContext);
   const location = useLocation();
+  const [expanded, setExpanded] = useState<string | false>(false);
+
+  const handleAccordionChange =
+    (category: string) =>
+    (_event: React.SyntheticEvent, isExpanded: boolean) => {
+      setExpanded(isExpanded ? category : false);
+    };
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -109,6 +121,10 @@ export default function Menu({ children }: MenuProps) {
           {Array.from(MainPages.entries()).map(([category, page]) => {
             const subPagesForCategory = SubPages.get(category) ?? [];
             const MainIcon = pageSymbol.get(category);
+            const isCategoryActive = subPagesForCategory.some(
+              // Keep open category dropdown
+              (sub) => location.pathname === sub.path,
+            );
 
             // If no subpages → normal link
             if (subPagesForCategory.length === 0) {
@@ -134,6 +150,8 @@ export default function Menu({ children }: MenuProps) {
             return (
               <ListItem key={category} disablePadding sx={{ display: "block" }}>
                 <Accordion
+                  expanded={expanded === category || isCategoryActive}
+                  onChange={handleAccordionChange(category)}
                   disableGutters
                   elevation={0}
                   sx={{
