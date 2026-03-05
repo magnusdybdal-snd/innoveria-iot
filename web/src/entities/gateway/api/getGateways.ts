@@ -16,7 +16,7 @@ export const getGateways = async (): Promise<GatewayApiResponse[]> => {
       "GET",
     );
 
-    return data.gateways;
+    return data.gateways ?? [];
   } catch (error) {
     console.error("Failed to fetch gateways:", error);
     return [];

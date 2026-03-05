@@ -16,7 +16,7 @@ export const getSensors = async (): Promise<SensorApiResponse[]> => {
       "GET",
     );
 
-    return data.sensors;
+    return data.sensors ?? [];
   } catch (error) {
     console.error("Failed to fetch sensors:", error);
     return [];

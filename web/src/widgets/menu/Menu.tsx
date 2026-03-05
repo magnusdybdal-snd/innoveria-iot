@@ -199,7 +199,11 @@ export default function Menu(menuProps: MenuProps) {
                         const SubIcon = pageSymbol.get(subPage.name);
 
                         return (
-                          <ListItem key={subPage.path} disablePadding>
+                          <ListItem
+                            key={subPage.path}
+                            disablePadding
+                            component="div"
+                          >
                             <ListItemButton
                               component={RouterLink}
                               to={subPage.path}
