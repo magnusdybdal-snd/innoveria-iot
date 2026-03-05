@@ -28,7 +28,7 @@
 
   if [ "$CHIRPSTACK_SEED" = "true" ]; then
     echo "Seeding ChirpStack with known dev tenant and application..."
-    PGPASSWORD=chirpstack psql -h chirpstack-postgres -U chirpstack -d chirpstack < /scripts/seed-chirpstack.sql
+    PGPASSWORD=chirpstack psql -h $POSTGRES_HOST -U $POSTGRES_USER -d chirpstack-db < /seed/seed-chirpstack.sql
     echo "ChirpStack seed done."
   fi
 
