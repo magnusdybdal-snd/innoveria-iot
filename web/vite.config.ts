@@ -19,8 +19,13 @@ export default defineConfig({
     host: true,
     strictPort: true,
     port: 3000,
-    allowedHosts: [
-      "prog2900-lorawan.vm.iik.ntnu.no", // TODO remove when switching to production if required.
-    ],
+
+    // caddy proxies the api route for doing internal http requests
+    proxy: {
+      "/api": {
+        target: "http://localhost:8081/api",
+        changeOrigin: true,
+      },
+    },
   },
 });

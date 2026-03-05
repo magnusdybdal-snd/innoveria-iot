@@ -9,13 +9,17 @@ import (
 
 // SensorServiceImpl TODO(@vinjar): add proper documentation.
 type SensorServiceImpl struct {
-	cc *chirpstackrest.Client
+	cc          *chirpstackrest.Client
+	companyRepo domain.CompanyConfigRepository
+	sensorRepo  domain.SensorRepository
 }
 
 // NewSensorService TODO(@vinjar): add proper documentation.
-func NewSensorService(cc *chirpstackrest.Client) *SensorServiceImpl {
+func NewSensorService(cc *chirpstackrest.Client, sensorRepo domain.SensorRepository, companyRepo domain.CompanyConfigRepository) *SensorServiceImpl {
 	return &SensorServiceImpl{
-		cc: cc,
+		cc:          cc,
+		sensorRepo:  sensorRepo,
+		companyRepo: companyRepo,
 	}
 }
 
@@ -25,10 +29,16 @@ func (s *SensorServiceImpl) GetAll(ctx context.Context) ([]domain.Sensor, error)
 
 	// TODO: fix this when tennant system is working
 	limit := 1
-	applicationId := ""
+
+	// TODO: REPLACE HARDCODED companyID once auth exists
+	cfg, err := s.companyRepo.FindByCompanyID(ctx, "a0000000-0000-0000-0000-000000000001")
+	if err != nil {
+		return nil, err
+	}
+	applicationID := cfg.ChirpstackApplicationID
 
 	// 2. Get status from chirpstack
-	resp, err := s.cc.GetAllSensors(ctx, limit, applicationId)
+	resp, err := s.cc.GetAllSensors(ctx, limit, applicationID)
 	if err != nil {
 		return nil, err
 	}

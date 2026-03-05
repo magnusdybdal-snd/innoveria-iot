@@ -76,6 +76,14 @@ function SensorAllInfo({
   );
 }
 
+/**
+ * Modal dialog showing all fields and the latest sensor reading payload for a selected sensor.
+ * @param props - Component props
+ * @param props.open - Whether the dialog is visible
+ * @param props.onClose - Called when the dialog should close
+ * @param props.sensor - The sensor whose full details and latest reading are displayed
+ * @returns The rendered sensor detail dialog
+ */
 export function SensorAllInfoPopUp(props: AddDeviceProps) {
   const { onClose, open, sensor } = props;
   const [reading, setReading] = useState<SensorReadingApiResponse | null>(null);

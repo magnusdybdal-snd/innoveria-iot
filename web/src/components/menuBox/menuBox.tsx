@@ -14,6 +14,15 @@ type MenuBoxProps = {
 {
   /*Box for menu components*/
 }
+/**
+ * Sidebar navigation card that renders a primary page link and its optional sub-page links.
+ * @param root0 - Component props
+ * @param root0.title - Display label for the primary navigation link
+ * @param root0.mainPage - Route path for the primary link
+ * @param root0.subPages - List of sub-page routes rendered below the primary link
+ * @param root0.add - Whether to show an "+ Add" link at the bottom of the sub-page list
+ * @returns The rendered menu box
+ */
 export function MenuBox({ title, mainPage, subPages, add }: MenuBoxProps) {
   return (
     <Box

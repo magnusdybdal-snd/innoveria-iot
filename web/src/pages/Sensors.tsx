@@ -32,6 +32,10 @@ const addSensorDetails: string[] = [
 const sortableColumns: SensorSortKey[] = ["Status", "Name", "Last reading"];
 type NewSensor = Omit<Sensor, "id" | "status" | "lastReading">;
 
+/**
+ * Full-page view listing all LoRaWAN sensors with sortable columns, summary statistics, and add/detail dialogs.
+ * @returns The rendered Sensors page
+ */
 export default function Sensors() {
   const [sensors, setSensors] = useState<Sensor[]>([]);
   const [isLoading, setIsLoading] = useState(true);

@@ -1,0 +1,14 @@
+# reading enviroment variable from .env.production
+{$DOMAIN} {
+
+    root * /usr/share/caddy
+    file_server # for static file serving
+
+    # Letting caddy safely handle http requests internally on backend
+    handle_path /api/* {
+        reverse_proxy api-gateway:8080
+    }
+
+    # if file does not exists run index.html
+    try_files {path} /index.html 
+}

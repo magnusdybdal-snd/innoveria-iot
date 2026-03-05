@@ -5,11 +5,15 @@ import {
 } from "@/API/apiClient";
 import type { Gateway } from "@/mocks/gateways";
 
+/**
+ * Fetches all gateways from the collection-service via the API gateway and maps them to the local Gateway shape.
+ * @returns Array of Gateway objects, or an empty array if the request fails
+ */
 export const fetchGateways = async (): Promise<Gateway[]> => {
   try {
     const data = await apiRequest<GatewayListApiResponse>(
       serviceClient,
-      "/api/v1/device/gateways",
+      "/v1/device/gateways",
       "GET",
     );
 

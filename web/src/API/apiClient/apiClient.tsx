@@ -10,13 +10,20 @@ export const chuckApiClient = axios.create({
 
 // Client for all microservice requests — routed through the api-gateway
 export const serviceClient = axios.create({
-  baseURL: "http://localhost:8081",
+  baseURL: import.meta.env.VITE_API_URL, // Imported api url from vite config
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-// Generic API helper
+/**
+ * Sends a typed HTTP request through the given Axios instance and returns the response data.
+ * @param client - Axios instance to use for the request
+ * @param url - Request URL, relative to the instance's baseURL
+ * @param method - HTTP method to use
+ * @param data - Optional request body for POST/PUT requests
+ * @returns Parsed response body typed as T
+ */
 export const apiRequest = async <T,>(
   client: AxiosInstance,
   url: string,
