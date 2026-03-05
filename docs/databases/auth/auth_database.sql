@@ -3,7 +3,7 @@ CREATE SCHEMA "auth";
 CREATE TYPE "auth"."role_type" AS ENUM (
   'FACTORY_WORKER',
   'FACTORY_SUPERUSER',
-  'ADMIN'
+  'PLATFORM_ADMIN'
 );
 
 CREATE TABLE "auth"."company" (
