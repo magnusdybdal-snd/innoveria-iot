@@ -188,7 +188,7 @@ export default function Menu({ children }: MenuProps) {
                               component={RouterLink}
                               to={subPage.path}
                               sx={{ pl: 4 }}
-                              selected={location.pathname === page}
+                              selected={location.pathname === subPage.path}
                             >
                               {/*Add symbol if page has it*/}
                               {SubIcon && (
