@@ -47,7 +47,7 @@ if [ -n "$STAGED_SQL" ]; then
   FAILED=0
   for file in $STAGED_SQL; do
     echo "  Checking $file..."
-    OUTPUT=$(cd web && bunx sql-lint --driver postgres "../$file")
+    OUTPUT=$(cd web && bunx sql-lint"../$file")
     if [ -n "$OUTPUT" ]; then
       echo "$OUTPUT"
       FAILED=1

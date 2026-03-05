@@ -1,0 +1,4 @@
+{
+  "driver": ["postgres"],
+  "ignore-errors": ["trailing whitespace"]
+}
