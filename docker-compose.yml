@@ -16,10 +16,11 @@ services:
     volumes:
       - ./infra/config/chirpstack:/etc/chirpstack
       - ./infra/config/chirpstack-device-profiles:/profiles
+      - ./infra/config/postgresql/initdb/seed-chirpstack.sql:/seed/seed-chirpstack.sql
       - ./scripts/startChirpstack.sh:/scripts/startChirpstack.sh
       - chirpstack-secrets:/secrets
     depends_on:
-      - chirpstack-postgres
+      - chirpstack-db
       - mosquitto
       - redis
     environment:
@@ -28,6 +29,7 @@ services:
       - POSTGRES_HOST=chirpstack-db
       - POSTGRES_USER=chirpstack
       - POSTGRES_PASSWORD=chirpstack
+      - CHIRPSTACK_SEED=true
     ports:
       - "8080:8080"
 
@@ -54,7 +56,7 @@ services:
     depends_on:
       - chirpstack
 
-  chirpstack-postgres:
+  chirpstack-db:
     image: postgres:16-alpine
     restart: unless-stopped
     volumes:
@@ -63,7 +65,7 @@ services:
     environment:
       - POSTGRES_USER=chirpstack
       - POSTGRES_PASSWORD=chirpstack
-      - POSTGRES_DB=chirpstack
+      - POSTGRES_DB=chirpstack-db
 
   redis:
     image: redis:7-alpine
