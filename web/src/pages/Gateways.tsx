@@ -65,33 +65,34 @@ export default function Gateways() {
   const sorted = sortGateways(gateways, sortConfig.key, sortConfig.direction);
 
   return (
-    <div className="flex h-screen">
-      <Menu />
-      <PageContent>
-        <SubPageHeader title="Gateways" />
-        <PageDivider />
-        <CategoryHeader
-          categories={gatewayDetails}
-          columns={gatewayDetails.length + 1}
-          sortableColumns={sortableColumns}
-          sortConfig={sortConfig}
-          onSort={handleSort}
-        >
-          {isLoading && <p>Loading...</p>}{" "}
-          {/*TODO: make a better looking loading indicator */}
-          {sorted.map((gateway) => (
-            <DeviceRow key={gateway.id}>
-              <GatewayInfo
-                name={gateway.name}
-                status={gateway.status}
-                device_eui={gateway.device_eui}
-                lastSeenAt={gateway.lastSeenAt}
-              />
-            </DeviceRow>
-          ))}
-        </CategoryHeader>
-        {!isLoading && sorted.length === 0 && <NoDeviceFoundCard />}
-      </PageContent>
-    </div>
+    <Menu>
+      <div className="flex h-screen">
+        <PageContent>
+          <SubPageHeader title="Gateways" />
+          <PageDivider />
+          <CategoryHeader
+            categories={gatewayDetails}
+            columns={gatewayDetails.length + 1}
+            sortableColumns={sortableColumns}
+            sortConfig={sortConfig}
+            onSort={handleSort}
+          >
+            {isLoading && <p>Loading...</p>}{" "}
+            {/*TODO: make a better looking loading indicator */}
+            {sorted.map((gateway) => (
+              <DeviceRow key={gateway.id}>
+                <GatewayInfo
+                  name={gateway.name}
+                  status={gateway.status}
+                  device_eui={gateway.device_eui}
+                  lastSeenAt={gateway.lastSeenAt}
+                />
+              </DeviceRow>
+            ))}
+          </CategoryHeader>
+          {!isLoading && sorted.length === 0 && <NoDeviceFoundCard />}
+        </PageContent>
+      </div>
+    </Menu>
   );
 }

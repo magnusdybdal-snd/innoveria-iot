@@ -1,6 +1,6 @@
 import Divider from "@mui/material/Divider";
-import Typography from "@mui/material/Typography";
-import { useLocation } from "react-router";
+import Link from "@mui/material/Link";
+import { Link as RouterLink, useLocation } from "react-router";
 
 {
   /*Path of current site + line divider*/
@@ -15,20 +15,37 @@ export function Path() {
 
   return (
     <div>
-      <Typography variant="h6">
+      <Link
+        component={RouterLink}
+        to="/"
+        color="inherit"
+        style={{
+          textDecoration: "none",
+        }}
+      >
         Home
-        {pathNames.map((name, index) => {
-          const formatted =
-            name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+      </Link>
 
-          return (
-            <span key={index}>
-              {" > "}
+      {pathNames.map((name, index) => {
+        const formatted =
+          name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+
+        const to = "/" + pathNames.slice(0, index + 1).join("/");
+
+        return (
+          <span key={index}>
+            {" > "}
+            <Link
+              component={RouterLink}
+              to={to}
+              color="inherit"
+              style={{ textDecoration: "none" }}
+            >
               {formatted}
-            </span>
-          );
-        })}
-      </Typography>
+            </Link>
+          </span>
+        );
+      })}
       <Divider
         sx={{
           backgroundColor: "primary.main",
