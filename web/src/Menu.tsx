@@ -7,6 +7,7 @@ import {
 
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import HomeIcon from "@mui/icons-material/Home";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import MemoryIcon from "@mui/icons-material/Memory";
 import RouterIcon from "@mui/icons-material/Router";
@@ -45,6 +46,7 @@ interface MenuProps {
 }
 
 const pageSymbol: Map<string, ComponentType<SvgIconProps>> = new Map([
+  ["Home", HomeIcon],
   ["Dashboard views", SpaceDashboardIcon],
   ["Devices", MemoryIcon],
   ["Gateways", RouterIcon],
