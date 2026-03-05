@@ -308,8 +308,9 @@ func (c *Client) CreateSensor(ctx context.Context, body dto.CreateChirpstackSens
 	return nil
 }
 
-// RenameSensor TODO(@vinjar): add proper documentation.
-func (c *Client) RenameSensor(ctx context.Context, body dto.CreateChirpstackSensorRequest) error {
+// UpdateSensor updates a device's name, description and device profile in Chirpstack.
+// DeviceEUI identifies the device and cannot be changed.
+func (c *Client) UpdateSensor(ctx context.Context, body dto.CreateChirpstackSensorRequest) error {
 	url := fmt.Sprintf("%s/api/devices/%s", c.baseURL, body.DeviceEUI)
 	resp, err := httpclient.DoRaw(
 		c.httpClient,

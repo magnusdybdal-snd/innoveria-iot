@@ -37,9 +37,41 @@ func (s *SensorServiceImpl) Create(ctx context.Context, payload domain.Sensor) e
 	return nil
 }
 
-// Update TODO
-func (s *SensorServiceImpl) Update(ctx context.Context, deviceID string, sensor domain.Sensor) error {
+// Update updates a sensors metadata in the database and the name, description and sensor profile id
+// in Chirpstack.
+func (s *SensorServiceImpl) Update(ctx context.Context, sensorID string, payload domain.Sensor) error {
+	// Verify the sensor exists in the db
+	sensor, err := s.sensorRepo.FindByID(ctx, sensorID)
+	if err != nil {
+		return fmt.Errorf("update sensor: sensor %s not found in database: %w", sensorID, err)
+	}
+
+	// Get company's chirpstack tenant ID for call to chirpstack
+	companycfg, err := s.companycfgRepo.FindByCompanyID(ctx, sensor.CompanyID)
+	if err != nil {
+		return fmt.Errorf("update sensor: finding company tenant ID: %w", err)
+	}
+
+	// Merge payload with existing sensor to get a complete sensor for the Chirpstack request.
+	sensor.Name = payload.Name
+	sensor.Description = payload.Description
+	sensor.ChirpstackProfileID = payload.ChirpstackProfileID
+
+	// Chirpstack put request
+	sensorReq := mappers.MapUpdateChirpstackSensor(sensor, companycfg.ChirpstackApplicationID)
+	if err := s.cc.UpdateSensor(ctx, sensorReq); err != nil {
+		return fmt.Errorf("update sensor: update in chirpstack: %w", err)
+	}
+
+	// Update the sensor in the databse.
+	err = s.sensorRepo.Update(ctx, sensorID, payload)
+	if err != nil {
+		return fmt.Errorf("update sensor: update in database: %w", err)
+	}
+
+	slog.Info("successfully updated sensor", "id", sensorID)
 	return nil
+
 }
 
 // GetAll retrieves all sensors belonging to a companyID from the database and merges the
@@ -47,7 +79,7 @@ func (s *SensorServiceImpl) Update(ctx context.Context, deviceID string, sensor 
 func (s *SensorServiceImpl) GetAll(ctx context.Context) ([]domain.Sensor, error) {
 
 	// fetch all sensor belonging to the company in db
-	sensors, err := s.sensorRepo.FindAllByCompanyID(ctx, "a0000000-0000-0000-0000-000000000001")
+	sensors, err := s.sensorRepo.FindAllByCompanyID(ctx, "a0000000-0000-0000-0000-000000000001") // TODO: replace with AUTH
 	if err != nil {
 		return nil, fmt.Errorf("get all sensors: getting sensors from db: %w", err)
 	}

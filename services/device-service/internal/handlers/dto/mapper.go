@@ -43,6 +43,16 @@ func MapGatewayDTOToDomain(from CreateGatewayRequest) domain.Gateway {
 	}
 }
 
+// MapUpdateSensorDTOToDomain maps an UpdateSensorRequest to a domain Sensor.
+func MapUpdateSensorDTOToDomain(from UpdateSensorRequest) domain.Sensor {
+	return domain.Sensor{
+		Name:                from.Name,
+		Description:         &from.Description,
+		FactoryAreaID:       &from.FactoryAreaID,
+		ChirpstackProfileID: from.ChirpstackProfileId,
+	}
+}
+
 // MapSensorDomainToDTO TODO(@Magnus Dybdal): add proper documentation.
 func MapSensorDomainToDTO(from []domain.Sensor) SensorListResponse {
 	tot := len(from)

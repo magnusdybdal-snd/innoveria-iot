@@ -24,7 +24,7 @@ func MergeSensor(cs dto.ChirpstackSensor, db domain.Sensor) domain.Sensor {
 		UpdatedAt:           db.UpdatedAt,
 		// Runetime from Chirpstack
 		Status:     mapStatusSensor(cs.LastSeenAt),
-		LastSeenAt: cs.LastSeenAt.Format(time.RFC1123),
+		LastSeenAt: cs.LastSeenAt.Format(time.RFC3339),
 	}
 }
 
@@ -34,4 +34,17 @@ func mapStatusSensor(lastSeen time.Time) domain.Status {
 		return domain.StatusOnline
 	}
 	return domain.StatusOffline
+}
+
+// MapUpdateChirpstackSensor builds a Chirpstack update request from a domain sensor and applicationID
+func MapUpdateChirpstackSensor(sensor domain.Sensor, applicationID string) dto.CreateChirpstackSensorRequest {
+	return dto.CreateChirpstackSensorRequest{
+		CreateSensorPayload: dto.CreateSensorPayload{
+			DeviceEUI:       sensor.DeviceEUI,
+			Name:            sensor.Name,
+			ApplicationID:   applicationID,
+			DeviceProfileID: sensor.ChirpstackProfileID,
+			JoinEUI:         "0000000000000000",
+		},
+	}
 }

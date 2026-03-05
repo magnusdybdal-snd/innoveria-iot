@@ -40,14 +40,14 @@ const (
 	`
 
 	updateSensorQuery = `
-	UPDATE device.sensor
-	SET name = $1, description = $2, factory_area_id = $3, updated_at = now()
-	WHERE sensor_id = $4
+		UPDATE device.sensor
+		SET name = $1, description = $2, factory_area_id = $3, chirpstack_profile_id = $4, updated_at = now()
+		WHERE sensor_id = $5
 	`
 
 	deleteSensorQuery = `
-	DELETE FROM device.sensor
-	WHERE sensor_id = $1
+		DELETE FROM device.sensor
+		WHERE sensor_id = $1
 	`
 )
 
@@ -211,7 +211,14 @@ func (r *SensorRepository) UpdateState(ctx context.Context, sensorID string, sta
 // Returns an error if no sensor with the given ID exists
 func (r *SensorRepository) Update(ctx context.Context, deviceID string, payload domain.Sensor) error {
 
-	tag, err := r.db.Pool.Exec(ctx, updateSensorQuery, payload.Name, payload.Description, payload.FactoryAreaID, deviceID)
+	tag, err := r.db.Pool.Exec(ctx, updateSensorQuery,
+		payload.Name,
+		payload.Description,
+		payload.FactoryAreaID,
+		payload.ChirpstackProfileID,
+		deviceID,
+	)
+
 	if err != nil {
 		return fmt.Errorf("update sensor %w", err)
 	}
