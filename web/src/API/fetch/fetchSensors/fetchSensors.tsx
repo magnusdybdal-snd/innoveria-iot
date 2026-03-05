@@ -17,7 +17,7 @@ export const fetchSensors = async (): Promise<Sensor[]> => {
       "GET",
     );
 
-    return data.sensors.map((sensor) => ({
+    return (data.sensors ?? []).map((sensor) => ({
       id: sensor.id,
       name: sensor.name,
       status: sensor.status,
