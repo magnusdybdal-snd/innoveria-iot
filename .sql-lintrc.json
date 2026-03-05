@@ -1,4 +1,0 @@
-{
-  "//": "sql-lint configuration. sql-lint checks staged .sql files for syntax errors in the Husky pre-commit hook and in the GitLab CI sql-check job. See web/.husky/pre-commit and web/.gitlab-ci.yml.",
-  "ignoredRules": ["trailing-whitespace"]
-}
