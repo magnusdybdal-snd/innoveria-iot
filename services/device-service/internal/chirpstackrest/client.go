@@ -284,6 +284,77 @@ func (c *Client) GetOneSensor(ctx context.Context, deviceEUI string) (dto.Chirps
 	return resp, nil
 }
 
+// CreateSensor TODO(@vinjar): add proper documentation.
+func (c *Client) CreateSensor(ctx context.Context, body dto.CreateChirpstackSensorRequest) error {
+	url := fmt.Sprintf("%s/api/devices", c.baseURL)
+	resp, err := httpclient.DoRaw(
+		c.httpClient,
+		ctx,
+		url,
+		http.MethodPost,
+		body,
+		map[string]string{
+			"Authorization": "Bearer " + c.token,
+		},
+	)
+	if err != nil {
+		return handleChirpstackError(err)
+	}
+
+	if err := resp.Body.Close(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// RenameSensor TODO(@vinjar): add proper documentation.
+func (c *Client) RenameSensor(ctx context.Context, body dto.CreateChirpstackSensorRequest) error {
+	url := fmt.Sprintf("%s/api/devices/%s", c.baseURL, body.DeviceEUI)
+	resp, err := httpclient.DoRaw(
+		c.httpClient,
+		ctx,
+		url,
+		http.MethodPut,
+		body,
+		map[string]string{
+			"Authorization": "Bearer " + c.token,
+		},
+	)
+	if err != nil {
+		return handleChirpstackError(err)
+	}
+
+	if err := resp.Body.Close(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// DeleteSensor TODO(@vinjar): add proper documentation.
+func (c *Client) DeleteSensor(ctx context.Context, deviceEUI string) error {
+	url := fmt.Sprintf("%s/api/devices/%s", c.baseURL, deviceEUI)
+	resp, err := httpclient.DoRaw(
+		c.httpClient,
+		ctx,
+		url,
+		http.MethodDelete,
+		nil,
+		map[string]string{
+			"Authorization": "Bearer " + c.token,
+		},
+	)
+	if err != nil {
+		return handleChirpstackError(err)
+	}
+
+	if err := resp.Body.Close(); err != nil {
+		return err
+	}
+	return nil
+}
+
 // GetAllSensorProfiles TODO(@vinjar): add proper documentation.
 func (c *Client) GetAllSensorProfiles(ctx context.Context, limit int) (dto.DeviceProfileListResponse, error) {
 	url := fmt.Sprintf("%s/api/device-profiles?limit=%d", c.baseURL, limit)

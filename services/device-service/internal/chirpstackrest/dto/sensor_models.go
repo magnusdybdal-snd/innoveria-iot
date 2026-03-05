@@ -2,13 +2,14 @@ package dto
 
 import "time"
 
-// ChirpstackSensorList TODO(@vinjar): add proper documentation.
+// ChirpstackSensorList is the paginated response from the ChirpStack GET /api/devices endpoint.
 type ChirpstackSensorList struct {
 	Result     []ChirpstackSensor `json:"result"`
 	TotalCount int                `json:"totalCount"`
 }
 
-// ChirpstackSensor TODO(@vinjar): add proper documentation.
+// ChirpstackSensor represents a single device as returned by the ChirpStack API.
+// ChirpStack refers to sensors as "devices" internally.
 type ChirpstackSensor struct {
 	DeviceEUI         string `json:"devEui"`
 	Name              string `json:"name"`
@@ -24,9 +25,25 @@ type ChirpstackSensor struct {
 	Tags         map[string]string      `json:"tags"`
 }
 
-// ChirpstackSensorStatus TODO(@vinjar): add proper documentation.
+// ChirpstackSensorStatus contains hardware status reported by the device to ChirpStack.
 type ChirpstackSensorStatus struct {
 	BatteryLevel        float64 `json:"batteryLevel"`
 	ExternalPowerSource bool    `json:"externalPowerSource"`
 	Margin              int     `json:"margin"`
+}
+
+// CreateChirpstackSensorRequest is the top-level body for POST and PUT /api/devices.
+// ChirpStack expects the payload wrapped under a "device" key.
+type CreateChirpstackSensorRequest struct {
+	CreateSensorPayload `json:"device"`
+}
+
+// CreateSensorPayload contains the fields required by ChirpStack to register a new device.
+type CreateSensorPayload struct {
+	DeviceEUI       string `json:"devEui"`
+	Name            string `json:"name"`
+	Description     string `json:"description"`
+	ApplicationID   string `json:"applicationId"`
+	DeviceProfileID string `json:"deviceProfileId"`
+	JoinEUI         string `json:"joinEui"`
 }

@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 
 	"innoveria-iot/device-service/internal/domain"
@@ -36,5 +37,25 @@ func PostSensor(svc domain.SensorService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		_ = r.Context()
 
+	}
+}
+
+// DeleteSensor deletes a sensor by its internal ID.
+func DeleteSensor(svc domain.SensorService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+
+		id := r.PathValue("id")
+		if id == "" {
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("no sensor id found"), "bad request")
+			return
+		}
+
+		if err := svc.Delete(ctx, id); err != nil {
+			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			return
+		}
+
+		w.WriteHeader(http.StatusNoContent)
 	}
 }

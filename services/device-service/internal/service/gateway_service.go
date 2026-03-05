@@ -1,4 +1,4 @@
-// Package service TODO(@vinjar): add proper documentation.
+// Package service TODO
 package service
 
 import (
