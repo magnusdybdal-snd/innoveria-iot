@@ -9,12 +9,13 @@ import Menu from "@/Menu.tsx";
  */
 export default function Home() {
   return (
-    <div className="flex h-screen">
-      <Menu />
-      <PageContent>
-        <SubPageHeader />
-        <JokeViewer />
-      </PageContent>
-    </div>
+    <Menu>
+      <div className="flex h-screen">
+        <PageContent>
+          <SubPageHeader />
+          <JokeViewer />
+        </PageContent>
+      </div>
+    </Menu>
   );
 }
