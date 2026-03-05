@@ -3,7 +3,7 @@ import { StyledEngineProvider, ThemeProvider } from "@mui/material/styles";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router";
 
-import "@/index.css";
+import "@/app/providers/styles/index.css";
 
 import { useState } from "react";
 
