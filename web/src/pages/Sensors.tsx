@@ -1,17 +1,16 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import {
-  getSensors,
   SensorAllInfoPopUp,
   SensorMainInfo,
   SensorsGenInfo,
   sortSensors,
+  useSensors,
   type SensorApiResponse,
   type SensorSortKey,
   type SortDirection,
 } from "@entities/sensor";
 import { AddDevice } from "@features/addSensor";
-import { mockSensors } from "@mocks/sensors";
 import Button from "@mui/material/Button";
 import { CategoryHeader } from "@shared/ui/CategoryHeader";
 import { DeviceRow } from "@shared/ui/DeviceRow";
@@ -20,6 +19,8 @@ import { PageContent } from "@shared/ui/PageContent";
 import { PageDivider } from "@shared/ui/PageDivider";
 import { SubPageHeader } from "@shared/ui/SubPageHeader";
 import { Menu } from "@widgets/menu";
+
+import { mockSensors } from "@/shared/mocks/sensors";
 
 const sensorMainDetails: string[] = ["Status", "Name", "Last reading"];
 const addSensorDetails: string[] = [
@@ -37,17 +38,9 @@ type NewSensor = Omit<SensorApiResponse, "id" | "status" | "lastReading">;
  * @returns The rendered Sensors page
  */
 export default function Sensors() {
-  const [sensors, setSensors] = useState<SensorApiResponse[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { sensors, isLoading } = useSensors();
   const [sensorsMocked, setMockSensors] =
     useState<SensorApiResponse[]>(mockSensors);
-
-  useEffect(() => {
-    getSensors().then((data) => {
-      setSensors(data);
-      setIsLoading(false);
-    });
-  }, []);
 
   const [openAdd, setOpenAdd] = useState(false);
   const [selectedSensor, setSelectedSensor] =
