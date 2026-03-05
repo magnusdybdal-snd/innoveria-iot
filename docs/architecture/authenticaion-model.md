@@ -5,16 +5,21 @@
 Based on `docs/databases/auth/auth_database.sql`:
 
 - Schema: `auth`
-- Core entity: `company`
-- Tenancy grouping inside company: `factory_area`
+- Core tenant entity: `company`
+- Factory hierarchy inside company:
+  - `factory` (belongs to `company`)
+  - `factory_area` (belongs to `factory`)
 - Identity table: `user`
   - Includes `company_id` directly on the user (single-company model in current schema)
   - Stores `email`, `password_hash`, `role`, and `last_logged_in`
 - Session persistence: `refresh_token`
   - Token material is stored as `token_hash` (not plaintext token)
-  - Includes expiration (`expires_at`), revocation (`revoked_at`), and device/network metadata (`device_info`, `ip_address`)
+  - Includes expiration (`expires_at`), revocation (`revoked_at`)
+- Authorization tables:
+  - `permission` (permission catalog, keyed by `permission_key`)
+  - `role_permission` (maps `auth.role_type` -> `permission_id`)
 
-## Role model (current schema)
+## Role and permission model (current schema)
 
 `auth.role_type` enum defines three roles:
 
@@ -31,19 +36,33 @@ Role intent (project-specific):
   - Can see sensor data and ERP data needed for support.
   - Must NOT be able to access sensitive/customer-confidential data beyond what is required (least privilege).
 
-This is a role-based model with role value stored directly on `auth.user.role`.
+This schema uses role + permission mapping:
+
+- `auth.user.role` stores the role enum on each user.
+- `auth.permission` defines permission keys (for example `gateway:create`, `sensor:read`, `user:manage`, `factory:manage`).
+- `auth.role_permission` assigns permissions to each role.
+
+Seeded role-to-permission behavior in the SQL:
+
+- `FACTORY_WORKER`: read-only access to gateways/sensors/measurements.
+- `FACTORY_SUPERUSER`: read/write for gateways/sensors, plus `user:manage` and `factory:manage`.
+- `PLATFORM_ADMIN`: gateway/sensor create-update-read and `measurement:read` (does not include `user:manage`/`factory:manage` in current seed).
 
 
 ## Relationships and boundaries
 
-- `auth.factory_area.company_id -> auth.company.company_id`
+- `auth.factory.company_id -> auth.company.company_id`
+- `auth.factory_area.factory_id -> auth.factory.factory_id`
 - `auth.user.company_id -> auth.company.company_id`
+- `auth.role_permission.permission_id -> auth.permission.permission_id`
 
 Interpretation:
 
 - Company is the tenant boundary.
 - Users currently belong to exactly one company (via direct foreign key).
-- Factory areas are sub-units inside a company.
+- Factories are sub-units inside a company.
+- Factory areas are sub-units inside a factory.
+- Authorization checks can be role-derived via `role_permission`.
 
 ## Authentication/session flow (from architecture diagram)
 
@@ -79,12 +98,15 @@ From `docs/architecture/authentication-data-flow.md`:
   - Auth logic (login/profile/context)
   - Company onboarding
 
-Why `POST /auth/switch-company` used for innoveria being able to act inside different companies.
-- techinally meaning innoveria does not have one global token. They will retreive a new token based on this request.
+Why `POST /auth/switch-company` exists for Innoveria support users:
+
+- It allows a platform admin to act in a selected company context.
+- In practice this implies issuing a company-context token rather than relying on one global token.
 
 ## Practical summary
 
 - **AuthN:** JWT + refresh-token based sessions.
 - **Tenant context:** Company-scoped (`company_id`), resolved at gateway.
-- **AuthZ:** RBAC at gateway; currently backed by enum role in DB, with diagram indicating future/extended permission model.
+- **Domain structure:** `company -> factory -> factory_area`.
+- **AuthZ:** RBAC at gateway, backed by role enum (`auth.user.role`) plus permission mapping (`auth.permission`, `auth.role_permission`).
 - **Operational traceability:** Header-injected request context and refresh-token metadata support auditing and security operations.
