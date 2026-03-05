@@ -2,6 +2,10 @@ import type { GatewayListApiResponse } from "@/entities/gateway/model/gatewaySch
 import type { Gateway } from "@/mocks/gateways";
 import { apiRequest, serviceClient } from "@/shared/api";
 
+/**
+ * Fetches all gateways from the collection-service via the API gateway and maps them to the local Gateway shape.
+ * @returns Array of Gateway objects, or an empty array if the request fails
+ */
 export const getGateways = async (): Promise<Gateway[]> => {
   try {
     const data = await apiRequest<GatewayListApiResponse>(

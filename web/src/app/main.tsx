@@ -13,6 +13,10 @@ import { ThemeContext } from "@/shared/config/theme/themeContext";
 
 import AppRoutes from "./routes";
 
+/**
+ * Application root that wires up theme persistence, MUI ThemeProvider, and the React Router route tree.
+ * @returns The rendered application root with all providers and routes
+ */
 export default function Root() {
   // read saved theme on first load
   const [mode, setDark] = useState(() => {

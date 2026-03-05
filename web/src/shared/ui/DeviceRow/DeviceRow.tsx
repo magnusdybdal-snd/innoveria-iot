@@ -7,6 +7,13 @@ type DeviceRowProps = {
   onClick?: () => void;
 };
 
+/**
+ * Grid-aware row wrapper that spans all parent columns so child cells align with table headers.
+ * @param root0 - Component props
+ * @param root0.children - Cell content to render inside the row
+ * @param root0.onClick - Optional click handler; enables hover highlight when provided
+ * @returns The rendered device row
+ */
 export function DeviceRow({ children, onClick }: DeviceRowProps) {
   return (
     <Box

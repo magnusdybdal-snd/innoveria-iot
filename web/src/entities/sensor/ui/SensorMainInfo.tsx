@@ -19,6 +19,18 @@ type InfoMainProps = {
   onClick: () => void;
 };
 
+{
+  /*Format for main single sensor info*/
+}
+/**
+ * Renders the primary sensor row cells: status indicator, name, last reading, and an action menu.
+ * @param root0 - Component props
+ * @param root0.name - Display name of the sensor
+ * @param root0.status - Numeric status code: 0 = online, 1 = warning, 2 = offline
+ * @param root0.lastReading - Timestamp or relative time of the most recent sensor reading
+ * @param root0.onClick - Called when the user clicks "Extra sensor info" to open the detail dialog
+ * @returns The rendered sensor row cells
+ */
 export function SensorMainInfo({
   name,
   status,

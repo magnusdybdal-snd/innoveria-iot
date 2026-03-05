@@ -3,7 +3,10 @@ import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import { yellow } from "@mui/material/colors";
 
-// Card to display to user that no device has been found
+/**
+ * NoDeviceFoundCard
+ * @returns card with message that no device has been found
+ */
 export function NoDeviceFoundCard() {
   return (
     <>

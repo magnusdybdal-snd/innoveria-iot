@@ -2,6 +2,10 @@ import type { SensorListApiResponse } from "@/entities/sensor/model/sensorSchema
 import type { Sensor } from "@/mocks/sensors";
 import { apiRequest, serviceClient } from "@/shared/api";
 
+/**
+ * Fetches all sensors from the collection-service via the API gateway and maps them to the local Sensor shape.
+ * @returns Array of Sensor objects, or an empty array if the request fails
+ */
 export const getSensors = async (): Promise<Sensor[]> => {
   try {
     const data = await apiRequest<SensorListApiResponse>(
