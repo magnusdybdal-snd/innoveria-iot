@@ -1,3 +1,4 @@
+// Package handlers provides HTTP endpoints for auth service
 package handlers
 
 import (

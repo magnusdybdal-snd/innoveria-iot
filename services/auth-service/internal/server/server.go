@@ -1,3 +1,4 @@
+// Package server provides HTTP server for startup
 package server
 
 import (
@@ -14,6 +15,7 @@ import (
 	"innoveria-iot/auth-service/internal/config"
 )
 
+// Run starts the auth service HTTP server and handles graceful shutdown.
 func Run() error {
 	cfg := config.Load()
 
