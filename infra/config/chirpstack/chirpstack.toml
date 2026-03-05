@@ -18,7 +18,7 @@
   #  * disable - Do not use TLS
   #  * prefer - Attempt to connect with TLS but allow sessions without
   #  * require - Require the use of TLS
-  dsn="postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/chirpstack-db?sslmode=disable"
+  dsn="postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/chirpstack?sslmode=disable"
 
   # Max open connections.
   #

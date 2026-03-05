@@ -15,6 +15,7 @@ services:
     volumes:
       - ./infra/config/chirpstack:/etc/chirpstack
       - ./scripts/startChirpstack.sh:/scripts/startChirpstack.sh
+      - ./scripts/seed_chirpstack.sql:/scripts/seed_chirpstack.sql
       - chirpstack-secrets:/secrets
     depends_on:
       - chirpstack-db
@@ -26,6 +27,7 @@ services:
       - POSTGRES_HOST=chirpstack-db
       - POSTGRES_USER=${CHIRPSTACK_DB_USER}
       - POSTGRES_PASSWORD=${CHIRPSTACK_DB_PASSWORD}
+      - CHIRPSTACK_SEED=true # Set to true to seed ChirpStack with known dev tenant and application
 
   chirpstack-gateway-bridge:
     image: chirpstack/chirpstack-gateway-bridge:4
