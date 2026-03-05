@@ -52,6 +52,12 @@ const pageSymbol: Map<string, ComponentType<SvgIconProps>> = new Map([
   ["Reports", SummarizeIcon],
 ]);
 
+/**
+ * Persistent sidebar navigation with logo, user info, page links, theme toggle, and logout.
+ * @param root0
+ * @param root0.children
+ * @returns The rendered sidebar menu component
+ */
 export default function Menu({ children }: MenuProps) {
   const { mode, toggle } = useContext(ThemeContext);
   const location = useLocation();
