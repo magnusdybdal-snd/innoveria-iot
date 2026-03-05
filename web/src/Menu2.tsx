@@ -25,7 +25,7 @@ import ListItemText from "@mui/material/ListItemText";
 import type { SvgIconProps } from "@mui/material/SvgIcon";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import { Link as RouterLink } from "react-router";
+import { Link as RouterLink, useLocation } from "react-router";
 
 import innLogoDark from "@/assets/innoveriaDark.png";
 import innLogoLight from "@/assets/innoveriaLight.png";
@@ -49,6 +49,7 @@ const pageSymbol: Map<string, ComponentType<SvgIconProps>> = new Map([
 
 export default function Menu2({ children }: MenuProps) {
   const { mode, toggle } = useContext(ThemeContext);
+  const location = useLocation();
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -113,7 +114,11 @@ export default function Menu2({ children }: MenuProps) {
             if (subPagesForCategory.length === 0) {
               return (
                 <ListItem key={category} disablePadding>
-                  <ListItemButton component={RouterLink} to={page}>
+                  <ListItemButton
+                    component={RouterLink}
+                    to={page}
+                    selected={location.pathname === page}
+                  >
                     {/*Add symbol if page has it*/}
                     {MainIcon && (
                       <ListItemIcon sx={{ minWidth: 28 }}>
@@ -159,6 +164,7 @@ export default function Menu2({ children }: MenuProps) {
                               component={RouterLink}
                               to={subPage.path}
                               sx={{ pl: 4 }}
+                              selected={location.pathname === page}
                             >
                               {/*Add symbol if page has it*/}
                               {SubIcon && (

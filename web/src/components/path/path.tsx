@@ -1,6 +1,5 @@
 import Divider from "@mui/material/Divider";
 import Link from "@mui/material/Link";
-import Toolbar from "@mui/material/Toolbar";
 import { Link as RouterLink, useLocation } from "react-router";
 
 {
@@ -12,39 +11,37 @@ export function Path() {
 
   return (
     <div>
-      <Toolbar>
-        <Link
-          component={RouterLink}
-          to="/"
-          color="inherit"
-          style={{
-            textDecoration: "none",
-          }}
-        >
-          Home
-        </Link>
+      <Link
+        component={RouterLink}
+        to="/"
+        color="inherit"
+        style={{
+          textDecoration: "none",
+        }}
+      >
+        Home
+      </Link>
 
-        {pathNames.map((name, index) => {
-          const formatted =
-            name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+      {pathNames.map((name, index) => {
+        const formatted =
+          name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
 
-          const to = "/" + pathNames.slice(0, index + 1).join("/");
+        const to = "/" + pathNames.slice(0, index + 1).join("/");
 
-          return (
-            <span key={index}>
-              {" > "}
-              <Link
-                component={RouterLink}
-                to={to}
-                color="inherit"
-                style={{ textDecoration: "none" }}
-              >
-                {formatted}
-              </Link>
-            </span>
-          );
-        })}
-      </Toolbar>
+        return (
+          <span key={index}>
+            {" > "}
+            <Link
+              component={RouterLink}
+              to={to}
+              color="inherit"
+              style={{ textDecoration: "none" }}
+            >
+              {formatted}
+            </Link>
+          </span>
+        );
+      })}
       <Divider
         sx={{
           backgroundColor: "primary.main",
