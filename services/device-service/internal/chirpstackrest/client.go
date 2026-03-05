@@ -262,6 +262,28 @@ func (c *Client) GetAllSensors(ctx context.Context, limit int, applicationID str
 	return resp, nil
 }
 
+// GetOneSensor returns one chirpstack sensor
+// the parameter is deviceEUI which chirpstack calls deviceID
+func (c *Client) GetOneSensor(ctx context.Context, deviceEUI string) (dto.ChirpstackSensor, error) {
+	url := fmt.Sprintf("%s/api/devices/%s", c.baseURL, deviceEUI)
+
+	resp, err := httpclient.DoRequest[dto.ChirpstackSensor](
+		c.httpClient,
+		ctx,
+		url,
+		http.MethodGet,
+		nil,
+		map[string]string{
+			"Authorization": "Bearer " + c.token,
+		},
+	)
+	if err != nil {
+		return dto.ChirpstackSensor{}, handleChirpstackError(err)
+	}
+
+	return resp, nil
+}
+
 // GetAllSensorProfiles TODO(@vinjar): add proper documentation.
 func (c *Client) GetAllSensorProfiles(ctx context.Context, limit int) (dto.DeviceProfileListResponse, error) {
 	url := fmt.Sprintf("%s/api/device-profiles?limit=%d", c.baseURL, limit)

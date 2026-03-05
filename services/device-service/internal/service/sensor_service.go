@@ -2,9 +2,11 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"innoveria-iot/device-service/internal/chirpstackrest"
 	"innoveria-iot/device-service/internal/domain"
 	"innoveria-iot/device-service/internal/service/mappers"
+	"log/slog"
 )
 
 // SensorServiceImpl TODO(@vinjar): add proper documentation.
@@ -23,31 +25,30 @@ func NewSensorService(cc *chirpstackrest.Client, sensorRepo domain.SensorReposit
 	}
 }
 
-// GetAll TODO(@vinjar): add proper documentation.
+// GetAll retrieves all sensors belonging to a companyID from the database and merges the
+// response with the status from Chirpstack (status and last seen)
 func (s *SensorServiceImpl) GetAll(ctx context.Context) ([]domain.Sensor, error) {
-	// 1. get sensor meta data from database
 
-	// TODO: fix this when tennant system is working
-	limit := 1
-
-	// TODO: REPLACE HARDCODED companyID once auth exists
-	cfg, err := s.companyRepo.FindByCompanyID(ctx, "a0000000-0000-0000-0000-000000000001")
+	// fetch all sensor belonging to the company in db
+	sensors, err := s.sensorRepo.FindAllByCompanyID(ctx, "a0000000-0000-0000-0000-000000000001")
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("get all sensors: getting sensors from db: %w", err)
 	}
-	applicationID := cfg.ChirpstackApplicationID
 
-	// 2. Get status from chirpstack
-	resp, err := s.cc.GetAllSensors(ctx, limit, applicationID)
-	if err != nil {
-		return nil, err
-	}
+	// Sensors to be returned
 	var result []domain.Sensor
 
-	for _, sensor := range resp.Result {
-		result = append(result, mappers.MapChirpstackSensor(sensor))
+	// Loop over sensors and get their chirpstack status, merge and append response
+	for _, sensor := range sensors {
+		status, err := s.cc.GetOneSensor(ctx, sensor.DeviceEUI)
+		if err != nil {
+			// If no status form Chirpstack, append sensor without status / last seen
+			slog.Warn("failed to fetch sensor from chirpstack", "eui", sensor.DeviceEUI, "error", err)
+			result = append(result, sensor)
+			continue
+		}
+		result = append(result, mappers.MergeSensor(status, sensor))
 	}
-	// 3. merge to sensor domain
 
 	return result, nil
 }
