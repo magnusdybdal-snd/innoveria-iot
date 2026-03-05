@@ -50,37 +50,37 @@ Interpretation:
 From `docs/architecture/authentication-data-flow.md`:
 
 1. Frontend request reaches API Gateway.
-2. Gateway validates JWT.
-3. Gateway resolves active company context (`active_company_id`).
-4. Gateway performs RBAC authorization check using `(user_id, company_id, permission)`.
-5. Gateway injects trusted context headers:
+2. Login (`POST /auth/login`) is called without an access JWT.
+   - Auth Service validates credentials.
+   - Auth Service returns a short-lived access JWT for API calls.
+   - Auth Service also returns a long-lived refresh token and stores only its hash in `auth.refresh_token.token_hash` (plus `expires_at` / `revoked_at`).
+3. For protected API calls, client sends `Authorization: Bearer <access_jwt>`.
+4. Gateway validates the access JWT.
+5. Gateway resolves active company context (`active_company_id`).
+6. Gateway performs RBAC authorization check using `(user_id, company_id, permission)`.
+7. Gateway injects trusted context headers:
    - `X-User-Id`
    - `X-Company-Id`
    - `X-Roles`
    - `X-Permissions`
    - `X-Request-Id`
-6. Downstream services (Auth/Device/Collection) consume trusted headers instead of re-parsing identity.
+8. Downstream services (Auth/Device/Collection) consume trusted headers instead of re-parsing identity.
+9. When the access JWT expires, client calls an auth endpoint (commonly `POST /auth/refresh`) with the refresh token to obtain a new access JWT.
+   - Auth Service hashes the presented refresh token and matches it against `auth.refresh_token.token_hash` and checks `expires_at` / `revoked_at`.
 
 ## Auth service responsibilities
 
 - Handlers:
   - `POST /auth/login`
   - `GET /auth/me`
-  - `POST /auth/switch-company`
+  - `POST /auth/switch-company` (Platform Admin)
   - `POST /companies` (Platform Admin)
 - Service layer:
   - Auth logic (login/profile/context)
   - Company onboarding
 
-## Important model observation (schema vs diagram)
-
-The architecture diagram references repository/domain concepts not present in the current SQL file:
-
-- `user_company_memberships`
-- `roles`
-- `permissions`
-
-This suggests a target/expanded authorization design (membership + granular permissions), while the current DB schema is still a simpler model (single `user.company_id` + enum role).
+Why `POST /auth/switch-company` used for innoveria being able to act inside different companies.
+- techinally meaning innoveria does not have one global token. They will retreive a new token based on this request.
 
 ## Practical summary
 
