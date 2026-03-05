@@ -1,5 +1,5 @@
-import { apiRequest, serviceClient } from "@/API/apiClient";
-import type { SensorReadingApiResponse } from "@/entities/sensor/model";
+import type { SensorReadingApiResponse } from "@/entities/sensor/model/sensorSchema";
+import { apiRequest, serviceClient } from "@/shared/api";
 
 export const fetchSensorReading = async (
   deviceEUI: string,

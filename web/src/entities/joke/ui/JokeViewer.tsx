@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 
-import { type Joke } from "@/API/apiClient";
-import { fetchJokeWithErrorHandling } from "@/API/fetch/fetchJoke";
+import { getJoke } from "../api";
+import type { Joke } from "../model/jokeSchema";
 
 export const JokeViewer: React.FC = () => {
   const [joke, setJoke] = useState<Joke | null>(null);
 
   useEffect(() => {
     const loadJoke = async () => {
-      const result = await fetchJokeWithErrorHandling();
+      const result = await getJoke();
       setJoke(result);
     };
 

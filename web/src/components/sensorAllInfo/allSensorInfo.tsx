@@ -7,11 +7,11 @@ import DialogTitle from "@mui/material/DialogTitle";
 import { useTheme } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 
-import type { SensorReadingApiResponse } from "@/API/apiClient";
 import { fetchSensorReading } from "@/API/fetchSensorReading";
 import { CategoryHeader } from "@/components/CategoryHeader";
 import { DeviceRow } from "@/components/gatewayRow";
 import type { Sensor } from "@/mocks/sensors.ts";
+import type { SensorReadingApiResponse } from "@/shared/api";
 
 export interface AddDeviceProps {
   open: boolean;

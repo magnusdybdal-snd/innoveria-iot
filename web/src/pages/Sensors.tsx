@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 
 import Button from "@mui/material/Button";
 
-import { fetchSensors } from "@/API/fetch/fetchSensors";
 import { AddDevice } from "@/components/addDevicePopup";
 import { CategoryHeader } from "@/components/CategoryHeader";
 import {
@@ -18,6 +17,7 @@ import { SensorAllInfoPopUp } from "@/components/sensorAllInfo";
 import { SensorMainInfo } from "@/components/sensorMainInfo";
 import { SensorsGenInfo } from "@/components/sensorsGenInfo";
 import { SubPageHeader } from "@/components/subPageHeader";
+import { getSensors } from "@/entities/sensor/api/index.ts";
 import Menu from "@/Menu.tsx";
 import { mockSensors, type Sensor } from "@/mocks/sensors.ts";
 
@@ -38,7 +38,7 @@ export default function Sensors() {
   const [sensorsMocked, setMockSensors] = useState<Sensor[]>(mockSensors);
 
   useEffect(() => {
-    fetchSensors().then((data) => {
+    getSensors().then((data) => {
       setSensors(data);
       setIsLoading(false);
     });

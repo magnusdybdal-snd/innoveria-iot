@@ -1,8 +1,8 @@
-import { apiRequest, serviceClient } from "@/API/apiClient";
-import type { GatewayListApiResponse } from "@/entities/gateway/model";
+import type { GatewayListApiResponse } from "@/entities/gateway/model/gatewaySchema";
 import type { Gateway } from "@/mocks/gateways";
+import { apiRequest, serviceClient } from "@/shared/api";
 
-export const fetchGateways = async (): Promise<Gateway[]> => {
+export const getGateways = async (): Promise<Gateway[]> => {
   try {
     const data = await apiRequest<GatewayListApiResponse>(
       serviceClient,

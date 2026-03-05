@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 
-import { fetchGateways } from "@/API/fetch/fetchGateways";
 import { CategoryHeader } from "@/components/CategoryHeader";
 import { GatewayInfo } from "@/components/gatewayInfo";
 import {
@@ -13,6 +12,7 @@ import { NoDeviceFoundCard } from "@/components/noDeviceFoundCard";
 import { PageContent } from "@/components/pageContent";
 import { PageDivider } from "@/components/pageDivider";
 import { SubPageHeader } from "@/components/subPageHeader";
+import { getGateways } from "@/entities/gateway/api/index.ts";
 import Menu from "@/Menu";
 import type { Gateway } from "@/mocks/gateways";
 
@@ -33,7 +33,7 @@ export default function Gateways() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    fetchGateways().then((data) => {
+    getGateways().then((data) => {
       setGateways(data);
       setIsLoading(false);
     });
