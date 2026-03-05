@@ -7,6 +7,7 @@ import (
 	"innoveria-iot/device-service/internal/chirpstackrest"
 	"innoveria-iot/device-service/internal/config"
 	"innoveria-iot/device-service/internal/db"
+	"innoveria-iot/device-service/internal/repository"
 	"innoveria-iot/device-service/internal/service"
 	"innoveria-iot/pkg/dbutil"
 	"log/slog"
@@ -39,8 +40,11 @@ func Run() error {
 
 	// Service init
 	chirpstackClient := chirpstackrest.New(*cfg)
-	gatewaySvc := service.NewGatewayService(chirpstackClient)
-	sensorSvc := service.NewSensorService(chirpstackClient)
+	companyConfigRepo := repository.NewCompanyConfigRepository(database)
+	gatewayRepo := repository.NewGatewayRepository(database)
+	sensorRepo := repository.NewSensorRepository(database)
+	gatewaySvc := service.NewGatewayService(chirpstackClient, gatewayRepo, companyConfigRepo)
+	sensorSvc := service.NewSensorService(chirpstackClient, sensorRepo, companyConfigRepo)
 	sensorProfileSvc := service.NewSensorProfileService(chirpstackClient)
 	sensorGroupService := service.NewDeviceGroupService(chirpstackClient)
 

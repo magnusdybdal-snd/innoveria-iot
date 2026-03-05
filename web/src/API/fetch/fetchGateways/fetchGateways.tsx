@@ -6,7 +6,7 @@ export const fetchGateways = async (): Promise<Gateway[]> => {
   try {
     const data = await apiRequest<GatewayListApiResponse>(
       serviceClient,
-      "/api/v1/device/gateways",
+      "/v1/device/gateways",
       "GET",
     );
 
