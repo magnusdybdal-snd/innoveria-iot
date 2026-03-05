@@ -1,20 +1,20 @@
 import { useEffect, useState } from "react";
 
-import { CategoryHeader } from "@/components/CategoryHeader";
-import { GatewayInfo } from "@/components/gatewayInfo";
 import {
-  DeviceRow,
+  GatewayInfo,
+  getGateways,
   sortGateways,
   type GatewaySortKey,
   type SortDirection,
-} from "@/components/gatewayRow";
-import { NoDeviceFoundCard } from "@/components/noDeviceFoundCard";
-import { PageContent } from "@/components/pageContent";
-import { PageDivider } from "@/components/pageDivider";
-import { SubPageHeader } from "@/components/subPageHeader";
-import { getGateways } from "@/entities/gateway/api/index.ts";
-import Menu from "@/Menu";
+} from "@/entities/gateway";
 import type { Gateway } from "@/mocks/gateways";
+import { CategoryHeader } from "@/shared/ui/CategoryHeader";
+import { DeviceRow } from "@/shared/ui/DeviceRow";
+import { NoDeviceFoundCard } from "@/shared/ui/NoDeviceFoundCard";
+import { PageContent } from "@/shared/ui/PageContent";
+import { PageDivider } from "@/shared/ui/PageDivider";
+import { SubPageHeader } from "@/shared/ui/SubPageHeader";
+import { Menu } from "@/widgets/menu";
 
 // Column labels rendered by CategoryHeader; order determines grid layout
 const gatewayDetails: string[] = ["Status", "Name", "EUI", "Last seen"];

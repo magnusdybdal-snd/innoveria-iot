@@ -1,7 +1,7 @@
-import { PageContent } from "@/components/pageContent";
-import { SubPageHeader } from "@/components/subPageHeader";
 import { JokeViewer } from "@/entities/joke";
-import Menu from "@/Menu.tsx";
+import { PageContent } from "@/shared/ui/PageContent";
+import { SubPageHeader } from "@/shared/ui/SubPageHeader";
+import { Menu } from "@/widgets/menu";
 
 export default function Home() {
   return (

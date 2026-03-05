@@ -2,24 +2,24 @@ import { useEffect, useState } from "react";
 
 import Button from "@mui/material/Button";
 
-import { AddDevice } from "@/components/addDevicePopup";
-import { CategoryHeader } from "@/components/CategoryHeader";
 import {
-  DeviceRow,
+  getSensors,
+  SensorAllInfoPopUp,
+  SensorMainInfo,
+  SensorsGenInfo,
   sortSensors,
   type SensorSortKey,
   type SortDirection,
-} from "@/components/gatewayRow";
-import { NoDeviceFoundCard } from "@/components/noDeviceFoundCard";
-import { PageContent } from "@/components/pageContent";
-import { PageDivider } from "@/components/pageDivider";
-import { SensorAllInfoPopUp } from "@/components/sensorAllInfo";
-import { SensorMainInfo } from "@/components/sensorMainInfo";
-import { SensorsGenInfo } from "@/components/sensorsGenInfo";
-import { SubPageHeader } from "@/components/subPageHeader";
-import { getSensors } from "@/entities/sensor/api/index.ts";
-import Menu from "@/Menu.tsx";
+} from "@/entities/sensor";
+import { AddDevice } from "@/features/addSensor";
 import { mockSensors, type Sensor } from "@/mocks/sensors.ts";
+import { CategoryHeader } from "@/shared/ui/CategoryHeader";
+import { DeviceRow } from "@/shared/ui/DeviceRow";
+import { NoDeviceFoundCard } from "@/shared/ui/NoDeviceFoundCard";
+import { PageContent } from "@/shared/ui/PageContent";
+import { PageDivider } from "@/shared/ui/PageDivider";
+import { SubPageHeader } from "@/shared/ui/SubPageHeader";
+import { Menu } from "@/widgets/menu";
 
 const sensorMainDetails: string[] = ["Status", "Name", "Last reading"];
 const addSensorDetails: string[] = [

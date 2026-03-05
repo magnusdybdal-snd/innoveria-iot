@@ -1,1 +1,0 @@
-export { NoDeviceFoundCard } from "./noDeviceFoundCard";
