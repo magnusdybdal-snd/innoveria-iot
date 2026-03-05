@@ -1,22 +1,23 @@
 import { useEffect, useState } from "react";
 
+import { fetchSensorReading } from "@entities/sensor/api";
+import type {
+  SensorApiResponse,
+  SensorReadingApiResponse,
+} from "@entities/sensor/model/sensorSchema";
 import CircleIcon from "@mui/icons-material/Circle";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { useTheme } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
-
-import { fetchSensorReading } from "@/entities/sensor/api";
-import type { SensorReadingApiResponse } from "@/entities/sensor/model/sensorSchema";
-import type { Sensor } from "@/mocks/sensors.ts";
-import { CategoryHeader } from "@/shared/ui/CategoryHeader";
-import { DeviceRow } from "@/shared/ui/DeviceRow";
+import { CategoryHeader } from "@shared/ui/CategoryHeader";
+import { DeviceRow } from "@shared/ui/DeviceRow";
 
 export interface AddDeviceProps {
   open: boolean;
   onClose: () => void;
-  sensor: Sensor;
+  sensor: SensorApiResponse;
 }
 
 type InfoAllProps = {
@@ -87,8 +88,8 @@ export function SensorAllInfoPopUp(props: AddDeviceProps) {
 
   useEffect(() => {
     if (!open) return;
-    fetchSensorReading("f62ccf710469ad3b").then(setReading); // TODO: replace hardcoded value with 'sensor.euid'
-  }, [open, sensor.euid]);
+    fetchSensorReading("f62ccf710469ad3b").then(setReading); // TODO: replace hardcoded value with 'sensor.device_eui'
+  }, [open, sensor.device_eui]);
 
   const handleClose = () => {
     onClose();
@@ -132,7 +133,7 @@ export function SensorAllInfoPopUp(props: AddDeviceProps) {
               name={sensor.name}
               status={sensor.status}
               lastReading={sensor.lastReading}
-              euid={sensor.euid}
+              euid={sensor.device_eui}
               machine={sensor.machine}
               appKey={sensor.appKey}
               senProf={sensor.senProf}

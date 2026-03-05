@@ -1,6 +1,5 @@
+import { apiRequest } from "@shared/api";
 import axios from "axios";
-
-import { apiRequest } from "@/shared/api";
 
 import type { Joke } from "../model/jokeSchema";
 
@@ -12,7 +11,10 @@ const chuckApiClient = axios.create({
     "Content-Type": "application/json",
   },
 });
-
+/**
+ *  Fetches a random joke from the Chuck Norris API using the apiRequest wrapper and returns it as a Joke object.
+ * @returns  A Joke object containing the joke data, or null if the request fails
+ */
 export const getJoke = async (): Promise<Joke | null> => {
   try {
     return await apiRequest<Joke>(chuckApiClient, "/random", "GET");

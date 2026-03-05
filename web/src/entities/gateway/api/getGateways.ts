@@ -1,12 +1,14 @@
-import type { GatewayListApiResponse } from "@/entities/gateway/model/gatewaySchema";
-import type { Gateway } from "@/mocks/gateways";
-import { apiRequest, serviceClient } from "@/shared/api";
+import type {
+  GatewayApiResponse,
+  GatewayListApiResponse,
+} from "@entities/gateway/model/gatewaySchema";
+import { apiRequest, serviceClient } from "@shared/api";
 
 /**
- * Fetches all gateways from the collection-service via the API gateway and maps them to the local Gateway shape.
- * @returns Array of Gateway objects, or an empty array if the request fails
+ * Fetches all gateways from the collection-service via the API gateway.
+ * @returns Array of GatewayApiResponse objects, or an empty array if the request fails
  */
-export const getGateways = async (): Promise<Gateway[]> => {
+export const getGateways = async (): Promise<GatewayApiResponse[]> => {
   try {
     const data = await apiRequest<GatewayListApiResponse>(
       serviceClient,
@@ -14,14 +16,7 @@ export const getGateways = async (): Promise<Gateway[]> => {
       "GET",
     );
 
-    return data.gateways.map((gw) => ({
-      id: gw.id,
-      company_id: gw.company_id,
-      name: gw.name,
-      status: gw.status,
-      euid: gw.device_eui,
-      lastSeen: gw.lastSeenAt,
-    }));
+    return data.gateways;
   } catch (error) {
     console.error("Failed to fetch gateways:", error);
     return [];

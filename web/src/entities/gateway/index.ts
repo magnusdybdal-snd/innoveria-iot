@@ -1,3 +1,7 @@
+export type {
+  GatewayApiResponse,
+  GatewayListApiResponse,
+} from "./model/gatewaySchema";
 export { getGateways } from "./api";
 export { GatewayInfo } from "./ui";
 export { sortGateways } from "./lib/sortGateways";

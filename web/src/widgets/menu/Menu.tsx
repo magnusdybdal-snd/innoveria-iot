@@ -1,5 +1,7 @@
 import { useContext } from "react";
 
+import innLogoDark from "@assets/innoveriaDark.png";
+import innLogoLight from "@assets/innoveriaLight.png";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import Avatar from "@mui/material/Avatar";
@@ -8,14 +10,11 @@ import Button from "@mui/material/Button";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
+import MainPages from "@shared/config/navigation/mainPageList";
+import SubPages from "@shared/config/navigation/subPageList";
+import { ThemeContext } from "@shared/config/theme/themeContext";
+import { MenuBox } from "@shared/ui/MenuBox";
 import { Link as RouterLink } from "react-router";
-
-import innLogoDark from "@/assets/innoveriaDark.png";
-import innLogoLight from "@/assets/innoveriaLight.png";
-import MainPages from "@/shared/config/navigation/mainPageList";
-import SubPages from "@/shared/config/navigation/subPageList";
-import { ThemeContext } from "@/shared/config/theme/themeContext";
-import { MenuBox } from "@/shared/ui/MenuBox";
 
 import viteLogo from "/vite.svg";
 

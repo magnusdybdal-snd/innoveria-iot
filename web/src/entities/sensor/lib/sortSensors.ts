@@ -1,4 +1,4 @@
-import type { Sensor } from "@/mocks/sensors";
+import type { SensorApiResponse } from "@entities/sensor/model/sensorSchema";
 
 export type SortDirection = "asc" | "desc";
 export type SensorSortKey =
@@ -9,19 +9,19 @@ export type SensorSortKey =
   | "Application key"
   | "Sensor profile";
 
-// Sorting sensors based on Key (SensorSortkeys)
+// Sorting sensors based on Key (SensorSortKey)
 /**
  * Returns a sorted copy of the sensor array based on the given column and direction.
- * @param sensors - Array of Sensor objects to sort
+ * @param sensors - Array of SensorApiResponse objects to sort
  * @param key - Column to sort by, or null to return the array unsorted
  * @param direction - Sort order: "asc" or "desc"
- * @returns A new sorted Sensor array (does not mutate the input)
+ * @returns A new sorted SensorApiResponse array (does not mutate the input)
  */
 export function sortSensors(
-  sensors: Sensor[],
+  sensors: SensorApiResponse[],
   key: SensorSortKey | null,
   direction: SortDirection,
-): Sensor[] {
+): SensorApiResponse[] {
   if (!key) return sensors;
   return [...sensors].sort((a, b) => {
     let cmp = 0;

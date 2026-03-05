@@ -8,8 +8,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
-
-import { CategoryHeader } from "@/shared/ui/CategoryHeader";
+import { CategoryHeader } from "@shared/ui/CategoryHeader";
 
 export interface AddDeviceProps {
   open: boolean;
@@ -17,7 +16,7 @@ export interface AddDeviceProps {
   addOptions: string[];
   onAdd: (sensor: {
     name: string;
-    euid: string;
+    device_eui: string;
     machine: string;
     appKey: string;
     senProf: string;
@@ -66,7 +65,7 @@ export function AddDevice(props: AddDeviceProps) {
 
     props.onAdd({
       name: values["Name"],
-      euid: values["DeviceEUI"],
+      device_eui: values["DeviceEUI"],
       machine: values["Machine"],
       appKey: values["Application key"],
       senProf: values["Sensor profile"],

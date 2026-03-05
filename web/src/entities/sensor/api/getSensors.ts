@@ -1,12 +1,14 @@
-import type { SensorListApiResponse } from "@/entities/sensor/model/sensorSchema";
-import type { Sensor } from "@/mocks/sensors";
-import { apiRequest, serviceClient } from "@/shared/api";
+import type {
+  SensorApiResponse,
+  SensorListApiResponse,
+} from "@entities/sensor/model/sensorSchema";
+import { apiRequest, serviceClient } from "@shared/api";
 
 /**
- * Fetches all sensors from the collection-service via the API gateway and maps them to the local Sensor shape.
- * @returns Array of Sensor objects, or an empty array if the request fails
+ * Fetches all sensors from the collection-service via the API gateway.
+ * @returns Array of SensorApiResponse objects, or an empty array if the request fails
  */
-export const getSensors = async (): Promise<Sensor[]> => {
+export const getSensors = async (): Promise<SensorApiResponse[]> => {
   try {
     const data = await apiRequest<SensorListApiResponse>(
       serviceClient,
@@ -14,16 +16,7 @@ export const getSensors = async (): Promise<Sensor[]> => {
       "GET",
     );
 
-    return data.sensors.map((sensor) => ({
-      id: sensor.id,
-      name: sensor.name,
-      status: sensor.status,
-      euid: sensor.device_eui,
-      machine: sensor.machine,
-      lastReading: sensor.lastReading,
-      appKey: sensor.appKey,
-      senProf: sensor.senProf,
-    }));
+    return data.sensors;
   } catch (error) {
     console.error("Failed to fetch sensors:", error);
     return [];

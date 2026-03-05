@@ -24,7 +24,11 @@
       "@components/*": ["./src/components/*"],
       "@widgets/*": ["./src/widgets/*"],
       "@pages/*": ["./src/pages/*"],
-      "@app/*": ["./app/*"]
+      "@app/*": ["./src/app/*"],
+      "@shared/*": ["./src/shared/*"],
+      "@features/*": ["./src/features/*"],
+      "@assets/*": ["./src/assets/*"],
+      "@mocks/*": ["./src/mocks/*"]
     },
 
     /* Linting */

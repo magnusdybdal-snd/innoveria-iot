@@ -1,8 +1,7 @@
 import Box from "@mui/material/Box";
-
-import { Path } from "@/shared/ui/Path";
-import { AddBox } from "@/widgets/dashboard";
-import { Menu } from "@/widgets/menu";
+import { Path } from "@shared/ui/Path";
+import { AddBox } from "@widgets/dashboard";
+import { Menu } from "@widgets/menu";
 
 /**
  * Dashboard page that displays the current breadcrumb path and a placeholder to add new dashboard components.

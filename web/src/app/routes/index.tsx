@@ -1,11 +1,14 @@
+import Dashboard from "@pages/Dashboard.tsx";
+import Gateways from "@pages/Gateways";
+import Home from "@pages/Home.tsx";
+import Login from "@pages/Login.tsx";
+import Sensors from "@pages/Sensors.tsx";
 import { Route, Routes } from "react-router";
 
-import Dashboard from "@/pages/Dashboard.tsx";
-import Gateways from "@/pages/Gateways";
-import Home from "@/pages/Home.tsx";
-import Login from "@/pages/Login.tsx";
-import Sensors from "@/pages/Sensors.tsx";
-
+/**
+ * AppRoutes defines the routing structure of the application, mapping URL paths to their corresponding page components.
+ * @returns The rendered Routes component containing all defined routes
+ */
 export default function AppRoutes() {
   return (
     <Routes>

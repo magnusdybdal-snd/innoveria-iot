@@ -1,5 +1,5 @@
-import type { SensorReadingApiResponse } from "@/entities/sensor/model/sensorSchema";
-import { apiRequest, serviceClient } from "@/shared/api";
+import type { SensorReadingApiResponse } from "@entities/sensor/model/sensorSchema";
+import { apiRequest, serviceClient } from "@shared/api";
 
 /**
  * Fetches the latest sensor reading for a given device from the collection-service.

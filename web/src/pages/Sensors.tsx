@@ -1,25 +1,25 @@
 import { useEffect, useState } from "react";
 
-import Button from "@mui/material/Button";
-
 import {
   getSensors,
   SensorAllInfoPopUp,
   SensorMainInfo,
   SensorsGenInfo,
   sortSensors,
+  type SensorApiResponse,
   type SensorSortKey,
   type SortDirection,
-} from "@/entities/sensor";
-import { AddDevice } from "@/features/addSensor";
-import { mockSensors, type Sensor } from "@/mocks/sensors.ts";
-import { CategoryHeader } from "@/shared/ui/CategoryHeader";
-import { DeviceRow } from "@/shared/ui/DeviceRow";
-import { NoDeviceFoundCard } from "@/shared/ui/NoDeviceFoundCard";
-import { PageContent } from "@/shared/ui/PageContent";
-import { PageDivider } from "@/shared/ui/PageDivider";
-import { SubPageHeader } from "@/shared/ui/SubPageHeader";
-import { Menu } from "@/widgets/menu";
+} from "@entities/sensor";
+import { AddDevice } from "@features/addSensor";
+import { mockSensors } from "@mocks/sensors";
+import Button from "@mui/material/Button";
+import { CategoryHeader } from "@shared/ui/CategoryHeader";
+import { DeviceRow } from "@shared/ui/DeviceRow";
+import { NoDeviceFoundCard } from "@shared/ui/NoDeviceFoundCard";
+import { PageContent } from "@shared/ui/PageContent";
+import { PageDivider } from "@shared/ui/PageDivider";
+import { SubPageHeader } from "@shared/ui/SubPageHeader";
+import { Menu } from "@widgets/menu";
 
 const sensorMainDetails: string[] = ["Status", "Name", "Last reading"];
 const addSensorDetails: string[] = [
@@ -30,16 +30,17 @@ const addSensorDetails: string[] = [
   "Sensor profile",
 ];
 const sortableColumns: SensorSortKey[] = ["Status", "Name", "Last reading"];
-type NewSensor = Omit<Sensor, "id" | "status" | "lastReading">;
+type NewSensor = Omit<SensorApiResponse, "id" | "status" | "lastReading">;
 
 /**
  * Full-page view listing all LoRaWAN sensors with sortable columns, summary statistics, and add/detail dialogs.
  * @returns The rendered Sensors page
  */
 export default function Sensors() {
-  const [sensors, setSensors] = useState<Sensor[]>([]);
+  const [sensors, setSensors] = useState<SensorApiResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [sensorsMocked, setMockSensors] = useState<Sensor[]>(mockSensors);
+  const [sensorsMocked, setMockSensors] =
+    useState<SensorApiResponse[]>(mockSensors);
 
   useEffect(() => {
     getSensors().then((data) => {
@@ -49,7 +50,8 @@ export default function Sensors() {
   }, []);
 
   const [openAdd, setOpenAdd] = useState(false);
-  const [selectedSensor, setSelectedSensor] = useState<Sensor | null>(null);
+  const [selectedSensor, setSelectedSensor] =
+    useState<SensorApiResponse | null>(null);
 
   // Handler for opening and closing add sensor pop-up
   const handleClickOpenAdd = () => {
@@ -61,7 +63,7 @@ export default function Sensors() {
   };
 
   // Handler for opening and closing all info pop-up
-  const handleRowClick = (sensor: Sensor) => {
+  const handleRowClick = (sensor: SensorApiResponse) => {
     setSelectedSensor(sensor);
   };
 

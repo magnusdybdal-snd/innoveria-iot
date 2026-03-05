@@ -15,8 +15,8 @@ import { ActionMenu } from "@/shared/ui/actionMenu";
 type InfoProps = {
   name: string;
   status: number;
-  euid: string;
-  lastSeen: string;
+  device_eui: string;
+  lastSeenAt: string;
 };
 
 /**
@@ -28,9 +28,16 @@ type InfoProps = {
  * @param props.status - Numeric status code: 0 = online, 1 = warning, 2 = offline
  * @param props.euid - EUI (Extended Unique Identifier) of the gateway
  * @param props.lastSeen - Human-readable time since last contact (e.g. "2 min ago")
+ * @param props.device_eui
+ * @param props.lastSeenAt
  * @returns A set of grid-aligned cells with an action menu and rename dialog
  */
-export function GatewayInfo({ name, status, euid, lastSeen }: InfoProps) {
+export function GatewayInfo({
+  name,
+  status,
+  device_eui,
+  lastSeenAt,
+}: InfoProps) {
   const theme = useTheme();
   const [currentName, setCurrentName] = useState(name);
   const [editOpen, setEditOpen] = useState(false);
@@ -75,8 +82,8 @@ export function GatewayInfo({ name, status, euid, lastSeen }: InfoProps) {
         }}
       />
       <Typography>{currentName}</Typography>
-      <Typography>{euid}</Typography>
-      <Typography>{lastSeen}</Typography>
+      <Typography>{device_eui}</Typography>
+      <Typography>{lastSeenAt}</Typography>
       <ActionMenu items={menuItems} />
       <Dialog open={editOpen} onClose={() => setEditOpen(false)}>
         <DialogTitle>Rename gateway</DialogTitle>

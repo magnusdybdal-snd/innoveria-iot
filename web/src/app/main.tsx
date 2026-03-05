@@ -7,11 +7,10 @@ import "@/app/providers/styles/index.css";
 
 import { useState } from "react";
 
-import { DarkMode } from "@/shared/config/theme/darkMode";
-import { LightMode } from "@/shared/config/theme/lightMode";
-import { ThemeContext } from "@/shared/config/theme/themeContext";
-
-import AppRoutes from "./routes";
+import AppRoutes from "@app/routes/index.tsx";
+import { DarkMode } from "@shared/config/theme/darkMode";
+import { LightMode } from "@shared/config/theme/lightMode";
+import { ThemeContext } from "@shared/config/theme/themeContext";
 
 /**
  * Application root that wires up theme persistence, MUI ThemeProvider, and the React Router route tree.

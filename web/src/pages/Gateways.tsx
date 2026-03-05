@@ -1,20 +1,21 @@
 import { useEffect, useState } from "react";
 
+import { CategoryHeader } from "@shared/ui/CategoryHeader";
+import { DeviceRow } from "@shared/ui/DeviceRow";
+import { NoDeviceFoundCard } from "@shared/ui/NoDeviceFoundCard";
+import { PageContent } from "@shared/ui/PageContent";
+import { PageDivider } from "@shared/ui/PageDivider";
+import { SubPageHeader } from "@shared/ui/SubPageHeader";
+import { Menu } from "@widgets/menu";
+
 import {
   GatewayInfo,
   getGateways,
   sortGateways,
+  type GatewayApiResponse,
   type GatewaySortKey,
   type SortDirection,
 } from "@/entities/gateway";
-import type { Gateway } from "@/mocks/gateways";
-import { CategoryHeader } from "@/shared/ui/CategoryHeader";
-import { DeviceRow } from "@/shared/ui/DeviceRow";
-import { NoDeviceFoundCard } from "@/shared/ui/NoDeviceFoundCard";
-import { PageContent } from "@/shared/ui/PageContent";
-import { PageDivider } from "@/shared/ui/PageDivider";
-import { SubPageHeader } from "@/shared/ui/SubPageHeader";
-import { Menu } from "@/widgets/menu";
 
 // Column labels rendered by CategoryHeader; order determines grid layout
 const gatewayDetails: string[] = ["Status", "Name", "EUI", "Last seen"];
@@ -30,7 +31,7 @@ const sortableColumns: GatewaySortKey[] = ["Status", "Name", "Last seen"];
  * @returns The rendered Gateways page
  */
 export default function Gateways() {
-  const [gateways, setGateways] = useState<Gateway[]>([]);
+  const [gateways, setGateways] = useState<GatewayApiResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -84,8 +85,8 @@ export default function Gateways() {
               <GatewayInfo
                 name={gateway.name}
                 status={gateway.status}
-                euid={gateway.euid}
-                lastSeen={gateway.lastSeen}
+                device_eui={gateway.device_eui}
+                lastSeenAt={gateway.lastSeenAt}
               />
             </DeviceRow>
           ))}

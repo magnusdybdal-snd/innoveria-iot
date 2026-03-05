@@ -9,8 +9,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import { useTheme } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-
-import { ActionMenu } from "@/shared/ui/actionMenu";
+import { ActionMenu } from "@shared/ui/actionMenu";
 
 type InfoMainProps = {
   name: string;
