@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"innoveria-iot/auth-service/internal/config"
+	"innoveria-iot/auth-service/internal/services"
 	"innoveria-iot/pkg/dbutil"
 )
 
@@ -26,9 +27,10 @@ func Run() error {
 		return fmt.Errorf("db error: %w", err)
 	}
 	defer database.Close()
+	authSvc := services.NewAuthServiceImpl()
 
 	// Setting up mux and http server
-	mux := NewRouter()
+	mux := NewRouter(authSvc)
 	server := &http.Server{
 		Addr:              cfg.Addr,
 		Handler:           mux,
