@@ -20,13 +20,13 @@ services:
       - ./scripts/seed-chirpstack.sql:/scripts/seed-chirpstack.sql
       - chirpstack-secrets:/secrets
     depends_on:
-      - chirpstack-postgres
+      - chirpstack-db
       - mosquitto
       - redis
     environment:
       - MQTT_BROKER_HOST=mosquitto
       - REDIS_HOST=redis
-      - POSTGRES_HOST=chirpstack-postgres
+      - POSTGRES_HOST=chirpstack-db
       - POSTGRES_USER=chirpstack
       - POSTGRES_PASSWORD=chirpstack
       - CHIRPSTACK_SEED=true
@@ -56,7 +56,7 @@ services:
     depends_on:
       - chirpstack
 
-  chirpstack-postgres:
+  chirpstack-db:
     image: postgres:16-alpine
     restart: unless-stopped
     volumes:
@@ -65,7 +65,7 @@ services:
     environment:
       - POSTGRES_USER=chirpstack
       - POSTGRES_PASSWORD=chirpstack
-      - POSTGRES_DB=chirpstack
+      - POSTGRES_DB=chirpstack-db
 
   redis:
     image: redis:7-alpine

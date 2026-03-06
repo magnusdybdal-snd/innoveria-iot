@@ -30,12 +30,12 @@ func MergeGateway(cs dto.ChirpstackGateway, db domain.Gateway) domain.Gateway {
 }
 
 // MapCreateChirpstackGateway TODO(@vinjar): add proper documentation.
-func MapCreateChirpstackGateway(from domain.Gateway, chirpstackTennantId string) dto.CreateChirpstackGatewayRequest {
+func MapCreateChirpstackGateway(from domain.Gateway, chirpstackTenantID string) dto.CreateChirpstackGatewayRequest {
 	return dto.CreateChirpstackGatewayRequest{
 		CreateGatewayPayload: dto.CreateGatewayPayload{
 			GatewayEUI: from.GatewayEUI,
 			Name:       from.Name,
-			TenantID:   chirpstackTennantId,
+			TenantID:   chirpstackTenantID,
 		},
 	}
 }

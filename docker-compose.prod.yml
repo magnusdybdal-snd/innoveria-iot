@@ -26,6 +26,7 @@ services:
       - POSTGRES_HOST=chirpstack-db
       - POSTGRES_USER=${CHIRPSTACK_DB_USER}
       - POSTGRES_PASSWORD=${CHIRPSTACK_DB_PASSWORD}
+      - CHIRPSTACK_SEED=false
 
   chirpstack-gateway-bridge:
     image: chirpstack/chirpstack-gateway-bridge:4
@@ -122,7 +123,7 @@ services:
     environment:
       - POSTGRES_USER=${COLLECTION_DB_USER}
       - POSTGRES_PASSWORD=${COLLECTION_DB_PASSWORD}
-      - POSTGRES_DB=collection-db
+      - POSTGRES_DB=${COLLECTION_DB_NAME}
 
   device-service:
     build:
