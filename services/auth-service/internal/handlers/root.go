@@ -19,6 +19,6 @@ func Root(w http.ResponseWriter, r *http.Request) {
 		"status": "ok",
 	})
 	if err != nil {
-		slog.Error("error decoding json", "err", err)
+		slog.Error("error encoding json", "err", err)
 	}
 }
