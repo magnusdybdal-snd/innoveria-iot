@@ -57,6 +57,7 @@ func MapUpdateSensorDTOToDomain(from UpdateSensorRequest) domain.Sensor {
 // MapCreateSensorDTOToDomain maps a CreateSensorRequest to a domain Sensor.
 func MapCreateSensorDTOToDomain(from CreateSensorRequest) domain.Sensor {
 	return domain.Sensor{
+		CompanyID:           from.CompanyID,
 		Name:                from.Name,
 		Description:         from.Description,
 		DeviceEUI:           from.DeviceEUI,

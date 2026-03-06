@@ -26,6 +26,7 @@ type UpdateSensorRequest struct {
 
 // CreateSensorRequest represents the fields required to register a new sensor.
 type CreateSensorRequest struct {
+	CompanyID           string  `json:"company_id"`
 	Name                string  `json:"name"`
 	Description         *string `json:"description"`
 	DeviceEUI           string  `json:"device_eui"`
