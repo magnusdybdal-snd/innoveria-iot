@@ -36,15 +36,15 @@ func mapStatusSensor(lastSeen time.Time) domain.Status {
 	return domain.StatusOffline
 }
 
-// MapUpdateChirpstackSensor builds a Chirpstack update request from a domain sensor and applicationID
-func MapUpdateChirpstackSensor(sensor domain.Sensor, applicationID string) dto.CreateChirpstackSensorRequest {
-	return dto.CreateChirpstackSensorRequest{
-		CreateSensorPayload: dto.CreateSensorPayload{
+// MapChirpstackSensorRequest builds a Chirpstack update request from a domain sensor and applicationID
+func MapChirpstackSensorRequest(sensor domain.Sensor, applicationID string) dto.ChirpstackSensorRequest {
+	return dto.ChirpstackSensorRequest{
+		SensorPayload: dto.SensorPayload{
 			DeviceEUI:       sensor.DeviceEUI,
 			Name:            sensor.Name,
 			ApplicationID:   applicationID,
 			DeviceProfileID: sensor.ChirpstackProfileID,
-			JoinEUI:         "0000000000000000",
+			JoinEUI:         "0000000000000000", // Not an issue when we host Chirpstack privately.
 		},
 	}
 }

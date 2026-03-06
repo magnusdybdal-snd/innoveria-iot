@@ -25,8 +25,8 @@ func NewRouter(
 	mux.HandleFunc("DELETE "+GATEWAY_ROUTE_ID, handlers.DeleteGateway(gatewaySvc))
 
 	// Sensor Routes:
-	// mux.HandleFunc("GET "+SENSOR_ROUTE, handlers.GetSensors(sensorSvc))
-	// mux.HandleFunc("POST "+SENSOR_ROUTE, handlers.PostSensors(sensorSvc)) // TODO: add this, when logic is right
+	mux.HandleFunc("GET "+SENSOR_ROUTE, handlers.GetSensors(sensorSvc))
+	mux.HandleFunc("POST "+SENSOR_ROUTE, handlers.PostSensor(sensorSvc))
 	mux.HandleFunc("DELETE "+SENSOR_ROUTE_ID, handlers.DeleteSensor(sensorSvc))
 	mux.HandleFunc("PUT "+SENSOR_ROUTE_ID, handlers.PutSensor(sensorSvc))
 

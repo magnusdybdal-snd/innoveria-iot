@@ -32,14 +32,14 @@ type ChirpstackSensorStatus struct {
 	Margin              int     `json:"margin"`
 }
 
-// CreateChirpstackSensorRequest is the top-level body for POST and PUT /api/devices.
+// ChirpstackSensorRequest is the top-level body for POST and PUT /api/devices.
 // ChirpStack expects the payload wrapped under a "device" key.
-type CreateChirpstackSensorRequest struct {
-	CreateSensorPayload `json:"device"`
+type ChirpstackSensorRequest struct {
+	SensorPayload `json:"device"`
 }
 
-// CreateSensorPayload contains the fields required by ChirpStack to register a new device.
-type CreateSensorPayload struct {
+// SensorPayload contains the fields required by ChirpStack to register a new device.
+type SensorPayload struct {
 	DeviceEUI       string `json:"devEui"`
 	Name            string `json:"name"`
 	Description     string `json:"description"`

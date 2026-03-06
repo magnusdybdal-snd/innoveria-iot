@@ -285,7 +285,7 @@ func (c *Client) GetOneSensor(ctx context.Context, deviceEUI string) (dto.Chirps
 }
 
 // CreateSensor TODO(@vinjar): add proper documentation.
-func (c *Client) CreateSensor(ctx context.Context, body dto.CreateChirpstackSensorRequest) error {
+func (c *Client) CreateSensor(ctx context.Context, body dto.ChirpstackSensorRequest) error {
 	url := fmt.Sprintf("%s/api/devices", c.baseURL)
 	resp, err := httpclient.DoRaw(
 		c.httpClient,
@@ -310,7 +310,7 @@ func (c *Client) CreateSensor(ctx context.Context, body dto.CreateChirpstackSens
 
 // UpdateSensor updates a device's name, description and device profile in Chirpstack.
 // DeviceEUI identifies the device and cannot be changed.
-func (c *Client) UpdateSensor(ctx context.Context, body dto.CreateChirpstackSensorRequest) error {
+func (c *Client) UpdateSensor(ctx context.Context, body dto.ChirpstackSensorRequest) error {
 	url := fmt.Sprintf("%s/api/devices/%s", c.baseURL, body.DeviceEUI)
 	resp, err := httpclient.DoRaw(
 		c.httpClient,

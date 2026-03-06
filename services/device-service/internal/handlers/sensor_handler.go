@@ -32,10 +32,25 @@ func GetSensors(svc domain.SensorService) http.HandlerFunc {
 	}
 }
 
-// PostSensor TODO(@vinjar): add proper documentation.
+// PostSensor registers a new sensor in ChirpStack and the database.
 func PostSensor(svc domain.SensorService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		_ = r.Context()
+		ctx := r.Context()
+
+		payload, err := json.Decode[dto.CreateSensorRequest](r)
+		if err != nil {
+			json.HandleError(w, http.StatusBadRequest, err, "bad request")
+			return
+		}
+
+		data := dto.MapCreateSensorDTOToDomain(payload)
+
+		if err := svc.Create(ctx, data); err != nil {
+			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			return
+		}
+
+		w.WriteHeader(http.StatusCreated)
 
 	}
 }

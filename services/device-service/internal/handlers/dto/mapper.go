@@ -47,9 +47,23 @@ func MapGatewayDTOToDomain(from CreateGatewayRequest) domain.Gateway {
 func MapUpdateSensorDTOToDomain(from UpdateSensorRequest) domain.Sensor {
 	return domain.Sensor{
 		Name:                from.Name,
-		Description:         &from.Description,
-		FactoryAreaID:       &from.FactoryAreaID,
-		ChirpstackProfileID: from.ChirpstackProfileId,
+		Description:         from.Description,
+		FactoryAreaID:       from.FactoryAreaID,
+		ChirpstackProfileID: from.ChirpstackProfileID,
+		ProductionResource:  from.ProductionResource,
+	}
+}
+
+// MapCreateSensorDTOToDomain maps a CreateSensorRequest to a domain Sensor.
+func MapCreateSensorDTOToDomain(from CreateSensorRequest) domain.Sensor {
+	return domain.Sensor{
+		Name:                from.Name,
+		Description:         from.Description,
+		DeviceEUI:           from.DeviceEUI,
+		ChirpstackProfileID: from.ChirpstackProfileID,
+		FactoryAreaID:       from.FactoryAreaID,
+		ProductionResource:  from.ProductionResource,
+		State:               domain.DeviceStateActive, // Default state ACTIVE when created
 	}
 }
 

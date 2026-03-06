@@ -25,15 +25,30 @@ func NewSensorService(cc *chirpstackrest.Client, sensorRepo domain.SensorReposit
 	}
 }
 
-// Create TODO
+// Create adds a new sensor to ChirpStack and the database. The sensor will always
+// be added to ChirpStack first. If this fails we return early and don't make an entry in
+// the database.
 func (s *SensorServiceImpl) Create(ctx context.Context, payload domain.Sensor) error {
 	// Find the company's chirpstack tenant ID
-	_, err := s.companycfgRepo.FindByCompanyID(ctx, payload.CompanyID)
+	cfg, err := s.companycfgRepo.FindByCompanyID(ctx, payload.CompanyID)
 	if err != nil {
 		return fmt.Errorf("create sensor: finding company tenant ID: %w", err)
 	}
 
-	// Sending post request to chirpstack
+	// Send post request to ChirpStack
+	sensorReq := mappers.MapChirpstackSensorRequest(payload, cfg.ChirpstackApplicationID)
+	err = s.cc.CreateSensor(ctx, sensorReq)
+	if err != nil {
+		return fmt.Errorf("create sensor: add to chirpstack: %w", err)
+	}
+
+	// If successful creation in chirpstac, store in DB.
+	sensor, err := s.sensorRepo.Create(ctx, payload)
+	if err != nil {
+		return fmt.Errorf("create sensor: add to database: %w", err)
+	}
+
+	slog.Info("successfully created sensor", "id", sensor.Id)
 	return nil
 }
 
@@ -58,7 +73,7 @@ func (s *SensorServiceImpl) Update(ctx context.Context, sensorID string, payload
 	sensor.ChirpstackProfileID = payload.ChirpstackProfileID
 
 	// Chirpstack put request
-	sensorReq := mappers.MapUpdateChirpstackSensor(sensor, companycfg.ChirpstackApplicationID)
+	sensorReq := mappers.MapChirpstackSensorRequest(sensor, companycfg.ChirpstackApplicationID)
 	if err := s.cc.UpdateSensor(ctx, sensorReq); err != nil {
 		return fmt.Errorf("update sensor: update in chirpstack: %w", err)
 	}
