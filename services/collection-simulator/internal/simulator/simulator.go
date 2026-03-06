@@ -31,10 +31,13 @@ func New(client *broker.Client, cfg config.Config) *Simulator {
 
 // Initilze the simulator
 // Starts goroutines so it simulate concurrent dataflow
+// EUIs are generated sequentially: b000000000000001, b000000000000002, ...
+// With deviceCount=3 (default) the EUIs match the dev seeds exactly.
+// Increase deviceCount via the Devices env var for stress testing.
 func (s *Simulator) Start() {
 	for i := 0; i < s.deviceCount; i++ {
-		deviceId := fmt.Sprintf("%d", i)
-		go s.run(deviceId)
+		eui := fmt.Sprintf("b%015d", i+1)
+		go s.run(eui)
 	}
 
 	select {}
