@@ -7,6 +7,7 @@ import {
 
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import HomeIcon from "@mui/icons-material/Home";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import MemoryIcon from "@mui/icons-material/Memory";
 import RouterIcon from "@mui/icons-material/Router";
@@ -45,6 +46,7 @@ interface MenuProps {
 }
 
 const pageSymbol: Map<string, ComponentType<SvgIconProps>> = new Map([
+  ["Home", HomeIcon],
   ["Dashboard views", SpaceDashboardIcon],
   ["Devices", MemoryIcon],
   ["Gateways", RouterIcon],
@@ -54,19 +56,25 @@ const pageSymbol: Map<string, ComponentType<SvgIconProps>> = new Map([
 
 /**
  * Persistent sidebar navigation with logo, user info, page links, theme toggle, and logout.
- * @param root0
- * @param root0.children
+ * @param menuProps props of menu
+ * @param menuProps.children the page
  * @returns The rendered sidebar menu component
  */
-export default function Menu({ children }: MenuProps) {
+export default function Menu(menuProps: MenuProps) {
+  const { children } = menuProps;
   const { mode, toggle } = useContext(ThemeContext);
   const location = useLocation();
-  const [expanded, setExpanded] = useState<string | false>(false);
+  const [expanded, setExpanded] = useState<string[]>([]);
 
   const handleAccordionChange =
     (category: string) =>
     (_event: React.SyntheticEvent, isExpanded: boolean) => {
-      setExpanded(isExpanded ? category : false);
+      setExpanded(
+        (prev) =>
+          isExpanded
+            ? [...prev, category] // open category
+            : prev.filter((c) => c !== category), // close category
+      );
     };
 
   return (
@@ -126,11 +134,10 @@ export default function Menu({ children }: MenuProps) {
           {/* Menu navigation */}
           {Array.from(MainPages.entries()).map(([category, page]) => {
             const subPagesForCategory = SubPages.get(category) ?? [];
-            const MainIcon = pageSymbol.get(category);
             const isCategoryActive = subPagesForCategory.some(
-              // Keep open category dropdown
               (sub) => location.pathname === sub.path,
             );
+            const MainIcon = pageSymbol.get(category);
 
             // If no subpages → normal link
             if (subPagesForCategory.length === 0) {
@@ -156,7 +163,7 @@ export default function Menu({ children }: MenuProps) {
             return (
               <ListItem key={category} disablePadding sx={{ display: "block" }}>
                 <Accordion
-                  expanded={expanded === category || isCategoryActive}
+                  expanded={expanded.includes(category)}
                   onChange={handleAccordionChange(category)}
                   disableGutters
                   elevation={0}
@@ -167,7 +174,17 @@ export default function Menu({ children }: MenuProps) {
                 >
                   <AccordionSummary
                     expandIcon={<ExpandMoreIcon />}
-                    sx={{ px: 2 }}
+                    sx={{
+                      px: 2,
+                      backgroundColor: isCategoryActive
+                        ? "action.selected"
+                        : "transparent",
+                      "&:hover": {
+                        backgroundColor: isCategoryActive
+                          ? "action.selected"
+                          : "action.hover",
+                      },
+                    }}
                   >
                     {MainIcon && (
                       <ListItemIcon sx={{ minWidth: 28 }}>
