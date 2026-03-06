@@ -140,6 +140,7 @@ services:
       - DB_SSLMODE=${DEVICE_DB_SSLMODE}
     depends_on:
       - device-db
+    restart: unless-stopped
 
   device-db:
     image: postgres:16-alpine
@@ -162,6 +163,9 @@ services:
       - DB_PASSWORD=${AUTH_DB_PASSWORD}
       - DB_NAME=${AUTH_DB_NAME}
       - DB_SSLMODE=${AUTH_DB_SSLMODE}
+    depends_on:
+      - auth-db
+    restart: unless-stopped
 
   auth-db:
     image: postgres:16-alpine

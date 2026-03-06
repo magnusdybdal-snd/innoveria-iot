@@ -21,6 +21,7 @@ func Load() *Config {
 	dbPassword := env.Get("DB_PASSWORD", "auth")
 	dbName := env.Get("DB_NAME", "auth")
 	sslmode := env.Get("DB_SSLMODE", "disable")
+
 	return &Config{
 		Addr: ":" + env.Get("PORT", "8080"),
 		DB_URL: fmt.Sprintf(
