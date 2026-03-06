@@ -31,7 +31,7 @@ type NewSensor = Omit<Sensor, "id" | "status" | "lastReading">;
 export default function Companies() {
   const [sensors, setSensors] = useState<Sensor[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [sensorsMocked, setMockSensors] = useState<Sensor[]>(mockSensors);
+  const [setMockSensors] = useState<Sensor[]>(mockSensors);
 
   useEffect(() => {
     fetchSensors().then((data) => {
@@ -105,24 +105,6 @@ export default function Companies() {
   }
 
   const sorted = sortSensors(sensors, sortConfig.key, sortConfig.direction);
-  const sortedMock = sortSensors(
-    sensorsMocked,
-    sortConfig.key,
-    sortConfig.direction,
-  );
-
-  const sensorInfos = new Map<string, number>();
-  sensorInfos.set("Total sensors", sorted.length);
-  sensorInfos.set(
-    "Online sensors",
-    sorted.filter((sensor) => sensor.status === 0).length,
-  );
-  sensorInfos.set(
-    "Offline sensors",
-    sorted.filter((sensor) => sensor.status === 2).length,
-  );
-  sensorInfos.set("Last seen 24hr", 0);
-  sensorInfos.set("Error last 24hr", 0);
 
   return (
     <Menu>
@@ -137,16 +119,6 @@ export default function Companies() {
             onSort={handleSort}
           >
             {sorted.map((sensor) => (
-              <DeviceRow key={sensor.id}>
-                <SensorMainInfo
-                  name={sensor.name}
-                  status={sensor.status}
-                  lastReading={sensor.lastReading}
-                  onClick={() => handleRowClick(sensor)}
-                />
-              </DeviceRow>
-            ))}
-            {sortedMock.map((sensor) => (
               <DeviceRow key={sensor.id}>
                 <SensorMainInfo
                   name={sensor.name}
