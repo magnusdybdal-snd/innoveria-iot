@@ -15,7 +15,7 @@ func Root(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	err := json.Encode(w, http.StatusOK, map[string]string{
-		"name":   "device-service",
+		"name":   "auth-service",
 		"status": "ok",
 	})
 	if err != nil {

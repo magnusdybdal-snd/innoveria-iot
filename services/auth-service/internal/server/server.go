@@ -30,7 +30,7 @@ func Run() error {
 	// main startup function
 	serverErrors := make(chan error, 1)
 	go func() {
-		slog.Info("device-service listning")
+		slog.Info("auth-service listning")
 		err := server.ListenAndServe()
 		serverErrors <- err
 	}()
@@ -49,12 +49,12 @@ func Run() error {
 		}
 		return fmt.Errorf("listen %w", err)
 	case sig := <-shutdown:
-		slog.Info("device-service shutting down", "signal", sig.String())
+		slog.Info("auth-service shutting down", "signal", sig.String())
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
 
 		if err := server.Shutdown(ctx); err != nil {
-			slog.Error("device-service shutdown error", "err", err)
+			slog.Error("auth-service shutdown error", "err", err)
 			err := server.Close()
 			return fmt.Errorf("shutdown: %w", err)
 		}

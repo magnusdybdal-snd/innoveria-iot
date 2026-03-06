@@ -1,3 +1,4 @@
+// package main application entryppoint
 package main
 
 import (
@@ -8,11 +9,12 @@ import (
 	"innoveria-iot/pkg/logger"
 )
 
+// main application entrypoint
 func main() {
 	logger.NewLogger("auth-service")
 
 	if err := server.Run(); err != nil {
-		slog.Error("device-service exited with error", "error", err)
+		slog.Error("auth-service exited with error", "error", err)
 		os.Exit(1)
 	}
 }
