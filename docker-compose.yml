@@ -188,6 +188,20 @@ services:
       - ./pkg:/pkg
     environment:
       - GO_ENV=development
+    depends_on:
+      - auth-db
+
+  auth-db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    ports:
+      - "5435:5432"
+    volumes:
+      - authdata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=auth
+      - POSTGRES_PASSWORD=auth
+      - POSTGRES_DB=auth
 
 #
 # Docker data volumes
@@ -197,4 +211,5 @@ volumes:
   chirpstackdata:
   redisdata:
   devicedata:
+  authdata:
   chirpstack-secrets: # for api key
