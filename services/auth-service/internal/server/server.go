@@ -13,11 +13,19 @@ import (
 	"time"
 
 	"innoveria-iot/auth-service/internal/config"
+	"innoveria-iot/pkg/dbutil"
 )
 
 // Run starts the auth service HTTP server and handles graceful shutdown.
 func Run() error {
 	cfg := config.Load()
+
+	// Init connection to auth database
+	database, err := dbutil.New(cfg.DB_URL, "auth-db")
+	if err != nil {
+		return fmt.Errorf("db error: %w", err)
+	}
+	defer database.Close()
 
 	// Setting up mux and http server
 	mux := NewRouter()
