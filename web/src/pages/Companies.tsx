@@ -1,13 +1,10 @@
 import { useState } from "react";
 
-import { CategoryHeader } from "@/components/CategoryHeader";
-import {
-  type SensorSortKey,
-  type SortDirection,
-} from "@/components/gatewayRow";
-import { PageContent } from "@/components/pageContent";
-import { SubPageHeader } from "@/components/subPageHeader";
-import Menu from "@/Menu.tsx";
+import { type SensorSortKey, type SortDirection } from "@entities/sensor";
+import { CategoryHeader } from "@shared/ui/CategoryHeader";
+import { PageContent } from "@shared/ui/PageContent";
+import { SubPageHeader } from "@shared/ui/SubPageHeader";
+import { Menu } from "@widgets/menu";
 
 const companyMainDetails: string[] = ["Name"];
 const sortableColumns: SensorSortKey[] = ["Name"];

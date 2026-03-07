@@ -1,1 +1,0 @@
-export { fetchGateways } from "./fetchGateways";

@@ -1,1 +1,0 @@
-export { SubPageHeader } from "./subPageHeader";
