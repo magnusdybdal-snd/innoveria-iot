@@ -11,7 +11,7 @@ const (
 	createCompany = `
 		INSERT INTO auth.company (name, address)
 		VALUES ($1, $2)
-		RETURNING company_id, name, address, created_at
+		RETURNING company_id, name, address, created_at, updated_at
 	`
 )
 

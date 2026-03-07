@@ -3,6 +3,7 @@ package domain
 
 import (
 	"context"
+	"time"
 )
 
 // CompanyRepo defines the company repository needed by the auth domain.
@@ -26,6 +27,6 @@ type Company struct {
 	CompanyId string
 	Name      string
 	Address   string
-	CreatedAt string
-	UpdatedAt string
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }

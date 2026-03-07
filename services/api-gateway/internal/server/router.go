@@ -18,6 +18,10 @@ func NewRouter(cfg *config.Config) *http.ServeMux {
 	/*
 		Proxy routes microservice:
 	*/
+	// auth service
+	handlers.RegisterProxyService(mux, AUTHENTICATION_ROUTE, "auth-service", cfg.AuthSvcURL, []string{
+		"/company",
+	})
 	// Device service
 	handlers.RegisterProxyService(mux, DEVICE_ROUTE, "device-service", cfg.DeviceSvcURL, []string{
 		"/gateways",

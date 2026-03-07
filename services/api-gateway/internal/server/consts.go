@@ -12,6 +12,6 @@ const (
 	// Proxy routing to correct service
 	COLLECTION_ROUTE     = API_ROUTE + "/collection"
 	DEVICE_ROUTE         = API_ROUTE + "/device"
-	AUTHENTICATION_ROUTE = API_ROUTE + "/authentication"
+	AUTHENTICATION_ROUTE = API_ROUTE + "/auth"
 	CONTEXT_ROUTE        = API_ROUTE + "/context"
 )
