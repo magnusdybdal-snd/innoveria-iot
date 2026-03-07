@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import {
   GatewayInfo,
   getGateways,
+  postGateway,
   sortGateways,
   type GatewayApiResponse,
   type GatewaySortKey,
@@ -16,11 +17,16 @@ import { PageDivider } from "@shared/ui/PageDivider";
 import { SubPageHeader } from "@shared/ui/SubPageHeader";
 import { Menu } from "@widgets/menu";
 
+import { AddDevice } from "@/features/addSensor/ui/AddDevice";
+import { CustomButton } from "@/shared/ui/Button";
+
 // Column labels rendered by CategoryHeader; order determines grid layout
 const gatewayDetails: string[] = ["Status", "Name", "EUI", "Last seen"];
 
 // EUI is display-only; excluded because the ChirpStack identifier is not a meaningful value to sort by.
 const sortableColumns: GatewaySortKey[] = ["Status", "Name", "Last seen"];
+
+const addGatewayDetails: string[] = ["Name", "DeviceEUI"];
 
 /**
  * Full-page view listing all LoRaWAN gateways registered in ChirpStack.
@@ -33,13 +39,17 @@ export default function Gateways() {
   const [gateways, setGateways] = useState<GatewayApiResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
+  const fetchGateways = () => {
     getGateways().then((data) => {
       setGateways(data);
       setIsLoading(false);
     });
-  }, []);
+  };
 
+  useEffect(() => {
+    fetchGateways();
+  }, []);
+  const [openAdd, setOpenAdd] = useState(false);
   const [sortConfig, setSortConfig] = useState<{
     key: GatewaySortKey | null;
     direction: SortDirection;
@@ -47,6 +57,32 @@ export default function Gateways() {
     key: null,
     direction: "asc",
   });
+
+  // Handler for opening and closing add sensor pop-up
+  const handleClickOpenAdd = () => {
+    setOpenAdd(true);
+  };
+  const handleCloseAdd = () => {
+    setOpenAdd(false);
+  };
+  const handleAddGateway = (gatewayData: {
+    name: string;
+    deviceEui: string;
+  }) => {
+    postGateway({
+      companyId: "a0000000-0000-0000-0000-000000000001", // TODO: replace with real company ID from auth
+      deviceEui: gatewayData.deviceEui,
+      name: gatewayData.name,
+    })
+      .then(() => fetchGateways())
+      .catch((err: unknown) => {
+        throw err;
+      });
+  };
+
+  const addButton = (
+    <CustomButton onClick={handleClickOpenAdd}>Add gateway</CustomButton>
+  );
 
   /**
    * Updates sort state when a column header is clicked.
@@ -68,7 +104,7 @@ export default function Gateways() {
     <Menu>
       <div className="flex h-screen">
         <PageContent>
-          <SubPageHeader title="Gateways" />
+          <SubPageHeader title="Gateways" action={addButton} />
           <PageDivider />
           <CategoryHeader
             categories={gatewayDetails}
@@ -92,6 +128,12 @@ export default function Gateways() {
           </CategoryHeader>
           {!isLoading && sorted.length === 0 && <NoDeviceFoundCard />}
         </PageContent>
+        <AddDevice
+          open={openAdd}
+          onClose={handleCloseAdd}
+          addOptions={addGatewayDetails}
+          onAdd={handleAddGateway}
+        />
       </div>
     </Menu>
   );

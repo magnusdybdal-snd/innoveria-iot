@@ -55,8 +55,9 @@ export function AddDevice(props: AddDeviceProps) {
       setFillError(true);
       return;
     } else if (
-      newLengthErrors.DeviceEUI ||
-      newLengthErrors["Application key"]
+      (addOptions.includes("DeviceEUI") && newLengthErrors.DeviceEUI) ||
+      (addOptions.includes("Application key") &&
+        newLengthErrors["Application key"])
     ) {
       setFillError(false);
       setLengthErrors(newLengthErrors);
