@@ -5,11 +5,14 @@ import {
   type ReactNode,
 } from "react";
 
+import BusinessIcon from "@mui/icons-material/Business";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import FactoryIcon from "@mui/icons-material/Factory";
 import HomeIcon from "@mui/icons-material/Home";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import MemoryIcon from "@mui/icons-material/Memory";
+import PeopleIcon from "@mui/icons-material/People";
 import RouterIcon from "@mui/icons-material/Router";
 import SettingsRemoteIcon from "@mui/icons-material/SettingsRemote";
 import SpaceDashboardIcon from "@mui/icons-material/SpaceDashboard";
@@ -52,6 +55,9 @@ const pageSymbol: Map<string, ComponentType<SvgIconProps>> = new Map([
   ["Gateways", RouterIcon],
   ["Sensors", SettingsRemoteIcon],
   ["Reports", SummarizeIcon],
+  ["Companies", BusinessIcon],
+  ["Factories", FactoryIcon],
+  ["Users", PeopleIcon],
 ]);
 
 /**
