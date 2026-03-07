@@ -177,7 +177,31 @@ services:
       - POSTGRES_USER=device
       - POSTGRES_PASSWORD=device
       - POSTGRES_DB=device
-      
+  auth-service:
+    build:
+      context: .
+      dockerfile: infra/development/auth-service.Dockerfile
+    ports:
+      - "8084:8080"
+    volumes:
+      - ./services/auth-service:/app
+      - ./pkg:/pkg
+    environment:
+      - GO_ENV=development
+    depends_on:
+      - auth-db
+
+  auth-db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    ports:
+      - "5435:5432"
+    volumes:
+      - authdata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=auth
+      - POSTGRES_PASSWORD=auth
+      - POSTGRES_DB=auth
 
 #
 # Docker data volumes
@@ -187,4 +211,5 @@ volumes:
   chirpstackdata:
   redisdata:
   devicedata:
+  authdata:
   chirpstack-secrets: # for api key

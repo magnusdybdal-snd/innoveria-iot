@@ -140,6 +140,7 @@ services:
       - DB_SSLMODE=${DEVICE_DB_SSLMODE}
     depends_on:
       - device-db
+    restart: unless-stopped
 
   device-db:
     image: postgres:16-alpine
@@ -151,9 +152,35 @@ services:
       - POSTGRES_PASSWORD=${DEVICE_DB_PASSWORD}
       - POSTGRES_DB=${DEVICE_DB_NAME}
 
+  auth-service:
+    build:
+      context: .
+      dockerfile: infra/production/auth-service.Dockerfile
+    environment:
+      - GO_ENV=${GO_ENV}
+      - DB_HOST=auth-db
+      - DB_USER=${AUTH_DB_USER}
+      - DB_PASSWORD=${AUTH_DB_PASSWORD}
+      - DB_NAME=${AUTH_DB_NAME}
+      - DB_SSLMODE=${AUTH_DB_SSLMODE}
+    depends_on:
+      - auth-db
+    restart: unless-stopped
+
+  auth-db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    volumes:
+      - auth-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=${AUTH_DB_USER}
+      - POSTGRES_PASSWORD=${AUTH_DB_PASSWORD}
+      - POSTGRES_DB=${AUTH_DB_NAME}
+
 volumes:
   chirpstack-secrets:
   chirpstack-data:
   collection-data:
   device-data:
+  auth-data:
   redis-data:

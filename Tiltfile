@@ -21,6 +21,11 @@ dc_resource(
 )
 
 dc_resource(
+    'auth-db',
+    labels=['database']
+)
+
+dc_resource(
     'collection-service',
     labels=['microservice']
 )
@@ -32,6 +37,11 @@ dc_resource(
 
 dc_resource(
     'device-service',
+    labels=['microservice']
+)
+
+dc_resource(
+    'auth-service',
     labels=['microservice']
 )
 

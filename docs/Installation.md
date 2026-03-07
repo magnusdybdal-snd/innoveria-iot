@@ -33,8 +33,10 @@ Most important command (start production):
 NOTE: Its a prerequisite to set up enviroment variables in a file called .env.production
     - See .env.example on how to set it up
 
+
+As both dev and prod is in root. Its recommended to run prod with -p to create a new docker project
 ```bash
-docker compose --env-file .env.production -f docker-compose.prod.yml up -d --build
+docker compose -p app-prod --env-file .env.production -f docker-compose.prod.yml up -d --build
 ```
 
 Useful commands:
