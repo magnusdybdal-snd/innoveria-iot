@@ -84,7 +84,7 @@ export default function Gateways() {
                 <GatewayInfo
                   name={gateway.name}
                   status={gateway.status}
-                  device_eui={gateway.device_eui}
+                  device_eui={gateway.deviceEui}
                   lastSeenAt={gateway.lastSeenAt}
                 />
               </DeviceRow>
