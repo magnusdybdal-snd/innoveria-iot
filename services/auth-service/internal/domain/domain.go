@@ -1,9 +1,10 @@
 // Package domain defines auth-service core interfaces and domain contracts.
 package domain
 
-// AuthRepository defines persistence operations needed by the auth domain.
-type AuthRepository interface {
-}
+import "context"
+
+// CompanyRepo defines the company repository needed by the auth domain.
+type CompanyRepo interface{}
 
 // AuthService defines authentication and session operations exposed by
 // the auth domain service layer.
@@ -13,4 +14,14 @@ type AuthService interface {
 	// Refresh
 	// Logout
 	// Me
+	RegisterCompany(ctx context.Context) error
+}
+
+// Company is the domain model for company
+type Company struct {
+	CompanyId string
+	Name      string
+	Address   string
+	CreatedAt string
+	UpdatedAt string
 }
