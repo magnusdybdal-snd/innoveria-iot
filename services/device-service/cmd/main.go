@@ -13,7 +13,7 @@ import (
 // @version 		1.0
 // @description 	Manages sensors, gateways, sensor profiles and sensor groups.
 
-// @host 			localhost:8081
+// @host 			localhost:8083
 // @BasePath 		/api/v1/device
 
 func main() {

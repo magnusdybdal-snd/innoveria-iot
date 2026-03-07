@@ -1,0 +1,388 @@
+basePath: /api/v1/device
+definitions:
+  dto.CreateGatewayRequest:
+    properties:
+      company_id:
+        type: string
+      gateway_eui:
+        type: string
+      name:
+        type: string
+    type: object
+  dto.CreateSensorGroup:
+    properties:
+      company_id:
+        type: string
+      name:
+        type: string
+    type: object
+  dto.CreateSensorRequest:
+    properties:
+      company_id:
+        description: 'TODO: CompanyID should be extracted from auth'
+        type: string
+      description:
+        type: string
+      device_eui:
+        type: string
+      device_profile_id:
+        type: string
+      factory_area_id:
+        type: string
+      name:
+        type: string
+      production_resource:
+        type: string
+    type: object
+  dto.GatewayListResponse:
+    properties:
+      gateways:
+        items:
+          $ref: '#/definitions/dto.GatewayResponse'
+        type: array
+      total_count:
+        type: integer
+    type: object
+  dto.GatewayResponse:
+    properties:
+      company_id:
+        type: string
+      gateway_eui:
+        type: string
+      id:
+        type: string
+      last_seen_at:
+        type: string
+      name:
+        type: string
+      status:
+        type: integer
+    type: object
+  dto.SensorGroupListResponse:
+    properties:
+      sensor_groups:
+        items:
+          $ref: '#/definitions/dto.SensorGroupResponse'
+        type: array
+      total_count:
+        type: integer
+    type: object
+  dto.SensorGroupResponse:
+    properties:
+      company_id:
+        type: string
+      id:
+        type: string
+      location:
+        type: string
+      name:
+        type: string
+    type: object
+  dto.SensorListResponse:
+    properties:
+      sensors:
+        items:
+          $ref: '#/definitions/dto.SensorResponse'
+        type: array
+      total_count:
+        type: integer
+    type: object
+  dto.SensorProfileListResponse:
+    properties:
+      sensor_profiles:
+        items:
+          $ref: '#/definitions/dto.SensorProfileResponse'
+        type: array
+      total_count:
+        type: integer
+    type: object
+  dto.SensorProfileResponse:
+    properties:
+      id:
+        type: string
+      mac_version:
+        description: LoRaWAN version
+        type: string
+      name:
+        type: string
+      region:
+        description: LoRaWAN region (EU868)
+        type: string
+      vendor:
+        description: Vendor name
+        type: string
+      vendor_id:
+        description: Identification of model producer
+        type: string
+    type: object
+  dto.SensorResponse:
+    properties:
+      company_id:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      device_eui:
+        type: string
+      device_profile_id:
+        type: string
+      factory_area_id:
+        type: string
+      id:
+        type: string
+      last_seen_at:
+        type: string
+      name:
+        type: string
+      production_resource:
+        type: string
+      state:
+        type: string
+      status:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  dto.UpdateSensorRequest:
+    properties:
+      description:
+        type: string
+      device_profile_id:
+        type: string
+      factory_area_id:
+        type: string
+      name:
+        type: string
+      production_resource:
+        type: string
+    type: object
+host: localhost:8083
+info:
+  contact: {}
+  description: Manages sensors, gateways, sensor profiles and sensor groups.
+  title: Device Service API
+  version: "1.0"
+paths:
+  /gateways:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GatewayListResponse'
+        "500":
+          description: Internal Server Error
+      summary: List all gateways
+      tags:
+      - gateways
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Gateway payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateGatewayRequest'
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Create a gateway
+      tags:
+      - gateways
+  /gateways/{id}:
+    delete:
+      parameters:
+      - description: Gateway ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Delete a gateway
+      tags:
+      - gateways
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Gateway ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Update payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateGatewayRequest'
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Update a gateway
+      tags:
+      - gateways
+  /sensor-groups:
+    get:
+      parameters:
+      - description: Max number of groups to return
+        in: query
+        name: limit
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.SensorGroupListResponse'
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: List all sensor groups
+      tags:
+      - sensor-groups
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Sensor group payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateSensorGroup'
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Create a sensor group
+      tags:
+      - sensor-groups
+  /sensor-profiles:
+    get:
+      description: Not authenticated — every user can access this list.
+      parameters:
+      - description: Max number of profiles to return
+        in: query
+        name: limit
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.SensorProfileListResponse'
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: List all sensor profiles
+      tags:
+      - sensor-profiles
+  /sensors:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.SensorListResponse'
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Lists all sensors.
+      tags:
+      - sensors
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Sensor payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateSensorRequest'
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Create a sensor
+      tags:
+      - sensors
+  /sensors/{id}:
+    delete:
+      parameters:
+      - description: SensorID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Delete a sensor
+      tags:
+      - sensors
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Sensor ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Update payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateSensorRequest'
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Update a sensor
+      tags:
+      - sensors
+swagger: "2.0"
