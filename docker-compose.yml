@@ -16,8 +16,8 @@ services:
     volumes:
       - ./infra/config/chirpstack:/etc/chirpstack
       - ./infra/config/chirpstack-device-profiles:/profiles
-      - ./infra/config/postgresql/initdb/seed-chirpstack.sql:/seed/seed-chirpstack.sql
       - ./scripts/startChirpstack.sh:/scripts/startChirpstack.sh
+      - ./infra/seed/seed-chirpstack.sql:/seed/seed-chirpstack.sql
       - chirpstack-secrets:/secrets
     depends_on:
       - chirpstack-db

@@ -55,7 +55,7 @@ func PostGateway(svc domain.GatewayService) http.HandlerFunc {
 	}
 }
 
-// PutGateway TODO(@vinjar): add proper documentation.
+// PutGateway updates a gateway by its internal ID
 func PutGateway(svc domain.GatewayService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -71,6 +71,7 @@ func PutGateway(svc domain.GatewayService) http.HandlerFunc {
 			json.HandleError(w, http.StatusBadRequest, err, "bad request")
 			return
 		}
+
 		data := dto.MapGatewayDTOToDomain(payload)
 
 		if err := svc.Update(ctx, id, data); err != nil {
