@@ -16,7 +16,7 @@ export interface AddDeviceProps {
   addOptions: string[];
   onAdd: (sensor: {
     name: string;
-    device_eui: string;
+    deviceEui: string;
     machine: string;
     appKey: string;
     senProf: string;
@@ -65,7 +65,7 @@ export function AddDevice(props: AddDeviceProps) {
 
     props.onAdd({
       name: values["Name"],
-      device_eui: values["DeviceEUI"],
+      deviceEui: values["DeviceEUI"],
       machine: values["Machine"],
       appKey: values["Application key"],
       senProf: values["Sensor profile"],
