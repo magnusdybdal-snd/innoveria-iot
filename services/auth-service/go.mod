@@ -6,6 +6,7 @@ go 1.25.6
 
 require (
 	github.com/jackc/pgx/v5 v5.8.0
+	github.com/swaggo/swag v1.16.6
 	innoveria-iot/pkg v0.0.0
 )
 
@@ -197,7 +198,6 @@ require (
 	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/stretchr/testify v1.11.1 // indirect
 	github.com/subosito/gotenv v1.4.1 // indirect
-	github.com/swaggo/swag v1.16.6 // indirect
 	github.com/tetafro/godot v1.5.4 // indirect
 	github.com/timakin/bodyclose v0.0.0-20241222091800-1db5c5ca4d67 // indirect
 	github.com/timonwong/loggercheck v0.11.0 // indirect

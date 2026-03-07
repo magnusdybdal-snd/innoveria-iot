@@ -165,6 +165,24 @@ Commit the updated `docs/` folder along with your annotation changes.
 
 ---
 
+## Marking required vs optional fields in DTOs
+
+To make required and optional fields visible in the Swagger UI Model view, tag struct fields with `binding:"required"`:
+
+```go
+type CreateSensorRequest struct {
+    Name      string  `json:"name"       binding:"required"` // shows as required (*) in UI
+    CompanyID string  `json:"company_id" binding:"required"` // shows as required (*) in UI
+    Notes     *string `json:"notes"`                         // optional — nil if omitted from request
+}
+```
+
+- Use `binding:"required"` (not `validate:"required"` — swaggo does not recognise that tag)
+- Use `*string` for optional fields — a missing field in the JSON payload sets the pointer to `nil`
+- Add an inline comment on optional fields explaining why they can be omitted
+
+---
+
 ## Notes
 
 - `@Router` paths are relative to `@BasePath` — do not repeat the base path

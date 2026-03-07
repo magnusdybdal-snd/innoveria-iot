@@ -28,11 +28,18 @@ definitions:
       device_profile_id:
         type: string
       factory_area_id:
+        description: Optional — UUID, omit if service not yet available
         type: string
       name:
         type: string
       production_resource:
+        description: Optional — UUID, omit if service not yet available
         type: string
+    required:
+    - company_id
+    - device_eui
+    - device_profile_id
+    - name
     type: object
   dto.GatewayListResponse:
     properties:
@@ -151,11 +158,16 @@ definitions:
       device_profile_id:
         type: string
       factory_area_id:
+        description: Optional — UUID, omit if service not yet available
         type: string
       name:
         type: string
       production_resource:
+        description: Optional — UUID, omit if service not yet available
         type: string
+    required:
+    - device_profile_id
+    - name
     type: object
 host: localhost:8083
 info:

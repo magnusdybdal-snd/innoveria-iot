@@ -385,6 +385,12 @@ const docTemplate = `{
         },
         "dto.CreateSensorRequest": {
             "type": "object",
+            "required": [
+                "company_id",
+                "device_eui",
+                "device_profile_id",
+                "name"
+            ],
             "properties": {
                 "company_id": {
                     "description": "TODO: CompanyID should be extracted from auth",
@@ -400,12 +406,14 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "factory_area_id": {
+                    "description": "Optional — UUID, omit if service not yet available",
                     "type": "string"
                 },
                 "name": {
                     "type": "string"
                 },
                 "production_resource": {
+                    "description": "Optional — UUID, omit if service not yet available",
                     "type": "string"
                 }
             }
@@ -579,6 +587,10 @@ const docTemplate = `{
         },
         "dto.UpdateSensorRequest": {
             "type": "object",
+            "required": [
+                "device_profile_id",
+                "name"
+            ],
             "properties": {
                 "description": {
                     "type": "string"
@@ -587,12 +599,14 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "factory_area_id": {
+                    "description": "Optional — UUID, omit if service not yet available",
                     "type": "string"
                 },
                 "name": {
                     "type": "string"
                 },
                 "production_resource": {
+                    "description": "Optional — UUID, omit if service not yet available",
                     "type": "string"
                 }
             }
