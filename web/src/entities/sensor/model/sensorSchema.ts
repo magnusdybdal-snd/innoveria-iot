@@ -9,7 +9,7 @@ export interface SensorListApiResponse {
 
 export interface SensorApiResponse {
   id: string;
-  device_eui: string;
+  deviceEui: string;
   name: string;
   status: number;
   machine: string;
@@ -19,7 +19,7 @@ export interface SensorApiResponse {
 }
 
 export interface SensorReadingApiResponse {
-  device_eui: string;
+  deviceEui: string;
   timestamp: string;
   payload: Record<string, unknown>;
   company_id: string;

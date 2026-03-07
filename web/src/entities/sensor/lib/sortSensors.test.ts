@@ -7,7 +7,7 @@ const makeSensor = (
   overrides: Partial<SensorApiResponse>,
 ): SensorApiResponse => ({
   id: "1",
-  device_eui: "abc",
+  deviceEui: "abc",
   name: "Sensor A",
   status: 0,
   machine: "Machine A",
