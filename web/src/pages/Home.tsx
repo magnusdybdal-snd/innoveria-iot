@@ -1,4 +1,4 @@
-import { JokeViewer } from "@entities/joke";
+import Typography from "@mui/material/Typography";
 import { PageContent } from "@shared/ui/PageContent";
 import { SubPageHeader } from "@shared/ui/SubPageHeader";
 import { Menu } from "@widgets/menu";
@@ -13,7 +13,9 @@ export default function Home() {
       <div className="flex h-screen">
         <PageContent>
           <SubPageHeader />
-          <JokeViewer />
+          <Typography variant="h5" sx={{ mt: 2 }}>
+            Home Page content placeholder
+          </Typography>
         </PageContent>
       </div>
     </Menu>
