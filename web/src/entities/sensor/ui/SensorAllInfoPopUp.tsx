@@ -23,7 +23,7 @@ export interface AddDeviceProps {
 type InfoAllProps = {
   name: string;
   status: number;
-  euid: string;
+  sensorEui: string;
   machine: string;
   lastReading: string;
   appKey: string;
@@ -33,7 +33,7 @@ type InfoAllProps = {
 function SensorAllInfo({
   name,
   status,
-  euid,
+  sensorEui: euid,
   machine,
   lastReading,
   appKey,
@@ -133,7 +133,7 @@ export function SensorAllInfoPopUp(props: AddDeviceProps) {
               name={sensor.name}
               status={sensor.status}
               lastReading={sensor.lastReading}
-              euid={sensor.device_eui}
+              sensorEui={sensor.device_eui}
               machine={sensor.machine}
               appKey={sensor.appKey}
               senProf={sensor.senProf}
