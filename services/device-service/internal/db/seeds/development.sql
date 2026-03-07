@@ -1,7 +1,7 @@
 -- Company config (matches collection-service seed for cross-service consistency)
 -- chirpstack_application_id: replace with real value before demo
 INSERT INTO "device"."company_config" ("company_id", "chirpstack_tenant_id", "chirpstack_application_id")
-VALUES ('a0000000-0000-0000-0000-000000000001', '9d878067-58d3-4e3c-962e-f200256131ca', '2a7c4c7e-e38d-4fce-9214-e63839a042c0')
+VALUES ('a0000000-0000-0000-0000-000000000001', 'd0000000-0000-0000-0000-000000000001', 'e0000000-0000-0000-0000-000000000001')
 ON CONFLICT DO NOTHING;
 
 -- Gateway (matches chirpstack seed.)

@@ -2,11 +2,19 @@ package dto
 
 // SensorResponse TODO(@Magnus Dybdal): add proper documentation.
 type SensorResponse struct {
-	ID         string `json:"id"`
-	Name       string `json:"name"`
-	DeviceEUI  string `json:"device_eui"`
-	Status     int    `json:"status"`
-	LastSeenAt string `json:"last_seen_at"`
+	ID                  string  `json:"id"`
+	CompanyID           string  `json:"company_id"`
+	Name                string  `json:"name"`
+	Description         *string `json:"description"`
+	DeviceEUI           string  `json:"device_eui"`
+	State               string  `json:"state"`
+	FactoryAreaID       *string `json:"factory_area_id"`
+	ProductionResource  *string `json:"production_resource"`
+	ChirpstackProfileID string  `json:"device_profile_id"`
+	Status              int     `json:"status"`
+	LastSeenAt          string  `json:"last_seen_at"`
+	CreatedAt           string  `json:"created_at"`
+	UpdatedAt           string  `json:"updated_at"`
 }
 
 // SensorListResponse TODO(@Magnus Dybdal): add proper documentation.

@@ -1,6 +1,8 @@
 package dto
 
 import (
+	"time"
+
 	"innoveria-iot/device-service/internal/domain"
 )
 
@@ -85,11 +87,19 @@ func MapSensorDomainToDTO(from []domain.Sensor) SensorListResponse {
 
 func mapSensors(from domain.Sensor) SensorResponse {
 	return SensorResponse{
-		ID:         from.Id,
-		Name:       from.Name,
-		DeviceEUI:  from.DeviceEUI,
-		Status:     int(from.Status),
-		LastSeenAt: from.LastSeenAt,
+		ID:                  from.Id,
+		CompanyID:           from.CompanyID,
+		Name:                from.Name,
+		Description:         from.Description,
+		DeviceEUI:           from.DeviceEUI,
+		State:               string(from.State),
+		FactoryAreaID:       from.FactoryAreaID,
+		ProductionResource:  from.ProductionResource,
+		ChirpstackProfileID: from.ChirpstackProfileID,
+		Status:              int(from.Status),
+		LastSeenAt:          from.LastSeenAt,
+		CreatedAt:           from.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:           from.UpdatedAt.Format(time.RFC3339),
 	}
 }
 
