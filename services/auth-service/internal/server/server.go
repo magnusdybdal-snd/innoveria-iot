@@ -14,6 +14,7 @@ import (
 
 	"innoveria-iot/auth-service/internal/config"
 	"innoveria-iot/auth-service/internal/db"
+	"innoveria-iot/auth-service/internal/repository"
 	"innoveria-iot/auth-service/internal/services"
 	"innoveria-iot/pkg/dbutil"
 )
@@ -37,9 +38,11 @@ func Run() error {
 	if err := db.RunSeeds(database.Pool); err != nil {
 		return fmt.Errorf("seeds: %w", err)
 	}
+	// repo init
+	companyRepo := repository.NewCompanyRepo(database)
 
 	// service init
-	authSvc := services.NewAuthServiceImpl()
+	authSvc := services.NewAuthServiceImpl(companyRepo)
 
 	// Setting up mux and http server
 	mux := NewRouter(authSvc)
