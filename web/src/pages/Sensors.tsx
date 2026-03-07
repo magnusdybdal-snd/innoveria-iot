@@ -1,25 +1,26 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-import Button from "@mui/material/Button";
-
-import { fetchSensors } from "@/API/fetch/fetchSensors";
-import { AddDevice } from "@/components/addDevicePopup";
-import { CategoryHeader } from "@/components/CategoryHeader";
 import {
-  DeviceRow,
+  SensorAllInfoPopUp,
+  SensorMainInfo,
+  SensorsGenInfo,
   sortSensors,
+  useSensors,
+  type SensorApiResponse,
   type SensorSortKey,
   type SortDirection,
-} from "@/components/gatewayRow";
-import { NoDeviceFoundCard } from "@/components/noDeviceFoundCard";
-import { PageContent } from "@/components/pageContent";
-import { PageDivider } from "@/components/pageDivider";
-import { SensorAllInfoPopUp } from "@/components/sensorAllInfo";
-import { SensorMainInfo } from "@/components/sensorMainInfo";
-import { SensorsGenInfo } from "@/components/sensorsGenInfo";
-import { SubPageHeader } from "@/components/subPageHeader";
-import Menu from "@/Menu.tsx";
-import { mockSensors, type Sensor } from "@/mocks/sensors.ts";
+} from "@entities/sensor";
+import { AddDevice } from "@features/addSensor";
+import Button from "@mui/material/Button";
+import { CategoryHeader } from "@shared/ui/CategoryHeader";
+import { DeviceRow } from "@shared/ui/DeviceRow";
+import { NoDeviceFoundCard } from "@shared/ui/NoDeviceFoundCard";
+import { PageContent } from "@shared/ui/PageContent";
+import { PageDivider } from "@shared/ui/PageDivider";
+import { SubPageHeader } from "@shared/ui/SubPageHeader";
+import { Menu } from "@widgets/menu";
+
+import { mockSensors } from "@/shared/mocks/sensors";
 
 const sensorMainDetails: string[] = ["Status", "Name", "Last reading"];
 const addSensorDetails: string[] = [
@@ -30,26 +31,20 @@ const addSensorDetails: string[] = [
   "Sensor profile",
 ];
 const sortableColumns: SensorSortKey[] = ["Status", "Name", "Last reading"];
-type NewSensor = Omit<Sensor, "id" | "status" | "lastReading">;
+type NewSensor = Omit<SensorApiResponse, "id" | "status" | "lastReading">;
 
 /**
  * Full-page view listing all LoRaWAN sensors with sortable columns, summary statistics, and add/detail dialogs.
  * @returns The rendered Sensors page
  */
 export default function Sensors() {
-  const [sensors, setSensors] = useState<Sensor[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [sensorsMocked, setMockSensors] = useState<Sensor[]>(mockSensors);
-
-  useEffect(() => {
-    fetchSensors().then((data) => {
-      setSensors(data);
-      setIsLoading(false);
-    });
-  }, []);
+  const { sensors, isLoading } = useSensors();
+  const [sensorsMocked, setMockSensors] =
+    useState<SensorApiResponse[]>(mockSensors);
 
   const [openAdd, setOpenAdd] = useState(false);
-  const [selectedSensor, setSelectedSensor] = useState<Sensor | null>(null);
+  const [selectedSensor, setSelectedSensor] =
+    useState<SensorApiResponse | null>(null);
 
   // Handler for opening and closing add sensor pop-up
   const handleClickOpenAdd = () => {
@@ -61,7 +56,7 @@ export default function Sensors() {
   };
 
   // Handler for opening and closing all info pop-up
-  const handleRowClick = (sensor: Sensor) => {
+  const handleRowClick = (sensor: SensorApiResponse) => {
     setSelectedSensor(sensor);
   };
 

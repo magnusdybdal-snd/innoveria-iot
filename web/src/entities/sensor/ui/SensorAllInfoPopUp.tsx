@@ -1,0 +1,178 @@
+import { useEffect, useState } from "react";
+
+import { fetchSensorReading } from "@entities/sensor/api";
+import type {
+  SensorApiResponse,
+  SensorReadingApiResponse,
+} from "@entities/sensor/model/sensorSchema";
+import CircleIcon from "@mui/icons-material/Circle";
+import Dialog from "@mui/material/Dialog";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
+import { useTheme } from "@mui/material/styles";
+import Typography from "@mui/material/Typography";
+import { CategoryHeader } from "@shared/ui/CategoryHeader";
+import { DeviceRow } from "@shared/ui/DeviceRow";
+
+export interface AddDeviceProps {
+  open: boolean;
+  onClose: () => void;
+  sensor: SensorApiResponse;
+}
+
+type InfoAllProps = {
+  name: string;
+  status: number;
+  sensorEui: string;
+  machine: string;
+  lastReading: string;
+  appKey: string;
+  senProf: string;
+};
+
+function SensorAllInfo({
+  name,
+  status,
+  sensorEui: euid,
+  machine,
+  lastReading,
+  appKey,
+  senProf,
+}: InfoAllProps) {
+  const theme = useTheme();
+
+  const statusColor = (status: number) => {
+    const s = theme.palette.status;
+    switch (status) {
+      case 0:
+        return s.online;
+      case 1:
+        return s.warning;
+      case 2:
+        return s.offline;
+      default:
+        return s.unknown;
+    }
+  };
+  return (
+    <>
+      <CircleIcon
+        sx={{
+          color: statusColor(Number(status)),
+          fontSize: 14,
+          alignSelf: "center",
+          filter: "drop-shadow(0 0 1px grey)",
+        }}
+      />
+      <Typography>{name}</Typography>
+      <Typography>{euid}</Typography>
+      <Typography>{machine}</Typography>
+      <Typography>{lastReading}</Typography>
+      <Typography>{appKey}</Typography>
+      <Typography>{senProf}</Typography>
+    </>
+  );
+}
+
+/**
+ * Modal dialog showing all fields and the latest sensor reading payload for a selected sensor.
+ * @param props - Component props
+ * @param props.open - Whether the dialog is visible
+ * @param props.onClose - Called when the dialog should close
+ * @param props.sensor - The sensor whose full details and latest reading are displayed
+ * @returns The rendered sensor detail dialog
+ */
+export function SensorAllInfoPopUp(props: AddDeviceProps) {
+  const { onClose, open, sensor } = props;
+  const [reading, setReading] = useState<SensorReadingApiResponse | null>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    fetchSensorReading("f62ccf710469ad3b").then(setReading); // TODO: replace hardcoded value with 'sensor.device_eui'
+  }, [open, sensor.deviceEui]);
+
+  const handleClose = () => {
+    onClose();
+  };
+
+  const sensorAllDetails: string[] = [
+    "Status",
+    "Name",
+    "DeviceEUI",
+    "Machine",
+    "Last reading",
+    "Application key",
+    "Sensor profile",
+  ];
+
+  return (
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      maxWidth="lg"
+      fullWidth
+      aria-labelledby="alert-dialog-title"
+      aria-describedby="alert-dialog-description"
+      sx={{
+        "& .MuiPaper-root": {
+          backgroundColor: "primary.dark",
+          color: "primary.contrastText",
+        },
+      }}
+    >
+      <DialogTitle id="alert-dialog-title" sx={{ color: "primary.main" }}>
+        {"All sensor info"}
+      </DialogTitle>
+      <DialogContent>
+        <CategoryHeader
+          categories={sensorAllDetails}
+          columns={sensorAllDetails.length}
+        >
+          <DeviceRow key={sensor.id}>
+            <SensorAllInfo
+              name={sensor.name}
+              status={sensor.status}
+              lastReading={sensor.lastReading}
+              sensorEui={sensor.deviceEui}
+              machine={sensor.machine}
+              appKey={sensor.appKey}
+              senProf={sensor.senProf}
+            />
+          </DeviceRow>
+        </CategoryHeader>
+
+        {reading && (
+          <>
+            <Typography
+              sx={{ color: "primary.main", mt: 3, mb: 1, fontWeight: "bold" }}
+            >
+              Latest reading
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{ mb: 1, opacity: 0.7, color: "primary.main" }}
+            >
+              {new Date(reading.timestamp).toLocaleString()}
+            </Typography>
+            <CategoryHeader
+              categories={Object.keys(reading.payload)}
+              columns={Object.keys(reading.payload).length}
+            >
+              <DeviceRow key="reading">
+                {Object.values(reading.payload).map((value, i) => (
+                  <Typography key={i}>{String(value)}</Typography>
+                ))}
+              </DeviceRow>
+            </CategoryHeader>
+          </>
+        )}
+
+        {reading === null && (
+          <Typography sx={{ mt: 2, opacity: 0.5, color: "primary.main" }}>
+            No reading available
+          </Typography>
+        )}
+      </DialogContent>
+    </Dialog>
+  );
+}
