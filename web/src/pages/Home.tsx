@@ -4,7 +4,8 @@ import { SubPageHeader } from "@shared/ui/SubPageHeader";
 import { Menu } from "@widgets/menu";
 
 /**
- * Home page that displays a random Chuck Norris joke alongside the sub-page header.
+ * Home page that displays a placholder text, wrapped in the main Menu layout.
+ * This is the default landing page after login.
  * @returns The rendered Home page
  */
 export default function Home() {
