@@ -8,7 +8,7 @@ type ChirpstackGatewayList struct {
 	TotalCount int                 `json:"totalCount"`
 }
 
-// ChirpstackGateway TODO(@vinjar): add proper documentation.
+// ChirpstackGateway represents a single gateway as returned by the ChirStack API.
 type ChirpstackGateway struct {
 	GatewayEUI  string `json:"gatewayId"` // Chirpstack calls this gatewayId. We use our own id, so eui makes more sense
 	Name        string `json:"name"`
@@ -25,7 +25,7 @@ type ChirpstackGateway struct {
 	Properties map[string]string         `json:"properties"`
 }
 
-// ChirpstackGatewayLocation TODO(@vinjar): add proper documentation.
+// ChirpstackGatewayLocation is the ChirpStack reported location of the gateway.
 type ChirpstackGatewayLocation struct {
 	Latitude  float64 `json:"latitude"`
 	Longitude float64 `json:"longitude"`
@@ -34,12 +34,12 @@ type ChirpstackGatewayLocation struct {
 	Source    string  `json:"source"`
 }
 
-// CreateChirpstackGatewayRequest TODO(@vinjar): add proper documentation.
+// CreateChirpstackGatewayRequest is the top-level body for POST and PUT /api/gateways.
 type CreateChirpstackGatewayRequest struct {
 	CreateGatewayPayload `json:"gateway"` // How chirpstack handles requests
 }
 
-// CreateGatewayPayload TODO(@vinjar): add proper documentation.
+// CreateGatewayPayload contains the fields required by ChirpStack to register a new gateway.
 type CreateGatewayPayload struct {
 	GatewayEUI string `json:"gatewayId"` // chirpstack uses eui as id
 	Name       string `json:"name"`

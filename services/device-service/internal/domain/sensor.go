@@ -26,10 +26,12 @@ type Sensor struct {
 	LastSeenAt string
 }
 
-// SensorService TODO(@Magnus Dybdal): add proper documentation.
+// SensorService is the interface for sensor methods
 type SensorService interface {
+	Create(ctx context.Context, payload Sensor) error
+	Update(ctx context.Context, deviceID string, payload Sensor) error
 	GetAll(ctx context.Context) ([]Sensor, error)
-	Create(ctx context.Context) error
+	Delete(ctx context.Context, deviceID string) error
 }
 
 // SensorRepository handles persistance of sensor meta data in our database.
@@ -40,4 +42,6 @@ type SensorRepository interface {
 	FindAllByCompanyID(ctx context.Context, companyID string) ([]Sensor, error)
 	FindByEUI(ctx context.Context, deviceEUI string) (Sensor, error)
 	UpdateState(ctx context.Context, sensorID string, state DeviceState) error
+	Update(ctx context.Context, deviceID string, sensor Sensor) error
+	Delete(ctx context.Context, deviceID string) error
 }

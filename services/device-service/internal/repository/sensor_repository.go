@@ -38,6 +38,17 @@ const (
 		SET state = $1, updated_at = now()
 		WHERE sensor_id = $2
 	`
+
+	updateSensorQuery = `
+		UPDATE device.sensor
+		SET name = $1, description = $2, factory_area_id = $3, chirpstack_profile_id = $4, updated_at = now()
+		WHERE sensor_id = $5
+	`
+
+	deleteSensorQuery = `
+		DELETE FROM device.sensor
+		WHERE sensor_id = $1
+	`
 )
 
 // SensorRepository handles persistence of sensor metadata stored in the database.
@@ -191,6 +202,45 @@ func (r *SensorRepository) UpdateState(ctx context.Context, sensorID string, sta
 
 	if tag.RowsAffected() == 0 {
 		return fmt.Errorf("sensor not found: %s", sensorID)
+	}
+
+	return nil
+}
+
+// Update updates the user editable db fields of a sensor and updates the updated at timestamp
+// Returns an error if no sensor with the given ID exists
+func (r *SensorRepository) Update(ctx context.Context, deviceID string, payload domain.Sensor) error {
+
+	tag, err := r.db.Pool.Exec(ctx, updateSensorQuery,
+		payload.Name,
+		payload.Description,
+		payload.FactoryAreaID,
+		payload.ChirpstackProfileID,
+		deviceID,
+	)
+
+	if err != nil {
+		return fmt.Errorf("update sensor %w", err)
+	}
+
+	if tag.RowsAffected() == 0 {
+		return fmt.Errorf("sensor not found: %s", deviceID)
+	}
+
+	return nil
+}
+
+// Delete tries to delete a sensor from the database.
+// Returns an error if deletion fails or no sensor is found
+func (r *SensorRepository) Delete(ctx context.Context, deviceID string) error {
+
+	tag, err := r.db.Pool.Exec(ctx, deleteSensorQuery, deviceID)
+	if err != nil {
+		return fmt.Errorf("delete sensor %s: %w", deviceID, err)
+	}
+
+	if tag.RowsAffected() == 0 {
+		return fmt.Errorf("sensor not found: %s", deviceID)
 	}
 
 	return nil

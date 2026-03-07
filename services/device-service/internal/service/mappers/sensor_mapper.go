@@ -7,14 +7,24 @@ import (
 	"innoveria-iot/device-service/internal/domain"
 )
 
-// MapChirpstackSensor TODO(@Magnus Dybdal): add proper documentation.
-func MapChirpstackSensor(from dto.ChirpstackSensor) domain.Sensor {
+// MergeSensor merges Chirpstack runtime data with db metadata and returns domain Sensor
+func MergeSensor(cs dto.ChirpstackSensor, db domain.Sensor) domain.Sensor {
 	return domain.Sensor{
-		Id:         from.DeviceEUI, // TODO: Change this to internal database id
-		Name:       from.Name,
-		DeviceEUI:  from.DeviceEUI,
-		Status:     mapStatusSensor(from.LastSeenAt),
-		LastSeenAt: from.LastSeenAt.Format(time.RFC1123),
+		// From database
+		Id:                  db.Id,
+		CompanyID:           db.CompanyID,
+		DeviceEUI:           db.DeviceEUI,
+		Name:                db.Name,
+		Description:         db.Description,
+		State:               db.State,
+		FactoryAreaID:       db.FactoryAreaID,
+		ProductionResource:  db.ProductionResource,
+		ChirpstackProfileID: db.ChirpstackProfileID,
+		CreatedAt:           db.CreatedAt,
+		UpdatedAt:           db.UpdatedAt,
+		// Runetime from Chirpstack
+		Status:     mapStatusSensor(cs.LastSeenAt),
+		LastSeenAt: cs.LastSeenAt.Format(time.RFC3339),
 	}
 }
 
@@ -24,4 +34,17 @@ func mapStatusSensor(lastSeen time.Time) domain.Status {
 		return domain.StatusOnline
 	}
 	return domain.StatusOffline
+}
+
+// MapChirpstackSensorRequest builds a Chirpstack update request from a domain sensor and applicationID
+func MapChirpstackSensorRequest(sensor domain.Sensor, applicationID string) dto.ChirpstackSensorRequest {
+	return dto.ChirpstackSensorRequest{
+		SensorPayload: dto.SensorPayload{
+			DeviceEUI:       sensor.DeviceEUI,
+			Name:            sensor.Name,
+			ApplicationID:   applicationID,
+			DeviceProfileID: sensor.ChirpstackProfileID,
+			JoinEUI:         "0000000000000000", // Not an issue when we host Chirpstack privately.
+		},
+	}
 }

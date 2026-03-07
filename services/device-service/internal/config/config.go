@@ -21,11 +21,11 @@ func Load() *Config {
 	secret := env.GetFile("/secrets/chirpstack-api-key")
 
 	// database config
-	dbHost := env.Get("DB_HOST", "collection-db")
+	dbHost := env.Get("DB_HOST", "device-db")
 	dbPort := env.Get("DB_PORT", "5432")
-	dbUser := env.Get("DB_USER", "collection")
-	dbPassword := env.Get("DB_PASSWORD", "collection")
-	dbName := env.Get("DB_NAME", "collection")
+	dbUser := env.Get("DB_USER", "device")
+	dbPassword := env.Get("DB_PASSWORD", "device")
+	dbName := env.Get("DB_NAME", "device")
 	sslmode := env.Get("DB_SSLMODE", "disable")
 
 	return &Config{

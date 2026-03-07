@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 
 	"innoveria-iot/device-service/internal/domain"
@@ -31,10 +32,73 @@ func GetSensors(svc domain.SensorService) http.HandlerFunc {
 	}
 }
 
-// PostSensor TODO(@vinjar): add proper documentation.
+// PostSensor registers a new sensor in ChirpStack and the database.
 func PostSensor(svc domain.SensorService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		_ = r.Context()
+		ctx := r.Context()
 
+		payload, err := json.Decode[dto.CreateSensorRequest](r)
+		if err != nil {
+			json.HandleError(w, http.StatusBadRequest, err, "bad request")
+			return
+		}
+
+		data := dto.MapCreateSensorDTOToDomain(payload)
+
+		if err := svc.Create(ctx, data); err != nil {
+			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			return
+		}
+
+		w.WriteHeader(http.StatusCreated)
+
+	}
+}
+
+// PutSensor updates a sensor by its internal ID
+func PutSensor(svc domain.SensorService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+
+		id := r.PathValue("id")
+		if id == "" {
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("no sensor id found"), "bad request")
+			return
+		}
+
+		payload, err := json.Decode[dto.UpdateSensorRequest](r)
+		if err != nil {
+			json.HandleError(w, http.StatusBadRequest, err, "bad request")
+			return
+		}
+
+		data := dto.MapUpdateSensorDTOToDomain(payload)
+
+		if err := svc.Update(ctx, id, data); err != nil {
+			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			return
+		}
+
+		w.WriteHeader(http.StatusNoContent)
+	}
+}
+
+// DeleteSensor deletes a sensor by its internal ID.
+func DeleteSensor(svc domain.SensorService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+
+		id := r.PathValue("id")
+		if id == "" {
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("no sensor id found"), "bad request")
+			return
+		}
+
+		if err := svc.Delete(ctx, id); err != nil {
+			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			return
+		}
+
+		w.WriteHeader(http.StatusNoContent)
 	}
 }
