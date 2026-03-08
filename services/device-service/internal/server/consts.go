@@ -1,32 +1,32 @@
-// Package server TODO(@vinjar): add proper documentation.
+// Package server provides HTTP server setup and route definitions for the device service.
 package server
 
 const (
-	// INDEX TODO(@vinjar): add proper documentation.
+	// INDEX is the root route path.
 	INDEX = "/"
-	// VERSION TODO(@vinjar): add proper documentation.
+	// VERSION is the API version prefix.
 	VERSION = "v1"
-	// API_ROUTE TODO(@vinjar): add proper documentation.
+	// API_ROUTE is the base path for all API routes.
 	API_ROUTE = "/api/" + VERSION
 
-	// DEVICE_ROUTE TODO(@vinjar): add proper documentation.
+	// DEVICE_ROUTE is the base path for all device-related routes.
 	DEVICE_ROUTE = API_ROUTE + "/device"
 
-	// GATEWAY_ROUTE TODO(@vinjar): add proper documentation.
+	// GATEWAY_ROUTE is the route for gateway collection endpoints.
 	GATEWAY_ROUTE = DEVICE_ROUTE + "/gateways"
-	// GATEWAY_ROUTE_ID TODO(@vinjar): add proper documentation.
+	// GATEWAY_ROUTE_ID is the route for single gateway endpoints, with an {id} path parameter.
 	GATEWAY_ROUTE_ID = DEVICE_ROUTE + "/gateways/{id}"
 
-	// SENSOR_ROUTE TODO(@vinjar): add proper documentation.
+	// SENSOR_ROUTE is the route for sensor collection endpoints.
 	SENSOR_ROUTE = DEVICE_ROUTE + "/sensors"
-	// SENSOR_ROUTE_ID TODO(@vinjar): add proper documentation.
+	// SENSOR_ROUTE_ID is the route for single sensor endpoints, with an {id} path parameter.
 	SENSOR_ROUTE_ID = DEVICE_ROUTE + "/sensors/{id}"
 
-	// SENSOR_PROFILE_ROUTE TODO(@vinjar): add proper documentation.
+	// SENSOR_PROFILE_ROUTE is the route for sensor profile collection endpoints.
 	SENSOR_PROFILE_ROUTE = DEVICE_ROUTE + "/sensor-profiles"
-	// SENSOR_PROFILE_ROUTE_ID TODO(@vinjar): add proper documentation.
+	// SENSOR_PROFILE_ROUTE_ID is the route for single sensor profile endpoints, with an {id} path parameter.
 	SENSOR_PROFILE_ROUTE_ID = DEVICE_ROUTE + "/sensor-profiles/{id}"
 
-	// SENSOR_GROUP_ROUTE TODO(@vinjar): add proper documentation.
+	// SENSOR_GROUP_ROUTE is the route for sensor group collection endpoints.
 	SENSOR_GROUP_ROUTE = DEVICE_ROUTE + "/sensor-groups"
 )

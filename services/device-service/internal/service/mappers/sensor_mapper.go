@@ -7,7 +7,7 @@ import (
 	"innoveria-iot/device-service/internal/domain"
 )
 
-// MergeSensor merges Chirpstack runtime data with db metadata and returns domain Sensor
+// MergeSensor merges Chirpstack runtime data with database metadata and returns a domain Sensor.
 func MergeSensor(cs dto.ChirpstackSensor, db domain.Sensor) domain.Sensor {
 	return domain.Sensor{
 		// From database

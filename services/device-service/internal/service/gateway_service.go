@@ -1,4 +1,4 @@
-// Package service TODO
+// Package service implements the business logic for the device service.
 package service
 
 import (
@@ -11,14 +11,14 @@ import (
 	"innoveria-iot/device-service/internal/service/mappers"
 )
 
-// GatewayServiceImpl TODO(@vinjar): add proper documentation.
+// GatewayServiceImpl implements domain.GatewayService, coordinating between the database and Chirpstack.
 type GatewayServiceImpl struct {
 	cc             *chirpstackrest.Client
 	gatewayRepo    domain.GatewayRepository
 	companycfgRepo domain.CompanyConfigRepository
 }
 
-// NewGatewayService TODO(@vinjar): add proper documentation.
+// NewGatewayService creates a new GatewayServiceImpl with the given Chirpstack client and repositories.
 func NewGatewayService(cc *chirpstackrest.Client, gatewayRepo domain.GatewayRepository, companyCfgRepo domain.CompanyConfigRepository) *GatewayServiceImpl {
 	return &GatewayServiceImpl{
 		cc:             cc,

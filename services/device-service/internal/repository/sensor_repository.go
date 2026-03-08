@@ -95,7 +95,7 @@ func (r *SensorRepository) Create(ctx context.Context, sensor domain.Sensor) (do
 	return out, nil
 }
 
-// FindByID retrieves a sensor by its internal UUID
+// FindByID retrieves a sensor by its internal UUID.
 func (r *SensorRepository) FindByID(ctx context.Context, sensorID string) (domain.Sensor, error) {
 
 	var out domain.Sensor
@@ -192,7 +192,7 @@ func (r *SensorRepository) FindByEUI(ctx context.Context, deviceEUI string) (dom
 }
 
 // UpdateState sets the administrative state of a sensor and updates the updated at timestamp.
-// Returns an error if no sensor with the given ID exists
+// Returns an error if no sensor with the given ID exists.
 func (r *SensorRepository) UpdateState(ctx context.Context, sensorID string, state domain.DeviceState) error {
 
 	tag, err := r.db.Pool.Exec(ctx, updateSensorStateQuery, state, sensorID)
@@ -207,8 +207,8 @@ func (r *SensorRepository) UpdateState(ctx context.Context, sensorID string, sta
 	return nil
 }
 
-// Update updates the user editable db fields of a sensor and updates the updated at timestamp
-// Returns an error if no sensor with the given ID exists
+// Update updates the editable fields of a sensor (name, description, factory area, Chirpstack profile) and refreshes the updated at timestamp.
+// Returns an error if no sensor with the given ID exists.
 func (r *SensorRepository) Update(ctx context.Context, deviceID string, payload domain.Sensor) error {
 
 	tag, err := r.db.Pool.Exec(ctx, updateSensorQuery,
@@ -231,7 +231,7 @@ func (r *SensorRepository) Update(ctx context.Context, deviceID string, payload 
 }
 
 // Delete tries to delete a sensor from the database.
-// Returns an error if deletion fails or no sensor is found
+// Returns an error if deletion fails or no sensor is found.
 func (r *SensorRepository) Delete(ctx context.Context, deviceID string) error {
 
 	tag, err := r.db.Pool.Exec(ctx, deleteSensorQuery, deviceID)

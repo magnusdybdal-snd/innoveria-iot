@@ -1,4 +1,4 @@
-// Package repository TODO(@Magnus Dybdal): add proper documentation.
+// Package repository implements the persistence layer for the device service.
 package repository
 
 import (

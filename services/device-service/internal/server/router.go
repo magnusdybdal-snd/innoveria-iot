@@ -11,7 +11,7 @@ import (
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
-// NewRouter TODO(@vinjar): add proper documentation.
+// NewRouter creates and returns an HTTP ServeMux with all device service routes registered.
 func NewRouter(
 	gatewaySvc domain.GatewayService,
 	sensorSvc domain.SensorService,

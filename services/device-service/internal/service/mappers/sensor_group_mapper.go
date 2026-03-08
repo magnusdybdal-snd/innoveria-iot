@@ -5,7 +5,7 @@ import (
 	"innoveria-iot/device-service/internal/domain"
 )
 
-// MapCreateChirpstackApplication turns domain into chirpstack models
+// MapCreateChirpstackApplication maps a domain SensorGroup to a CreateChirpstackApplication request.
 func MapCreateChirpstackApplication(from domain.SensorGroup) dto.CreateChirpstackApplication {
 	return dto.CreateChirpstackApplication{
 		ApplicationPayload: dto.ApplicationPayload{
@@ -15,7 +15,7 @@ func MapCreateChirpstackApplication(from domain.SensorGroup) dto.CreateChirpstac
 	}
 }
 
-// MapChirpstackSensorGroupDtoToDomain TODO(@vinjar): add proper documentation.
+// MapChirpstackSensorGroupDtoToDomain maps a Chirpstack Application response to a domain SensorGroup.
 func MapChirpstackSensorGroupDtoToDomain(from dto.ChirpstackApplication) domain.SensorGroup {
 	return domain.SensorGroup{
 		Id:        from.ID,
