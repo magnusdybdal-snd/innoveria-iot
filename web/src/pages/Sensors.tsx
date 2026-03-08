@@ -11,7 +11,6 @@ import {
   type SortDirection,
 } from "@entities/sensor";
 import { AddDevice } from "@features/addSensor";
-import Button from "@mui/material/Button";
 import { CategoryHeader } from "@shared/ui/CategoryHeader";
 import { DeviceRow } from "@shared/ui/DeviceRow";
 import { NoDeviceFoundCard } from "@shared/ui/NoDeviceFoundCard";
@@ -21,6 +20,7 @@ import { SubPageHeader } from "@shared/ui/SubPageHeader";
 import { Menu } from "@widgets/menu";
 
 import { mockSensors } from "@/shared/mocks/sensors";
+import { CustomButton } from "@/shared/ui/Button";
 
 const sensorMainDetails: string[] = ["Status", "Name", "Last reading"];
 const addSensorDetails: string[] = [
@@ -74,23 +74,11 @@ export default function Sensors() {
         ...sensorData,
       },
     ]);
+    setOpenAdd(false);
   };
 
   const addButton = (
-    <Button
-      variant="outlined"
-      sx={{
-        backgroundColor: "primary.main",
-        color: "primary.dark",
-        "&:hover": { backgroundColor: "primary.main" },
-        borderRadius: 2,
-        textTransform: "none",
-        fontSize: 20,
-      }}
-      onClick={handleClickOpenAdd}
-    >
-      Add device +
-    </Button>
+    <CustomButton onClick={handleClickOpenAdd}>Add sensor</CustomButton>
   );
 
   const [sortConfig, setSortConfig] = useState<{
