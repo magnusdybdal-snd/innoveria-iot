@@ -8,5 +8,5 @@ const (
 	API_ROUTE = "/api/" + VERSION
 
 	AUTH_ROUTE    = API_ROUTE + "/auth"
-	COMPANY_ROUTE = AUTH_ROUTE + "/company"
+	COMPANY_ROUTE = AUTH_ROUTE + "/companies"
 )

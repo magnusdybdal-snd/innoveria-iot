@@ -13,15 +13,17 @@ func NewRouter(cfg *config.Config) *http.ServeMux {
 	mux := http.NewServeMux()
 
 	// Root handler
-	mux.HandleFunc("GET /", handlers.Root)
+	// mux.HandleFunc("GET /", handlers.Root)
 
 	/*
 		Proxy routes microservice:
 	*/
+
 	// auth service
 	handlers.RegisterProxyService(mux, AUTHENTICATION_ROUTE, "auth-service", cfg.AuthSvcURL, []string{
-		"/company",
+		"/companies",
 	})
+
 	// Device service
 	handlers.RegisterProxyService(mux, DEVICE_ROUTE, "device-service", cfg.DeviceSvcURL, []string{
 		"/gateways",
