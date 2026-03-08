@@ -4,7 +4,6 @@ package server
 //
 //godoclint:disable
 const (
-	INDEX     = "/"
 	VERSION   = "v1"
 	API_ROUTE = "/api/" + VERSION
 

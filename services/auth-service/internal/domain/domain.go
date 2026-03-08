@@ -8,7 +8,11 @@ import (
 
 // CompanyRepo defines the company repository needed by the auth domain.
 type CompanyRepo interface {
-	Create(ctx context.Context, config Company) (Company, error)
+	Create(ctx context.Context, company Company) (Company, error)
+	// TODO:
+	// Get all
+	// Get one
+	// Put/patch
 }
 
 // AuthService defines authentication and session operations exposed by
@@ -24,7 +28,7 @@ type AuthService interface {
 
 // Company is the domain model for company
 type Company struct {
-	CompanyId string
+	CompanyID string
 	Name      string
 	Address   string
 	CreatedAt time.Time

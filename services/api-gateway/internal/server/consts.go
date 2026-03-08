@@ -5,7 +5,6 @@ package server
 
 // API gateway routes
 const (
-	INDEX     = "/"
 	VERSION   = "v1"
 	API_ROUTE = "/api/" + VERSION
 

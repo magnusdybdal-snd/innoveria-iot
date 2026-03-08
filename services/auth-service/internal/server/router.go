@@ -12,7 +12,7 @@ func NewRouter(authSvc domain.AuthService) *http.ServeMux {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /", handlers.Root)
-	mux.HandleFunc("POST /", handlers.PostCompany(authSvc))
+	mux.HandleFunc("POST "+COMPANY_ROUTE, handlers.PostCompany(authSvc))
 
 	return mux
 }

@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 
 	"innoveria-iot/auth-service/internal/domain"
@@ -18,14 +19,23 @@ func PostCompany(svc domain.AuthService) http.HandlerFunc {
 			json.HandleError(w, http.StatusBadRequest, err, "bad request")
 			return
 		}
-		data := dto.MapCreateCompanyToDomain(payload)
 
-		resp, err := svc.RegisterCompany(ctx, data)
+		// Dto to comain, only name and address
+		companyDomain := dto.MapCreateCompanyToDomain(payload)
+		if companyDomain.Name == "" || companyDomain.Address == "" {
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("missing required fields"), "name and address are required")
+			return
+		}
+
+		companyResp, err := svc.RegisterCompany(ctx, companyDomain)
 		if err != nil {
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
 			return
 		}
-		if err := json.Encode(w, http.StatusOK, resp); err != nil {
+
+		// returned response as domain
+		resp := dto.MapCompanyFromDomain(companyResp)
+		if err := json.Encode(w, http.StatusCreated, resp); err != nil {
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
 		}
 	}

@@ -13,7 +13,7 @@ func NewRouter(cfg *config.Config) *http.ServeMux {
 	mux := http.NewServeMux()
 
 	// Root handler
-	mux.HandleFunc(INDEX, handlers.Root)
+	mux.HandleFunc("GET /", handlers.Root)
 
 	/*
 		Proxy routes microservice:

@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"fmt"
+
 	"innoveria-iot/auth-service/internal/domain"
 	"innoveria-iot/pkg/dbutil"
 )
@@ -26,13 +27,13 @@ func NewCompanyRepo(db *dbutil.DB) *CompanyRepoImpl {
 }
 
 // Create inserts a new company and generates a company id
-func (r *CompanyRepoImpl) Create(ctx context.Context, config domain.Company) (domain.Company, error) {
+func (r *CompanyRepoImpl) Create(ctx context.Context, company domain.Company) (domain.Company, error) {
 	var out domain.Company
 	err := r.db.Pool.QueryRow(ctx, createCompany,
-		config.Name,
-		config.Address,
+		company.Name,
+		company.Address,
 	).Scan(
-		&out.CompanyId,
+		&out.CompanyID,
 		&out.Name,
 		&out.Address,
 		&out.CreatedAt,
