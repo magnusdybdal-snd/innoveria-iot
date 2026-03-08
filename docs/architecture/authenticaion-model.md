@@ -1,4 +1,7 @@
 # Authentication model notes
+The authenticaion model for application follows a multi tenant authentication
+- The `platform admin` registers a new company with a company `superuser`
+- Super user logs in and administrates users for thier company
 
 ## What exists in the current auth database
 
