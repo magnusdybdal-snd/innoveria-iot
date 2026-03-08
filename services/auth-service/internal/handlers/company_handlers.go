@@ -10,6 +10,16 @@ import (
 )
 
 // PostCompany handles company creation requests.
+//
+// @Summary Register a new company
+// @Tags companies
+// @Accept json
+// @Produce json
+// @Param body body dto.CreateNewCompany true "Company payload"
+// @Success 201 {object} dto.CompanyResponse
+// @Failure 400
+// @Failure 500
+// @Router /companies [post]
 func PostCompany(svc domain.AuthService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()

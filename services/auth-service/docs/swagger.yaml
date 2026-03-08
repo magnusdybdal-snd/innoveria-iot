@@ -1,4 +1,55 @@
+basePath: /api/v1/auth
+definitions:
+  dto.CompanyResponse:
+    properties:
+      address:
+        type: string
+      company_id:
+        type: string
+      created_at:
+        type: string
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  dto.CreateNewCompany:
+    properties:
+      address:
+        type: string
+      name:
+        type: string
+    type: object
+host: localhost:8084
 info:
   contact: {}
-paths: {}
+  description: Manages user authenticaion, permission roles, company generation
+  title: Auth Service API
+  version: "1.0"
+paths:
+  /companies:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Company payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateNewCompany'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.CompanyResponse'
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Register a new company
+      tags:
+      - companies
 swagger: "2.0"
