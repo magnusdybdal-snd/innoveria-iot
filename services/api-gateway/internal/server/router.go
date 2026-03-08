@@ -5,6 +5,8 @@ import (
 
 	"innoveria-iot/api-gateway/internal/config"
 	"innoveria-iot/api-gateway/internal/handlers"
+
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 // NewRouter configures the HTTP router
@@ -31,6 +33,10 @@ func NewRouter(cfg *config.Config) *http.ServeMux {
 		"/latest",
 		"/measurements",
 	})
+
+	// Swagger — merged spec from all services, served via the gateway
+	mux.HandleFunc("GET /swagger/doc.json", handlers.MergedSwaggerSpec(cfg.DeviceSvcURL, cfg.CollSvcURL))
+	mux.HandleFunc("GET /swagger/", httpSwagger.Handler(httpSwagger.URL("/swagger/doc.json")))
 
 	return mux
 }

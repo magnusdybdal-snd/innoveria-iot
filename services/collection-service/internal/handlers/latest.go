@@ -7,7 +7,16 @@ import (
 	"innoveria-iot/pkg/json"
 )
 
-// HandleLatestMeasurement TODO(@Magnus Dybdal): add proper documentation.
+// HandleLatestMeasurement returns the latest measurement for a device
+//
+// @Summary		Get latest measurement
+// @Tags		measurements
+// @Produce		json
+// @Param		device_eui	query	string	true	"DeviceEUI"
+// @Success		200		{object}	domain.SensorMeasurement
+// @Failure		400
+// @Failure		404
+// @Router		/latest [get]
 func HandleLatestMeasurement(svc domain.MeasurementService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
