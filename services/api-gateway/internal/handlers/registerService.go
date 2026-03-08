@@ -1,4 +1,3 @@
-// Package handlers TODO(@vinjar): add proper documentation.
 package handlers
 
 import (

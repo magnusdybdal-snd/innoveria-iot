@@ -6,6 +6,10 @@ import (
 
 	"innoveria-iot/device-service/internal/domain"
 	"innoveria-iot/device-service/internal/handlers"
+
+	_ "innoveria-iot/device-service/docs"
+
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 // NewRouter TODO(@vinjar): add proper documentation.
@@ -37,6 +41,9 @@ func NewRouter(
 	// SensorGroup routes
 	mux.HandleFunc("POST "+SENSOR_GROUP_ROUTE, handlers.PostSensorGroup(sensorGroupSvc))
 	mux.HandleFunc("GET "+SENSOR_GROUP_ROUTE, handlers.GetAllSensorGroups(sensorGroupSvc))
+
+	// Swagger docs
+	mux.HandleFunc("GET /swagger/", httpSwagger.WrapHandler)
 
 	return mux
 }

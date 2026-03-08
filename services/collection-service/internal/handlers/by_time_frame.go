@@ -1,4 +1,4 @@
-// Package handlers TODO(@Magnus Dybdal): add proper documentation.
+// Package handlers provides HTTP handler functions for the collection service API.
 package handlers
 
 import (
@@ -9,7 +9,18 @@ import (
 	"innoveria-iot/pkg/json"
 )
 
-// HandleMeasurementsByTimeRange TODO(@Magnus Dybdal): add proper documentation.
+// HandleMeasurementsByTimeRange returns measurements for a device within a time range.
+//
+// @Summary		Get measurements by time range
+// @Tags		measurements
+// @Produce		json
+// @Param		device_eui	query	string	true	"Device EUI"
+// @Param		from		query	string	true	"Start time (RFC3339, e.g. 2024-01-01T00:00:00Z)"
+// @Param		to			query	string	true	"End time (RFC3339, e.g. 2024-01-02T00:00:00Z)"
+// @Success		200	{array}		domain.SensorMeasurement
+// @Failure		400
+// @Failure		500
+// @Router		/measurements [get]
 func HandleMeasurementsByTimeRange(svc domain.MeasurementService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		q := r.URL.Query()
