@@ -21,6 +21,7 @@ export interface AddDeviceProps {
     appKey: string;
     senProf: string;
   }) => void;
+  submitError?: string | null;
 }
 
 /**
@@ -33,7 +34,7 @@ export interface AddDeviceProps {
  * @returns The rendered add-device dialog
  */
 export function AddDevice(props: AddDeviceProps) {
-  const { onClose, open, addOptions } = props;
+  const { onClose, open, addOptions, submitError } = props;
   const [values, setValues] = useState<Record<string, string>>({});
   const [fillError, setFillError] = useState(false);
   const [lengthErrors, setLengthErrors] = useState<Record<string, boolean>>({});
@@ -74,7 +75,6 @@ export function AddDevice(props: AddDeviceProps) {
 
     setFillError(false);
     setLengthErrors({});
-    onClose();
   };
 
   const deviceProfiles = [
@@ -206,6 +206,9 @@ export function AddDevice(props: AddDeviceProps) {
           <div style={{ color: "red", marginTop: 8 }}>
             All fields must be filled
           </div>
+        )}
+        {submitError && (
+          <div style={{ color: "red", marginTop: 8 }}>{submitError}</div>
         )}
       </DialogContent>
       <DialogActions>

@@ -38,6 +38,7 @@ const addGatewayDetails: string[] = ["Name", "DeviceEUI"];
 export default function Gateways() {
   const [gateways, setGateways] = useState<GatewayApiResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [addError, setAddError] = useState<string | null>(null);
 
   const fetchGateways = () => {
     getGateways().then((data) => {
@@ -64,19 +65,26 @@ export default function Gateways() {
   };
   const handleCloseAdd = () => {
     setOpenAdd(false);
+    setAddError(null);
   };
   const handleAddGateway = (gatewayData: {
     name: string;
     deviceEui: string;
   }) => {
+    setAddError(null);
     postGateway({
       companyId: "a0000000-0000-0000-0000-000000000001", // TODO: replace with real company ID from auth
       deviceEui: gatewayData.deviceEui,
       name: gatewayData.name,
     })
-      .then(() => fetchGateways())
-      .catch((err: unknown) => {
-        throw err;
+      .then(() => {
+        fetchGateways();
+        setOpenAdd(false);
+      })
+      .catch(() => {
+        setAddError(
+          "Failed to add gateway. The EUI may already be registered.",
+        );
       });
   };
 
@@ -133,6 +141,7 @@ export default function Gateways() {
           onClose={handleCloseAdd}
           addOptions={addGatewayDetails}
           onAdd={handleAddGateway}
+          submitError={addError}
         />
       </div>
     </Menu>

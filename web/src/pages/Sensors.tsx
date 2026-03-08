@@ -74,6 +74,7 @@ export default function Sensors() {
         ...sensorData,
       },
     ]);
+    setOpenAdd(false);
   };
 
   const addButton = (
