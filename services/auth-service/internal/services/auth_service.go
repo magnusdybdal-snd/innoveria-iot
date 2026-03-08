@@ -15,7 +15,9 @@ type AuthServiceImpl struct {
 }
 
 // NewAuthServiceImpl creates a new AuthServiceImpl instance.
-func NewAuthServiceImpl(companyRepo domain.CompanyRepo) *AuthServiceImpl {
+func NewAuthServiceImpl(
+	companyRepo domain.CompanyRepo,
+) *AuthServiceImpl {
 	return &AuthServiceImpl{
 		companyRepo: companyRepo,
 	}

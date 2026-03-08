@@ -40,6 +40,7 @@ func Run() error {
 	}
 	// repo init
 	companyRepo := repository.NewCompanyRepo(database)
+	_ = repository.NewUserRepo(database)
 
 	// service init
 	authSvc := services.NewAuthServiceImpl(companyRepo)

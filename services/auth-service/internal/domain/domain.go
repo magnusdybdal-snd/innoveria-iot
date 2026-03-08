@@ -34,3 +34,7 @@ type Company struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
+
+// User is the domain model for an user
+type User struct {
+}

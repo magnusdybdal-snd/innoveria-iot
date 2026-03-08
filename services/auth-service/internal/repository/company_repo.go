@@ -21,7 +21,7 @@ type CompanyRepoImpl struct {
 	db *dbutil.DB
 }
 
-// NewCompanyRepo initilise a new company repository
+// NewCompanyRepo initilize a new company repository
 func NewCompanyRepo(db *dbutil.DB) *CompanyRepoImpl {
 	return &CompanyRepoImpl{db: db}
 }
