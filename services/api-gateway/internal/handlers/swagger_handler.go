@@ -2,7 +2,9 @@
 package handlers
 
 import (
-	"encoding/json"
+	"context"
+	"innoveria-iot/pkg/httpclient"
+	"innoveria-iot/pkg/json"
 	"maps"
 	"net/http"
 )
@@ -21,16 +23,8 @@ type swaggerSpec struct {
 
 // fetchSpec fetches and parses the Swagger JSON spec from a service.
 // Each service exposes its generated spec at /swagger/doc.json.
-func fetchSpec(url string) (swaggerSpec, error) {
-	resp, err := http.Get(url + "/swagger/doc.json")
-	if err != nil {
-		return swaggerSpec{}, err
-	}
-	defer func() { _ = resp.Body.Close() }()
-
-	var spec swaggerSpec
-	err = json.NewDecoder(resp.Body).Decode(&spec)
-	return spec, err
+func fetchSpec(ctx context.Context, client *httpclient.Client, url string) (swaggerSpec, error) {
+	return httpclient.DoRequest[swaggerSpec](client, ctx, url+"/swagger/doc.json", http.MethodGet, nil, nil)
 }
 
 // MergedSwaggerSpec returns a handler that fetches the Swagger spec from each
@@ -43,16 +37,18 @@ func fetchSpec(url string) (swaggerSpec, error) {
 // The merged spec is served at GET /swagger/doc.json and consumed by the
 // Swagger UI at GET /swagger/.
 func MergedSwaggerSpec(deviceSvcURL, collSvcURL string) http.HandlerFunc {
+	// Client is created once and reused across requests
+	client := httpclient.New()
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		// Fetch each service's generated spec
-		deviceSpec, err := fetchSpec(deviceSvcURL)
+		deviceSpec, err := fetchSpec(r.Context(), client, deviceSvcURL)
 		if err != nil {
 			http.Error(w, "failed to fetch device spec", http.StatusInternalServerError)
 			return
 		}
 
-		collSpec, err := fetchSpec(collSvcURL)
+		collSpec, err := fetchSpec(r.Context(), client, collSvcURL)
 		if err != nil {
 			http.Error(w, "failed to fetch collection spec", http.StatusInternalServerError)
 			return
@@ -81,9 +77,9 @@ func MergedSwaggerSpec(deviceSvcURL, collSvcURL string) http.HandlerFunc {
 		maps.Copy(merged.Definitions, deviceSpec.Definitions)
 		maps.Copy(merged.Definitions, collSpec.Definitions)
 
-		w.Header().Set("Content-Type", "application/json")
-		if err := json.NewEncoder(w).Encode(merged); err != nil {
-			http.Error(w, "failed to encode merged spec", http.StatusInternalServerError)
+		// Encode and return the merged spec.
+		if err := json.Encode(w, http.StatusOK, merged); err != nil {
+			http.Error(w, "failed to encode merged swagger spec", http.StatusInternalServerError)
 		}
 	}
 }
