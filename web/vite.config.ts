@@ -29,11 +29,11 @@ export default defineConfig({
     port: 3000,
 
     // caddy proxies the api route for doing internal http requests
-    proxy: {
-      "/api": {
-        target: "http://localhost:8081/api",
-        changeOrigin: true,
-      },
-    },
+    // proxy: {
+    //   "/api": {
+    //     target: "http://localhost:8081/api",
+    //     changeOrigin: true,
+    //   },
+    // },
   },
 });
