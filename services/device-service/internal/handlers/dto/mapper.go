@@ -23,12 +23,17 @@ func MapGatewayDomainToDTO(from []domain.Gateway) GatewayListResponse {
 
 func mapGateway(from domain.Gateway) GatewayResponse {
 	return GatewayResponse{
-		ID:         from.Id,
-		CompanyId:  from.CompanyId,
-		GatewayEUI: from.GatewayEUI,
-		Name:       from.Name,
-		Status:     int(from.Status),
-		LastSeenAt: from.LastSeenAt,
+		ID:            from.Id,
+		CompanyId:     from.CompanyId,
+		GatewayEUI:    from.GatewayEUI,
+		Name:          from.Name,
+		Description:   from.Description,
+		Status:        int(from.Status),
+		State:         string(from.State),
+		FactoryAreaID: from.FactoryAreaID,
+		LastSeenAt:    from.LastSeenAt,
+		CreatedAt:     from.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:     from.UpdatedAt.Format(time.RFC3339),
 	}
 }
 
