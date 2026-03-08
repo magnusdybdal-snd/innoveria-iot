@@ -1,13 +1,14 @@
 import type { CreateGatewayRequest } from "@entities/gateway/model/gatewaySchema";
+import { API_ROUTES } from "@shared/api/routes";
 
 /**
- * Posts a new gateway to the API. This function sends a POST request to the /api/gateways endpoint with the provided gateway data.
+ * Posts a new gateway to the API. This function sends a POST request to the /api/v1/device/gateways endpoint with the provided gateway data.
  * @param gatewayData - An object containing the companyId, deviceEui, and name of the gateway to be created.
  */
 export const postGateway = async (
   gatewayData: CreateGatewayRequest,
 ): Promise<void> => {
-  const response = await fetch("/api/gateways", {
+  const response = await fetch(API_ROUTES.gateways, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

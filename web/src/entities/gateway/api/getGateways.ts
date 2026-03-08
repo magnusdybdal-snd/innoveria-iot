@@ -3,6 +3,7 @@ import type {
   GatewayListApiResponse,
 } from "@entities/gateway/model/gatewaySchema";
 import { apiRequest, serviceClient } from "@shared/api";
+import { API_ROUTES } from "@shared/api/routes";
 
 /**
  * Fetches all gateways from the collection-service via the API gateway.
@@ -12,7 +13,7 @@ export const getGateways = async (): Promise<GatewayApiResponse[]> => {
   try {
     const data = await apiRequest<GatewayListApiResponse>(
       serviceClient,
-      "/v1/device/gateways",
+      API_ROUTES.gateways,
       "GET",
     );
 
