@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	createCompany = `
+	createCompanyQuery = `
 		INSERT INTO auth.company (name, address)
 		VALUES ($1, $2)
 		RETURNING company_id, name, address, created_at, updated_at
@@ -29,7 +29,7 @@ func NewCompanyRepo(db *dbutil.DB) *CompanyRepoImpl {
 // Create inserts a new company and generates a company id
 func (r *CompanyRepoImpl) Create(ctx context.Context, company domain.Company) (domain.Company, error) {
 	var out domain.Company
-	err := r.db.Pool.QueryRow(ctx, createCompany,
+	err := r.db.Pool.QueryRow(ctx, createCompanyQuery,
 		company.Name,
 		company.Address,
 	).Scan(

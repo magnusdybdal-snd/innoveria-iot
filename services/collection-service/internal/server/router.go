@@ -1,4 +1,4 @@
-// Package server TODO(@Magnus Dybdal): add proper documentation.
+// Package server provides the HTTP server and routing for the device service API.
 package server
 
 import (

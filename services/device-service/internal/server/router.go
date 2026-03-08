@@ -1,3 +1,4 @@
+// Package server provides HTTP server for startup
 package server
 
 import (
