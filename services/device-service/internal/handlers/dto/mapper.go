@@ -24,7 +24,7 @@ func MapGatewayDomainToDTO(from []domain.Gateway) GatewayListResponse {
 func mapGateway(from domain.Gateway) GatewayResponse {
 	return GatewayResponse{
 		ID:            from.Id,
-		CompanyId:     from.CompanyId,
+		CompanyID:     from.CompanyId,
 		GatewayEUI:    from.GatewayEUI,
 		Name:          from.Name,
 		Description:   from.Description,
@@ -81,7 +81,7 @@ func MapSensorDomainToDTO(from []domain.Sensor) SensorListResponse {
 	sensors := make([]SensorResponse, tot)
 
 	for i, s := range from {
-		sensors[i] = mapSensors(s)
+		sensors[i] = mapSensor(s)
 	}
 
 	return SensorListResponse{
@@ -90,7 +90,7 @@ func MapSensorDomainToDTO(from []domain.Sensor) SensorListResponse {
 	}
 }
 
-func mapSensors(from domain.Sensor) SensorResponse {
+func mapSensor(from domain.Sensor) SensorResponse {
 	return SensorResponse{
 		ID:                  from.Id,
 		CompanyID:           from.CompanyID,

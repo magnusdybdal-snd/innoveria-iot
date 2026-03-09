@@ -28,9 +28,12 @@ func MergeSensor(cs dto.ChirpstackSensor, db domain.Sensor) domain.Sensor {
 	}
 }
 
-// TODO: Find a better way to handle sensor status
 func mapStatusSensor(lastSeen time.Time) domain.Status {
-	if time.Since(lastSeen) < 5*time.Minute {
+	if lastSeen.IsZero() {
+		return domain.StatusNeverSeen
+	}
+	// TODO: Sensors have different hearthbeats, should probably be stored alongside profileID.
+	if time.Since(lastSeen) < 2*time.Hour {
 		return domain.StatusOnline
 	}
 	return domain.StatusOffline
@@ -42,6 +45,7 @@ func MapChirpstackSensorRequest(sensor domain.Sensor, applicationID string) dto.
 		SensorPayload: dto.SensorPayload{
 			DeviceEUI:       sensor.DeviceEUI,
 			Name:            sensor.Name,
+			Description:     *sensor.Description,
 			ApplicationID:   applicationID,
 			DeviceProfileID: sensor.ChirpstackProfileID,
 			JoinEUI:         "0000000000000000", // Not an issue when we host Chirpstack privately.
