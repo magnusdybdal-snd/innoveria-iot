@@ -28,6 +28,7 @@ func MergeSensor(cs dto.ChirpstackSensor, db domain.Sensor) domain.Sensor {
 	}
 }
 
+// mapStatusSensor returns sensor status based on time since it last was seen in Chirpstack.
 func mapStatusSensor(lastSeen time.Time) domain.Status {
 	if lastSeen.IsZero() {
 		return domain.StatusNeverSeen

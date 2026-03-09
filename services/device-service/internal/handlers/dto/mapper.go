@@ -132,37 +132,3 @@ func mapSensorProfiles(from domain.SensorProfile) SensorProfileResponse {
 		VendorName: from.VendorName,
 	}
 }
-
-// MapSensorGroupToDomain maps a CreateSensorGroup request to a domain SensorGroup.
-func MapSensorGroupToDomain(from CreateSensorGroup) domain.SensorGroup {
-	return domain.SensorGroup{
-		Id:        "", // converted in chirpstack
-		Name:      from.Name,
-		CompanyId: from.CompanyId, // TODO: Change this to tennant id
-		Location:  "",             // TODO: handle this somewhere
-	}
-}
-
-// MapSensorGroupToDTO maps a slice of domain SensorGroups to a SensorGroupListResponse.
-func MapSensorGroupToDTO(from []domain.SensorGroup) SensorGroupListResponse {
-	tot := len(from)
-
-	sensorGroups := make([]SensorGroupResponse, tot)
-
-	for i, sg := range from {
-		sensorGroups[i] = mapSensorGroup(sg)
-	}
-	return SensorGroupListResponse{
-		TotalCount:   tot,
-		SensorGroups: sensorGroups,
-	}
-}
-
-func mapSensorGroup(from domain.SensorGroup) SensorGroupResponse {
-	return SensorGroupResponse{
-		Id:        from.Id,
-		Name:      from.Name,
-		CompanyId: from.CompanyId,
-		Location:  from.Location,
-	}
-}
