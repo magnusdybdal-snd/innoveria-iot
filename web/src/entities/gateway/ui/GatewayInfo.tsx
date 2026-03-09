@@ -17,6 +17,7 @@ type InfoProps = {
   status: number;
   device_eui: string;
   lastSeenAt: string;
+  onDelete: () => void;
 };
 
 /**
@@ -26,10 +27,9 @@ type InfoProps = {
  * @param props - Component props
  * @param props.name - Display name of the gateway
  * @param props.status - Numeric status code: 0 = online, 1 = warning, 2 = offline
- * @param props.euid - EUI (Extended Unique Identifier) of the gateway
- * @param props.lastSeen - Human-readable time since last contact (e.g. "2 min ago")
  * @param props.device_eui
  * @param props.lastSeenAt
+ * @param props.onDelete
  * @returns A set of grid-aligned cells with an action menu and rename dialog
  */
 export function GatewayInfo({
@@ -37,6 +37,7 @@ export function GatewayInfo({
   status,
   device_eui,
   lastSeenAt,
+  onDelete,
 }: InfoProps) {
   const theme = useTheme();
   const [currentName, setCurrentName] = useState(name);
@@ -55,7 +56,7 @@ export function GatewayInfo({
 
   const menuItems = [
     { label: "Rename", onClick: handleEditOpen },
-    { label: "Delete", onClick: () => {} },
+    { label: "Delete", onClick: onDelete },
   ];
 
   const statusColor = (status: number) => {

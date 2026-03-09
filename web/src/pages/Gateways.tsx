@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import {
+  deleteGateway,
   GatewayInfo,
   getGateways,
   postGateway,
@@ -47,6 +48,13 @@ export default function Gateways() {
     });
   };
 
+  // TODO: add message to user indicating deletion success or failure
+  const handleDeleteGateway = (id: string) => {
+    deleteGateway(id).then(() => {
+      fetchGateways();
+    });
+  };
+
   useEffect(() => {
     fetchGateways();
   }, []);
@@ -59,7 +67,7 @@ export default function Gateways() {
     direction: "asc",
   });
 
-  // Handler for opening and closing add sensor pop-up
+  // Handler for opening and closing add gateway pop-up
   const handleClickOpenAdd = () => {
     setOpenAdd(true);
   };
@@ -83,7 +91,7 @@ export default function Gateways() {
       })
       .catch(() => {
         setAddError(
-          "Failed to add gateway. The EUI may already be registered.",
+          "Failed to add gateway. The EUI may already be registered.", // TODO: throw non-hardcoded error messages - based on actual error
         );
       });
   };
@@ -130,6 +138,7 @@ export default function Gateways() {
                   status={gateway.status}
                   device_eui={gateway.deviceEui}
                   lastSeenAt={gateway.lastSeenAt}
+                  onDelete={() => handleDeleteGateway(gateway.id)}
                 />
               </DeviceRow>
             ))}
