@@ -20,7 +20,7 @@ if [ -n "$STAGED_GO" ]; then
   echo "$STAGED_GO" | xargs git add
 
   # Add new Go services here. pkg/ must be first — services depend on it via replace directive.
-  GO_SERVICES="pkg services/api-gateway services/collection-service services/device-service services/auth-service"
+  GO_SERVICES="pkg services/api-gateway services/collection-service services/device-service services/auth-service services/onboarding-service"
 
   for dir in $GO_SERVICES; do
     if [ -d "$dir" ]; then
