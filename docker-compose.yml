@@ -202,6 +202,20 @@ services:
       - POSTGRES_USER=auth
       - POSTGRES_PASSWORD=auth
       - POSTGRES_DB=auth
+  
+  onboarding-service:
+    build:
+      context: .
+      dockerfile: infra/development/onboarding-service.Dockerfile
+    ports:
+      - "8085:8080"
+    volumes:
+      - ./services/onboarding-service:/app
+      - ./pkg:/pkg
+    environment:
+      - GO_ENV=development
+    depends_on:
+      - device-db
 
 #
 # Docker data volumes
