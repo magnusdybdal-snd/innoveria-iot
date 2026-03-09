@@ -5,7 +5,7 @@
     file_server # for static file serving
 
     # Letting caddy safely handle http requests internally on backend
-    handle_path /api/* {
+    handle /api/* {
         reverse_proxy api-gateway:8080
     }
 
