@@ -24,3 +24,10 @@ export interface SensorReadingApiResponse {
   payload: Record<string, unknown>;
   companyId: string;
 }
+
+export interface CreateSensorRequest {
+  companyId: string;
+  deviceEui: string;
+  deviceProfileId: string;
+  name: string;
+}
