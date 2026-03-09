@@ -26,7 +26,6 @@ type InfoAllProps = {
   sensorEui: string;
   machine: string;
   lastReading: string;
-  appKey: string;
   senProf: string;
 };
 
@@ -36,7 +35,6 @@ function SensorAllInfo({
   sensorEui: euid,
   machine,
   lastReading,
-  appKey,
   senProf,
 }: InfoAllProps) {
   const theme = useTheme();
@@ -68,7 +66,6 @@ function SensorAllInfo({
       <Typography>{euid}</Typography>
       <Typography>{machine}</Typography>
       <Typography>{lastReading}</Typography>
-      <Typography>{appKey}</Typography>
       <Typography>{senProf}</Typography>
     </>
   );
@@ -88,7 +85,7 @@ export function SensorAllInfoPopUp(props: AddDeviceProps) {
 
   useEffect(() => {
     if (!open) return;
-    fetchSensorReading("f62ccf710469ad3b").then(setReading); // TODO: replace hardcoded value with 'sensor.device_eui'
+    fetchSensorReading(sensor.deviceEui).then(setReading); // TODO: replace hardcoded value with 'sensor.device_eui'
   }, [open, sensor.deviceEui]);
 
   const handleClose = () => {
@@ -101,7 +98,6 @@ export function SensorAllInfoPopUp(props: AddDeviceProps) {
     "DeviceEUI",
     "Machine",
     "Last reading",
-    "Application key",
     "Sensor profile",
   ];
 
@@ -135,7 +131,6 @@ export function SensorAllInfoPopUp(props: AddDeviceProps) {
               lastReading={sensor.lastReading}
               sensorEui={sensor.deviceEui}
               machine={sensor.machine}
-              appKey={sensor.appKey}
               senProf={sensor.sensorProfileId}
             />
           </DeviceRow>

@@ -12,7 +12,6 @@ const makeSensor = (
   status: 0,
   machine: "Machine A",
   lastReading: "1 min",
-  appKey: "key-a",
   sensorProfileId: "profile-a",
   ...overrides,
 });

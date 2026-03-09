@@ -14,7 +14,6 @@ export interface SensorApiResponse {
   status: number;
   machine: string;
   lastReading: string;
-  appKey: string;
   sensorProfileId: string;
 }
 
