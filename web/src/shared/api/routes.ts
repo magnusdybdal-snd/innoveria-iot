@@ -2,6 +2,6 @@
 
 // In production, Caddy proxies /api/* so relative paths work.
 export const API_ROUTES = {
-  gateways: `/api/v1/device/gateways`,
-  sensors: `/api/v1/device/sensors`,
+  gateways: `/v1/device/gateways`,
+  sensors: `/v1/device/sensors`,
 };
