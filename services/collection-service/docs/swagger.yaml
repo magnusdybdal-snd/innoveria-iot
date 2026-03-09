@@ -12,6 +12,13 @@ definitions:
       timestamp:
         type: string
     type: object
+  dto.CreateTenantMappingRequest:
+    properties:
+      company_id:
+        type: string
+      tenant_id:
+        type: string
+    type: object
 host: localhost:8082
 info:
   contact: {}
@@ -19,6 +26,27 @@ info:
   title: Collection Service API
   version: "1.0"
 paths:
+  /collection/company-config:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Tenant mapping payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateTenantMappingRequest'
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Create tenant mapping
+      tags:
+      - company-config
   /latest:
     get:
       parameters:

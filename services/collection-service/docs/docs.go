@@ -15,6 +15,39 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/collection/company-config": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "company-config"
+                ],
+                "summary": "Create tenant mapping",
+                "parameters": [
+                    {
+                        "description": "Tenant mapping payload",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateTenantMappingRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/latest": {
             "get": {
                 "produces": [
@@ -116,6 +149,17 @@ const docTemplate = `{
                     "additionalProperties": {}
                 },
                 "timestamp": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.CreateTenantMappingRequest": {
+            "type": "object",
+            "properties": {
+                "company_id": {
+                    "type": "string"
+                },
+                "tenant_id": {
                     "type": "string"
                 }
             }
