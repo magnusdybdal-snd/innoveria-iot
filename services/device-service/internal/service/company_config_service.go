@@ -31,15 +31,15 @@ func NewCompanyConfigService(cc *chirpstackrest.Client, repo domain.CompanyConfi
 //
 // Returns the tenantID so the onboarding service can pass it to the collection service.
 // Compensating transactions are run on failure to keep Chirpstack and the database in sync.
-func (s *CompanyConfigServiceImpl) CreateCompanyConfig(ctx context.Context, companyID string) (string, error) {
+func (s *CompanyConfigServiceImpl) CreateCompanyConfig(ctx context.Context, companyID string, name string) (string, error) {
 	// Step 1: create Chirpstack tenant
-	tenantID, err := s.cc.CreateTenant(ctx, mappers.MapCreateChirpstackTenant(companyID))
+	tenantID, err := s.cc.CreateTenant(ctx, mappers.MapCreateChirpstackTenant(name))
 	if err != nil {
 		return "", fmt.Errorf("create company config: create chirpstack tenant: %w", err)
 	}
 
 	// Step 2: create Chirpstack application under the new tenant
-	applicationID, err := s.cc.CreateApplication(ctx, mappers.MapCreateChirpstackApplication(companyID, tenantID))
+	applicationID, err := s.cc.CreateApplication(ctx, mappers.MapCreateChirpstackApplication(name, tenantID))
 	if err != nil {
 		// Compensate: delete the tenant we just created
 		if compErr := s.cc.DeleteTenant(ctx, tenantID); compErr != nil {

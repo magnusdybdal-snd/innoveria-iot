@@ -24,7 +24,7 @@ type AuthClient interface {
 // CreateCompanyConfig creates a Chirpstack tenant and application for the company,
 // stores the companyID-applicationID mapping internally, and returns the tenantID.
 type DeviceClient interface {
-	CreateCompanyConfig(ctx context.Context, companyID string) (tenantID string, err error)
+	CreateCompanyConfig(ctx context.Context, companyID string, name string) (tenantID string, err error)
 	DeleteCompanyConfig(ctx context.Context, companyID string) error
 }
 

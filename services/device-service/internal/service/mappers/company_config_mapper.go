@@ -2,18 +2,18 @@ package mappers
 
 import "innoveria-iot/device-service/internal/chirpstackrest/dto"
 
-// MapCreateChirpstackTenant maps a companyID to a CreateChirpstackTenant request.
-func MapCreateChirpstackTenant(companyID string) dto.CreateChirpstackTenant {
+// MapCreateChirpstackTenant maps a company name to a CreateChirpstackTenant request.
+func MapCreateChirpstackTenant(name string) dto.CreateChirpstackTenant {
 	return dto.CreateChirpstackTenant{
-		Tenant: dto.TenantPayload{Name: companyID},
+		Tenant: dto.TenantPayload{Name: name},
 	}
 }
 
-// MapCreateChirpstackApplication maps a companyID and tenantID to a CreateChirpstackApplication request.
-func MapCreateChirpstackApplication(companyID string, tenantID string) dto.CreateChirpstackApplication {
+// MapCreateChirpstackApplication maps a company name and tenantID to a CreateChirpstackApplication request.
+func MapCreateChirpstackApplication(name string, tenantID string) dto.CreateChirpstackApplication {
 	return dto.CreateChirpstackApplication{
 		ApplicationPayload: dto.ApplicationPayload{
-			Name:     companyID,
+			Name:     name,
 			TenantID: tenantID,
 		},
 	}

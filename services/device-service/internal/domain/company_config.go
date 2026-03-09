@@ -23,6 +23,6 @@ type CompanyConfigRepository interface {
 
 // CompanyConfigService defines the business logic for managing company configurations.
 type CompanyConfigService interface {
-	CreateCompanyConfig(ctx context.Context, companyID string) (tenantID string, err error)
+	CreateCompanyConfig(ctx context.Context, companyID string, name string) (tenantID string, err error)
 	DeleteCompanyConfig(ctx context.Context, companyID string) error
 }

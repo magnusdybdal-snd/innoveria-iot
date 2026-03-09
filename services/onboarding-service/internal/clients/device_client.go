@@ -23,7 +23,7 @@ func NewDeviceClient(baseURL string) *DeviceClient {
 
 // CreateCompanyConfig calls the device service to create a Chirpstack tenant and application
 // for the given company. Returns the Chirpstack tenantID.
-func (c *DeviceClient) CreateCompanyConfig(_ context.Context, _ string) (string, error) {
+func (c *DeviceClient) CreateCompanyConfig(_ context.Context, _ string, _ string) (string, error) {
 	// TODO: implement
 	return "", fmt.Errorf("not implemented")
 }

@@ -43,7 +43,7 @@ func (s *OnboardingServiceImpl) CreateCompany(ctx context.Context, company domai
 	}
 
 	// Step 2: create chirpstack config in device service
-	tenantID, err := s.deviceClient.CreateCompanyConfig(ctx, companyID)
+	tenantID, err := s.deviceClient.CreateCompanyConfig(ctx, companyID, company.Name)
 	if err != nil {
 		// Compensate: delete company from auth service
 		if compErr := s.authClient.DeleteCompany(ctx, companyID); compErr != nil {
