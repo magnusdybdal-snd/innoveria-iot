@@ -3,20 +3,21 @@ package clients
 import (
 	"context"
 	"fmt"
-	"net/http"
+
+	"innoveria-iot/pkg/httpclient"
 )
 
 // DeviceClient is an HTTP client for the device service.
 type DeviceClient struct {
-	baseURL    string
-	httpClient *http.Client
+	baseURL string
+	client  *httpclient.Client
 }
 
 // NewDeviceClient creates a new DeviceClient targeting the given base URL.
 func NewDeviceClient(baseURL string) *DeviceClient {
 	return &DeviceClient{
-		baseURL:    baseURL,
-		httpClient: &http.Client{},
+		baseURL: baseURL,
+		client:  httpclient.New(),
 	}
 }
 

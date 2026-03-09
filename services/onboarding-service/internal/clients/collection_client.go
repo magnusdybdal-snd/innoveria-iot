@@ -3,20 +3,21 @@ package clients
 import (
 	"context"
 	"fmt"
-	"net/http"
+
+	"innoveria-iot/pkg/httpclient"
 )
 
 // CollectionClient is an HTTP client for the collection service.
 type CollectionClient struct {
-	baseURL    string
-	httpClient *http.Client
+	baseURL string
+	client  *httpclient.Client
 }
 
 // NewCollectionClient creates a new CollectionClient targeting the given base URL.
 func NewCollectionClient(baseURL string) *CollectionClient {
 	return &CollectionClient{
-		baseURL:    baseURL,
-		httpClient: &http.Client{},
+		baseURL: baseURL,
+		client:  httpclient.New(),
 	}
 }
 

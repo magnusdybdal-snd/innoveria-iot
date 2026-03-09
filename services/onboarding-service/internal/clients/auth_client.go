@@ -4,22 +4,22 @@ package clients
 import (
 	"context"
 	"fmt"
-	"net/http"
 
 	"innoveria-iot/onboarding-service/internal/domain"
+	"innoveria-iot/pkg/httpclient"
 )
 
 // AuthClient is an HTTP client for the auth service.
 type AuthClient struct {
-	baseURL    string
-	httpClient *http.Client
+	baseURL string
+	client  *httpclient.Client
 }
 
 // NewAuthClient creates a new AuthClient targeting the given base URL.
 func NewAuthClient(baseURL string) *AuthClient {
 	return &AuthClient{
-		baseURL:    baseURL,
-		httpClient: &http.Client{},
+		baseURL: baseURL,
+		client:  httpclient.New(),
 	}
 }
 
