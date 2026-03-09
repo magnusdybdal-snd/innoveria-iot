@@ -6,6 +6,9 @@ const (
 	// API_ROUTE is the base path for all API routes.
 	API_ROUTE = "/api/" + VERSION
 
-	// COMPANY_ROUTE is the route for company onboarding endpoints
-	COMPANY_ROUTE = API_ROUTE + "/company"
+	// ONBOARDING_ROUTE is the base path for all onboarding-related routes.
+	ONBOARDING_ROUTE = API_ROUTE + "/onboarding"
+
+	// COMPANY_ROUTE is the route for company onboarding endpoints.
+	COMPANY_ROUTE = ONBOARDING_ROUTE + "/company"
 )
