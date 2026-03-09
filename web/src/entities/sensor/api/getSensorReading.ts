@@ -1,5 +1,6 @@
 import type { SensorReadingApiResponse } from "@entities/sensor/model/sensorSchema";
 import { apiRequest, serviceClient } from "@shared/api";
+import { API_ROUTES } from "@shared/api/routes";
 
 /**
  * Fetches the latest sensor reading for a given device from the collection-service.
@@ -12,7 +13,7 @@ export const fetchSensorReading = async (
   try {
     const data = await apiRequest<SensorReadingApiResponse>(
       serviceClient,
-      `/api/v1/collection/latest?device_eui=${encodeURIComponent(deviceEUI)}`,
+      `${API_ROUTES.collection}/latest?device_eui=${encodeURIComponent(deviceEUI)}`,
       "GET",
     );
     return data;

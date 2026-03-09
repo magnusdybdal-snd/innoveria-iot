@@ -13,7 +13,7 @@ const makeSensor = (
   machine: "Machine A",
   lastReading: "1 min",
   appKey: "key-a",
-  senProf: "profile-a",
+  sensorProfileId: "profile-a",
   ...overrides,
 });
 

@@ -136,7 +136,7 @@ export function SensorAllInfoPopUp(props: AddDeviceProps) {
               sensorEui={sensor.deviceEui}
               machine={sensor.machine}
               appKey={sensor.appKey}
-              senProf={sensor.senProf}
+              senProf={sensor.sensorProfileId}
             />
           </DeviceRow>
         </CategoryHeader>

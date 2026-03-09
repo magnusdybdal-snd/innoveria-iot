@@ -34,8 +34,8 @@ export interface CreateSensorRequest {
 
 // Sensor profile API responses
 export interface SensorProfileListApiResponse {
-  totalCount: number;
-  sensorProfiles: SensorProfileApiResponse[];
+  total_count: number;
+  sensor_profiles: SensorProfileApiResponse[];
 }
 
 export interface SensorProfileApiResponse {

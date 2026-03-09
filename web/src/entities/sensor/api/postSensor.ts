@@ -18,7 +18,7 @@ export const postSensor = async (
     body: JSON.stringify({
       company_id: sensorData.companyId,
       device_eui: sensorData.deviceEui,
-      device_profile_id: sensorData.deviceProfileId,
+      device_profile_id: sensorData.sensorProfileId,
       name: sensorData.name,
     }),
   });
