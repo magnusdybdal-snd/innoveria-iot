@@ -15,7 +15,7 @@ export interface SensorApiResponse {
   machine: string;
   lastReading: string;
   appKey: string;
-  senProf: string;
+  sensorProfileId: string;
 }
 
 export interface SensorReadingApiResponse {
@@ -28,6 +28,20 @@ export interface SensorReadingApiResponse {
 export interface CreateSensorRequest {
   companyId: string;
   deviceEui: string;
-  deviceProfileId: string;
+  sensorProfileId: string;
   name: string;
+}
+
+// Sensor profile API responses
+export interface SensorProfileListApiResponse {
+  totalCount: number;
+  sensorProfiles: SensorProfileApiResponse[];
+}
+
+export interface SensorProfileApiResponse {
+  id: string;
+  name: string;
+  region: string;
+  vendorId: string;
+  vendor: string;
 }
