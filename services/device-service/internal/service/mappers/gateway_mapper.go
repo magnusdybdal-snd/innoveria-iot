@@ -52,6 +52,9 @@ func mapStatus(status string, lastSeen time.Time) domain.Status {
 		return domain.StatusOffline
 	default:
 		// Fallback in case there is no status
+		if lastSeen.IsZero() {
+			return domain.StatusNeverSeen
+		}
 		if time.Since(lastSeen) < 5*time.Minute {
 			return domain.StatusOnline
 		}
