@@ -9,7 +9,12 @@ import (
 	"innoveria-iot/pkg/logger"
 )
 
-// main application entrypoint
+// @title       Auth Service API
+// @version     1.0
+// @description Manages user authenticaion, permission roles, company generation
+
+// @host        localhost:8084
+// @BasePath    /api/v1/auth
 func main() {
 	logger.NewLogger("auth-service")
 

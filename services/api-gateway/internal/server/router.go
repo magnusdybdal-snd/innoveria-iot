@@ -15,11 +15,17 @@ func NewRouter(cfg *config.Config) *http.ServeMux {
 	mux := http.NewServeMux()
 
 	// Root handler
-	mux.HandleFunc(INDEX, handlers.Root)
+	// mux.HandleFunc("GET /", handlers.Root)
 
 	/*
 		Proxy routes microservice:
 	*/
+
+	// auth service
+	handlers.RegisterProxyService(mux, AUTHENTICATION_ROUTE, "auth-service", cfg.AuthSvcURL, []string{
+		"/companies",
+	})
+
 	// Device service
 	handlers.RegisterProxyService(mux, DEVICE_ROUTE, "device-service", cfg.DeviceSvcURL, []string{
 		"/gateways",
@@ -35,7 +41,7 @@ func NewRouter(cfg *config.Config) *http.ServeMux {
 	})
 
 	// Swagger — merged spec from all services, served via the gateway
-	mux.HandleFunc("GET /swagger/doc.json", handlers.MergedSwaggerSpec(cfg.DeviceSvcURL, cfg.CollSvcURL))
+	mux.HandleFunc("GET /swagger/doc.json", handlers.MergedSwaggerSpec(cfg.DeviceSvcURL, cfg.CollSvcURL, cfg.AuthSvcURL))
 	mux.HandleFunc("GET /swagger/", httpSwagger.Handler(httpSwagger.URL("/swagger/doc.json")))
 
 	return mux

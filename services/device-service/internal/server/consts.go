@@ -1,9 +1,10 @@
 // Package server provides HTTP server setup and route definitions for the device service.
 package server
 
+// Suppress godoclint in this file. Const naming should be explanatory in themselves
+//godoclint:disable
+
 const (
-	// INDEX is the root route path.
-	INDEX = "/"
 	// VERSION is the API version prefix.
 	VERSION = "v1"
 	// API_ROUTE is the base path for all API routes.

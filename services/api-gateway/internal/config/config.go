@@ -12,6 +12,7 @@ type Config struct {
 	Addr         string
 	CollSvcURL   string
 	DeviceSvcURL string
+	AuthSvcURL   string
 	// Some serviceURL
 	// Some serviceAPIKEY?
 }
@@ -22,7 +23,7 @@ func Load() *Config {
 		Addr:         ":" + env.Get("PORT", "8080"),
 		CollSvcURL:   strings.TrimSpace(env.Get("COLLECTION_SERVICE", "http://collection-service:8080")),
 		DeviceSvcURL: strings.TrimSpace(env.Get("DEVICE_SERVICE", "http://device-service:8080")),
-		// Some serviceURL
+		AuthSvcURL:   strings.TrimSpace(env.Get("AUTH_SERVICE", "http://auth-service:8080")),
 	}
 
 	return &cfg
