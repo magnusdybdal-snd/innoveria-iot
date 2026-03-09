@@ -2,6 +2,7 @@
 {$DOMAIN} {
 
     root * /usr/share/caddy
+    encode gzip zstd
     file_server # for static file serving
 
     # Letting caddy safely handle http requests internally on backend
