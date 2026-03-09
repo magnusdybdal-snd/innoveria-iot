@@ -17,7 +17,7 @@ type Config struct {
 // Load reads configuration from environment variables and returns a populated Config.
 func Load() *Config {
 	return &Config{
-		Addr:             ":" + env.Get("PORT", "8085"),
+		Addr:             ":" + env.Get("PORT", "8080"),
 		AuthSvcURL:       env.Get("AUTH_SERVICE", "http://auth-service:8080"),
 		DeviceSvcURL:     env.Get("DEVICE_SERVICE", "http://device-service:8080"),
 		CollectionSvcURL: env.Get("COLLECTION_SERVICE", "http://collection-service:8080"),

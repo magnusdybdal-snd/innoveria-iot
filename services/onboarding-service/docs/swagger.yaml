@@ -14,7 +14,7 @@ info:
   title: Onboarding Service API
   version: "1.0"
 paths:
-  /onboarding/company:
+  /company:
     post:
       consumes:
       - application/json

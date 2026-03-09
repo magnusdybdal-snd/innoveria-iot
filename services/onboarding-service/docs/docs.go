@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/onboarding/company": {
+        "/company": {
             "post": {
                 "consumes": [
                     "application/json"

@@ -9,7 +9,7 @@
     "host": "localhost:8085",
     "basePath": "/api/v1/onboarding",
     "paths": {
-        "/onboarding/company": {
+        "/company": {
             "post": {
                 "consumes": [
                     "application/json"

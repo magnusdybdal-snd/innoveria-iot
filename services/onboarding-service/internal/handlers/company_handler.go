@@ -17,7 +17,7 @@ import (
 // @Success		201
 // @Failure		400
 // @Failure		500
-// @Router		/onboarding/company [post]
+// @Router		/company [post]
 func PostCompany(svc domain.OnboardingService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
