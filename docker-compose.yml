@@ -215,7 +215,9 @@ services:
     environment:
       - GO_ENV=development
     depends_on:
-      - device-db
+      - auth-service
+      - device-service
+      - collection-service
 
 #
 # Docker data volumes
