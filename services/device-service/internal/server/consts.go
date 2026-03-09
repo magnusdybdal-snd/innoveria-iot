@@ -30,4 +30,9 @@ const (
 
 	// SENSOR_GROUP_ROUTE is the route for sensor group collection endpoints.
 	SENSOR_GROUP_ROUTE = DEVICE_ROUTE + "/sensor-groups"
+
+	// COMPANY_CONFIG_ROUTE is the route for company config endpoints.
+	COMPANY_CONFIG_ROUTE = DEVICE_ROUTE + "/company-config"
+	// COMPANY_CONFIG_ROUTE_ID is the route for single company config endpoints, with a {companyID} path parameter.
+	COMPANY_CONFIG_ROUTE_ID = DEVICE_ROUTE + "/company-config/{companyID}"
 )

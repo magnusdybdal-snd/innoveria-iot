@@ -17,6 +17,7 @@ func NewRouter(
 	gatewaySvc domain.GatewayService,
 	sensorSvc domain.SensorService,
 	sensorProfileSvc domain.SensorProfileService,
+	companyConfigSvc domain.CompanyConfigService,
 ) *http.ServeMux {
 	mux := http.NewServeMux()
 
@@ -36,6 +37,10 @@ func NewRouter(
 
 	// Sensor profile routes:
 	mux.HandleFunc("GET "+SENSOR_PROFILE_ROUTE, handlers.GetAllSensorProfiles(sensorProfileSvc))
+
+	// Company config routes:
+	mux.HandleFunc("POST "+COMPANY_CONFIG_ROUTE, handlers.PostCompanyConfig(companyConfigSvc))
+	mux.HandleFunc("DELETE "+COMPANY_CONFIG_ROUTE_ID, handlers.DeleteCompanyConfig(companyConfigSvc))
 
 	// Swagger docs
 	mux.HandleFunc("GET /swagger/", httpSwagger.WrapHandler)
