@@ -9,7 +9,7 @@
     "host": "localhost:8082",
     "basePath": "/api/v1/collection",
     "paths": {
-        "/collection/company-config": {
+        "/company-config": {
             "post": {
                 "consumes": [
                     "application/json"

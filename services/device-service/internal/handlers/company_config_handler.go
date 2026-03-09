@@ -19,7 +19,7 @@ import (
 // @Success		201		{object}	dto.CreateCompanyConfigResponse
 // @Failure		400
 // @Failure		500
-// @Router		/device/company-config [post]
+// @Router		/company-config [post]
 func PostCompanyConfig(svc domain.CompanyConfigService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -55,7 +55,7 @@ func PostCompanyConfig(svc domain.CompanyConfigService) http.HandlerFunc {
 // @Success		204
 // @Failure		400
 // @Failure		500
-// @Router		/device/company-config/{companyID} [delete]
+// @Router		/company-config/{companyID} [delete]
 func DeleteCompanyConfig(svc domain.CompanyConfigService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()

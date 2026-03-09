@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/collection/company-config": {
+        "/company-config": {
             "post": {
                 "consumes": [
                     "application/json"

@@ -198,7 +198,7 @@ info:
   title: Device Service API
   version: "1.0"
 paths:
-  /device/company-config:
+  /company-config:
     post:
       consumes:
       - application/json
@@ -223,7 +223,7 @@ paths:
       summary: Create company config
       tags:
       - company-config
-  /device/company-config/{companyID}:
+  /company-config/{companyID}:
     delete:
       parameters:
       - description: Company ID

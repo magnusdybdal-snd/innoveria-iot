@@ -18,7 +18,7 @@ import (
 // @Success		201
 // @Failure		400
 // @Failure		500
-// @Router		/collection/company-config [post]
+// @Router		/company-config [post]
 func PostTenantMapping(svc domain.TenantMappingService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()

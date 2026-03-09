@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/device/company-config": {
+        "/company-config": {
             "post": {
                 "consumes": [
                     "application/json"
@@ -54,7 +54,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/device/company-config/{companyID}": {
+        "/company-config/{companyID}": {
             "delete": {
                 "tags": [
                     "company-config"

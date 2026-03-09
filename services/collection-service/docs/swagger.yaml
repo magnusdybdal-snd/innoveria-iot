@@ -26,7 +26,7 @@ info:
   title: Collection Service API
   version: "1.0"
 paths:
-  /collection/company-config:
+  /company-config:
     post:
       consumes:
       - application/json

@@ -27,12 +27,12 @@ func NewAuthClient(baseURL string) *AuthClient {
 
 // CreateCompany calls the auth service to create a new company and returns the assigned companyID.
 func (c *AuthClient) CreateCompany(ctx context.Context, company domain.Company) (string, error) {
-	resp, err := httpclient.DoRequest[dto.CreateCompanyResponse](
+	resp, err := httpclient.DoRequest[dto.AuthCreateCompanyResponse](
 		c.client,
 		ctx,
 		c.baseURL+"/api/v1/auth/companies",
 		http.MethodPost,
-		dto.CreateCompanyRequest{Name: company.Name, Address: company.Address},
+		dto.AuthCreateCompanyRequest{Name: company.Name, Address: company.Address},
 		nil,
 	)
 	if err != nil {
