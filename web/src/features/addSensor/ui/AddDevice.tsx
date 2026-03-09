@@ -20,7 +20,7 @@ export interface AddDeviceProps {
     machine: string;
     appKey: string;
     senProf: string;
-  }) => void;
+  }) => Promise<void>;
   submitError?: string | null;
 }
 
@@ -65,13 +65,17 @@ export function AddDevice(props: AddDeviceProps) {
       return;
     }
 
-    props.onAdd({
-      name: values["Name"],
-      deviceEui: values["DeviceEUI"],
-      machine: values["Machine"],
-      appKey: values["Application key"],
-      senProf: values["Sensor profile"],
-    });
+    props
+      .onAdd({
+        name: values["Name"],
+        deviceEui: values["DeviceEUI"],
+        machine: values["Machine"],
+        appKey: values["Application key"],
+        senProf: values["Sensor profile"],
+      })
+      .then(() => {
+        setValues({});
+      });
 
     setFillError(false);
     setLengthErrors({});
@@ -144,7 +148,7 @@ export function AddDevice(props: AddDeviceProps) {
                     lengthErrors[option] ? inputLengthError[option] : ""
                   }
                   error={!!lengthErrors[option]}
-                  value={values[option]}
+                  value={values[option] ?? ""}
                   onChange={(e) => {
                     let value = e.target.value;
 

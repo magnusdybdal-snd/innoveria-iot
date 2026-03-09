@@ -64,7 +64,7 @@ export default function Sensors() {
     setSelectedSensor(null);
   };
 
-  const handleAddSensor = (sensorData: NewSensor) => {
+  const handleAddSensor = (sensorData: NewSensor): Promise<void> => {
     setMockSensors((prev) => [
       ...prev,
       {
@@ -75,6 +75,7 @@ export default function Sensors() {
       },
     ]);
     setOpenAdd(false);
+    return Promise.resolve();
   };
 
   const addButton = (
