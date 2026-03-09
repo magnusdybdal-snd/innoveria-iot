@@ -80,7 +80,7 @@ export default function Gateways() {
     deviceEui: string;
   }) => {
     setAddError(null);
-    postGateway({
+    return postGateway({
       companyId: "a0000000-0000-0000-0000-000000000001", // TODO: replace with real company ID from auth
       deviceEui: gatewayData.deviceEui,
       name: gatewayData.name,
