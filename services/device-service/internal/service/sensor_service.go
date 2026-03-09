@@ -9,14 +9,14 @@ import (
 	"log/slog"
 )
 
-// SensorServiceImpl TODO(@vinjar): add proper documentation.
+// SensorServiceImpl implements domain.SensorService, coordinating between the database and Chirpstack.
 type SensorServiceImpl struct {
 	cc             *chirpstackrest.Client
 	companycfgRepo domain.CompanyConfigRepository
 	sensorRepo     domain.SensorRepository
 }
 
-// NewSensorService TODO(@vinjar): add proper documentation.
+// NewSensorService creates a new SensorServiceImpl with the given Chirpstack client and repositories.
 func NewSensorService(cc *chirpstackrest.Client, sensorRepo domain.SensorRepository, companycfgRepo domain.CompanyConfigRepository) *SensorServiceImpl {
 	return &SensorServiceImpl{
 		cc:             cc,
@@ -52,8 +52,7 @@ func (s *SensorServiceImpl) Create(ctx context.Context, payload domain.Sensor) e
 	return nil
 }
 
-// Update updates a sensors metadata in the database and the name, description and sensor profile id
-// in Chirpstack.
+// Update updates a sensor's metadata in the database and the name, description, and sensor profile ID in Chirpstack.
 func (s *SensorServiceImpl) Update(ctx context.Context, sensorID string, payload domain.Sensor) error {
 	// Verify the sensor exists in the db
 	sensor, err := s.sensorRepo.FindByID(ctx, sensorID)
@@ -90,7 +89,7 @@ func (s *SensorServiceImpl) Update(ctx context.Context, sensorID string, payload
 }
 
 // GetAll retrieves all sensors belonging to a companyID from the database and merges the
-// response with the status from Chirpstack (status and last seen)
+// response with the status from Chirpstack (status and last seen).
 func (s *SensorServiceImpl) GetAll(ctx context.Context) ([]domain.Sensor, error) {
 
 	// fetch all sensor belonging to the company in db

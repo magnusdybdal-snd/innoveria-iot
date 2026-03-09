@@ -18,7 +18,7 @@ import (
 	"time"
 )
 
-// Run TODO(@vinjar): add proper documentation.
+// Run initialises dependencies, starts the HTTP server, and blocks until a shutdown signal is received or a startup error occurs.
 func Run() error {
 	cfg := config.Load()
 

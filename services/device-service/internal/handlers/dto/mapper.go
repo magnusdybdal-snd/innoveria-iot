@@ -6,7 +6,7 @@ import (
 	"innoveria-iot/device-service/internal/domain"
 )
 
-// MapGatewayDomainToDTO TODO(@Magnus Dybdal): add proper documentation.
+// MapGatewayDomainToDTO maps a slice of domain Gateways to a GatewayListResponse.
 func MapGatewayDomainToDTO(from []domain.Gateway) GatewayListResponse {
 	tot := len(from)
 	gateways := make([]GatewayResponse, tot)
@@ -23,16 +23,21 @@ func MapGatewayDomainToDTO(from []domain.Gateway) GatewayListResponse {
 
 func mapGateway(from domain.Gateway) GatewayResponse {
 	return GatewayResponse{
-		ID:         from.Id,
-		CompanyId:  from.CompanyId,
-		GatewayEUI: from.GatewayEUI,
-		Name:       from.Name,
-		Status:     int(from.Status),
-		LastSeenAt: from.LastSeenAt,
+		ID:            from.Id,
+		CompanyId:     from.CompanyId,
+		GatewayEUI:    from.GatewayEUI,
+		Name:          from.Name,
+		Description:   from.Description,
+		Status:        int(from.Status),
+		State:         string(from.State),
+		FactoryAreaID: from.FactoryAreaID,
+		LastSeenAt:    from.LastSeenAt,
+		CreatedAt:     from.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:     from.UpdatedAt.Format(time.RFC3339),
 	}
 }
 
-// MapGatewayDTOToDomain TODO(@Magnus Dybdal): add proper documentation.
+// MapGatewayDTOToDomain maps a CreateGatewayRequest to a domain Gateway, setting defaults for State and Status.
 func MapGatewayDTOToDomain(from CreateGatewayRequest) domain.Gateway {
 	return domain.Gateway{
 		Id:         "", // converted later in db
@@ -70,7 +75,7 @@ func MapCreateSensorDTOToDomain(from CreateSensorRequest) domain.Sensor {
 	}
 }
 
-// MapSensorDomainToDTO TODO(@Magnus Dybdal): add proper documentation.
+// MapSensorDomainToDTO maps a slice of domain Sensors to a SensorListResponse.
 func MapSensorDomainToDTO(from []domain.Sensor) SensorListResponse {
 	tot := len(from)
 	sensors := make([]SensorResponse, tot)
@@ -103,7 +108,7 @@ func mapSensors(from domain.Sensor) SensorResponse {
 	}
 }
 
-// MapSensorProfileDomainToDTO TODO(@Magnus Dybdal): add proper documentation.
+// MapSensorProfileDomainToDTO maps a slice of domain SensorProfiles to a SensorProfileListResponse.
 func MapSensorProfileDomainToDTO(from []domain.SensorProfile) SensorProfileListResponse {
 	tot := len(from)
 	sensorProfiles := make([]SensorProfileResponse, tot)
@@ -128,7 +133,7 @@ func mapSensorProfiles(from domain.SensorProfile) SensorProfileResponse {
 	}
 }
 
-// MapSensorGroupToDomain TODO(@Magnus Dybdal): add proper documentation.
+// MapSensorGroupToDomain maps a CreateSensorGroup request to a domain SensorGroup.
 func MapSensorGroupToDomain(from CreateSensorGroup) domain.SensorGroup {
 	return domain.SensorGroup{
 		Id:        "", // converted in chirpstack
@@ -138,7 +143,7 @@ func MapSensorGroupToDomain(from CreateSensorGroup) domain.SensorGroup {
 	}
 }
 
-// MapSensorGroupToDTO TODO(@Magnus Dybdal): add proper documentation.
+// MapSensorGroupToDTO maps a slice of domain SensorGroups to a SensorGroupListResponse.
 func MapSensorGroupToDTO(from []domain.SensorGroup) SensorGroupListResponse {
 	tot := len(from)
 
