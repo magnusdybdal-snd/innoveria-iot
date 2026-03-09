@@ -13,7 +13,7 @@ import (
 //go:embed seeds/*.sql
 var seeds embed.FS
 
-// RunSeeds TODO(@Magnus Dybdal): add proper documentation.
+// RunSeeds runs all embedded SQL seed files against the given database pool.
 func RunSeeds(pool *pgxpool.Pool) error {
 	return dbutil.RunSeeds(pool, seeds)
 }

@@ -1,16 +1,16 @@
-// Package dto TODO(@vinjar): add proper documentation.
+// Package dto contains request and response models for the Chirpstack REST API.
 package dto
 
 // Chirpstack v4 model for applications
 import "time"
 
-// ChirpstackApplicationList TODO(@vinjar): add proper documentation.
+// ChirpstackApplicationList is the paginated response from the Chirpstack GET /api/applications endpoint.
 type ChirpstackApplicationList struct {
 	Result     []ChirpstackApplication `json:"result"`
 	TotalCount int                     `json:"totalCount"`
 }
 
-// ChirpstackApplication TODO(@vinjar): add proper documentation.
+// ChirpstackApplication represents a single application as returned by the Chirpstack API.
 type ChirpstackApplication struct {
 	ID          string    `json:"id"`
 	Name        string    `json:"name"`
@@ -19,12 +19,12 @@ type ChirpstackApplication struct {
 	UpdatedAt   time.Time `json:"updatedAt"`
 }
 
-// CreateChirpstackApplication TODO(@vinjar): add proper documentation.
+// CreateChirpstackApplication is the top-level body for POST /api/applications.
 type CreateChirpstackApplication struct {
 	ApplicationPayload `json:"application"`
 }
 
-// ApplicationPayload TODO(@vinjar): add proper documentation.
+// ApplicationPayload contains the fields required by Chirpstack to create a new application.
 type ApplicationPayload struct {
 	Name        string            `json:"name"`
 	TenantID    string            `json:"tenantId"`

@@ -2,13 +2,13 @@ package dto
 
 import "time"
 
-// ChirpstackGatewayList TODO(@vinjar): add proper documentation.
+// ChirpstackGatewayList is the paginated response from the Chirpstack GET /api/gateways endpoint.
 type ChirpstackGatewayList struct {
 	Result     []ChirpstackGateway `json:"result"`
 	TotalCount int                 `json:"totalCount"`
 }
 
-// ChirpstackGateway represents a single gateway as returned by the ChirStack API.
+// ChirpstackGateway represents a single gateway as returned by the Chirpstack API.
 type ChirpstackGateway struct {
 	GatewayEUI  string `json:"gatewayId"` // Chirpstack calls this gatewayId. We use our own id, so eui makes more sense
 	Name        string `json:"name"`

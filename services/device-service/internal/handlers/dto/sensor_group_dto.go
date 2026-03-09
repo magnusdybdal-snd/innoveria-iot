@@ -1,6 +1,6 @@
 package dto
 
-// SensorGroupResponse TODO(@vinjar): add proper documentation.
+// SensorGroupResponse represents a single sensor group in API responses.
 type SensorGroupResponse struct {
 	Id        string `json:"id"`
 	Name      string `json:"name"`
@@ -8,13 +8,13 @@ type SensorGroupResponse struct {
 	Location  string `json:"location"`
 }
 
-// SensorGroupListResponse TODO(@vinjar): add proper documentation.
+// SensorGroupListResponse wraps a slice of SensorGroupResponse with a total count, returned by list endpoints.
 type SensorGroupListResponse struct {
 	TotalCount   int                   `json:"total_count"`
 	SensorGroups []SensorGroupResponse `json:"sensor_groups"`
 }
 
-// CreateSensorGroup TODO(@vinjar): add proper documentation.
+// CreateSensorGroup contains the fields required to create a new sensor group.
 type CreateSensorGroup struct {
 	CompanyId string `json:"company_id"`
 	Name      string `json:"name"`

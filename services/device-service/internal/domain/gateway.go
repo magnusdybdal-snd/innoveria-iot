@@ -24,7 +24,7 @@ type Gateway struct {
 	LastSeenAt string
 }
 
-// GatewayService TODO(@Magnus Dybdal): add proper documentation.
+// GatewayService defines the business logic operations for gateways.
 type GatewayService interface {
 	Create(ctx context.Context, payload Gateway) error
 	Update(ctx context.Context, gatewayId string, payload Gateway) error

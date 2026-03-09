@@ -91,7 +91,7 @@ func (r *GatewayRepository) Create(ctx context.Context, gateway domain.Gateway) 
 	return out, nil
 }
 
-// FindByID retrieves a gateway by its internal UUID
+// FindByID retrieves a gateway by its internal UUID.
 func (r *GatewayRepository) FindByID(ctx context.Context, gatewayID string) (domain.Gateway, error) {
 
 	var out domain.Gateway

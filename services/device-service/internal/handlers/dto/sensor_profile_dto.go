@@ -1,6 +1,6 @@
 package dto
 
-// SensorProfileResponse TODO(@vinjar): add proper documentation.
+// SensorProfileResponse represents a single sensor profile in API responses.
 type SensorProfileResponse struct {
 	Id         string `json:"id"`
 	Name       string `json:"name"`
@@ -11,7 +11,7 @@ type SensorProfileResponse struct {
 	// IsCustom bool   `json:"isCustom,omitempty"`
 }
 
-// SensorProfileListResponse TODO(@vinjar): add proper documentation.
+// SensorProfileListResponse wraps a slice of SensorProfileResponse with a total count, returned by list endpoints.
 type SensorProfileListResponse struct {
 	TotalCount     int                     `json:"total_count"`
 	SensorProfiles []SensorProfileResponse `json:"sensor_profiles"`
