@@ -31,8 +31,11 @@ export default defineConfig({
     // caddy proxies the api route for doing internal http requests
     proxy: {
       "/api": {
-        target: "http://localhost:8081/api",
+        target: "http://localhost:8081",
         changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ""),
+        // http://localhost:8081/api/bar
+        //   -> http://localhost:8081/bar
       },
     },
   },

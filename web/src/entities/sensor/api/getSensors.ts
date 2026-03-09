@@ -3,6 +3,7 @@ import type {
   SensorListApiResponse,
 } from "@entities/sensor/model/sensorSchema";
 import { apiRequest, serviceClient } from "@shared/api";
+import { API_ROUTES } from "@shared/api/routes";
 
 /**
  * Fetches all sensors from the collection-service via the API gateway.
@@ -12,7 +13,7 @@ export const getSensors = async (): Promise<SensorApiResponse[]> => {
   try {
     const data = await apiRequest<SensorListApiResponse>(
       serviceClient,
-      "/v1/device/sensors",
+      API_ROUTES.sensors,
       "GET",
     );
 

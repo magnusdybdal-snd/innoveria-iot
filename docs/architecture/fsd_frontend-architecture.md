@@ -83,7 +83,6 @@ src/
 │   │   ├── lib/                  # sortGateways.ts
 │   │   ├── ui/                   # GatewayInfo
 │   │   └── index.ts
-│   └── joke/                     # Dev placeholder — remove before production
 │
 ├── features/                     # User interactions
 │   └── addSensor/

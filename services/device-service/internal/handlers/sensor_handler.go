@@ -9,7 +9,15 @@ import (
 	"innoveria-iot/pkg/json"
 )
 
-// GetSensors TODO(@vinjar): add proper documentation.
+// GetSensors returns all GetSensors
+//
+// @Summary 	Lists all sensors.
+// @Tags 		sensors
+// @Produce 	json
+// @Success 	200 {object} dto.SensorListResponse
+// @Failure 	400
+// @Failure 	500
+// @Router 		/sensors [get]
 func GetSensors(svc domain.SensorService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -33,6 +41,15 @@ func GetSensors(svc domain.SensorService) http.HandlerFunc {
 }
 
 // PostSensor registers a new sensor in ChirpStack and the database.
+//
+// @Summary		Create a sensor
+// @Tags 		sensors
+// @Accept		json
+// @Param		body   body   dto.CreateSensorRequest   true   "Sensor payload"
+// @Success		201
+// @Failure		400
+// @Failure 	500
+// @Router		/sensors [post]
 func PostSensor(svc domain.SensorService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -56,6 +73,16 @@ func PostSensor(svc domain.SensorService) http.HandlerFunc {
 }
 
 // PutSensor updates a sensor by its internal ID
+//
+// @Summary 	Update a sensor
+// @Tags		sensors
+// @Accept		json
+// @Param		id     path   string                    true   "Sensor ID"
+// @Param		body   body   dto.UpdateSensorRequest   true   "Update payload"
+// @Success		204
+// @Failure		400
+// @Failure		500
+// @Router		/sensors/{id} [put]
 func PutSensor(svc domain.SensorService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -84,6 +111,14 @@ func PutSensor(svc domain.SensorService) http.HandlerFunc {
 }
 
 // DeleteSensor deletes a sensor by its internal ID.
+//
+// @Summary		Delete a sensor
+// @Tags 		sensors
+// @Param		id		path	string		true	"SensorID"
+// @Success		204
+// @Failure		400
+// @Failure		500
+// @Router		/sensors/{id} [delete]
 func DeleteSensor(svc domain.SensorService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
