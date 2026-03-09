@@ -97,7 +97,7 @@ func (c *Client) CreateApplication(ctx context.Context, body dto.CreateChirpstac
 }
 
 // CreateTenant registers a new tenant in Chirpstack.
-func (c *Client) CreateTenant(ctx context.Context, body dto.CreateChirpstackApplication) (string, error) {
+func (c *Client) CreateTenant(ctx context.Context, body dto.CreateChirpstackTenant) (string, error) {
 	url := fmt.Sprintf("%s/api/tenants", c.baseURL)
 
 	resp, err := httpclient.DoRequest[dto.ChirpstackTenantCreateResponse](
@@ -120,6 +120,29 @@ func (c *Client) CreateTenant(ctx context.Context, body dto.CreateChirpstackAppl
 // DeleteTenant deletes a tenant from Chirpstack
 func (c *Client) DeleteTenant(ctx context.Context, tenantID string) error {
 	url := fmt.Sprintf("%s/api/tenants/%s", c.baseURL, tenantID)
+	resp, err := httpclient.DoRaw(
+		c.httpClient,
+		ctx,
+		url,
+		http.MethodDelete,
+		nil,
+		map[string]string{
+			"Authorization": "Bearer " + c.token,
+		},
+	)
+	if err != nil {
+		return handleChirpstackError(err)
+	}
+
+	if err := resp.Body.Close(); err != nil {
+		return err
+	}
+	return nil
+}
+
+// DeleteApplication removes an application from Chirpstack by its ID.
+func (c *Client) DeleteApplication(ctx context.Context, applicationID string) error {
+	url := fmt.Sprintf("%s/api/applications/%s", c.baseURL, applicationID)
 	resp, err := httpclient.DoRaw(
 		c.httpClient,
 		ctx,

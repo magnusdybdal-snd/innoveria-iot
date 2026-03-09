@@ -18,4 +18,11 @@ type CompanyConfig struct {
 type CompanyConfigRepository interface {
 	Create(ctx context.Context, config CompanyConfig) (CompanyConfig, error)
 	FindByCompanyID(ctx context.Context, companyID string) (CompanyConfig, error)
+	Delete(ctx context.Context, companyID string) error
+}
+
+// CompanyConfigService defines the business logic for managing company configurations.
+type CompanyConfigService interface {
+	CreateCompanyConfig(ctx context.Context, companyID string) (tenantID string, err error)
+	DeleteCompanyConfig(ctx context.Context, companyID string) error
 }

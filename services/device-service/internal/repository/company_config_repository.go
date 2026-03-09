@@ -20,6 +20,11 @@ const (
 		FROM device.company_config
 		WHERE company_id = $1
 	`
+
+	deleteCompanyConfigQuery = `
+		DELETE FROM device.company_config
+		WHERE company_id = $1
+	`
 )
 
 // CompanyConfigRepository handles persistance of company configuration in the database.
@@ -72,4 +77,20 @@ func (r *CompanyConfigRepository) FindByCompanyID(ctx context.Context, companyID
 	}
 
 	return out, nil
+}
+
+// Delete tries to delete a company config mapping from the database.
+// Returns an error if deletion fails or no company config is found.
+func (r *CompanyConfigRepository) Delete(ctx context.Context, companyID string) error {
+
+	tag, err := r.db.Pool.Exec(ctx, deleteCompanyConfigQuery, companyID)
+	if err != nil {
+		return fmt.Errorf("delete company config %s: %w", companyID, err)
+	}
+
+	if tag.RowsAffected() == 0 {
+		return fmt.Errorf("company not found: %s", companyID)
+	}
+
+	return nil
 }
