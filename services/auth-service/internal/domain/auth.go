@@ -13,8 +13,15 @@ type AuthService interface {
 	// Refresh
 	// Logout
 	// Me
+
+	// Company
 	RegisterCompany(ctx context.Context, payload Company) (Company, error)
 	GetOneCompany(ctx context.Context, companyID string) (Company, error)
 	GetAllCompanies(ctx context.Context) ([]Company, error)
 	DeleteCompany(ctx context.Context, companyID string) error
+	// Factory
+	RegisterFactory(ctx context.Context, payload Factory) (Factory, error)
+	GetOneFactory(ctx context.Context, factoryID string) (Factory, error)
+	GetAllFactories(ctx context.Context) ([]Factory, error)
+	DeleteFactory(ctx context.Context, factoryID string) error
 }

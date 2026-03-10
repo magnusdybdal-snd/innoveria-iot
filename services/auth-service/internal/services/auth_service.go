@@ -12,12 +12,14 @@ import (
 // AuthServiceImpl implements authentication use cases for the auth service.
 type AuthServiceImpl struct {
 	companyRepo domain.CompanyRepo
+	factoryRepo domain.FactoryRepo
 }
 
 // NewAuthServiceImpl creates a new AuthServiceImpl instance.
-func NewAuthServiceImpl(companyRepo domain.CompanyRepo) *AuthServiceImpl {
+func NewAuthServiceImpl(companyRepo domain.CompanyRepo, factoryRepo domain.FactoryRepo) *AuthServiceImpl {
 	return &AuthServiceImpl{
 		companyRepo: companyRepo,
+		factoryRepo: factoryRepo,
 	}
 }
 
@@ -64,5 +66,48 @@ func (s *AuthServiceImpl) DeleteCompany(ctx context.Context, companyID string) e
 	}
 
 	slog.Info("successfully deleted company", "id", companyID)
+	return nil
+}
+
+// RegisterFactory creates a new factory.
+func (s *AuthServiceImpl) RegisterFactory(ctx context.Context, payload domain.Factory) (domain.Factory, error) {
+	factory, err := s.factoryRepo.Create(ctx, payload)
+	if err != nil {
+		return domain.Factory{}, err
+	}
+
+	slog.Info("successfully registered factory", "id", factory.Id)
+	return factory, nil
+}
+
+// GetOneFactory retrieves a single factory by its ID.
+func (s *AuthServiceImpl) GetOneFactory(ctx context.Context, factoryID string) (domain.Factory, error) {
+	factory, err := s.factoryRepo.FindByID(ctx, factoryID)
+	if err != nil {
+		return domain.Factory{}, err
+	}
+
+	slog.Info("successfully found factory", "id", factory.Id)
+	return factory, nil
+}
+
+// GetAllFactories retrieves all factories.
+func (s *AuthServiceImpl) GetAllFactories(ctx context.Context) ([]domain.Factory, error) {
+	factories, err := s.factoryRepo.FindAll(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	slog.Info("successfully found all factories")
+	return factories, nil
+}
+
+// DeleteFactory deletes a factory by ID.
+func (s *AuthServiceImpl) DeleteFactory(ctx context.Context, factoryID string) error {
+	if err := s.factoryRepo.DeleteByID(ctx, factoryID); err != nil {
+		return err
+	}
+
+	slog.Info("successfully deleted factory", "id", factoryID)
 	return nil
 }

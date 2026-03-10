@@ -24,6 +24,10 @@ const (
 		FROM auth.factory
 		ORDER BY created_at ASC
 	`
+	deleteFactoryByIDQuery = `
+		DELETE FROM auth.factory
+		WHERE factory_id = $1
+	`
 )
 
 // FactoryRepoImpl is the  implementation of
@@ -107,4 +111,18 @@ func (r *FactoryRepoImpl) FindByID(ctx context.Context, factoryID string) (domai
 	}
 
 	return out, nil
+}
+
+// DeleteByID deletes a factory by id.
+func (r *FactoryRepoImpl) DeleteByID(ctx context.Context, factoryID string) error {
+	result, err := r.db.Pool.Exec(ctx, deleteFactoryByIDQuery, factoryID)
+	if err != nil {
+		return fmt.Errorf("delete factory by id: %w", err)
+	}
+
+	if result.RowsAffected() == 0 {
+		return fmt.Errorf("delete factory by id: factory not found")
+	}
+
+	return nil
 }
