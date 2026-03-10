@@ -1,11 +1,13 @@
 package handlers
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 
 	"innoveria-iot/onboarding-service/internal/domain"
 	"innoveria-iot/onboarding-service/internal/handlers/dto"
+	"innoveria-iot/pkg/httpclient"
 	"innoveria-iot/pkg/json"
 )
 
@@ -17,6 +19,7 @@ import (
 // @Param		body	body	dto.CreateCompanyRequest	true	"Company payload"
 // @Success		201
 // @Failure		400
+// @Failure     409
 // @Failure		500
 // @Router		/company [post]
 func PostCompany(svc domain.OnboardingService) http.HandlerFunc {
@@ -31,11 +34,17 @@ func PostCompany(svc domain.OnboardingService) http.HandlerFunc {
 
 		if payload.Address == "" || payload.Name == "" {
 			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("missing required fields"), "name and address are required")
+			return
 		}
 
 		company := dto.MapToDomain(payload)
 
 		if err := svc.CreateCompany(ctx, company); err != nil {
+			var httpErr *httpclient.HTTPError
+			if errors.As(err, &httpErr) && httpErr.StatusCode >= 400 && httpErr.StatusCode < 500 {
+				json.HandleError(w, httpErr.StatusCode, err, httpErr.Status)
+				return
+			}
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
 			return
 		}
