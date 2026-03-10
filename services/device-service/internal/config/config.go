@@ -1,4 +1,4 @@
-// Package config TODO(@Magnus Dybdal): add proper documentation.
+// Package config loads and provides runtime configuration for the device service.
 package config
 
 import (
@@ -7,7 +7,7 @@ import (
 	"innoveria-iot/pkg/env"
 )
 
-// Config TODO(@Magnus Dybdal): add proper documentation.
+// Config holds all runtime configuration values for the device service.
 type Config struct {
 	Addr   string
 	DB_url string
@@ -16,7 +16,7 @@ type Config struct {
 	ChirpstackSecret string // chirpstack api token (bearer token)
 }
 
-// Load TODO(@Magnus Dybdal): add proper documentation.
+// Load reads configuration from environment variables and mounted secrets, returning a populated Config.
 func Load() *Config {
 	secret := env.GetFile("/secrets/chirpstack-api-key")
 

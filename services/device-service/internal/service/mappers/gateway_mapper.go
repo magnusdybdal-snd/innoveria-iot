@@ -1,4 +1,4 @@
-// Package mappers TODO(@vinjar): add proper documentation.
+// Package mappers provides functions for converting between domain, Chirpstack, and database models.
 package mappers
 
 import (
@@ -12,7 +12,7 @@ import (
 	Gateway mapping
 */
 
-// MergeGateway merges Chirpstack runtime data with DB domain data into a domain gateway
+// MergeGateway merges Chirpstack runtime data with database domain data into a domain Gateway.
 func MergeGateway(cs dto.ChirpstackGateway, db domain.Gateway) domain.Gateway {
 	return domain.Gateway{
 		Id:            db.Id,
@@ -29,10 +29,10 @@ func MergeGateway(cs dto.ChirpstackGateway, db domain.Gateway) domain.Gateway {
 	}
 }
 
-// MapCreateChirpstackGateway TODO(@vinjar): add proper documentation.
-func MapCreateChirpstackGateway(from domain.Gateway, chirpstackTenantID string) dto.CreateChirpstackGatewayRequest {
-	return dto.CreateChirpstackGatewayRequest{
-		CreateGatewayPayload: dto.CreateGatewayPayload{
+// MapChirpstackGatewayRequest maps a domain Gateway and a Chirpstack tenant ID to a CreateChirpstackGatewayRequest.
+func MapChirpstackGatewayRequest(from domain.Gateway, chirpstackTenantID string) dto.ChirpstackGatewayRequest {
+	return dto.ChirpstackGatewayRequest{
+		GatewayPayload: dto.GatewayPayload{
 			GatewayEUI: from.GatewayEUI,
 			Name:       from.Name,
 			TenantID:   chirpstackTenantID,
@@ -40,8 +40,8 @@ func MapCreateChirpstackGateway(from domain.Gateway, chirpstackTenantID string) 
 	}
 }
 
-// Mapping for status
-// Do number instead. And it will display as offline if last seen is bigger then 5 min
+// mapStatus converts a Chirpstack status string to a domain Status.
+// Falls back to online/offline based on last seen time if the status string is unrecognised.
 func mapStatus(status string, lastSeen time.Time) domain.Status {
 	switch status {
 	case "ONLINE":
@@ -52,6 +52,9 @@ func mapStatus(status string, lastSeen time.Time) domain.Status {
 		return domain.StatusOffline
 	default:
 		// Fallback in case there is no status
+		if lastSeen.IsZero() {
+			return domain.StatusNeverSeen
+		}
 		if time.Since(lastSeen) < 5*time.Minute {
 			return domain.StatusOnline
 		}

@@ -1,6 +1,6 @@
 package dto
 
-// SensorResponse TODO(@Magnus Dybdal): add proper documentation.
+// SensorResponse represents a single sensor in API responses.
 type SensorResponse struct {
 	ID                  string  `json:"id"`
 	CompanyID           string  `json:"company_id"`
@@ -17,7 +17,7 @@ type SensorResponse struct {
 	UpdatedAt           string  `json:"updated_at"`
 }
 
-// SensorListResponse TODO(@Magnus Dybdal): add proper documentation.
+// SensorListResponse wraps a slice of SensorResponse with a total count, returned by list endpoints.
 type SensorListResponse struct {
 	TotalCount int              `json:"total_count"`
 	Sensors    []SensorResponse `json:"sensors"`

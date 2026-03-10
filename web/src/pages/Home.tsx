@@ -1,7 +1,6 @@
 import Typography from "@mui/material/Typography";
 import { PageContent } from "@shared/ui/PageContent";
 import { SubPageHeader } from "@shared/ui/SubPageHeader";
-import { Menu } from "@widgets/menu";
 
 /**
  * Home page that displays a placholder text, wrapped in the main Menu layout.
@@ -10,15 +9,13 @@ import { Menu } from "@widgets/menu";
  */
 export default function Home() {
   return (
-    <Menu>
-      <div className="flex h-screen">
-        <PageContent>
-          <SubPageHeader />
-          <Typography variant="h5" sx={{ mt: 2 }}>
-            Home Page content placeholder
-          </Typography>
-        </PageContent>
-      </div>
-    </Menu>
+    <div className="flex h-screen">
+      <PageContent>
+        <SubPageHeader />
+        <Typography variant="h5" sx={{ mt: 2 }}>
+          Home Page content placeholder
+        </Typography>
+      </PageContent>
+    </div>
   );
 }

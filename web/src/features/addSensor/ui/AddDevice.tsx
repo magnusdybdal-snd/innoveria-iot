@@ -14,13 +14,14 @@ export interface AddDeviceProps {
   open: boolean;
   onClose: () => void;
   addOptions: string[];
+  profileOptions?: { id: string; name: string }[];
   onAdd: (sensor: {
     name: string;
     deviceEui: string;
     machine: string;
     appKey: string;
     senProf: string;
-  }) => void;
+  }) => Promise<void>;
   submitError?: string | null;
 }
 
@@ -34,7 +35,7 @@ export interface AddDeviceProps {
  * @returns The rendered add-device dialog
  */
 export function AddDevice(props: AddDeviceProps) {
-  const { onClose, open, addOptions, submitError } = props;
+  const { onClose, open, addOptions, profileOptions = [], submitError } = props;
   const [values, setValues] = useState<Record<string, string>>({});
   const [fillError, setFillError] = useState(false);
   const [lengthErrors, setLengthErrors] = useState<Record<string, boolean>>({});
@@ -65,28 +66,21 @@ export function AddDevice(props: AddDeviceProps) {
       return;
     }
 
-    props.onAdd({
-      name: values["Name"],
-      deviceEui: values["DeviceEUI"],
-      machine: values["Machine"],
-      appKey: values["Application key"],
-      senProf: values["Sensor profile"],
-    });
+    props
+      .onAdd({
+        name: values["Name"],
+        deviceEui: values["DeviceEUI"],
+        machine: values["Machine"],
+        appKey: values["Application key"],
+        senProf: values["Sensor profile"],
+      })
+      .then(() => {
+        setValues({});
+      });
 
     setFillError(false);
     setLengthErrors({});
   };
-
-  const deviceProfiles = [
-    "Milesight EM300-CL",
-    "Milesight EM300-DI",
-    "Milesight EM300-MCS",
-    "Milesight EM300-MLD",
-    "Milesight EM300-SLD-ZLD",
-    "Milesight EM300-TH",
-    "Milesight EM310-TILT",
-    "Milesight EM320-TH",
-  ];
 
   const inputLength: Record<string, string> = {
     DeviceEUI: "16 characters",
@@ -144,7 +138,7 @@ export function AddDevice(props: AddDeviceProps) {
                     lengthErrors[option] ? inputLengthError[option] : ""
                   }
                   error={!!lengthErrors[option]}
-                  value={values[option]}
+                  value={values[option] ?? ""}
                   onChange={(e) => {
                     let value = e.target.value;
 
@@ -153,7 +147,7 @@ export function AddDevice(props: AddDeviceProps) {
                       option === "DeviceEUI" ||
                       option === "Application key"
                     ) {
-                      value = value.replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
+                      value = value.replace(/[^a-fA-F0-9]/g, "");
                     }
 
                     setValues((prev) => ({
@@ -184,7 +178,7 @@ export function AddDevice(props: AddDeviceProps) {
                 }}
                 fullWidth
                 key={option}
-                value={values[option]}
+                value={values[option] ?? ""}
                 displayEmpty
                 onChange={(e) =>
                   setValues((prev) => ({
@@ -193,9 +187,9 @@ export function AddDevice(props: AddDeviceProps) {
                   }))
                 }
               >
-                {deviceProfiles.map((prof) => (
-                  <MenuItem key={prof} value={prof}>
-                    {prof}
+                {profileOptions.map((prof) => (
+                  <MenuItem key={prof.id} value={prof.id}>
+                    {prof.name}
                   </MenuItem>
                 ))}
               </Select>

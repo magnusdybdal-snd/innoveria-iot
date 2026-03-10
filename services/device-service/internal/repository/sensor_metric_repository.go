@@ -23,7 +23,7 @@ const (
 	`
 )
 
-// SensorMetricRepository handles persistence of sensor metrics stored in the database
+// SensorMetricRepository handles persistence of sensor metrics stored in the database.
 type SensorMetricRepository struct {
 	db *dbutil.DB
 }
@@ -33,10 +33,10 @@ func NewSensorMetricRepository(db *dbutil.DB) *SensorMetricRepository {
 	return &SensorMetricRepository{db: db}
 }
 
-// Upsert inserts a new sensor metric for a sensor. some sensors have more than one sensor metric.
-// i.e temperature - C and humidity - %RH
-// If the combination sensorID and measurement type already exists it updates the unit instead to
-// avoid duplicate sensor measurement types.
+// Upsert inserts a new sensor metric for a sensor. Some sensors have more than one metric,
+// e.g. temperature (°C) and humidity (%RH).
+// If the combination of sensorID and measurement type already exists, it updates the unit instead
+// to avoid duplicate measurement types.
 func (r *SensorMetricRepository) Upsert(ctx context.Context, metric domain.SensorMetric) error {
 
 	_, err := r.db.Pool.Exec(ctx, upsertSensorMetricQuery, metric.SensorID, metric.MeasurementType, metric.Unit)

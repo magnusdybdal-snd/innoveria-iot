@@ -2,13 +2,13 @@ package dto
 
 import "time"
 
-// DeviceProfileListResponse TODO(@vinjar): add proper documentation.
+// DeviceProfileListResponse is the paginated response from the Chirpstack GET /api/device-profiles endpoint.
 type DeviceProfileListResponse struct {
 	Result     []DeviceProfile `json:"result"`
 	TotalCount int             `json:"totalCount"`
 }
 
-// DeviceProfile TODO(@vinjar): add proper documentation.
+// DeviceProfile represents a single LoRaWAN device profile as returned by the Chirpstack API.
 type DeviceProfile struct {
 	ID                string    `json:"id"`
 	Name              string    `json:"name"`

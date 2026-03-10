@@ -16,7 +16,6 @@ import { NoDeviceFoundCard } from "@shared/ui/NoDeviceFoundCard";
 import { PageContent } from "@shared/ui/PageContent";
 import { PageDivider } from "@shared/ui/PageDivider";
 import { SubPageHeader } from "@shared/ui/SubPageHeader";
-import { Menu } from "@widgets/menu";
 
 import { CustomButton } from "@/shared/ui/Button";
 
@@ -116,42 +115,40 @@ export default function Companies() {
   const sorted = sortCompanies(companies, sortConfig.key, sortConfig.direction);
 
   return (
-    <Menu>
-      <div className="flex h-screen">
-        <PageContent>
-          <SubPageHeader title="Companies" action={addButton} />
-          <PageDivider />
-          <CategoryHeader
-            categories={companyDetails}
-            columns={companyDetails.length + 1}
-            sortableColumns={sortableColumns}
-            sortConfig={sortConfig}
-            onSort={handleSort}
-          >
-            {isLoading && <p>Loading...</p>}{" "}
-            {/*TODO: make a better looking loading indicator */}
-            {sorted.map((company) => (
-              <DeviceRow key={company.company_id}>
-                <CompanyInfo
-                  name={company.name}
-                  address={company.address}
-                  created_at={company.created_at}
-                  updated_at={company.updated_at}
-                  addUser={addAdminUser}
-                />
-              </DeviceRow>
-            ))}
-          </CategoryHeader>
-          {!isLoading && sorted.length === 0 && <NoDeviceFoundCard />}
-        </PageContent>
-        <AddCompany
-          open={openAdd}
-          onClose={handleCloseAdd}
-          addOptions={addCompanyDetails}
-          onAdd={handleAddCompany}
-          submitError={addError}
-        />
-      </div>
-    </Menu>
+    <div className="flex h-screen">
+      <PageContent>
+        <SubPageHeader title="Companies" action={addButton} />
+        <PageDivider />
+        <CategoryHeader
+          categories={companyDetails}
+          columns={companyDetails.length + 1}
+          sortableColumns={sortableColumns}
+          sortConfig={sortConfig}
+          onSort={handleSort}
+        >
+          {isLoading && <p>Loading...</p>}{" "}
+          {/*TODO: make a better looking loading indicator */}
+          {sorted.map((company) => (
+            <DeviceRow key={company.company_id}>
+              <CompanyInfo
+                name={company.name}
+                address={company.address}
+                created_at={company.created_at}
+                updated_at={company.updated_at}
+                addUser={addAdminUser}
+              />
+            </DeviceRow>
+          ))}
+        </CategoryHeader>
+        {!isLoading && sorted.length === 0 && <NoDeviceFoundCard />}
+      </PageContent>
+      <AddCompany
+        open={openAdd}
+        onClose={handleCloseAdd}
+        addOptions={addCompanyDetails}
+        onAdd={handleAddCompany}
+        submitError={addError}
+      />
+    </div>
   );
 }

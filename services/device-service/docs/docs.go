@@ -438,6 +438,15 @@ const docTemplate = `{
                 "company_id": {
                     "type": "string"
                 },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "factory_area_id": {
+                    "type": "string"
+                },
                 "gateway_eui": {
                     "type": "string"
                 },
@@ -450,8 +459,14 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
+                "state": {
+                    "type": "string"
+                },
                 "status": {
                     "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
                 }
             }
         },
