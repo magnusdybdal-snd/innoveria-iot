@@ -6,7 +6,7 @@ type InfoProps = {
   address: string;
   created_at: string;
   updated_at: string;
-  onClick: () => void;
+  addUser: () => void;
 };
 
 /**
@@ -18,7 +18,7 @@ type InfoProps = {
  * @param props.address - Main address of company office
  * @param props.created_at - Date the company was added
  * @param props.updated_at - Date of most recent change/addition/deletion related to company
- * @param props.onClick
+ * @param props.addUser - Function to add a new company admin user
  * @returns A set of grid-aligned cells with an action menu and rename dialog
  */
 export function CompanyInfo({
@@ -26,7 +26,7 @@ export function CompanyInfo({
   address,
   created_at,
   updated_at,
-  onClick,
+  addUser,
 }: InfoProps) {
   return (
     <>
@@ -44,9 +44,9 @@ export function CompanyInfo({
           textTransform: "none",
           fontSize: 15,
         }}
-        onClick={onClick}
+        onClick={addUser}
       >
-        Extra sensor info
+        Add first company admin
       </Button>
     </>
   );

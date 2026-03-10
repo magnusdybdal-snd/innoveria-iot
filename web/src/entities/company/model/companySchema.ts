@@ -18,4 +18,6 @@ export interface CompanyListApiResponse {
 export interface CreateCompanyRequest {
   name: string;
   address: string;
+  created_at: string;
+  updated_at: string;
 }
