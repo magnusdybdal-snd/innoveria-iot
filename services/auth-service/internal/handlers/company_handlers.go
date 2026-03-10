@@ -80,15 +80,15 @@ func GetAllCompanies(svc domain.AuthService) http.HandlerFunc {
 //
 // @Summary Delete company
 // @Tags companies
-// @Param companyID path string true "Company ID"
+// @Param id path string true "id"
 // @Success 204
 // @Failure 400
 // @Failure 500
-// @Router /companies/{companyID} [delete]
+// @Router /companies/{id} [delete]
 func DeleteCompany(svc domain.AuthService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		companyID := r.PathValue("companyID")
+		companyID := r.PathValue("id")
 		if companyID == "" {
 			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("missing companyID path parameter"), "companyID is required")
 			return

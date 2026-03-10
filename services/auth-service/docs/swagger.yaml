@@ -74,4 +74,22 @@ paths:
       summary: Register a new company
       tags:
       - companies
+  /companies/{id}:
+    delete:
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Delete company
+      tags:
+      - companies
 swagger: "2.0"
