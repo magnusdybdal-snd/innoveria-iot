@@ -73,15 +73,27 @@ services:
       - "${MQTT_PORT}:${MQTT_PORT}"
     volumes: 
       - ./infra/config/mosquitto/config:/mosquitto/config/
+
+  caddy:
+    image: caddy:alpine
+    restart: unless-stopped
+    ports:
+      - "${HTTP_PORT}:80"
+      - "${HTTPS_PORT}:443"
+    environment:
+      - DOMAIN=${DOMAIN}
+    volumes:
+      - ./infra/production/Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+
   web:
     build:
       context: .
       dockerfile: infra/production/web.Dockerfile
-    ports:
-      - "${HTTP_PORT}:${HTTP_PORT}"
-      - "${HTTPS_PORT}:${HTTPS_PORT}"
+    expose:
+      - "3000"
     environment:
-      - DOMAIN=${DOMAIN}
       - API_PROXY_TARGET=http://api-gateway:8080
     depends_on:
       - api-gateway
@@ -185,3 +197,5 @@ volumes:
   device-data:
   auth-data:
   redis-data:
+  caddy_data:
+  caddy_config:

@@ -2,7 +2,7 @@ import axios, { type AxiosInstance, type AxiosResponse } from "axios";
 
 // Client for all microservice requests — routed through the api-gateway
 export const serviceClient = axios.create({
-  baseURL: "/api", // Imported api url from vite config
+  baseURL: "/api",
   headers: {
     "Content-Type": "application/json",
   },
