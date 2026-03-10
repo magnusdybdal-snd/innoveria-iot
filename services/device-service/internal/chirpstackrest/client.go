@@ -114,7 +114,7 @@ func (c *Client) CreateTenant(ctx context.Context, body dto.CreateChirpstackTena
 		http.MethodPost,
 		body,
 		map[string]string{
-			"Authorization": "Bearer " + c.token,
+			"Authorization": c.authHeader(),
 		},
 	)
 	if err != nil {
@@ -134,7 +134,7 @@ func (c *Client) DeleteTenant(ctx context.Context, tenantID string) error {
 		http.MethodDelete,
 		nil,
 		map[string]string{
-			"Authorization": "Bearer " + c.token,
+			"Authorization": c.authHeader(),
 		},
 	)
 	if err != nil {
@@ -157,7 +157,7 @@ func (c *Client) DeleteApplication(ctx context.Context, applicationID string) er
 		http.MethodDelete,
 		nil,
 		map[string]string{
-			"Authorization": "Bearer " + c.token,
+			"Authorization": c.authHeader(),
 		},
 	)
 	if err != nil {
