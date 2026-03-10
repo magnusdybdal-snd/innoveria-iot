@@ -5,6 +5,8 @@ import Login from "@pages/Login.tsx";
 import Sensors from "@pages/Sensors.tsx";
 import { Route, Routes } from "react-router";
 
+import StatusPage from "@/pages/StatusPage";
+
 import Layout from "./Layout";
 
 /**
@@ -21,6 +23,10 @@ export default function AppRoutes() {
         <Route path="/Devices/Sensors" element={<Sensors />} />
         <Route path="/Devices/Gateways" element={<Gateways />} />
         <Route path="/Reports" element={<Home />} />
+        <Route
+          path="*"
+          element={<StatusPage code="404" message="Page not found" />}
+        />
       </Route>
     </Routes>
   );
