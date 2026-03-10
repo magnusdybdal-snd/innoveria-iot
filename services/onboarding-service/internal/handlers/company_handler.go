@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 
 	"innoveria-iot/onboarding-service/internal/domain"
@@ -26,6 +27,10 @@ func PostCompany(svc domain.OnboardingService) http.HandlerFunc {
 		if err != nil {
 			json.HandleError(w, http.StatusBadRequest, err, "bad request")
 			return
+		}
+
+		if payload.Address == "" || payload.Name == "" {
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("missing required fields"), "name and address are required")
 		}
 
 		company := dto.MapToDomain(payload)
