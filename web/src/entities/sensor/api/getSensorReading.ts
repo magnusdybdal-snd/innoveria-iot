@@ -12,7 +12,7 @@ export const fetchSensorReading = async (
   try {
     const data = await apiRequest<SensorReadingApiResponse>(
       serviceClient,
-      `/api/v1/collection/latest?device_eui=${encodeURIComponent(deviceEUI)}`,
+      `v1/collection/latest?device_eui=${encodeURIComponent(deviceEUI)}`,
       "GET",
     );
     return data;
