@@ -10,4 +10,7 @@ const (
 	AUTH_ROUTE       = API_ROUTE + "/auth"
 	COMPANY_ROUTE    = AUTH_ROUTE + "/companies"
 	COMPANY_ID_ROUTE = COMPANY_ROUTE + "/{id}"
+
+	FACTORY_ROUTE    = API_ROUTE + "/factories"
+	FACTORY_ID_ROUTE = FACTORY_ROUTE + "/{id}"
 )
