@@ -147,7 +147,7 @@ export function AddDevice(props: AddDeviceProps) {
                       option === "DeviceEUI" ||
                       option === "Application key"
                     ) {
-                      value = value.replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
+                      value = value.replace(/[^a-fA-F0-9]/g, "");
                     }
 
                     setValues((prev) => ({
