@@ -50,3 +50,28 @@ func PostCompany(svc domain.AuthService) http.HandlerFunc {
 		}
 	}
 }
+
+// GetAllCompanies handles requests to fetch all companies.
+//
+// @Summary Get all companies
+// @Tags companies
+// @Produce json
+// @Success 200 {object} dto.CompanyListResponse
+// @Failure 500
+// @Router /companies [get]
+func GetAllCompanies(svc domain.AuthService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+
+		companies, err := svc.GetAllCompanies(ctx)
+		if err != nil {
+			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			return
+		}
+
+		resp := dto.MapCompanyListFromDomain(companies)
+		if err := json.Encode(w, http.StatusOK, resp); err != nil {
+			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+		}
+	}
+}

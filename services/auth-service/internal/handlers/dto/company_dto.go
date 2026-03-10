@@ -46,3 +46,16 @@ func MapCompanyFromDomain(from domain.Company) CompanyResponse {
 		UpdatedAt: from.UpdatedAt,
 	}
 }
+
+// MapCompanyListFromDomain maps domain companies to a company list response DTO.
+func MapCompanyListFromDomain(from []domain.Company) CompanyListResponse {
+	companies := make([]CompanyResponse, 0, len(from))
+	for _, company := range from {
+		companies = append(companies, MapCompanyFromDomain(company))
+	}
+
+	return CompanyListResponse{
+		TotalCount: len(companies),
+		Companies:  companies,
+	}
+}

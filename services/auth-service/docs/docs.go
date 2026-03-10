@@ -16,6 +16,26 @@ const docTemplate = `{
     "basePath": "{{.BasePath}}",
     "paths": {
         "/companies": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "companies"
+                ],
+                "summary": "Get all companies",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.CompanyListResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
             "post": {
                 "consumes": [
                     "application/json"
@@ -56,6 +76,20 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "dto.CompanyListResponse": {
+            "type": "object",
+            "properties": {
+                "companies": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.CompanyResponse"
+                    }
+                },
+                "total_count": {
+                    "type": "integer"
+                }
+            }
+        },
         "dto.CompanyResponse": {
             "type": "object",
             "properties": {

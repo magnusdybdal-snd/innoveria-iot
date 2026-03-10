@@ -1,5 +1,14 @@
 basePath: /api/v1/auth
 definitions:
+  dto.CompanyListResponse:
+    properties:
+      companies:
+        items:
+          $ref: '#/definitions/dto.CompanyResponse'
+        type: array
+      total_count:
+        type: integer
+    type: object
   dto.CompanyResponse:
     properties:
       address:
@@ -28,6 +37,19 @@ info:
   version: "1.0"
 paths:
   /companies:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.CompanyListResponse'
+        "500":
+          description: Internal Server Error
+      summary: Get all companies
+      tags:
+      - companies
     post:
       consumes:
       - application/json

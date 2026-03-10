@@ -16,6 +16,7 @@ func NewRouter(authSvc domain.AuthService) *http.ServeMux {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /", handlers.Root)
+	mux.HandleFunc("GET "+COMPANY_ROUTE, handlers.GetAllCompanies(authSvc))
 	mux.HandleFunc("POST "+COMPANY_ROUTE, handlers.PostCompany(authSvc))
 
 	// Swagger docs

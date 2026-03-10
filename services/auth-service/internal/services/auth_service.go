@@ -24,9 +24,9 @@ func NewAuthServiceImpl(companyRepo domain.CompanyRepo) *AuthServiceImpl {
 // RegisterCompany generates a new company and starts onboarding on device-service
 // Its only possible for platform admin to register a new company
 // So a permission check will happend which is only available for the platform admin
-func (a *AuthServiceImpl) RegisterCompany(ctx context.Context, payload domain.Company) (domain.Company, error) {
+func (s *AuthServiceImpl) RegisterCompany(ctx context.Context, payload domain.Company) (domain.Company, error) {
 	// 1. insert in database
-	company, err := a.companyRepo.Create(ctx, payload)
+	company, err := s.companyRepo.Create(ctx, payload)
 	if err != nil {
 		return domain.Company{}, err
 	}
@@ -36,12 +36,23 @@ func (a *AuthServiceImpl) RegisterCompany(ctx context.Context, payload domain.Co
 }
 
 // GetOneCompany retrieves a single company by its ID
-func (a *AuthServiceImpl) GetOneCompany(ctx context.Context, companyID string) (domain.Company, error) {
-	company, err := a.companyRepo.FindByID(ctx, companyID)
+func (s *AuthServiceImpl) GetOneCompany(ctx context.Context, companyID string) (domain.Company, error) {
+	company, err := s.companyRepo.FindByID(ctx, companyID)
 	if err != nil {
 		return domain.Company{}, err
 	}
 
 	slog.Info("successfully found company", "id", company.Id)
 	return company, nil
+}
+
+// GetAllCompanies retrieves all companies.
+func (s *AuthServiceImpl) GetAllCompanies(ctx context.Context) ([]domain.Company, error) {
+	companies, err := s.companyRepo.FindAll(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	slog.Info("successfully found all companies")
+	return companies, nil
 }
