@@ -105,6 +105,7 @@ services:
     environment:
       - COLLECTION_SERVICE=${COLLECTION_SERVICE}
       - DEVICE_SERVICE=${DEVICE_SERVICE}
+      - ONBOARDING_SERVICE=${ONBOARDING_SERVICE}
       - GO_ENV=${GO_ENV}
     restart: unless-stopped
 
@@ -189,6 +190,18 @@ services:
       - POSTGRES_USER=${AUTH_DB_USER}
       - POSTGRES_PASSWORD=${AUTH_DB_PASSWORD}
       - POSTGRES_DB=${AUTH_DB_NAME}
+
+  onboarding-service:
+    build:
+      context: .
+      dockerfile: infra/production/onboarding-service.Dockerfile
+    environment:
+      - GO_ENV=${GO_ENV}
+    depends_on:
+      - auth-service
+      - device-service
+      - collection-service
+    restart: unless-stopped
 
 volumes:
   chirpstack-secrets:
