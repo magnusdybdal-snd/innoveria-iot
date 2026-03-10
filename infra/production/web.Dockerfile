@@ -9,7 +9,15 @@ COPY ./web ./
 
 RUN bun run build
 
-FROM caddy:2-alpine
+FROM node:20-alpine
 
-COPY --from=builder /app/dist /usr/share/caddy
-COPY infra/production/Caddyfile /etc/caddy/Caddyfile
+WORKDIR /app
+
+RUN npm install -g serve
+
+COPY --from=builder /app/dist ./dist
+
+EXPOSE 3000
+
+CMD ["serve", "-s", "dist", "-l", "3000"]
+

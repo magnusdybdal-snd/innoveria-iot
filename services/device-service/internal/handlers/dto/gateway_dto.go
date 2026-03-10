@@ -4,7 +4,7 @@ package dto
 // GatewayResponse represents a single gateway in API responses.
 type GatewayResponse struct {
 	ID            string  `json:"id"`
-	CompanyId     string  `json:"company_id"`
+	CompanyID     string  `json:"company_id"`
 	GatewayEUI    string  `json:"gateway_eui"`
 	Name          string  `json:"name"`
 	Description   *string `json:"description"`
@@ -24,7 +24,7 @@ type GatewayListResponse struct {
 
 // CreateGatewayRequest contains the fields required to register a new gateway.
 type CreateGatewayRequest struct {
-	CompanyId  string `json:"company_id"`
-	GatewayEUI string `json:"gateway_eui"`
-	Name       string `json:"name"`
+	CompanyId  string `json:"company_id"    binding:"required"`
+	GatewayEUI string `json:"gateway_eui"   binding:"required"`
+	Name       string `json:"name"          binding:"required"`
 }
