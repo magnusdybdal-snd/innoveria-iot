@@ -69,7 +69,7 @@ export default function Companies() {
     direction: "asc",
   });
 
-  // Handler for opening and closing add sensor pop-up
+  // Handler for opening and closing add company pop-up
   const handleClickOpenAdd = () => {
     setOpenAdd(true);
   };
@@ -83,8 +83,6 @@ export default function Companies() {
     postCompany({
       name: companyData.name,
       address: companyData.address,
-      created_at: new Date().toUTCString(),
-      updated_at: new Date().toUTCString(),
     })
       .then(() => {
         fetchCompanies();

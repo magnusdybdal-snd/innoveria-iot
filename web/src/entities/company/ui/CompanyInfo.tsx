@@ -18,7 +18,7 @@ type InfoProps = {
  * @param props.address - Main address of company office
  * @param props.created_at - Date the company was added
  * @param props.updated_at - Date of most recent change/addition/deletion related to company
- * @param props.addUser - Function to add a new company admin user
+ * @param props.addUser - Button to add a new company admin user
  * @returns A set of grid-aligned cells with an action menu and rename dialog
  */
 export function CompanyInfo({
