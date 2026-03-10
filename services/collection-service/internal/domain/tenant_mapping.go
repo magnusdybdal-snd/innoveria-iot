@@ -2,8 +2,12 @@ package domain
 
 import (
 	"context"
+	"errors"
 	"time"
 )
+
+// ErrNotFound is returned when a requested resource does not exist in the database.
+var ErrNotFound = errors.New("not found")
 
 // TenantMapping holds the mapping between a Chirpstack tenant ID and an internal company ID.
 type TenantMapping struct {

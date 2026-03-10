@@ -57,7 +57,7 @@ func (r *TenantMappingRepository) Delete(ctx context.Context, companyID string) 
 	}
 
 	if tag.RowsAffected() == 0 {
-		return fmt.Errorf("tenant mapping not found for company: %s", companyID)
+		return fmt.Errorf("delete tenant mapping: %w", domain.ErrNotFound)
 	}
 
 	return nil

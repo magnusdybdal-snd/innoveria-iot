@@ -3,9 +3,12 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"innoveria-iot/device-service/internal/domain"
 	"innoveria-iot/pkg/dbutil"
+
+	"github.com/jackc/pgx/v5"
 )
 
 const (
@@ -73,6 +76,9 @@ func (r *CompanyConfigRepository) FindByCompanyID(ctx context.Context, companyID
 		&out.CreatedAt,
 	)
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return domain.CompanyConfig{}, fmt.Errorf("find company config by id: %w", domain.ErrNotFound)
+		}
 		return domain.CompanyConfig{}, fmt.Errorf("find company config by id: %w", err)
 	}
 
@@ -89,7 +95,7 @@ func (r *CompanyConfigRepository) Delete(ctx context.Context, companyID string) 
 	}
 
 	if tag.RowsAffected() == 0 {
-		return fmt.Errorf("company not found: %s", companyID)
+		return fmt.Errorf("delete company config: %w", domain.ErrNotFound)
 	}
 
 	return nil
