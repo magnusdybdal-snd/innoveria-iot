@@ -23,6 +23,7 @@ import { PageDivider } from "@shared/ui/PageDivider";
 import { SubPageHeader } from "@shared/ui/SubPageHeader";
 import { Menu } from "@widgets/menu";
 
+import { deleteSensor } from "@/entities/sensor/api/deleteSensor";
 import { CustomButton } from "@/shared/ui/Button";
 
 const sensorMainDetails: string[] = ["Status", "Name", "Last reading"];
@@ -53,6 +54,12 @@ export default function Sensors() {
     getSensorProfiles().then(setSensorProfiles);
   }, []);
 
+  // Handler for deleting a sensor; refreshes list on success
+  const handleDeleteSensor = (id: string) => {
+    deleteSensor(id).then(() => {
+      refetch();
+    });
+  };
   // Handler for opening and closing add sensor pop-up
   const handleClickOpenAdd = () => {
     setOpenAdd(true);
@@ -154,6 +161,7 @@ export default function Sensors() {
                   status={sensor.status}
                   lastReading={formatTimestamp(sensor.lastReading)}
                   onClick={() => handleRowClick(sensor)}
+                  onDelete={() => handleDeleteSensor(sensor.id)}
                 />
               </DeviceRow>
             ))}
