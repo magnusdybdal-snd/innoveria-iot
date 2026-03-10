@@ -10,7 +10,6 @@ import { API_ROUTES } from "@shared/api/routes";
  * @returns Array of GatewayApiResponse objects, or an empty array if the request fails
  */
 export const getGateways = async (): Promise<GatewayApiResponse[]> => {
-  console.log("api-route", process.env.API_PROXY_TARGET);
   try {
     const data = await apiRequest<GatewayListApiResponse>(
       serviceClient,
