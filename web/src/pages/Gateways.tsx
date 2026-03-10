@@ -17,7 +17,6 @@ import { NoDeviceFoundCard } from "@shared/ui/NoDeviceFoundCard";
 import { PageContent } from "@shared/ui/PageContent";
 import { PageDivider } from "@shared/ui/PageDivider";
 import { SubPageHeader } from "@shared/ui/SubPageHeader";
-import { Menu } from "@widgets/menu";
 
 import { AddDevice } from "@/features/addSensor/ui/AddDevice";
 import { CustomButton } from "@/shared/ui/Button";
@@ -118,42 +117,40 @@ export default function Gateways() {
   const sorted = sortGateways(gateways, sortConfig.key, sortConfig.direction);
 
   return (
-    <Menu>
-      <div className="flex h-screen">
-        <PageContent>
-          <SubPageHeader title="Gateways" action={addButton} />
-          <PageDivider />
-          <CategoryHeader
-            categories={gatewayDetails}
-            columns={gatewayDetails.length + 1}
-            sortableColumns={sortableColumns}
-            sortConfig={sortConfig}
-            onSort={handleSort}
-          >
-            {isLoading && <p>Loading...</p>}{" "}
-            {/*TODO: make a better looking loading indicator */}
-            {sorted.map((gateway) => (
-              <DeviceRow key={gateway.id}>
-                <GatewayInfo
-                  name={gateway.name}
-                  status={gateway.status}
-                  device_eui={gateway.deviceEui}
-                  lastSeenAt={formatTimestamp(gateway.lastSeenAt)}
-                  onDelete={() => handleDeleteGateway(gateway.id)}
-                />
-              </DeviceRow>
-            ))}
-          </CategoryHeader>
-          {!isLoading && sorted.length === 0 && <NoDeviceFoundCard />}
-        </PageContent>
-        <AddDevice
-          open={openAdd}
-          onClose={handleCloseAdd}
-          addOptions={addGatewayDetails}
-          onAdd={handleAddGateway}
-          submitError={addError}
-        />
-      </div>
-    </Menu>
+    <div className="flex h-screen">
+      <PageContent>
+        <SubPageHeader title="Gateways" action={addButton} />
+        <PageDivider />
+        <CategoryHeader
+          categories={gatewayDetails}
+          columns={gatewayDetails.length + 1}
+          sortableColumns={sortableColumns}
+          sortConfig={sortConfig}
+          onSort={handleSort}
+        >
+          {isLoading && <p>Loading...</p>}{" "}
+          {/*TODO: make a better looking loading indicator */}
+          {sorted.map((gateway) => (
+            <DeviceRow key={gateway.id}>
+              <GatewayInfo
+                name={gateway.name}
+                status={gateway.status}
+                device_eui={gateway.deviceEui}
+                lastSeenAt={formatTimestamp(gateway.lastSeenAt)}
+                onDelete={() => handleDeleteGateway(gateway.id)}
+              />
+            </DeviceRow>
+          ))}
+        </CategoryHeader>
+        {!isLoading && sorted.length === 0 && <NoDeviceFoundCard />}
+      </PageContent>
+      <AddDevice
+        open={openAdd}
+        onClose={handleCloseAdd}
+        addOptions={addGatewayDetails}
+        onAdd={handleAddGateway}
+        submitError={addError}
+      />
+    </div>
   );
 }
