@@ -25,6 +25,10 @@ const (
 		FROM auth.company
 		ORDER BY created_at ASC
 	`
+	deleteCompanyByIDQuery = `
+		DELETE FROM auth.company
+		WHERE company_id = $1
+	`
 )
 
 // CompanyRepoImpl is the domain implementation of database operations on companies
@@ -93,4 +97,18 @@ func (r *CompanyRepoImpl) FindByID(ctx context.Context, companyID string) (domai
 		return out, fmt.Errorf("find company by id: %w", err)
 	}
 	return out, nil
+}
+
+// DeleteByID deletes a company by id.
+func (r *CompanyRepoImpl) DeleteByID(ctx context.Context, companyID string) error {
+	result, err := r.db.Pool.Exec(ctx, deleteCompanyByIDQuery, companyID)
+	if err != nil {
+		return fmt.Errorf("delete company by id: %w", err)
+	}
+
+	if result.RowsAffected() == 0 {
+		return fmt.Errorf("delete company by id: company not found")
+	}
+
+	return nil
 }

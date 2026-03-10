@@ -56,3 +56,13 @@ func (s *AuthServiceImpl) GetAllCompanies(ctx context.Context) ([]domain.Company
 	slog.Info("successfully found all companies")
 	return companies, nil
 }
+
+// DeleteCompany deletes a company by ID.
+func (s *AuthServiceImpl) DeleteCompany(ctx context.Context, companyID string) error {
+	if err := s.companyRepo.DeleteByID(ctx, companyID); err != nil {
+		return err
+	}
+
+	slog.Info("successfully deleted company", "id", companyID)
+	return nil
+}

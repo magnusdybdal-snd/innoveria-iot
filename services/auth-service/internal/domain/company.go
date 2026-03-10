@@ -19,5 +19,5 @@ type CompanyRepo interface {
 	Create(ctx context.Context, company Company) (Company, error)
 	FindAll(ctx context.Context) ([]Company, error)
 	FindByID(ctx context.Context, companyID string) (Company, error)
-	// Put/patch
+	DeleteByID(ctx context.Context, companyID string) error
 }

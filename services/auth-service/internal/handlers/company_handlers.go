@@ -75,3 +75,30 @@ func GetAllCompanies(svc domain.AuthService) http.HandlerFunc {
 		}
 	}
 }
+
+// DeleteCompany handles requests to delete a company by ID.
+//
+// @Summary Delete company
+// @Tags companies
+// @Param companyID path string true "Company ID"
+// @Success 204
+// @Failure 400
+// @Failure 500
+// @Router /companies/{companyID} [delete]
+func DeleteCompany(svc domain.AuthService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		companyID := r.PathValue("companyID")
+		if companyID == "" {
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("missing companyID path parameter"), "companyID is required")
+			return
+		}
+
+		if err := svc.DeleteCompany(ctx, companyID); err != nil {
+			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			return
+		}
+
+		w.WriteHeader(http.StatusNoContent)
+	}
+}

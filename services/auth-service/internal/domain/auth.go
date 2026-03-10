@@ -16,4 +16,5 @@ type AuthService interface {
 	RegisterCompany(ctx context.Context, payload Company) (Company, error)
 	GetOneCompany(ctx context.Context, companyID string) (Company, error)
 	GetAllCompanies(ctx context.Context) ([]Company, error)
+	DeleteCompany(ctx context.Context, companyID string) error
 }
