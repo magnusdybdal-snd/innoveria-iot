@@ -92,15 +92,23 @@ func (s *CompanyConfigServiceImpl) DeleteCompanyConfig(ctx context.Context, comp
 	}
 
 	// Best-effort Chirpstack cleanup — application must be deleted before tenant
+	chirpstackCleanupOK := true
 	if err := s.cc.DeleteApplication(ctx, cfg.ChirpstackApplicationID); err != nil {
+		chirpstackCleanupOK = false
 		slog.Error("failed to delete chirpstack application after db delete",
 			"applicationID", cfg.ChirpstackApplicationID, "error", err)
 	}
 	if err := s.cc.DeleteTenant(ctx, cfg.ChirpstackTenantID); err != nil {
+		chirpstackCleanupOK = false
 		slog.Error("failed to delete chirpstack tenant after db delete",
 			"tenantID", cfg.ChirpstackTenantID, "error", err)
 	}
 
-	slog.Info("successfully deleted company config", "companyID", companyID)
+	if chirpstackCleanupOK {
+		slog.Info("successfully deleted company config", "companyID", companyID)
+	} else {
+		slog.Warn("deleted company config from database; chirpstack cleanup partially failed — manual remediation required",
+			"companyID", companyID)
+	}
 	return nil
 }
