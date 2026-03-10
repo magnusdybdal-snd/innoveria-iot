@@ -14,4 +14,5 @@ type AuthService interface {
 	// Logout
 	// Me
 	RegisterCompany(ctx context.Context, payload Company) (Company, error)
+	GetOneCompany(ctx context.Context, companyID string) (Company, error)
 }

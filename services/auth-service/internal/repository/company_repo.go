@@ -19,6 +19,12 @@ const (
 		FROM auth.company
 		WHERE company_id = $1
 	`
+	// Ordered by first to last
+	findAllCompaniesQuery = `
+		SELECT company_id, name, address, created_at, updated_at
+		FROM auth.company
+		ORDER BY created_at ASC
+	`
 )
 
 // CompanyRepoImpl is the domain implementation of database operations on companies
@@ -52,8 +58,25 @@ func (r *CompanyRepoImpl) Create(ctx context.Context, company domain.Company) (d
 
 // FindAll retreieves all companies
 func (r *CompanyRepoImpl) FindAll(ctx context.Context) ([]domain.Company, error) {
+	rows, err := r.db.Pool.Query(ctx, findAllCompaniesQuery)
+	if err != nil {
+		return nil, fmt.Errorf("find all companies: %w", err)
+	}
+	defer rows.Close()
 
-	return nil, nil
+	var out []domain.Company
+
+	for rows.Next() {
+		var c domain.Company
+		if err := rows.Scan(&c.Id, &c.Name, &c.Address, &c.CreatedAt, &c.UpdatedAt); err != nil {
+			return nil, fmt.Errorf("scan company: %w", err)
+		}
+		out = append(out, c)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("rows error: %w", err)
+	}
+	return out, nil
 }
 
 // FindByID retreieves all companies by id

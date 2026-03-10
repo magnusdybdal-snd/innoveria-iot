@@ -16,6 +16,12 @@ type CompanyResponse struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
+// CompanyListResponse wraps a slice of CompanyResponse with a total count
+type CompanyListResponse struct {
+	TotalCount int               `json:"total_count"`
+	Companies  []CompanyResponse `json:"companies"`
+}
+
 // CreateNewCompany is the request payload for creating a company.
 type CreateNewCompany struct {
 	Name    string `json:"name"`

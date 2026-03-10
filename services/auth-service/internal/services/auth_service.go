@@ -34,3 +34,14 @@ func (a *AuthServiceImpl) RegisterCompany(ctx context.Context, payload domain.Co
 	slog.Info("succsessfully registered company", "id", company.Id)
 	return company, nil
 }
+
+// GetOneCompany retrieves a single company by its ID
+func (a *AuthServiceImpl) GetOneCompany(ctx context.Context, companyID string) (domain.Company, error) {
+	company, err := a.companyRepo.FindByID(ctx, companyID)
+	if err != nil {
+		return domain.Company{}, err
+	}
+
+	slog.Info("successfully found company", "id", company.Id)
+	return company, nil
+}
