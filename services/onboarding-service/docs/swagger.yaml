@@ -30,6 +30,8 @@ paths:
           description: Created
         "400":
           description: Bad Request
+        "409":
+          description: Conflict
         "500":
           description: Internal Server Error
       summary: Onboard a new company

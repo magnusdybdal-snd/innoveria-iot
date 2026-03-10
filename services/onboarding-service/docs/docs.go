@@ -42,6 +42,9 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request"
                     },
+                    "409": {
+                        "description": "Conflict"
+                    },
                     "500": {
                         "description": "Internal Server Error"
                     }
