@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import {
+  deleteGateway,
   GatewayInfo,
   getGateways,
   postGateway,
@@ -9,13 +10,13 @@ import {
   type GatewaySortKey,
   type SortDirection,
 } from "@entities/gateway";
+import { formatTimestamp } from "@shared/lib";
 import { CategoryHeader } from "@shared/ui/CategoryHeader";
 import { DeviceRow } from "@shared/ui/DeviceRow";
 import { NoDeviceFoundCard } from "@shared/ui/NoDeviceFoundCard";
 import { PageContent } from "@shared/ui/PageContent";
 import { PageDivider } from "@shared/ui/PageDivider";
 import { SubPageHeader } from "@shared/ui/SubPageHeader";
-import { Menu } from "@widgets/menu";
 
 import { AddDevice } from "@/features/addSensor/ui/AddDevice";
 import { CustomButton } from "@/shared/ui/Button";
@@ -47,6 +48,13 @@ export default function Gateways() {
     });
   };
 
+  // TODO: add message to user indicating deletion success or failure
+  const handleDeleteGateway = (id: string) => {
+    deleteGateway(id).then(() => {
+      fetchGateways();
+    });
+  };
+
   useEffect(() => {
     fetchGateways();
   }, []);
@@ -59,7 +67,7 @@ export default function Gateways() {
     direction: "asc",
   });
 
-  // Handler for opening and closing add sensor pop-up
+  // Handler for opening and closing add gateway pop-up
   const handleClickOpenAdd = () => {
     setOpenAdd(true);
   };
@@ -72,7 +80,7 @@ export default function Gateways() {
     deviceEui: string;
   }) => {
     setAddError(null);
-    postGateway({
+    return postGateway({
       companyId: "a0000000-0000-0000-0000-000000000001", // TODO: replace with real company ID from auth
       deviceEui: gatewayData.deviceEui,
       name: gatewayData.name,
@@ -83,7 +91,7 @@ export default function Gateways() {
       })
       .catch(() => {
         setAddError(
-          "Failed to add gateway. The EUI may already be registered.",
+          "Failed to add gateway. The EUI may already be registered.", // TODO: throw non-hardcoded error messages - based on actual error
         );
       });
   };
@@ -109,41 +117,40 @@ export default function Gateways() {
   const sorted = sortGateways(gateways, sortConfig.key, sortConfig.direction);
 
   return (
-    <Menu>
-      <div className="flex h-screen">
-        <PageContent>
-          <SubPageHeader title="Gateways" action={addButton} />
-          <PageDivider />
-          <CategoryHeader
-            categories={gatewayDetails}
-            columns={gatewayDetails.length + 1}
-            sortableColumns={sortableColumns}
-            sortConfig={sortConfig}
-            onSort={handleSort}
-          >
-            {isLoading && <p>Loading...</p>}{" "}
-            {/*TODO: make a better looking loading indicator */}
-            {sorted.map((gateway) => (
-              <DeviceRow key={gateway.id}>
-                <GatewayInfo
-                  name={gateway.name}
-                  status={gateway.status}
-                  device_eui={gateway.deviceEui}
-                  lastSeenAt={gateway.lastSeenAt}
-                />
-              </DeviceRow>
-            ))}
-          </CategoryHeader>
-          {!isLoading && sorted.length === 0 && <NoDeviceFoundCard />}
-        </PageContent>
-        <AddDevice
-          open={openAdd}
-          onClose={handleCloseAdd}
-          addOptions={addGatewayDetails}
-          onAdd={handleAddGateway}
-          submitError={addError}
-        />
-      </div>
-    </Menu>
+    <div className="flex h-screen">
+      <PageContent>
+        <SubPageHeader title="Gateways" action={addButton} />
+        <PageDivider />
+        <CategoryHeader
+          categories={gatewayDetails}
+          columns={gatewayDetails.length + 1}
+          sortableColumns={sortableColumns}
+          sortConfig={sortConfig}
+          onSort={handleSort}
+        >
+          {isLoading && <p>Loading...</p>}{" "}
+          {/*TODO: make a better looking loading indicator */}
+          {sorted.map((gateway) => (
+            <DeviceRow key={gateway.id}>
+              <GatewayInfo
+                name={gateway.name}
+                status={gateway.status}
+                device_eui={gateway.deviceEui}
+                lastSeenAt={formatTimestamp(gateway.lastSeenAt)}
+                onDelete={() => handleDeleteGateway(gateway.id)}
+              />
+            </DeviceRow>
+          ))}
+        </CategoryHeader>
+        {!isLoading && sorted.length === 0 && <NoDeviceFoundCard />}
+      </PageContent>
+      <AddDevice
+        open={openAdd}
+        onClose={handleCloseAdd}
+        addOptions={addGatewayDetails}
+        onAdd={handleAddGateway}
+        submitError={addError}
+      />
+    </div>
   );
 }

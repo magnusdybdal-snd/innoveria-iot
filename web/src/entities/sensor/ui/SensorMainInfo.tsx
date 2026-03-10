@@ -16,6 +16,7 @@ type InfoMainProps = {
   status: number;
   lastReading: string;
   onClick: () => void;
+  onDelete: () => void;
 };
 
 {
@@ -28,6 +29,7 @@ type InfoMainProps = {
  * @param root0.status - Numeric status code: 0 = online, 1 = warning, 2 = offline
  * @param root0.lastReading - Timestamp or relative time of the most recent sensor reading
  * @param root0.onClick - Called when the user clicks "Extra sensor info" to open the detail dialog
+ * @param root0.onDelete - Called when the user clicks "Delete" to remove the sensor
  * @returns The rendered sensor row cells
  */
 export function SensorMainInfo({
@@ -35,6 +37,7 @@ export function SensorMainInfo({
   status,
   lastReading,
   onClick,
+  onDelete,
 }: InfoMainProps) {
   const theme = useTheme();
   const [currentName, setCurrentName] = useState(name);
@@ -53,7 +56,7 @@ export function SensorMainInfo({
 
   const menuItems = [
     { label: "Rename", onClick: handleEditOpen },
-    { label: "Delete", onClick: () => {} },
+    { label: "Delete", onClick: onDelete },
   ];
 
   const statusColor = (status: number) => {
