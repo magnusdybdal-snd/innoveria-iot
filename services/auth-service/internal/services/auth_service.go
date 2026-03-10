@@ -26,11 +26,11 @@ func NewAuthServiceImpl(companyRepo domain.CompanyRepo) *AuthServiceImpl {
 // So a permission check will happend which is only available for the platform admin
 func (a *AuthServiceImpl) RegisterCompany(ctx context.Context, payload domain.Company) (domain.Company, error) {
 	// 1. insert in database
-	data, err := a.companyRepo.Create(ctx, payload)
+	company, err := a.companyRepo.Create(ctx, payload)
 	if err != nil {
 		return domain.Company{}, err
 	}
 
-	slog.Info("succsessfully registered company", "id", data.CompanyID)
-	return data, nil
+	slog.Info("succsessfully registered company", "id", company.Id)
+	return company, nil
 }

@@ -62,10 +62,10 @@ const docTemplate = `{
                 "address": {
                     "type": "string"
                 },
-                "company_id": {
+                "created_at": {
                     "type": "string"
                 },
-                "created_at": {
+                "id": {
                     "type": "string"
                 },
                 "name": {

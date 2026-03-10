@@ -4,9 +4,9 @@ definitions:
     properties:
       address:
         type: string
-      company_id:
-        type: string
       created_at:
+        type: string
+      id:
         type: string
       name:
         type: string

@@ -134,71 +134,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/sensor-groups": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "sensor-groups"
-                ],
-                "summary": "List all sensor groups",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Max number of groups to return",
-                        "name": "limit",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/dto.SensorGroupListResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    },
-                    "500": {
-                        "description": "Internal Server Error"
-                    }
-                }
-            },
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "tags": [
-                    "sensor-groups"
-                ],
-                "summary": "Create a sensor group",
-                "parameters": [
-                    {
-                        "description": "Sensor group payload",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.CreateSensorGroup"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created"
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    },
-                    "500": {
-                        "description": "Internal Server Error"
-                    }
-                }
-            }
-        },
         "/sensor-profiles": {
             "get": {
                 "description": "Not authenticated — every user can access this list.",
@@ -360,22 +295,16 @@ const docTemplate = `{
     "definitions": {
         "dto.CreateGatewayRequest": {
             "type": "object",
+            "required": [
+                "company_id",
+                "gateway_eui",
+                "name"
+            ],
             "properties": {
                 "company_id": {
                     "type": "string"
                 },
                 "gateway_eui": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "dto.CreateSensorGroup": {
-            "type": "object",
-            "properties": {
-                "company_id": {
                     "type": "string"
                 },
                 "name": {
@@ -470,37 +399,6 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.SensorGroupListResponse": {
-            "type": "object",
-            "properties": {
-                "sensor_groups": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/dto.SensorGroupResponse"
-                    }
-                },
-                "total_count": {
-                    "type": "integer"
-                }
-            }
-        },
-        "dto.SensorGroupResponse": {
-            "type": "object",
-            "properties": {
-                "company_id": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "location": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
         "dto.SensorListResponse": {
             "type": "object",
             "properties": {
@@ -546,12 +444,12 @@ const docTemplate = `{
                     "description": "LoRaWAN region (EU868)",
                     "type": "string"
                 },
-                "vendor": {
-                    "description": "Vendor name",
-                    "type": "string"
-                },
                 "vendor_id": {
                     "description": "Identification of model producer",
+                    "type": "string"
+                },
+                "vendor_name": {
+                    "description": "Vendor name",
                     "type": "string"
                 }
             }

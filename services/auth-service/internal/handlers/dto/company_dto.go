@@ -9,7 +9,7 @@ import (
 
 // CompanyResponse is response payload for response
 type CompanyResponse struct {
-	CompanyID string    `json:"company_id"`
+	Id        string    `json:"id"`
 	Name      string    `json:"name"`
 	Address   string    `json:"address"`
 	CreatedAt time.Time `json:"created_at"`
@@ -33,7 +33,7 @@ func MapCreateCompanyToDomain(from CreateNewCompany) domain.Company {
 // MapCompanyFromDomain maps a domain Company to a CompanyResponse DTO.
 func MapCompanyFromDomain(from domain.Company) CompanyResponse {
 	return CompanyResponse{
-		CompanyID: from.CompanyID,
+		Id:        from.Id,
 		Name:      from.Name,
 		Address:   from.Address,
 		CreatedAt: from.CreatedAt,
