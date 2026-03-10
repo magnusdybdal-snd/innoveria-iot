@@ -12,14 +12,12 @@ type Config struct {
 	Addr   string
 	DB_url string
 
-	ChirpstackURL    string // chirpstack rest api url
-	ChirpstackSecret string // chirpstack api token (bearer token)
+	ChirpstackURL        string // chirpstack rest api url
+	ChirpstackSecretPath string // chirpstack api token (bearer token)
 }
 
 // Load reads configuration from environment variables and mounted secrets, returning a populated Config.
 func Load() *Config {
-	secret := env.GetFile("/secrets/chirpstack-api-key")
-
 	// database config
 	dbHost := env.Get("DB_HOST", "device-db")
 	dbPort := env.Get("DB_PORT", "5432")
@@ -39,7 +37,7 @@ func Load() *Config {
 			dbName,
 			sslmode,
 		),
-		ChirpstackURL:    env.Get("CHIRPSTACK_REST", "http://chirpstack-rest-api:8090"),
-		ChirpstackSecret: secret,
+		ChirpstackURL:        env.Get("CHIRPSTACK_REST", "http://chirpstack-rest-api:8090"),
+		ChirpstackSecretPath: "/secrets/chirpstack-api-key",
 	}
 }
