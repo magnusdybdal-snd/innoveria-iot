@@ -17,7 +17,6 @@ import { NoDeviceFoundCard } from "@shared/ui/NoDeviceFoundCard";
 import { PageContent } from "@shared/ui/PageContent";
 import { PageDivider } from "@shared/ui/PageDivider";
 import { SubPageHeader } from "@shared/ui/SubPageHeader";
-import { Menu } from "@widgets/menu";
 
 import { mockSensors } from "@/shared/mocks/sensors";
 import { CustomButton } from "@/shared/ui/Button";
@@ -117,61 +116,59 @@ export default function Sensors() {
   sensorInfos.set("Error last 24hr", 0);
 
   return (
-    <Menu>
-      <div className="flex h-screen">
-        <PageContent>
-          <SubPageHeader title="Sensor devices" action={addButton} />
-          <div className="flex justify-between flex-wrap">
-            {Array.from(sensorInfos.entries()).map(([key, value]) => (
-              <SensorsGenInfo key={key} title={key} count={value} />
-            ))}
-          </div>
-          <PageDivider />
-          <CategoryHeader
-            categories={sensorMainDetails}
-            columns={sensorMainDetails.length + 2}
-            sortableColumns={sortableColumns}
-            sortConfig={sortConfig}
-            onSort={handleSort}
-          >
-            {sorted.map((sensor) => (
-              <DeviceRow key={sensor.id}>
-                <SensorMainInfo
-                  name={sensor.name}
-                  status={sensor.status}
-                  lastReading={sensor.lastReading}
-                  onClick={() => handleRowClick(sensor)}
-                />
-              </DeviceRow>
-            ))}
-            {sortedMock.map((sensor) => (
-              <DeviceRow key={sensor.id}>
-                <SensorMainInfo
-                  name={sensor.name}
-                  status={sensor.status}
-                  lastReading={sensor.lastReading}
-                  onClick={() => handleRowClick(sensor)}
-                />
-              </DeviceRow>
-            ))}
-          </CategoryHeader>
-          {selectedSensor && (
-            <SensorAllInfoPopUp
-              open={true}
-              onClose={handleCloseInfo}
-              sensor={selectedSensor}
-            />
-          )}
-          {!isLoading && sorted.length === 0 && <NoDeviceFoundCard />}
-        </PageContent>
+    <div className="flex h-screen">
+      <PageContent>
+        <SubPageHeader title="Sensor devices" action={addButton} />
+        <div className="flex justify-between flex-wrap">
+          {Array.from(sensorInfos.entries()).map(([key, value]) => (
+            <SensorsGenInfo key={key} title={key} count={value} />
+          ))}
+        </div>
+        <PageDivider />
+        <CategoryHeader
+          categories={sensorMainDetails}
+          columns={sensorMainDetails.length + 2}
+          sortableColumns={sortableColumns}
+          sortConfig={sortConfig}
+          onSort={handleSort}
+        >
+          {sorted.map((sensor) => (
+            <DeviceRow key={sensor.id}>
+              <SensorMainInfo
+                name={sensor.name}
+                status={sensor.status}
+                lastReading={sensor.lastReading}
+                onClick={() => handleRowClick(sensor)}
+              />
+            </DeviceRow>
+          ))}
+          {sortedMock.map((sensor) => (
+            <DeviceRow key={sensor.id}>
+              <SensorMainInfo
+                name={sensor.name}
+                status={sensor.status}
+                lastReading={sensor.lastReading}
+                onClick={() => handleRowClick(sensor)}
+              />
+            </DeviceRow>
+          ))}
+        </CategoryHeader>
+        {selectedSensor && (
+          <SensorAllInfoPopUp
+            open={true}
+            onClose={handleCloseInfo}
+            sensor={selectedSensor}
+          />
+        )}
+        {!isLoading && sorted.length === 0 && <NoDeviceFoundCard />}
+      </PageContent>
 
-        <AddDevice
-          open={openAdd}
-          onClose={handleCloseAdd}
-          addOptions={addSensorDetails}
-          onAdd={handleAddSensor}
-        />
-      </div>
-    </Menu>
+      <AddDevice
+        open={openAdd}
+        onClose={handleCloseAdd}
+        addOptions={addSensorDetails}
+        onAdd={handleAddSensor}
+      />
+    </div>
   );
 }
