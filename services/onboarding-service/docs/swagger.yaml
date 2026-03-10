@@ -1,0 +1,40 @@
+basePath: /api/v1/onboarding
+definitions:
+  dto.CreateCompanyRequest:
+    properties:
+      address:
+        type: string
+      name:
+        type: string
+    type: object
+host: localhost:8085
+info:
+  contact: {}
+  description: Manages Onboarding for new companies.
+  title: Onboarding Service API
+  version: "1.0"
+paths:
+  /company:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Company payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateCompanyRequest'
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+        "409":
+          description: Conflict
+        "500":
+          description: Internal Server Error
+      summary: Onboard a new company
+      tags:
+      - onboarding
+swagger: "2.0"
