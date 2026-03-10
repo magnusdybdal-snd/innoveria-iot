@@ -41,8 +41,10 @@ func (s *CompanyConfigServiceImpl) CreateCompanyConfig(ctx context.Context, comp
 	// Step 2: create Chirpstack application under the new tenant
 	applicationID, err := s.cc.CreateApplication(ctx, mappers.MapCreateChirpstackApplication(name, tenantID))
 	if err != nil {
-		// Compensate: delete the tenant we just created
-		if compErr := s.cc.DeleteTenant(ctx, tenantID); compErr != nil {
+		// Compensate: delete the tenant we just created.
+		// Use WithoutCancel so compensation runs even if the request context is already cancelled.
+		compCtx := context.WithoutCancel(ctx)
+		if compErr := s.cc.DeleteTenant(compCtx, tenantID); compErr != nil {
 			slog.Error("saga compensation failed: could not delete chirpstack tenant after application creation failure",
 				"tenantID", tenantID, "error", compErr)
 		}
@@ -56,12 +58,14 @@ func (s *CompanyConfigServiceImpl) CreateCompanyConfig(ctx context.Context, comp
 		ChirpstackApplicationID: applicationID,
 	})
 	if err != nil {
-		// Compensate: delete application and tenant from Chirpstack
-		if compErr := s.cc.DeleteApplication(ctx, applicationID); compErr != nil {
+		// Compensate: delete application and tenant from Chirpstack.
+		// Use WithoutCancel so compensation runs even if the request context is already cancelled.
+		compCtx := context.WithoutCancel(ctx)
+		if compErr := s.cc.DeleteApplication(compCtx, applicationID); compErr != nil {
 			slog.Error("saga compensation failed: could not delete chirpstack application after db insert failure",
 				"applicationID", applicationID, "error", compErr)
 		}
-		if compErr := s.cc.DeleteTenant(ctx, tenantID); compErr != nil {
+		if compErr := s.cc.DeleteTenant(compCtx, tenantID); compErr != nil {
 			slog.Error("saga compensation failed: could not delete chirpstack tenant after db insert failure",
 				"tenantID", tenantID, "error", compErr)
 		}

@@ -45,8 +45,10 @@ func (s *OnboardingServiceImpl) CreateCompany(ctx context.Context, company domai
 	// Step 2: create chirpstack config in device service
 	tenantID, err := s.deviceClient.CreateCompanyConfig(ctx, companyID, company.Name)
 	if err != nil {
-		// Compensate: delete company from auth service
-		if compErr := s.authClient.DeleteCompany(ctx, companyID); compErr != nil {
+		// Compensate: delete company from auth service.
+		// Use WithoutCancel so compensation runs even if the request context is already cancelled.
+		compCtx := context.WithoutCancel(ctx)
+		if compErr := s.authClient.DeleteCompany(compCtx, companyID); compErr != nil {
 			slog.Error("saga compensation failed: could not delete company from auth service after device service failure",
 				"companyID", companyID, "error", compErr)
 		}
@@ -55,12 +57,14 @@ func (s *OnboardingServiceImpl) CreateCompany(ctx context.Context, company domai
 
 	// Step 3: store companyID-tenantID mapping in collection service
 	if err := s.collectionClient.CreateCompanyConfig(ctx, companyID, tenantID); err != nil {
-		// Compensate: delete device config and company from auth service
-		if compErr := s.deviceClient.DeleteCompanyConfig(ctx, companyID); compErr != nil {
+		// Compensate: delete device config and company from auth service.
+		// Use WithoutCancel so compensation runs even if the request context is already cancelled.
+		compCtx := context.WithoutCancel(ctx)
+		if compErr := s.deviceClient.DeleteCompanyConfig(compCtx, companyID); compErr != nil {
 			slog.Error("saga compensation failed: could not delete company config from device service after collection service failure",
 				"companyID", companyID, "error", compErr)
 		}
-		if compErr := s.authClient.DeleteCompany(ctx, companyID); compErr != nil {
+		if compErr := s.authClient.DeleteCompany(compCtx, companyID); compErr != nil {
 			slog.Error("saga compensation failed: could not delete company from auth service after collection service failure",
 				"companyID", companyID, "error", compErr)
 		}
