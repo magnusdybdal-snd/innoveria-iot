@@ -30,7 +30,6 @@ func (a *AuthServiceImpl) RegisterCompany(ctx context.Context, payload domain.Co
 	if err != nil {
 		return domain.Company{}, err
 	}
-	// 2. call platform onboarding service, which starts a new application and insert a company mapping in device
 
 	slog.Info("succsessfully registered company", "id", data.CompanyID)
 	return data, nil
