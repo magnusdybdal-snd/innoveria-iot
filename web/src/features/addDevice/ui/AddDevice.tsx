@@ -24,8 +24,10 @@ export interface AddDeviceProps {
 }
 
 const inputHints: Record<string, string> = {
-  DeviceEUI: "16 characters",
-  "Application key": "32 characters",
+  Name: "Enter device name",
+  DeviceEUI: "16 characters (hex)",
+  Machine: "Enter machine name",
+  "Application key": "32 characters (hex)",
 };
 
 const inputLengthError: Record<string, string> = {
