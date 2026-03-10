@@ -10,16 +10,16 @@ import {
   type GatewaySortKey,
   type SortDirection,
 } from "@entities/gateway";
+import { AddDevice } from "@features/addSensor";
 import { formatTimestamp } from "@shared/lib";
+import { CustomButton } from "@shared/ui/Button";
 import { CategoryHeader } from "@shared/ui/CategoryHeader";
 import { DeviceRow } from "@shared/ui/DeviceRow";
+import { SuccessSnackbar } from "@shared/ui/errorSnackbar";
 import { NoDeviceFoundCard } from "@shared/ui/NoDeviceFoundCard";
 import { PageContent } from "@shared/ui/PageContent";
 import { PageDivider } from "@shared/ui/PageDivider";
 import { SubPageHeader } from "@shared/ui/SubPageHeader";
-
-import { AddDevice } from "@/features/addSensor/ui/AddDevice";
-import { CustomButton } from "@/shared/ui/Button";
 
 // Column labels rendered by CategoryHeader; order determines grid layout
 const gatewayDetails: string[] = ["Status", "Name", "EUI", "Last seen"];
@@ -40,6 +40,7 @@ export default function Gateways() {
   const [gateways, setGateways] = useState<GatewayApiResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [addError, setAddError] = useState<string | null>(null);
+  const [deleteSuccess, setDeleteSuccess] = useState(false);
 
   const fetchGateways = () => {
     getGateways().then((data) => {
@@ -48,10 +49,10 @@ export default function Gateways() {
     });
   };
 
-  // TODO: add message to user indicating deletion success or failure
   const handleDeleteGateway = (id: string) => {
     deleteGateway(id).then(() => {
       fetchGateways();
+      setDeleteSuccess(true);
     });
   };
 
@@ -150,6 +151,11 @@ export default function Gateways() {
         addOptions={addGatewayDetails}
         onAdd={handleAddGateway}
         submitError={addError}
+      />
+      <SuccessSnackbar
+        open={deleteSuccess}
+        message="Gateway deleted successfully"
+        onClose={() => setDeleteSuccess(false)}
       />
     </div>
   );
