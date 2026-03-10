@@ -11,6 +11,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { useTheme } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
+import { formatReading, formatTimestamp } from "@shared/lib";
 import { CategoryHeader } from "@shared/ui/CategoryHeader";
 import { DeviceRow } from "@shared/ui/DeviceRow";
 
@@ -65,7 +66,7 @@ function SensorAllInfo({
       <Typography>{name}</Typography>
       <Typography>{euid}</Typography>
       <Typography>{machine}</Typography>
-      <Typography>{lastReading}</Typography>
+      <Typography>{formatTimestamp(lastReading)}</Typography>
       <Typography>{senProf}</Typography>
     </>
   );
@@ -147,7 +148,7 @@ export function SensorAllInfoPopUp(props: AddDeviceProps) {
               variant="body2"
               sx={{ mb: 1, opacity: 0.7, color: "primary.main" }}
             >
-              {new Date(reading.timestamp).toLocaleString()}
+              {formatTimestamp(reading.timestamp)}
             </Typography>
             <CategoryHeader
               categories={Object.keys(reading.payload)}
@@ -155,7 +156,7 @@ export function SensorAllInfoPopUp(props: AddDeviceProps) {
             >
               <DeviceRow key="reading">
                 {Object.values(reading.payload).map((value, i) => (
-                  <Typography key={i}>{String(value)}</Typography>
+                  <Typography key={i}>{formatReading(value)}</Typography>
                 ))}
               </DeviceRow>
             </CategoryHeader>

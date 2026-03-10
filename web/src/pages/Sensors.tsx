@@ -14,6 +14,7 @@ import {
   type SortDirection,
 } from "@entities/sensor";
 import { AddDevice } from "@features/addSensor";
+import { formatTimestamp } from "@shared/lib";
 import { CategoryHeader } from "@shared/ui/CategoryHeader";
 import { DeviceRow } from "@shared/ui/DeviceRow";
 import { NoDeviceFoundCard } from "@shared/ui/NoDeviceFoundCard";
@@ -150,7 +151,7 @@ export default function Sensors() {
                 <SensorMainInfo
                   name={sensor.name}
                   status={sensor.status}
-                  lastReading={sensor.lastReading}
+                  lastReading={formatTimestamp(sensor.lastReading)}
                   onClick={() => handleRowClick(sensor)}
                 />
               </DeviceRow>
