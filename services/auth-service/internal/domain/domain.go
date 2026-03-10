@@ -9,8 +9,8 @@ import (
 // CompanyRepo defines the company repository needed by the auth domain.
 type CompanyRepo interface {
 	Create(ctx context.Context, company Company) (Company, error)
-	GetAll(ctx context.Context) ([]Company, error)
-	GetOne(ctx context.Context, companyID string) (Company, error)
+	FindAll(ctx context.Context) ([]Company, error)
+	FindByID(ctx context.Context, companyID string) (Company, error)
 	// Put/patch
 }
 
