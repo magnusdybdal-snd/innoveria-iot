@@ -6,7 +6,6 @@ export type SensorSortKey =
   | "Status"
   | "Machine"
   | "Last reading"
-  | "Application key"
   | "Sensor profile";
 
 // Sorting sensors based on Key (SensorSortKey)
@@ -38,11 +37,8 @@ export function sortSensors(
       case "Last reading":
         cmp = a.lastReading.localeCompare(b.lastReading);
         break;
-      case "Application key":
-        cmp = a.appKey.localeCompare(b.appKey);
-        break;
       case "Sensor profile":
-        cmp = a.senProf.localeCompare(b.senProf);
+        cmp = a.sensorProfileId.localeCompare(b.sensorProfileId);
         break;
     }
     return direction === "asc" ? cmp : -cmp;

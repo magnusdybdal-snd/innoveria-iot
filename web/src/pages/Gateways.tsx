@@ -10,6 +10,7 @@ import {
   type GatewaySortKey,
   type SortDirection,
 } from "@entities/gateway";
+import { formatTimestamp } from "@shared/lib";
 import { CategoryHeader } from "@shared/ui/CategoryHeader";
 import { DeviceRow } from "@shared/ui/DeviceRow";
 import { NoDeviceFoundCard } from "@shared/ui/NoDeviceFoundCard";
@@ -137,7 +138,7 @@ export default function Gateways() {
                   name={gateway.name}
                   status={gateway.status}
                   device_eui={gateway.deviceEui}
-                  lastSeenAt={gateway.lastSeenAt}
+                  lastSeenAt={formatTimestamp(gateway.lastSeenAt)}
                   onDelete={() => handleDeleteGateway(gateway.id)}
                 />
               </DeviceRow>

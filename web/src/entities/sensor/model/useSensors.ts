@@ -7,18 +7,19 @@ export interface UseSensorsResult {
   sensors: SensorApiResponse[];
   isLoading: boolean;
   error: Error | null;
+  refetch: () => void;
 }
 
 /**
  * Fetches and manages the list of sensors from the collection-service.
- * @returns sensors array, loading state, and any fetch error
+ * @returns sensors array, loading state, any fetch error, and a refetch function
  */
 export function useSensors(): UseSensorsResult {
   const [sensors, setSensors] = useState<SensorApiResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
-  useEffect(() => {
+  const fetchSensors = () => {
     getSensors()
       .then(setSensors)
       .catch((err: unknown) => {
@@ -27,7 +28,11 @@ export function useSensors(): UseSensorsResult {
       .finally(() => {
         setIsLoading(false);
       });
+  };
+
+  useEffect(() => {
+    fetchSensors();
   }, []);
 
-  return { sensors, isLoading, error };
+  return { sensors, isLoading, error, refetch: fetchSensors };
 }
