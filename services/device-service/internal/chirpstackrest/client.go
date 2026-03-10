@@ -172,7 +172,7 @@ func (c *Client) GetOneGateway(ctx context.Context, gatewayEUI string) (dto.Chir
 }
 
 // CreateGateway registers a new gateway in Chirpstack.
-func (c *Client) CreateGateway(ctx context.Context, body dto.CreateChirpstackGatewayRequest) error {
+func (c *Client) CreateGateway(ctx context.Context, body dto.ChirpstackGatewayRequest) error {
 	url := fmt.Sprintf("%s/api/gateways", c.baseURL)
 	resp, err := httpclient.DoRaw(
 		c.httpClient,
@@ -196,7 +196,7 @@ func (c *Client) CreateGateway(ctx context.Context, body dto.CreateChirpstackGat
 }
 
 // RenameGateway updates the name of an existing Chirpstack gateway, identified by its EUI.
-func (c *Client) RenameGateway(ctx context.Context, body dto.CreateChirpstackGatewayRequest) error {
+func (c *Client) RenameGateway(ctx context.Context, body dto.ChirpstackGatewayRequest) error {
 	url := fmt.Sprintf("%s/api/gateways/%s", c.baseURL, body.GatewayEUI)
 	resp, err := httpclient.DoRaw(
 		c.httpClient,
