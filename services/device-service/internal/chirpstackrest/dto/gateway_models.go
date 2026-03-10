@@ -34,13 +34,13 @@ type ChirpstackGatewayLocation struct {
 	Source    string  `json:"source"`
 }
 
-// CreateChirpstackGatewayRequest is the top-level body for POST and PUT /api/gateways.
-type CreateChirpstackGatewayRequest struct {
-	CreateGatewayPayload `json:"gateway"` // How chirpstack handles requests
+// ChirpstackGatewayRequest is the top-level body for POST and PUT /api/gateways.
+type ChirpstackGatewayRequest struct {
+	GatewayPayload `json:"gateway"` // How chirpstack handles requests
 }
 
-// CreateGatewayPayload contains the fields required by ChirpStack to register a new gateway.
-type CreateGatewayPayload struct {
+// GatewayPayload contains the fields required by ChirpStack to register a new gateway.
+type GatewayPayload struct {
 	GatewayEUI string `json:"gatewayId"` // chirpstack uses eui as id
 	Name       string `json:"name"`
 	TenantID   string `json:"tenantId"` // chirpstack uses tennant id, we use company id

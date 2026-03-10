@@ -24,7 +24,7 @@ func MapGatewayDomainToDTO(from []domain.Gateway) GatewayListResponse {
 func mapGateway(from domain.Gateway) GatewayResponse {
 	return GatewayResponse{
 		ID:            from.Id,
-		CompanyId:     from.CompanyId,
+		CompanyID:     from.CompanyId,
 		GatewayEUI:    from.GatewayEUI,
 		Name:          from.Name,
 		Description:   from.Description,
@@ -81,7 +81,7 @@ func MapSensorDomainToDTO(from []domain.Sensor) SensorListResponse {
 	sensors := make([]SensorResponse, tot)
 
 	for i, s := range from {
-		sensors[i] = mapSensors(s)
+		sensors[i] = mapSensor(s)
 	}
 
 	return SensorListResponse{
@@ -90,7 +90,7 @@ func MapSensorDomainToDTO(from []domain.Sensor) SensorListResponse {
 	}
 }
 
-func mapSensors(from domain.Sensor) SensorResponse {
+func mapSensor(from domain.Sensor) SensorResponse {
 	return SensorResponse{
 		ID:                  from.Id,
 		CompanyID:           from.CompanyID,
@@ -130,39 +130,5 @@ func mapSensorProfiles(from domain.SensorProfile) SensorProfileResponse {
 		MACVersion: from.MACVersion,
 		VendorId:   from.VendorId,
 		VendorName: from.VendorName,
-	}
-}
-
-// MapSensorGroupToDomain maps a CreateSensorGroup request to a domain SensorGroup.
-func MapSensorGroupToDomain(from CreateSensorGroup) domain.SensorGroup {
-	return domain.SensorGroup{
-		Id:        "", // converted in chirpstack
-		Name:      from.Name,
-		CompanyId: from.CompanyId, // TODO: Change this to tennant id
-		Location:  "",             // TODO: handle this somewhere
-	}
-}
-
-// MapSensorGroupToDTO maps a slice of domain SensorGroups to a SensorGroupListResponse.
-func MapSensorGroupToDTO(from []domain.SensorGroup) SensorGroupListResponse {
-	tot := len(from)
-
-	sensorGroups := make([]SensorGroupResponse, tot)
-
-	for i, sg := range from {
-		sensorGroups[i] = mapSensorGroup(sg)
-	}
-	return SensorGroupListResponse{
-		TotalCount:   tot,
-		SensorGroups: sensorGroups,
-	}
-}
-
-func mapSensorGroup(from domain.SensorGroup) SensorGroupResponse {
-	return SensorGroupResponse{
-		Id:        from.Id,
-		Name:      from.Name,
-		CompanyId: from.CompanyId,
-		Location:  from.Location,
 	}
 }

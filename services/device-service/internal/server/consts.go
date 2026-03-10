@@ -27,7 +27,4 @@ const (
 	SENSOR_PROFILE_ROUTE = DEVICE_ROUTE + "/sensor-profiles"
 	// SENSOR_PROFILE_ROUTE_ID is the route for single sensor profile endpoints, with an {id} path parameter.
 	SENSOR_PROFILE_ROUTE_ID = DEVICE_ROUTE + "/sensor-profiles/{id}"
-
-	// SENSOR_GROUP_ROUTE is the route for sensor group collection endpoints.
-	SENSOR_GROUP_ROUTE = DEVICE_ROUTE + "/sensor-groups"
 )
