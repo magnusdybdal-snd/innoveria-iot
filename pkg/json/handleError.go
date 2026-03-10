@@ -19,17 +19,20 @@ type ErrorDetail struct {
 
 // HandleError TODO(@vinjar): add proper documentation.
 func HandleError(w http.ResponseWriter, code int, err error, msg string) {
-	if err != nil {
-		slog.Error("request error", "code", code, "message", msg, "error", err)
+	if err == nil {
+		slog.Warn("HandleError called with nil error", "code", code, "message", msg)
+		return
+	}
 
-		resp := ErrorResponse{
-			Error: ErrorDetail{
-				Code:    code,
-				Message: msg,
-			},
-		}
-		if encErr := Encode(w, code, resp); encErr != nil {
-			slog.Error("failed to write error response", "error", encErr)
-		}
+	slog.Error("request error", "code", code, "message", msg, "error", err)
+
+	resp := ErrorResponse{
+		Error: ErrorDetail{
+			Code:    code,
+			Message: msg,
+		},
+	}
+	if encErr := Encode(w, code, resp); encErr != nil {
+		slog.Error("failed to write error response", "error", encErr)
 	}
 }
