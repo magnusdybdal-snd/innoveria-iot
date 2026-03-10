@@ -42,7 +42,7 @@ func PostCompany(svc domain.OnboardingService) http.HandlerFunc {
 		if err := svc.CreateCompany(ctx, company); err != nil {
 			var httpErr *httpclient.HTTPError
 			if errors.As(err, &httpErr) && httpErr.StatusCode >= 400 && httpErr.StatusCode < 500 {
-				json.HandleError(w, httpErr.StatusCode, err, "company already exists")
+				json.HandleError(w, httpErr.StatusCode, err, httpErr.Status)
 				return
 			}
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
