@@ -45,6 +45,7 @@ func (s *OnboardingServiceImpl) CreateCompany(ctx context.Context, company domai
 	// Step 2: create chirpstack config in device service
 	tenantID, err := s.deviceClient.CreateCompanyConfig(ctx, companyID, company.Name)
 	if err != nil {
+		slog.Error("saga step failed: device service", "companyID", companyID, "error", err)
 		// Compensate: delete company from auth service.
 		// Use WithoutCancel so compensation runs even if the request context is already cancelled.
 		compCtx := context.WithoutCancel(ctx)
@@ -57,6 +58,7 @@ func (s *OnboardingServiceImpl) CreateCompany(ctx context.Context, company domai
 
 	// Step 3: store companyID-tenantID mapping in collection service
 	if err := s.collectionClient.CreateCompanyConfig(ctx, companyID, tenantID); err != nil {
+		slog.Error("saga step failed: collection service", "companyID", companyID, "error", err)
 		// Compensate: delete device config and company from auth service.
 		// Use WithoutCancel so compensation runs even if the request context is already cancelled.
 		compCtx := context.WithoutCancel(ctx)
