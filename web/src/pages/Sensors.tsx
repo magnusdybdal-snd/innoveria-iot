@@ -81,8 +81,9 @@ export default function Sensors() {
         refetch();
         setOpenAdd(false);
       })
-      .catch(() => {
+      .catch((err: unknown) => {
         setAddError("Failed to add sensor. The EUI may already be registered.");
+        throw err;
       });
   };
 
