@@ -86,7 +86,7 @@ export function SensorAllInfoPopUp(props: AddDeviceProps) {
 
   useEffect(() => {
     if (!open) return;
-    fetchSensorReading(sensor.deviceEui).then(setReading); // TODO: replace hardcoded value with 'sensor.device_eui'
+    fetchSensorReading(sensor.deviceEui).then(setReading);
   }, [open, sensor.deviceEui]);
 
   const handleClose = () => {

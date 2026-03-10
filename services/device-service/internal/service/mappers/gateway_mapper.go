@@ -29,10 +29,10 @@ func MergeGateway(cs dto.ChirpstackGateway, db domain.Gateway) domain.Gateway {
 	}
 }
 
-// MapCreateChirpstackGateway maps a domain Gateway and a Chirpstack tenant ID to a CreateChirpstackGatewayRequest.
-func MapCreateChirpstackGateway(from domain.Gateway, chirpstackTenantID string) dto.CreateChirpstackGatewayRequest {
-	return dto.CreateChirpstackGatewayRequest{
-		CreateGatewayPayload: dto.CreateGatewayPayload{
+// MapChirpstackGatewayRequest maps a domain Gateway and a Chirpstack tenant ID to a CreateChirpstackGatewayRequest.
+func MapChirpstackGatewayRequest(from domain.Gateway, chirpstackTenantID string) dto.ChirpstackGatewayRequest {
+	return dto.ChirpstackGatewayRequest{
+		GatewayPayload: dto.GatewayPayload{
 			GatewayEUI: from.GatewayEUI,
 			Name:       from.Name,
 			TenantID:   chirpstackTenantID,
@@ -52,6 +52,9 @@ func mapStatus(status string, lastSeen time.Time) domain.Status {
 		return domain.StatusOffline
 	default:
 		// Fallback in case there is no status
+		if lastSeen.IsZero() {
+			return domain.StatusNeverSeen
+		}
 		if time.Since(lastSeen) < 5*time.Minute {
 			return domain.StatusOnline
 		}

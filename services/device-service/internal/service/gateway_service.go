@@ -39,7 +39,7 @@ func (g *GatewayServiceImpl) Create(ctx context.Context, payload domain.Gateway)
 	}
 
 	// Sending post request to chirpstack
-	gatewayReq := mappers.MapCreateChirpstackGateway(payload, companycfg.ChirpstackTenantID)
+	gatewayReq := mappers.MapChirpstackGatewayRequest(payload, companycfg.ChirpstackTenantID)
 	if err := g.cc.CreateGateway(ctx, gatewayReq); err != nil {
 		return fmt.Errorf("create gateway: add to chirpstack: %w", err)
 	}
@@ -83,7 +83,7 @@ func (g *GatewayServiceImpl) Update(ctx context.Context, gatewayId string, paylo
 		payload.GatewayEUI = gateway.GatewayEUI
 
 		// Chirpstack put request, Chirpstack dont need gatewayID, just gatewayEUI
-		newReq := mappers.MapCreateChirpstackGateway(payload, companycfg.ChirpstackTenantID)
+		newReq := mappers.MapChirpstackGatewayRequest(payload, companycfg.ChirpstackTenantID)
 		if err := g.cc.RenameGateway(ctx, newReq); err != nil {
 			return fmt.Errorf("update gateway: update in chirpstack: %w", err)
 		}
@@ -91,7 +91,7 @@ func (g *GatewayServiceImpl) Update(ctx context.Context, gatewayId string, paylo
 		// On successful update in Chirpstack, try to update the database.
 		if err := g.gatewayRepo.Update(ctx, gatewayId, payload); err != nil {
 			// Compensate: revert Chirpstack to the old name.
-			oldReq := mappers.MapCreateChirpstackGateway(gateway, companycfg.ChirpstackTenantID)
+			oldReq := mappers.MapChirpstackGatewayRequest(gateway, companycfg.ChirpstackTenantID)
 			if compErr := g.cc.RenameGateway(ctx, oldReq); compErr != nil {
 				slog.Error("saga compensation failed: could not revert gateway name in chirpstack after db update failure",
 					"id", gatewayId, "error", compErr)
@@ -162,7 +162,7 @@ func (g *GatewayServiceImpl) Delete(ctx context.Context, gatewayID string) error
 	// Delete in database after successfully deleting in Chirpstack.
 	if err := g.gatewayRepo.Delete(ctx, gatewayID); err != nil {
 		// Compensate: re-create in Chirpstack so systems stay in sync.
-		gatewayReq := mappers.MapCreateChirpstackGateway(gateway, companycfg.ChirpstackTenantID)
+		gatewayReq := mappers.MapChirpstackGatewayRequest(gateway, companycfg.ChirpstackTenantID)
 		if compErr := g.cc.CreateGateway(ctx, gatewayReq); compErr != nil {
 			slog.Error("saga compensation failed: could not re-create gateway in chirpstack after db delete failure",
 				"eui", gateway.GatewayEUI, "error", compErr)

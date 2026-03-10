@@ -91,6 +91,8 @@ services:
       dockerfile: infra/development/web.Dockerfile
     ports:
       - "3000:3000"
+    environment:
+      - API_PROXY_TARGET=http://api-gateway:8080
     volumes:
       - ./web:/app
       - /app/node_modules
