@@ -40,7 +40,10 @@ export default function Gateways() {
   const [gateways, setGateways] = useState<GatewayApiResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [addError, setAddError] = useState<string | null>(null);
+
+  // State for controlling success snackbar
   const [deleteSuccess, setDeleteSuccess] = useState(false);
+  const [addSuccess, setAddSuccess] = useState(false);
 
   const fetchGateways = () => {
     getGateways().then((data) => {
@@ -89,6 +92,7 @@ export default function Gateways() {
       .then(() => {
         fetchGateways();
         setOpenAdd(false);
+        setAddSuccess(true);
       })
       .catch(() => {
         setAddError(
@@ -153,9 +157,16 @@ export default function Gateways() {
         submitError={addError}
       />
       <SuccessSnackbar
-        open={deleteSuccess}
-        message="Gateway deleted successfully"
-        onClose={() => setDeleteSuccess(false)}
+        open={deleteSuccess || addSuccess}
+        message={
+          addSuccess
+            ? "Gateway added successfully"
+            : "Gateway deleted successfully"
+        }
+        onClose={() => {
+          setDeleteSuccess(false);
+          setAddSuccess(false);
+        }}
       />
     </div>
   );
