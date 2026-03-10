@@ -76,6 +76,39 @@ func GetAllCompanies(svc domain.AuthService) http.HandlerFunc {
 	}
 }
 
+// GetOneCompany handles requests to fetch one company by ID.
+//
+// @Summary Get one company
+// @Tags companies
+// @Produce json
+// @Param id path string true "id"
+// @Success 200 {object} dto.CompanyResponse
+// @Failure 400
+// @Failure 500
+// @Router /companies/{id} [get]
+func GetOneCompany(svc domain.AuthService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+
+		companyID := r.PathValue("id")
+		if companyID == "" {
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("missing id path parameter"), "id is required")
+			return
+		}
+
+		company, err := svc.GetOneCompany(ctx, companyID)
+		if err != nil {
+			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			return
+		}
+
+		resp := dto.MapCompanyFromDomain(company)
+		if err := json.Encode(w, http.StatusOK, resp); err != nil {
+			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+		}
+	}
+}
+
 // DeleteCompany handles requests to delete a company by ID.
 //
 // @Summary Delete company
@@ -90,7 +123,7 @@ func DeleteCompany(svc domain.AuthService) http.HandlerFunc {
 		ctx := r.Context()
 		companyID := r.PathValue("id")
 		if companyID == "" {
-			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("missing companyID path parameter"), "companyID is required")
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("missing id path parameter"), "id is required")
 			return
 		}
 
