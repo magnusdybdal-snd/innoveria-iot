@@ -13,7 +13,7 @@ import {
   type SensorSortKey,
   type SortDirection,
 } from "@entities/sensor";
-import { AddDevice } from "@features/addSensor";
+import { AddDevice } from "@features/addDevice";
 import { formatTimestamp } from "@shared/lib";
 import { CategoryHeader } from "@shared/ui/CategoryHeader";
 import { DeviceRow } from "@shared/ui/DeviceRow";
