@@ -26,8 +26,11 @@ type CreateChirpstackApplication struct {
 
 // ApplicationPayload contains the fields required by Chirpstack to create a new application.
 type ApplicationPayload struct {
-	Name        string            `json:"name"`
-	TenantID    string            `json:"tenantId"`
-	Description string            `json:"description,omitempty"` // Not using description
-	Tags        map[string]string `json:"tags,omitempty"`        // Not using tags
+	Name     string `json:"name"`
+	TenantID string `json:"tenantId"`
+}
+
+// ChirpstackApplicationCreateResponse is the response from Chirpstack when creating a tenant.
+type ChirpstackApplicationCreateResponse struct {
+	ID string `json:"id"`
 }

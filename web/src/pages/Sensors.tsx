@@ -14,7 +14,7 @@ import {
   type SortDirection,
 } from "@entities/sensor";
 import { deleteSensor } from "@entities/sensor/api/deleteSensor";
-import { AddDevice } from "@features/addSensor";
+import { AddDevice } from "@features/addDevice";
 import { formatTimestamp } from "@shared/lib";
 import { CustomButton } from "@shared/ui/Button";
 import { CategoryHeader } from "@shared/ui/CategoryHeader";
