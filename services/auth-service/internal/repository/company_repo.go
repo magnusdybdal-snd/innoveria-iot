@@ -15,7 +15,7 @@ const (
 		RETURNING company_id, name, address, created_at, updated_at
 	`
 	findCompanyByIDQuery = `
-		SELECT company_id, name, address, created_at, update_at
+		SELECT company_id, name, address, created_at, updated_at
 		FROM auth.company
 		WHERE company_id = $1
 	`
