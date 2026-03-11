@@ -18,9 +18,8 @@ import { DeviceRow } from "@shared/ui/DeviceRow";
 import { NoDeviceFoundCard } from "@shared/ui/NoDeviceFoundCard";
 import { PageContent } from "@shared/ui/PageContent";
 import { PageDivider } from "@shared/ui/PageDivider";
+import { SuccessSnackbar } from "@shared/ui/snackbar";
 import { SubPageHeader } from "@shared/ui/SubPageHeader";
-
-import { SuccessSnackbar } from "@/shared/ui/successSnackbar";
 
 // Column labels rendered by CategoryHeader; order determines grid layout
 const gatewayDetails: string[] = ["Status", "Name", "EUI", "Last seen"];

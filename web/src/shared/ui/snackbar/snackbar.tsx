@@ -26,7 +26,7 @@ export function AppSnackbar({
   message,
   onClose,
   severity = "info",
-  autoHideDuration = 5000,
+  autoHideDuration = 5000, // Default to 5 seconds
 }: AppSnackbarProps) {
   return (
     <MuiSnackbar

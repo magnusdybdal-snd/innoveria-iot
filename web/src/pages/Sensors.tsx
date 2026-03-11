@@ -20,11 +20,11 @@ import { DeviceRow } from "@shared/ui/DeviceRow";
 import { NoDeviceFoundCard } from "@shared/ui/NoDeviceFoundCard";
 import { PageContent } from "@shared/ui/PageContent";
 import { PageDivider } from "@shared/ui/PageDivider";
+import { ErrorSnackbar, SuccessSnackbar } from "@shared/ui/snackbar";
 import { SubPageHeader } from "@shared/ui/SubPageHeader";
 
 import { deleteSensor } from "@/entities/sensor/api/deleteSensor";
 import { CustomButton } from "@/shared/ui/Button";
-import { SuccessSnackbar } from "@/shared/ui/successSnackbar/successMessage";
 
 const sensorMainDetails: string[] = ["Status", "Name", "Last reading"];
 const addSensorDetails: string[] = [
@@ -50,9 +50,11 @@ export default function Sensors() {
     SensorProfileApiResponse[]
   >([]);
 
-  // State for controlling success snackbar
+  // State for controlling success/error snackbars
   const [deleteSuccess, setDeleteSuccess] = useState(false);
-  const [addSuccess, setAddSuccess] = useState(false);
+  const [addSuccessSnackbar, setAddSuccess] = useState(false);
+  const [addErrorSnackbar, setAddErrorSnackbar] = useState(false);
+  const [deleteErrorSnackbar, setDeleteErrorSnackbar] = useState(false);
 
   useEffect(() => {
     getSensorProfiles().then(setSensorProfiles);
@@ -60,10 +62,14 @@ export default function Sensors() {
 
   // Handler for deleting a sensor; refreshes list on success
   const handleDeleteSensor = (id: string) => {
-    deleteSensor(id).then(() => {
-      refetch();
-      setDeleteSuccess(true);
-    });
+    deleteSensor(id)
+      .then(() => {
+        refetch();
+        setDeleteSuccess(true);
+      })
+      .catch(() => {
+        setDeleteErrorSnackbar(true);
+      });
   };
   // Handler for opening and closing add sensor pop-up
   const handleClickOpenAdd = () => {
@@ -96,6 +102,7 @@ export default function Sensors() {
       })
       .catch((err: unknown) => {
         setAddError("Failed to add sensor. The EUI may already be registered.");
+        setAddErrorSnackbar(true);
         throw err;
       });
   };
@@ -189,10 +196,20 @@ export default function Sensors() {
         onAdd={handleAddSensor}
         submitError={addError}
       />
+      <ErrorSnackbar
+        open={addErrorSnackbar}
+        message="Failed to add sensor. The EUI may already be registered."
+        onClose={() => setAddErrorSnackbar(false)}
+      />
+      <ErrorSnackbar
+        open={deleteErrorSnackbar}
+        message="Failed to delete sensor."
+        onClose={() => setDeleteErrorSnackbar(false)}
+      />
       <SuccessSnackbar
-        open={deleteSuccess || addSuccess}
+        open={deleteSuccess || addSuccessSnackbar}
         message={
-          addSuccess
+          addSuccessSnackbar
             ? "Sensor added successfully"
             : "Sensor deleted successfully"
         }
