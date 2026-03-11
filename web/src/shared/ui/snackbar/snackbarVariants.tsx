@@ -1,4 +1,4 @@
-import { AppSnackbar } from "./snackbar";
+import { AppSnackbar, SNACKBAR_SEVERITY } from "./snackbar";
 
 interface SnackbarProps {
   open: boolean;
@@ -14,7 +14,7 @@ interface SnackbarProps {
  * @returns The rendered success snackbar
  */
 export function SuccessSnackbar(props: SnackbarProps) {
-  return <AppSnackbar {...props} severity="success" />;
+  return <AppSnackbar {...props} severity={SNACKBAR_SEVERITY.SUCCESS} />;
 }
 
 /**
@@ -26,7 +26,7 @@ export function SuccessSnackbar(props: SnackbarProps) {
  * @returns The rendered error snackbar
  */
 export function ErrorSnackbar(props: SnackbarProps) {
-  return <AppSnackbar {...props} severity="error" />;
+  return <AppSnackbar {...props} severity={SNACKBAR_SEVERITY.ERROR} />;
 }
 
 /**
@@ -38,7 +38,7 @@ export function ErrorSnackbar(props: SnackbarProps) {
  * @returns The rendered info snackbar
  */
 export function InfoSnackbar(props: SnackbarProps) {
-  return <AppSnackbar {...props} severity="info" />;
+  return <AppSnackbar {...props} severity={SNACKBAR_SEVERITY.INFO} />;
 }
 
 /**
@@ -50,5 +50,5 @@ export function InfoSnackbar(props: SnackbarProps) {
  * @returns The rendered warning snackbar
  */
 export function WarningSnackbar(props: SnackbarProps) {
-  return <AppSnackbar {...props} severity="warning" />;
+  return <AppSnackbar {...props} severity={SNACKBAR_SEVERITY.WARNING} />;
 }
