@@ -4,11 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log/slog"
 
 	"innoveria-iot/auth-service/internal/domain"
 	"innoveria-iot/pkg/dbutil"
 
+	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5/pgconn" // for error handling
 )
 
@@ -16,15 +16,15 @@ const (
 	createFactoryQuery = `
 		INSERT INTO auth.factory (company_id, name, address)
 		VALUES ($1, $2, $3)
-		RETURNING factory_id, company_id, name, COALESCE(address, ''), created_at::text, updated_at::text
+		RETURNING factory_id, company_id, name, address, created_at, updated_at
 	`
 	findFactoryByIDQuery = `
-		SELECT factory_id, company_id, name, COALESCE(address, ''), created_at::text, updated_at::text
+		SELECT factory_id, company_id, name, address, created_at, updated_at
 		FROM auth.factory
 		WHERE factory_id = $1
 	`
 	findAllFactoriesQuery = `
-		SELECT factory_id, company_id, name, COALESCE(address, ''), created_at::text, updated_at::text
+		SELECT factory_id, company_id, name, address, created_at, updated_at
 		FROM auth.factory
 		ORDER BY created_at ASC
 	`
@@ -62,8 +62,7 @@ func (r *FactoryRepoImpl) Create(ctx context.Context, factory domain.Factory) (d
 	)
 	if err != nil {
 		var pgErr *pgconn.PgError
-		if errors.As(err, &pgErr) && pgErr.Code == "23503" {
-			slog.Error("pgerr", "err", pgErr.Code)
+		if errors.As(err, &pgErr) && pgErr.Code == pgerrcode.ForeignKeyViolation {
 			return domain.Factory{}, fmt.Errorf("create factory: %w", domain.ErrCompanyNotFound)
 		}
 		return domain.Factory{}, fmt.Errorf("create factory: %w", err)
