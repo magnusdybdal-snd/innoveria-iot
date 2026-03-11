@@ -42,8 +42,6 @@ func PostFactory(svc domain.AuthService) http.HandlerFunc {
 		factoryResp, err := svc.RegisterFactory(ctx, factoryDomain)
 		if err != nil {
 			switch {
-			case errors.Is(err, domain.ErrInvalidInput):
-				json.HandleError(w, http.StatusBadRequest, err, "bad request")
 			case errors.Is(err, domain.ErrCompanyNotFound):
 				json.HandleError(w, http.StatusNotFound, err, "company not found")
 			default:
