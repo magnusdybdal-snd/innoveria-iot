@@ -41,8 +41,8 @@ func MapFactoryFromDomain(from domain.Factory) FactoryResponse {
 		CompanyID: from.CompanyID,
 		Name:      from.Name,
 		Address:   from.Address,
-		CreatedAt: from.Created_at,
-		UpdatedAt: from.Updated_at,
+		CreatedAt: from.CreatedAt,
+		UpdatedAt: from.UpdatedAt,
 	}
 }
 

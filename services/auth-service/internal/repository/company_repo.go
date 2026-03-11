@@ -83,7 +83,7 @@ func (r *CompanyRepoImpl) FindAll(ctx context.Context) ([]domain.Company, error)
 	return out, nil
 }
 
-// FindByID retreieves all companies by id
+// FindByID retrieves one company by id
 func (r *CompanyRepoImpl) FindByID(ctx context.Context, companyID string) (domain.Company, error) {
 	var out domain.Company
 	err := r.db.Pool.QueryRow(ctx, findCompanyByIDQuery, companyID).Scan(

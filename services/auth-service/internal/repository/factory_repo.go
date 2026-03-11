@@ -57,8 +57,8 @@ func (r *FactoryRepoImpl) Create(ctx context.Context, factory domain.Factory) (d
 		&out.CompanyID,
 		&out.Name,
 		&out.Address,
-		&out.Created_at,
-		&out.Updated_at,
+		&out.CreatedAt,
+		&out.UpdatedAt,
 	)
 	if err != nil {
 		var pgErr *pgconn.PgError
@@ -89,8 +89,8 @@ func (r *FactoryRepoImpl) FindAll(ctx context.Context) ([]domain.Factory, error)
 			&factory.CompanyID,
 			&factory.Name,
 			&factory.Address,
-			&factory.Created_at,
-			&factory.Updated_at,
+			&factory.CreatedAt,
+			&factory.UpdatedAt,
 		); err != nil {
 			return nil, fmt.Errorf("scan factory: %w", err)
 		}
@@ -112,8 +112,8 @@ func (r *FactoryRepoImpl) FindByID(ctx context.Context, factoryID string) (domai
 		&out.CompanyID,
 		&out.Name,
 		&out.Address,
-		&out.Created_at,
-		&out.Updated_at,
+		&out.CreatedAt,
+		&out.UpdatedAt,
 	)
 	if err != nil {
 		return out, fmt.Errorf("find factory by id: %w", err)

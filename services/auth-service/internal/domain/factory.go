@@ -14,12 +14,12 @@ var (
 
 // Factory is the domain model for factory
 type Factory struct {
-	ID         string
-	CompanyID  string
-	Name       string
-	Address    string
-	Created_at string
-	Updated_at string
+	ID        string
+	CompanyID string
+	Name      string
+	Address   string
+	CreatedAt string
+	UpdatedAt string
 }
 
 // FactoryRepo defines the factory repository
