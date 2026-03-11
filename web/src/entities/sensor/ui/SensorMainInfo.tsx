@@ -43,6 +43,7 @@ export function SensorMainInfo({
   const [currentName, setCurrentName] = useState(name);
   const [editOpen, setEditOpen] = useState(false);
   const [editValue, setEditValue] = useState(name);
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
   const handleEditOpen = () => {
     setEditValue(currentName);
@@ -54,9 +55,17 @@ export function SensorMainInfo({
     setEditOpen(false);
   };
 
+  const handleDeleteOpen = () => {
+    setDeleteOpen(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    onDelete();
+  };
+
   const menuItems = [
     { label: "Rename", onClick: handleEditOpen },
-    { label: "Delete", onClick: onDelete },
+    { label: "Delete", onClick: handleDeleteOpen },
   ];
 
   const statusColor = (status: number) => {
@@ -115,6 +124,15 @@ export function SensorMainInfo({
           <Button onClick={() => setEditOpen(false)}>Cancel</Button>
           <Button variant="contained" onClick={handleEditSave}>
             Save
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={deleteOpen} onClose={() => setEditOpen(false)}>
+        <DialogTitle>Delete senor</DialogTitle>
+        <DialogActions>
+          <Button onClick={() => setDeleteOpen(false)}>Cancel</Button>
+          <Button variant="contained" onClick={handleDeleteConfirm}>
+            Confirm
           </Button>
         </DialogActions>
       </Dialog>
