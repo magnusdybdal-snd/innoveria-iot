@@ -33,7 +33,7 @@ func (s *AuthServiceImpl) RegisterCompany(ctx context.Context, payload domain.Co
 		return domain.Company{}, err
 	}
 
-	slog.Info("succsessfully registered company", "id", company.Id)
+	slog.Info("succsessfully registered company", "id", company.ID)
 	return company, nil
 }
 
@@ -44,7 +44,7 @@ func (s *AuthServiceImpl) GetOneCompany(ctx context.Context, companyID string) (
 		return domain.Company{}, err
 	}
 
-	slog.Info("successfully found company", "id", company.Id)
+	slog.Info("successfully found company", "id", company.ID)
 	return company, nil
 }
 
@@ -76,7 +76,7 @@ func (s *AuthServiceImpl) RegisterFactory(ctx context.Context, payload domain.Fa
 		return domain.Factory{}, err
 	}
 
-	slog.Info("successfully registered factory", "id", factory.Id)
+	slog.Info("successfully registered factory", "id", factory.ID)
 	return factory, nil
 }
 
@@ -87,7 +87,7 @@ func (s *AuthServiceImpl) GetOneFactory(ctx context.Context, factoryID string) (
 		return domain.Factory{}, err
 	}
 
-	slog.Info("successfully found factory", "id", factory.Id)
+	slog.Info("successfully found factory", "id", factory.ID)
 	return factory, nil
 }
 

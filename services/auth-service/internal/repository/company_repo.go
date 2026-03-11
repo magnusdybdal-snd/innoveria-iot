@@ -48,7 +48,7 @@ func (r *CompanyRepoImpl) Create(ctx context.Context, company domain.Company) (d
 		company.Name,
 		company.Address,
 	).Scan(
-		&out.Id,
+		&out.ID,
 		&out.Name,
 		&out.Address,
 		&out.CreatedAt,
@@ -72,7 +72,7 @@ func (r *CompanyRepoImpl) FindAll(ctx context.Context) ([]domain.Company, error)
 
 	for rows.Next() {
 		var c domain.Company
-		if err := rows.Scan(&c.Id, &c.Name, &c.Address, &c.CreatedAt, &c.UpdatedAt); err != nil {
+		if err := rows.Scan(&c.ID, &c.Name, &c.Address, &c.CreatedAt, &c.UpdatedAt); err != nil {
 			return nil, fmt.Errorf("scan company: %w", err)
 		}
 		out = append(out, c)
@@ -87,7 +87,7 @@ func (r *CompanyRepoImpl) FindAll(ctx context.Context) ([]domain.Company, error)
 func (r *CompanyRepoImpl) FindByID(ctx context.Context, companyID string) (domain.Company, error) {
 	var out domain.Company
 	err := r.db.Pool.QueryRow(ctx, findCompanyByIDQuery, companyID).Scan(
-		&out.Id,
+		&out.ID,
 		&out.Name,
 		&out.Address,
 		&out.CreatedAt,

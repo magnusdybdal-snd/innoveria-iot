@@ -14,7 +14,7 @@ var (
 
 // Factory is the domain model for factory
 type Factory struct {
-	Id         string
+	ID         string
 	CompanyID  string
 	Name       string
 	Address    string

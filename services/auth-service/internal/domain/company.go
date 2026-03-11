@@ -7,7 +7,7 @@ import (
 
 // Company is the domain model for company
 type Company struct {
-	Id        string
+	ID        string
 	Name      string
 	Address   string
 	CreatedAt time.Time

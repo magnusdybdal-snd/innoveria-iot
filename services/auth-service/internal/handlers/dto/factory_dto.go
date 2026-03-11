@@ -37,7 +37,7 @@ func MapCreateFactoryToDomain(from CreateNewFactory) domain.Factory {
 // MapFactoryFromDomain maps domain Factory to a FactoryResponse DTO.
 func MapFactoryFromDomain(from domain.Factory) FactoryResponse {
 	return FactoryResponse{
-		Id:        from.Id,
+		Id:        from.ID,
 		CompanyID: from.CompanyID,
 		Name:      from.Name,
 		Address:   from.Address,

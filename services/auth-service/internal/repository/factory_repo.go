@@ -53,7 +53,7 @@ func (r *FactoryRepoImpl) Create(ctx context.Context, factory domain.Factory) (d
 		factory.Name,
 		factory.Address,
 	).Scan(
-		&out.Id,
+		&out.ID,
 		&out.CompanyID,
 		&out.Name,
 		&out.Address,
@@ -85,7 +85,7 @@ func (r *FactoryRepoImpl) FindAll(ctx context.Context) ([]domain.Factory, error)
 	for rows.Next() {
 		var factory domain.Factory
 		if err := rows.Scan(
-			&factory.Id,
+			&factory.ID,
 			&factory.CompanyID,
 			&factory.Name,
 			&factory.Address,
@@ -108,7 +108,7 @@ func (r *FactoryRepoImpl) FindAll(ctx context.Context) ([]domain.Factory, error)
 func (r *FactoryRepoImpl) FindByID(ctx context.Context, factoryID string) (domain.Factory, error) {
 	var out domain.Factory
 	err := r.db.Pool.QueryRow(ctx, findFactoryByIDQuery, factoryID).Scan(
-		&out.Id,
+		&out.ID,
 		&out.CompanyID,
 		&out.Name,
 		&out.Address,
