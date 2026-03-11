@@ -2,6 +2,14 @@ package domain
 
 import (
 	"context"
+	"errors"
+)
+
+var (
+	// ErrCompanyNotFound triggers when there is a sql violation for company id in factory
+	ErrCompanyNotFound = errors.New("company not found")
+	// ErrInvalidInput trigger when there is an invalid input for factory
+	ErrInvalidInput = errors.New("invalid input")
 )
 
 // Factory is the domain model for factory

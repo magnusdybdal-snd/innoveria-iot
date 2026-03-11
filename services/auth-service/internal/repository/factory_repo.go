@@ -2,10 +2,14 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"log/slog"
 
 	"innoveria-iot/auth-service/internal/domain"
 	"innoveria-iot/pkg/dbutil"
+
+	"github.com/jackc/pgx/v5/pgconn" // for error handling
 )
 
 const (
@@ -57,6 +61,11 @@ func (r *FactoryRepoImpl) Create(ctx context.Context, factory domain.Factory) (d
 		&out.Updated_at,
 	)
 	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == "23503" {
+			slog.Error("pgerr", "err", pgErr.Code)
+			return domain.Factory{}, fmt.Errorf("create factory: %w", domain.ErrCompanyNotFound)
+		}
 		return domain.Factory{}, fmt.Errorf("create factory: %w", err)
 	}
 

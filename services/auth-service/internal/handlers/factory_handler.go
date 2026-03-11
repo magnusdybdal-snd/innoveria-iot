@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -18,6 +19,7 @@ import (
 // @Param body body dto.CreateNewFactory true "Factory payload"
 // @Success 201 {object} dto.FactoryResponse
 // @Failure 400
+// @Failure 404
 // @Failure 500
 // @Router /factories [post]
 func PostFactory(svc domain.AuthService) http.HandlerFunc {
@@ -36,9 +38,17 @@ func PostFactory(svc domain.AuthService) http.HandlerFunc {
 			return
 		}
 
+		// error check for invalid input
 		factoryResp, err := svc.RegisterFactory(ctx, factoryDomain)
 		if err != nil {
-			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			switch {
+			case errors.Is(err, domain.ErrInvalidInput):
+				json.HandleError(w, http.StatusBadRequest, err, "bad request")
+			case errors.Is(err, domain.ErrCompanyNotFound):
+				json.HandleError(w, http.StatusNotFound, err, "company not found")
+			default:
+				json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			}
 			return
 		}
 
