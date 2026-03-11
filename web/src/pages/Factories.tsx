@@ -17,6 +17,8 @@ import { SubPageHeader } from "@shared/ui/SubPageHeader";
 
 import { NoDeviceFoundCard } from "@/shared/ui/NoDeviceFoundCard";
 
+//TODO: Add post request functionality through button and schema
+
 const factoryDetails: string[] = [
   "ID",
   "Name",

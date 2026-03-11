@@ -7,7 +7,7 @@ const makeFactory = (
   overrides: Partial<FactoryApiResponse>,
 ): FactoryApiResponse => ({
   id: "1",
-  companyId: "c1",
+  factoryId: "c1",
   name: "Factory A",
   address: "Street 1",
   createdAt: new Date("2024-01-01"),

@@ -4,7 +4,7 @@ export interface FactoryListApiResponse {
 }
 export interface FactoryApiResponse {
   id: string;
-  companyId: string;
+  factoryId: string;
   name: string;
   address: string;
   createdAt: Date;
@@ -12,7 +12,7 @@ export interface FactoryApiResponse {
 }
 
 export interface CreateFactoryRequest {
-  companyId: string;
+  factoryId: string;
   name: string;
   address: string;
 }
