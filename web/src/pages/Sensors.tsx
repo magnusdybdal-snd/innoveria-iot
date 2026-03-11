@@ -22,7 +22,11 @@ import { DeviceRow } from "@shared/ui/DeviceRow";
 import { NoDeviceFoundCard } from "@shared/ui/NoDeviceFoundCard";
 import { PageContent } from "@shared/ui/PageContent";
 import { PageDivider } from "@shared/ui/PageDivider";
-import { AppSnackbar, useSnackbar } from "@shared/ui/snackbar";
+import {
+  AppSnackbar,
+  SNACKBAR_SEVERITY,
+  useSnackbar,
+} from "@shared/ui/snackbar";
 import { SubPageHeader } from "@shared/ui/SubPageHeader";
 
 const sensorMainDetails: string[] = ["Status", "Name", "Last reading"];
@@ -60,10 +64,10 @@ export default function Sensors() {
     deleteSensor(id)
       .then(() => {
         refetch();
-        show("Sensor deleted successfully", "success");
+        show("Sensor deleted successfully", SNACKBAR_SEVERITY.SUCCESS);
       })
       .catch(() => {
-        show("Failed to delete sensor.", "error");
+        show("Failed to delete sensor.", SNACKBAR_SEVERITY.ERROR);
       });
   };
   // Handler for opening and closing add sensor pop-up
@@ -93,11 +97,11 @@ export default function Sensors() {
       .then(() => {
         refetch();
         setOpenAdd(false);
-        show("Sensor added successfully", "success");
+        show("Sensor added successfully", SNACKBAR_SEVERITY.SUCCESS);
       })
       .catch((err: unknown) => {
         setAddError("Something went wrong adding sensor"); // TODO: improve error handling with specific messages based on error type
-        show("Failed to add sensor.", "error");
+        show("Failed to add sensor.", SNACKBAR_SEVERITY.ERROR);
         throw err;
       });
   };

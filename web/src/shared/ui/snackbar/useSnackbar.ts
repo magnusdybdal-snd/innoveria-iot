@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import type { SnackbarSeverity } from "./snackbar";
+import { type SnackbarSeverity } from "./snackbar";
 
 /**
  * Custom hook to manage snackbar state and provide a function to show snackbars with different severities.

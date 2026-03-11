@@ -1,13 +1,22 @@
 import Alert from "@mui/material/Alert";
-import MuiSnackbar from "@mui/material/Snackbar";
+import Snackbar from "@mui/material/Snackbar";
 
-export type SnackbarSeverity = "error" | "success" | "info" | "warning";
+export const SNACKBAR_SEVERITY = {
+  ERROR: "error",
+  SUCCESS: "success",
+  INFO: "info",
+  WARNING: "warning",
+  UNDEFINED: undefined,
+} as const;
+
+export type SnackbarSeverity =
+  (typeof SNACKBAR_SEVERITY)[keyof typeof SNACKBAR_SEVERITY];
 
 interface AppSnackbarProps {
   open: boolean;
   message: string;
   onClose: () => void;
-  severity?: SnackbarSeverity;
+  severity?: (typeof SNACKBAR_SEVERITY)[keyof typeof SNACKBAR_SEVERITY];
   autoHideDuration?: number;
 }
 
@@ -25,11 +34,11 @@ export function AppSnackbar({
   open,
   message,
   onClose,
-  severity = "info",
+  severity = SNACKBAR_SEVERITY.UNDEFINED,
   autoHideDuration = 5000, // Default to 5 seconds
 }: AppSnackbarProps) {
   return (
-    <MuiSnackbar
+    <Snackbar
       open={open}
       autoHideDuration={autoHideDuration}
       onClose={onClose}
@@ -38,6 +47,6 @@ export function AppSnackbar({
       <Alert onClose={onClose} severity={severity} variant="filled">
         {message}
       </Alert>
-    </MuiSnackbar>
+    </Snackbar>
   );
 }
