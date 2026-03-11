@@ -162,7 +162,7 @@ export default function Gateways() {
         submitError={addError}
       />
       <AppSnackbar
-        open={snackbar !== null}
+        open={snackbar?.open ?? false}
         message={snackbar?.message ?? ""}
         severity={snackbar?.severity}
         onClose={hide}
