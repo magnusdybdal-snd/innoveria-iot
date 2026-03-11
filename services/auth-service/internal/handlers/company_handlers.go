@@ -32,8 +32,8 @@ func PostCompany(svc domain.AuthService) http.HandlerFunc {
 
 		// Dto to domain, only name and address
 		companyDomain := dto.MapCreateCompanyToDomain(payload)
-		if companyDomain.Name == "" || companyDomain.Address == "" {
-			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("missing required fields"), "name and address are required")
+		if companyDomain.Name == "" {
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("missing required fields"), "name is required")
 			return
 		}
 
