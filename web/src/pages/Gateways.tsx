@@ -10,16 +10,15 @@ import {
   type GatewaySortKey,
   type SortDirection,
 } from "@entities/gateway";
+import { AddDevice } from "@features/addDevice";
 import { formatTimestamp } from "@shared/lib";
+import { CustomButton } from "@shared/ui/Button";
 import { CategoryHeader } from "@shared/ui/CategoryHeader";
 import { DeviceRow } from "@shared/ui/DeviceRow";
 import { NoDeviceFoundCard } from "@shared/ui/NoDeviceFoundCard";
 import { PageContent } from "@shared/ui/PageContent";
 import { PageDivider } from "@shared/ui/PageDivider";
 import { SubPageHeader } from "@shared/ui/SubPageHeader";
-
-import { AddDevice } from "@/features/addSensor/ui/AddDevice";
-import { CustomButton } from "@/shared/ui/Button";
 
 // Column labels rendered by CategoryHeader; order determines grid layout
 const gatewayDetails: string[] = ["Status", "Name", "EUI", "Last seen"];

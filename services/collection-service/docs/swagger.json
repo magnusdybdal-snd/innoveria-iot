@@ -9,6 +9,39 @@
     "host": "localhost:8082",
     "basePath": "/api/v1/collection",
     "paths": {
+        "/company-config": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "company-config"
+                ],
+                "summary": "Create tenant mapping",
+                "parameters": [
+                    {
+                        "description": "Tenant mapping payload",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateTenantMappingRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/latest": {
             "get": {
                 "produces": [
@@ -110,6 +143,17 @@
                     "additionalProperties": {}
                 },
                 "timestamp": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.CreateTenantMappingRequest": {
+            "type": "object",
+            "properties": {
+                "company_id": {
+                    "type": "string"
+                },
+                "tenant_id": {
                     "type": "string"
                 }
             }

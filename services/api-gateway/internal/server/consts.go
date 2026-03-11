@@ -13,4 +13,5 @@ const (
 	DEVICE_ROUTE         = API_ROUTE + "/device"
 	AUTHENTICATION_ROUTE = API_ROUTE + "/auth"
 	CONTEXT_ROUTE        = API_ROUTE + "/context"
+	ONBOARDING_ROUTE     = API_ROUTE + "/onboarding"
 )

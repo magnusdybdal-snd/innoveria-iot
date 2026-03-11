@@ -8,13 +8,14 @@ import (
 	"innoveria-iot/device-service/internal/chirpstackrest/dto"
 	"innoveria-iot/device-service/internal/config"
 
+	"innoveria-iot/pkg/env"
 	"innoveria-iot/pkg/httpclient"
 )
 
 // Client is an HTTP client for the Chirpstack REST API.
 type Client struct {
 	baseURL    string
-	token      string
+	secretPath string
 	httpClient *httpclient.Client
 }
 
@@ -22,9 +23,15 @@ type Client struct {
 func New(cfg config.Config) *Client {
 	return &Client{
 		baseURL:    cfg.ChirpstackURL,
-		token:      cfg.ChirpstackSecret,
+		secretPath: cfg.ChirpstackSecretPath,
 		httpClient: httpclient.New(),
 	}
+}
+
+// authHeader reads the token from disk on every call so that
+// the client always picks up a fresh token.
+func (c *Client) authHeader() string {
+	return "Bearer " + env.GetFile(c.secretPath)
 }
 
 // TODO: Add tennant authentication, so add tennantID as query
@@ -44,7 +51,7 @@ func (c *Client) GetOneApplication(ctx context.Context, applicationId string) (d
 		http.MethodGet,
 		nil,
 		map[string]string{
-			"Authorization": "Bearer " + c.token,
+			"Authorization": c.authHeader(),
 		},
 	)
 	if err != nil {
@@ -65,7 +72,7 @@ func (c *Client) GetAllApplication(ctx context.Context, limit int) (dto.Chirpsta
 		http.MethodGet,
 		nil,
 		map[string]string{
-			"Authorization": "Bearer " + c.token,
+			"Authorization": c.authHeader(),
 		},
 	)
 	if err != nil {
@@ -76,17 +83,81 @@ func (c *Client) GetAllApplication(ctx context.Context, limit int) (dto.Chirpsta
 }
 
 // CreateApplication registers a new application in Chirpstack.
-func (c *Client) CreateApplication(ctx context.Context, body dto.CreateChirpstackApplication) error {
+func (c *Client) CreateApplication(ctx context.Context, body dto.CreateChirpstackApplication) (string, error) {
 	url := fmt.Sprintf("%s/api/applications", c.baseURL)
 
-	resp, err := httpclient.DoRaw(
+	resp, err := httpclient.DoRequest[dto.ChirpstackApplicationCreateResponse](
 		c.httpClient,
 		ctx,
 		url,
 		http.MethodPost,
 		body,
 		map[string]string{
-			"Authorization": "Bearer " + c.token,
+			"Authorization": c.authHeader(),
+		},
+	)
+	if err != nil {
+		return "", handleChirpstackError(err)
+	}
+
+	return resp.ID, nil
+}
+
+// CreateTenant registers a new tenant in Chirpstack.
+func (c *Client) CreateTenant(ctx context.Context, body dto.CreateChirpstackTenant) (string, error) {
+	url := fmt.Sprintf("%s/api/tenants", c.baseURL)
+
+	resp, err := httpclient.DoRequest[dto.ChirpstackTenantCreateResponse](
+		c.httpClient,
+		ctx,
+		url,
+		http.MethodPost,
+		body,
+		map[string]string{
+			"Authorization": c.authHeader(),
+		},
+	)
+	if err != nil {
+		return "", handleChirpstackError(err)
+	}
+
+	return resp.ID, nil
+}
+
+// DeleteTenant deletes a tenant from Chirpstack
+func (c *Client) DeleteTenant(ctx context.Context, tenantID string) error {
+	url := fmt.Sprintf("%s/api/tenants/%s", c.baseURL, tenantID)
+	resp, err := httpclient.DoRaw(
+		c.httpClient,
+		ctx,
+		url,
+		http.MethodDelete,
+		nil,
+		map[string]string{
+			"Authorization": c.authHeader(),
+		},
+	)
+	if err != nil {
+		return handleChirpstackError(err)
+	}
+
+	if err := resp.Body.Close(); err != nil {
+		return err
+	}
+	return nil
+}
+
+// DeleteApplication removes an application from Chirpstack by its ID.
+func (c *Client) DeleteApplication(ctx context.Context, applicationID string) error {
+	url := fmt.Sprintf("%s/api/applications/%s", c.baseURL, applicationID)
+	resp, err := httpclient.DoRaw(
+		c.httpClient,
+		ctx,
+		url,
+		http.MethodDelete,
+		nil,
+		map[string]string{
+			"Authorization": c.authHeader(),
 		},
 	)
 	if err != nil {
@@ -110,7 +181,7 @@ func (c *Client) RenameApplication(ctx context.Context, body dto.ChirpstackAppli
 		http.MethodPut,
 		body,
 		map[string]string{
-			"Authorization": "Bearer " + c.token,
+			"Authorization": c.authHeader(),
 		},
 	)
 	if err != nil {
@@ -139,7 +210,7 @@ func (c *Client) GetAllGateways(ctx context.Context, limit int) (dto.ChirpstackG
 		http.MethodGet,
 		nil,
 		map[string]string{
-			"Authorization": "Bearer " + c.token,
+			"Authorization": c.authHeader(),
 		},
 	)
 	if err != nil {
@@ -161,7 +232,7 @@ func (c *Client) GetOneGateway(ctx context.Context, gatewayEUI string) (dto.Chir
 		http.MethodGet,
 		nil,
 		map[string]string{
-			"Authorization": "Bearer " + c.token,
+			"Authorization": c.authHeader(),
 		},
 	)
 	if err != nil {
@@ -181,7 +252,7 @@ func (c *Client) CreateGateway(ctx context.Context, body dto.ChirpstackGatewayRe
 		http.MethodPost,
 		body,
 		map[string]string{
-			"Authorization": "Bearer " + c.token,
+			"Authorization": c.authHeader(),
 		},
 	)
 	if err != nil {
@@ -205,7 +276,7 @@ func (c *Client) RenameGateway(ctx context.Context, body dto.ChirpstackGatewayRe
 		http.MethodPut,
 		body,
 		map[string]string{
-			"Authorization": "Bearer " + c.token,
+			"Authorization": c.authHeader(),
 		},
 	)
 	if err != nil {
@@ -229,7 +300,7 @@ func (c *Client) DeleteGateway(ctx context.Context, gatewayEUI string) error {
 		http.MethodDelete,
 		nil,
 		map[string]string{
-			"Authorization": "Bearer " + c.token,
+			"Authorization": c.authHeader(),
 		},
 	)
 	if err != nil {
@@ -252,7 +323,7 @@ func (c *Client) GetAllSensors(ctx context.Context, limit int, applicationID str
 		http.MethodGet,
 		nil,
 		map[string]string{
-			"Authorization": "Bearer " + c.token,
+			"Authorization": c.authHeader(),
 		},
 	)
 	if err != nil {
@@ -274,7 +345,7 @@ func (c *Client) GetOneSensor(ctx context.Context, deviceEUI string) (dto.Chirps
 		http.MethodGet,
 		nil,
 		map[string]string{
-			"Authorization": "Bearer " + c.token,
+			"Authorization": c.authHeader(),
 		},
 	)
 	if err != nil {
@@ -294,7 +365,7 @@ func (c *Client) CreateSensor(ctx context.Context, body dto.ChirpstackSensorRequ
 		http.MethodPost,
 		body,
 		map[string]string{
-			"Authorization": "Bearer " + c.token,
+			"Authorization": c.authHeader(),
 		},
 	)
 	if err != nil {
@@ -319,7 +390,7 @@ func (c *Client) UpdateSensor(ctx context.Context, body dto.ChirpstackSensorRequ
 		http.MethodPut,
 		body,
 		map[string]string{
-			"Authorization": "Bearer " + c.token,
+			"Authorization": c.authHeader(),
 		},
 	)
 	if err != nil {
@@ -343,7 +414,7 @@ func (c *Client) DeleteSensor(ctx context.Context, deviceEUI string) error {
 		http.MethodDelete,
 		nil,
 		map[string]string{
-			"Authorization": "Bearer " + c.token,
+			"Authorization": c.authHeader(),
 		},
 	)
 	if err != nil {
@@ -366,7 +437,7 @@ func (c *Client) GetAllSensorProfiles(ctx context.Context, limit int) (dto.Devic
 		http.MethodGet,
 		nil,
 		map[string]string{
-			"Authorization": "Bearer " + c.token,
+			"Authorization": c.authHeader(),
 		},
 	)
 	if err != nil {

@@ -46,6 +46,11 @@ dc_resource(
 )
 
 dc_resource(
+    'onboarding-service',
+    labels=['microservice']
+)
+
+dc_resource(
     'chirpstack',
     labels=['chirpstack']
 )
