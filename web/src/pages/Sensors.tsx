@@ -13,18 +13,17 @@ import {
   type SensorSortKey,
   type SortDirection,
 } from "@entities/sensor";
+import { deleteSensor } from "@entities/sensor/api/deleteSensor";
 import { AddDevice } from "@features/addSensor";
 import { formatTimestamp } from "@shared/lib";
+import { CustomButton } from "@shared/ui/Button";
 import { CategoryHeader } from "@shared/ui/CategoryHeader";
 import { DeviceRow } from "@shared/ui/DeviceRow";
 import { NoDeviceFoundCard } from "@shared/ui/NoDeviceFoundCard";
 import { PageContent } from "@shared/ui/PageContent";
 import { PageDivider } from "@shared/ui/PageDivider";
-import { ErrorSnackbar, SuccessSnackbar } from "@shared/ui/snackbar";
+import { AppSnackbar, useSnackbar } from "@shared/ui/snackbar";
 import { SubPageHeader } from "@shared/ui/SubPageHeader";
-
-import { deleteSensor } from "@/entities/sensor/api/deleteSensor";
-import { CustomButton } from "@/shared/ui/Button";
 
 const sensorMainDetails: string[] = ["Status", "Name", "Last reading"];
 const addSensorDetails: string[] = [
@@ -50,11 +49,7 @@ export default function Sensors() {
     SensorProfileApiResponse[]
   >([]);
 
-  // State for controlling success/error snackbars
-  const [deleteSuccess, setDeleteSuccess] = useState(false);
-  const [addSuccessSnackbar, setAddSuccess] = useState(false);
-  const [addErrorSnackbar, setAddErrorSnackbar] = useState(false);
-  const [deleteErrorSnackbar, setDeleteErrorSnackbar] = useState(false);
+  const { show, hide, snackbar } = useSnackbar();
 
   useEffect(() => {
     getSensorProfiles().then(setSensorProfiles);
@@ -65,10 +60,10 @@ export default function Sensors() {
     deleteSensor(id)
       .then(() => {
         refetch();
-        setDeleteSuccess(true);
+        show("Sensor deleted successfully", "success");
       })
       .catch(() => {
-        setDeleteErrorSnackbar(true);
+        show("Failed to delete sensor.", "error");
       });
   };
   // Handler for opening and closing add sensor pop-up
@@ -98,11 +93,11 @@ export default function Sensors() {
       .then(() => {
         refetch();
         setOpenAdd(false);
-        setAddSuccess(true);
+        show("Sensor added successfully", "success");
       })
       .catch((err: unknown) => {
-        setAddError("Failed to add sensor. The EUI may already be registered.");
-        setAddErrorSnackbar(true);
+        setAddError("Something went wrong adding sensor"); // TODO: improve error handling with specific messages based on error type
+        show("Failed to add sensor.", "error");
         throw err;
       });
   };
@@ -196,27 +191,11 @@ export default function Sensors() {
         onAdd={handleAddSensor}
         submitError={addError}
       />
-      <ErrorSnackbar
-        open={addErrorSnackbar}
-        message="Failed to add sensor. The EUI may already be registered."
-        onClose={() => setAddErrorSnackbar(false)}
-      />
-      <ErrorSnackbar
-        open={deleteErrorSnackbar}
-        message="Failed to delete sensor."
-        onClose={() => setDeleteErrorSnackbar(false)}
-      />
-      <SuccessSnackbar
-        open={deleteSuccess || addSuccessSnackbar}
-        message={
-          addSuccessSnackbar
-            ? "Sensor added successfully"
-            : "Sensor deleted successfully"
-        }
-        onClose={() => {
-          setDeleteSuccess(false);
-          setAddSuccess(false);
-        }}
+      <AppSnackbar
+        open={snackbar !== null}
+        message={snackbar?.message ?? ""}
+        severity={snackbar?.severity}
+        onClose={hide}
       />
     </div>
   );

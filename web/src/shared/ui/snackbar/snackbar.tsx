@@ -1,7 +1,7 @@
 import Alert from "@mui/material/Alert";
 import MuiSnackbar from "@mui/material/Snackbar";
 
-type SnackbarSeverity = "error" | "success" | "info" | "warning";
+export type SnackbarSeverity = "error" | "success" | "info" | "warning";
 
 interface AppSnackbarProps {
   open: boolean;
