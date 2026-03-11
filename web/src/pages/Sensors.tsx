@@ -24,6 +24,7 @@ import { SubPageHeader } from "@shared/ui/SubPageHeader";
 
 import { deleteSensor } from "@/entities/sensor/api/deleteSensor";
 import { CustomButton } from "@/shared/ui/Button";
+import { SuccessSnackbar } from "@/shared/ui/successSnackbar/successMessage";
 
 const sensorMainDetails: string[] = ["Status", "Name", "Last reading"];
 const addSensorDetails: string[] = [
@@ -49,6 +50,10 @@ export default function Sensors() {
     SensorProfileApiResponse[]
   >([]);
 
+  // State for controlling success snackbar
+  const [deleteSuccess, setDeleteSuccess] = useState(false);
+  const [addSuccess, setAddSuccess] = useState(false);
+
   useEffect(() => {
     getSensorProfiles().then(setSensorProfiles);
   }, []);
@@ -57,6 +62,7 @@ export default function Sensors() {
   const handleDeleteSensor = (id: string) => {
     deleteSensor(id).then(() => {
       refetch();
+      setDeleteSuccess(true);
     });
   };
   // Handler for opening and closing add sensor pop-up
@@ -86,6 +92,7 @@ export default function Sensors() {
       .then(() => {
         refetch();
         setOpenAdd(false);
+        setAddSuccess(true);
       })
       .catch((err: unknown) => {
         setAddError("Failed to add sensor. The EUI may already be registered.");
@@ -181,6 +188,18 @@ export default function Sensors() {
         profileOptions={sensorProfiles}
         onAdd={handleAddSensor}
         submitError={addError}
+      />
+      <SuccessSnackbar
+        open={deleteSuccess || addSuccess}
+        message={
+          addSuccess
+            ? "Sensor added successfully"
+            : "Sensor deleted successfully"
+        }
+        onClose={() => {
+          setDeleteSuccess(false);
+          setAddSuccess(false);
+        }}
       />
     </div>
   );
