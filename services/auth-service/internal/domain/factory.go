@@ -3,6 +3,7 @@ package domain
 import (
 	"context"
 	"errors"
+	"time"
 )
 
 var (
@@ -18,8 +19,8 @@ type Factory struct {
 	CompanyID string
 	Name      string
 	Address   string
-	CreatedAt string
-	UpdatedAt string
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 // FactoryRepo defines the factory repository

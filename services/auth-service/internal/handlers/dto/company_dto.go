@@ -9,11 +9,11 @@ import (
 
 // CompanyResponse is response payload for response
 type CompanyResponse struct {
-	ID        string    `json:"id"`
-	Name      string    `json:"name"`
-	Address   string    `json:"address"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID        string `json:"id"`
+	Name      string `json:"name"`
+	Address   string `json:"address"`
+	CreatedAt string `json:"created_at"`
+	UpdatedAt string `json:"updated_at"`
 }
 
 // CompanyListResponse wraps a slice of CompanyResponse with a total count
@@ -42,8 +42,8 @@ func MapCompanyFromDomain(from domain.Company) CompanyResponse {
 		ID:        from.ID,
 		Name:      from.Name,
 		Address:   from.Address,
-		CreatedAt: from.CreatedAt,
-		UpdatedAt: from.UpdatedAt,
+		CreatedAt: from.CreatedAt.Format(time.RFC3339),
+		UpdatedAt: from.UpdatedAt.Format(time.RFC3339),
 	}
 }
 

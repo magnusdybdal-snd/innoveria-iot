@@ -1,6 +1,10 @@
 package dto
 
-import "innoveria-iot/auth-service/internal/domain"
+import (
+	"time"
+
+	"innoveria-iot/auth-service/internal/domain"
+)
 
 // FactoryResponse is the response payload for factory operations.
 type FactoryResponse struct {
@@ -41,8 +45,8 @@ func MapFactoryFromDomain(from domain.Factory) FactoryResponse {
 		CompanyID: from.CompanyID,
 		Name:      from.Name,
 		Address:   from.Address,
-		CreatedAt: from.CreatedAt,
-		UpdatedAt: from.UpdatedAt,
+		CreatedAt: from.CreatedAt.Format(time.RFC3339),
+		UpdatedAt: from.UpdatedAt.Format(time.RFC3339),
 	}
 }
 
