@@ -7,6 +7,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
+//go:embed seeds/*.sql
 var seeds embed.FS
 
 // RunSeeds see /pkg/dbutil/seed.go
