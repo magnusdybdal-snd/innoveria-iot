@@ -67,11 +67,7 @@ export default function Factories() {
   const addButton = (
     <CustomButton onClick={handleClickOpenAdd}>Add factory</CustomButton>
   );
-  const handleAddFactory = (factoryData: {
-    factoryId: string;
-    name: string;
-    address: string;
-  }) => {
+  const handleAddFactory = (factoryData: { name: string; address: string }) => {
     setAddError(null);
     return postFactory({
       companyId: "a0000000-0000-0000-0000-000000000001", // TODO: replace with real company ID from auth
@@ -163,7 +159,6 @@ export default function Factories() {
           onSubmit={(values) =>
             handleAddFactory({
               name: values["Name"],
-              factoryId: values["Factory ID"],
               address: values["Address"],
             })
           }
