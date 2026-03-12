@@ -12,9 +12,11 @@ type Sensor struct {
 	Id                  string
 	CompanyID           string
 	DeviceEUI           string // hardware identifier, shared key with Chirpstack
+	ApplicationKey      string // password for sensor to connect to an application
 	Name                string
 	Description         *string
 	State               DeviceState // administrative state: ACTIVE / INACTIVE
+	FactoryID           *string     // loose cross-service ref
 	FactoryAreaID       *string     // loose cross-service ref
 	ProductionResource  *string     // loose cross-service ref
 	ChirpstackProfileID string      // LoRaWAN template that describes device model, chosen on registration
