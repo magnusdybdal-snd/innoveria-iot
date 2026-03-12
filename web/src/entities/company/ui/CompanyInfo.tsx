@@ -45,9 +45,8 @@ export function CompanyInfo({
         }}
         onClick={addUser}
       >
-        {" "}
-        {/* TODO: say first only when no company admin has been added. */}
-        Add first company admin
+        Add first company admin // TODO: say first only when no company admin
+        has been added.
       </Button>
     </>
   );
