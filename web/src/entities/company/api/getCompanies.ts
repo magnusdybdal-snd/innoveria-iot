@@ -28,11 +28,11 @@ export const getCompanies = async (): Promise<CompanyApiResponse[]> => {
     );
 
     return (data.companies ?? []).map((s) => ({
-      company_id: s.company_id,
+      companyId: s.company_id,
       name: s.name,
       address: s.address,
-      created_at: s.created_at,
-      updated_at: s.updated_at,
+      createdAt: s.created_at,
+      updatedAt: s.updated_at,
     }));
   } catch (error) {
     console.error("Failed to fetch companies:", error);
