@@ -33,7 +33,7 @@ func PostFactory(svc domain.AuthService) http.HandlerFunc {
 		}
 
 		factoryDomain := dto.MapCreateFactoryToDomain(payload)
-		if factoryDomain.CompanyID == "" && factoryDomain.Name == "" {
+		if factoryDomain.CompanyID == "" || factoryDomain.Name == "" {
 			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("missing required fields"), "company_id and name are required")
 			return
 		}
