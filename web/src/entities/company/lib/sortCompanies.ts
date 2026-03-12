@@ -31,9 +31,9 @@ export function sortCompanies(
     } else if (key === "Address") {
       cmp = a.address.localeCompare(b.address);
     } else if (key === "Created at") {
-      cmp = parseDateToMs(a.created_at) - parseDateToMs(b.created_at);
+      cmp = parseDateToMs(a.createdAt) - parseDateToMs(b.createdAt);
     } else if (key === "Updated at") {
-      cmp = parseDateToMs(a.updated_at) - parseDateToMs(b.updated_at);
+      cmp = parseDateToMs(a.updatedAt) - parseDateToMs(b.updatedAt);
     }
     return direction === "asc" ? cmp : -cmp;
   });
