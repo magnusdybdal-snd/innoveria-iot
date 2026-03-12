@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import {
+  deleteFactory,
   getFactories,
   sortFactories,
   type FactoryApiResponse,
@@ -92,6 +93,19 @@ export default function Factories() {
     });
   };
 
+  //TODO: impement snackbar.
+  //TODO: use deletion confirmation dialog when it has been implemented.
+  const handleDeleteFactory = (id: string) => {
+    deleteFactory(id)
+      .then(() => {
+        fetchFactories();
+        //show("Factory deleted successfully", SNACKBAR_SEVERITY.SUCCESS);
+      })
+      .catch(() => {
+        //show("Failed to delete factory", SNACKBAR_SEVERITY.ERROR);
+      });
+  };
+
   useEffect(() => {
     fetchFactories();
   }, []);
@@ -128,7 +142,7 @@ export default function Factories() {
                 address={factory.address}
                 createdAt={formatTimestamp(factory.createdAt.toString())}
                 updatedAt={formatTimestamp(factory.updatedAt.toString())}
-                addFactory={() => {}} // TODO: implement add user flow
+                onDelete={() => handleDeleteFactory(factory.id)}
               />
             </DeviceRow>
           ))}

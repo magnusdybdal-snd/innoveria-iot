@@ -1,12 +1,13 @@
-import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
+
+import { ActionMenu } from "@/shared/ui/actionMenu";
 
 type InfoProps = {
   name: string;
   address: string;
   createdAt: string;
   updatedAt: string;
-  addFactory: () => void;
+  onDelete: () => void;
 };
 
 /**
@@ -17,7 +18,7 @@ type InfoProps = {
  * @param props.address - Main address of factory office
  * @param props.createdAt - Formatted date the factory was added
  * @param props.updatedAt - Formatted date of most recent change
- * @param props.addFactory - Callback to add a new factory
+ * @param props.onDelete - Callback to delete a factory
  * @returns A set of grid-aligned cells with an add user button
  */
 export function FactoryInfo({
@@ -25,28 +26,17 @@ export function FactoryInfo({
   address,
   createdAt,
   updatedAt,
-  addFactory,
+  onDelete,
 }: InfoProps) {
+  const menuItems = [{ label: "Delete", onClick: onDelete }];
+
   return (
     <>
       <Typography>{name}</Typography>
       <Typography>{address}</Typography>
       <Typography>{createdAt}</Typography>
       <Typography>{updatedAt}</Typography>
-      <Button
-        variant="outlined"
-        sx={{
-          backgroundColor: "primary.main",
-          color: "primary.dark",
-          "&:hover": { backgroundColor: "primary.main" },
-          borderRadius: 2,
-          textTransform: "none",
-          fontSize: 15,
-        }}
-        onClick={addFactory}
-      >
-        Add first factory admin
-      </Button>
+      <ActionMenu items={menuItems} />
     </>
   );
 }
