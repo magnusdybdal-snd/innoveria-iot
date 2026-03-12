@@ -14,6 +14,11 @@ import { CategoryHeader } from "@shared/ui/CategoryHeader";
 import { DeviceRow } from "@shared/ui/DeviceRow";
 import { PageContent } from "@shared/ui/PageContent";
 import { PageDivider } from "@shared/ui/PageDivider";
+import {
+  AppSnackbar,
+  SNACKBAR_SEVERITY,
+  useSnackbar,
+} from "@shared/ui/snackbar";
 import { SubPageHeader } from "@shared/ui/SubPageHeader";
 
 import { postFactory } from "@/entities/factory/api/postFactory";
@@ -76,15 +81,18 @@ export default function Factories() {
       .then(() => {
         fetchFactories();
         setOpenAdd(false);
-        //show("Gateway added successfully", SNACKBAR_SEVERITY.SUCCESS);
+        show("Gateway added successfully", SNACKBAR_SEVERITY.SUCCESS);
       })
       .catch(() => {
         setAddError(
           "Failed to add gateway.", // TODO: throw non-hardcoded error messages - based on actual error
         );
-        //show("Failed to add gateway", SNACKBAR_SEVERITY.ERROR);
+        show("Failed to add gateway", SNACKBAR_SEVERITY.ERROR);
       });
   };
+
+  // State for controlling success snackbar
+  const { show, hide, snackbar } = useSnackbar();
 
   const fetchFactories = () => {
     getFactories().then((data) => {
@@ -93,16 +101,15 @@ export default function Factories() {
     });
   };
 
-  //TODO: impement snackbar.
   //TODO: use deletion confirmation dialog when it has been implemented.
   const handleDeleteFactory = (id: string) => {
     deleteFactory(id)
       .then(() => {
         fetchFactories();
-        //show("Factory deleted successfully", SNACKBAR_SEVERITY.SUCCESS);
+        show("Factory deleted successfully", SNACKBAR_SEVERITY.SUCCESS);
       })
       .catch(() => {
-        //show("Failed to delete factory", SNACKBAR_SEVERITY.ERROR);
+        show("Failed to delete factory", SNACKBAR_SEVERITY.ERROR);
       });
   };
 
@@ -161,6 +168,12 @@ export default function Factories() {
             })
           }
           submitError={addError}
+        />
+        <AppSnackbar
+          open={snackbar?.open ?? false}
+          message={snackbar?.message ?? ""}
+          severity={snackbar?.severity}
+          onClose={hide}
         />
       </PageContent>
     </div>
