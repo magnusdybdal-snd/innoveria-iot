@@ -3,11 +3,12 @@ package handlers
 import (
 	"errors"
 	"fmt"
-	"net/http"
-
 	"innoveria-iot/auth-service/internal/domain"
 	"innoveria-iot/auth-service/internal/handlers/dto"
 	"innoveria-iot/pkg/json"
+	"net/http"
+
+	"github.com/google/uuid"
 )
 
 // PostFactory handles factory creation requests.
@@ -122,6 +123,7 @@ func GetOneFactory(svc domain.AuthService) http.HandlerFunc {
 // @Param id path string true "id"
 // @Success 204
 // @Failure 400
+// @Failure 404
 // @Failure 500
 // @Router /factories/{id} [delete]
 func DeleteFactory(svc domain.AuthService) http.HandlerFunc {
@@ -133,8 +135,19 @@ func DeleteFactory(svc domain.AuthService) http.HandlerFunc {
 			return
 		}
 
+		// Check for valid uuid
+		if _, err := uuid.Parse(factoryID); err != nil {
+			json.HandleError(w, http.StatusBadRequest, err, "invalid factory id (uuid)")
+			return
+		}
+
 		if err := svc.DeleteFactory(ctx, factoryID); err != nil {
-			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			switch {
+			case errors.Is(err, domain.ErrFactoryNotFound):
+				json.HandleError(w, http.StatusNotFound, err, "factory not found")
+			default:
+				json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			}
 			return
 		}
 
