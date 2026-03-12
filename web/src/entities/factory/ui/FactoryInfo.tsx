@@ -2,7 +2,6 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 
 type InfoProps = {
-  id: string;
   name: string;
   address: string;
   createdAt: string;
@@ -14,7 +13,6 @@ type InfoProps = {
  * Displays a single factory row's data: id, name, address, date created, and date updated.
  * Includes a button for adding the first factory admin user.
  * @param props - Component props
- * @param props.id - Unique identifier of the factory
  * @param props.name - Display name of the factory
  * @param props.address - Main address of factory office
  * @param props.createdAt - Formatted date the factory was added
@@ -23,7 +21,6 @@ type InfoProps = {
  * @returns A set of grid-aligned cells with an add user button
  */
 export function FactoryInfo({
-  id,
   name,
   address,
   createdAt,
@@ -32,7 +29,6 @@ export function FactoryInfo({
 }: InfoProps) {
   return (
     <>
-      <Typography>{id}</Typography>
       <Typography>{name}</Typography>
       <Typography>{address}</Typography>
       <Typography>{createdAt}</Typography>

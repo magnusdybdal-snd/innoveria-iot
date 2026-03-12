@@ -8,7 +8,7 @@ type RawFactoryListApiResponse = {
 };
 type RawFactoryApiResponse = {
   id: string;
-  factory_id: string;
+  company_id: string;
   name: string;
   address: string;
   created_at: Date;
@@ -28,7 +28,7 @@ export const getFactories = async (): Promise<FactoryApiResponse[]> => {
 
     return (data.factories ?? []).map((a) => ({
       id: a.id,
-      factoryId: a.factory_id,
+      companyId: a.company_id,
       name: a.name,
       address: a.address,
       createdAt: a.created_at,

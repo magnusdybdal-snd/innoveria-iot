@@ -15,16 +15,18 @@ import { PageContent } from "@shared/ui/PageContent";
 import { PageDivider } from "@shared/ui/PageDivider";
 import { SubPageHeader } from "@shared/ui/SubPageHeader";
 
+import { postFactory } from "@/entities/factory/api/postFactory";
+import { AddEntityDialog } from "@/shared/ui/AddEntityDialog";
+import { CustomButton } from "@/shared/ui/Button";
 import { NoDeviceFoundCard } from "@/shared/ui/NoDeviceFoundCard";
 
 //TODO: Add post request functionality through button and schema
 
 const factoryDetails: string[] = [
-  "ID",
   "Name",
   "Address",
-  "Created",
-  "Last update",
+  "Created at",
+  "Updated at",
 ];
 
 const sortableColumns: FactorySortKey[] = [
@@ -45,6 +47,43 @@ export default function Factories() {
     key: FactorySortKey | null;
     direction: SortDirection;
   }>({ key: null, direction: "asc" });
+
+  // Adding a new factory
+  const [openAdd, setOpenAdd] = useState(false);
+  const [addError, setAddError] = useState<string | null>(null);
+  const handleClickOpenAdd = () => {
+    setOpenAdd(true);
+  };
+  const handleCloseAdd = () => {
+    setOpenAdd(false);
+    setAddError(null);
+  };
+  const addButton = (
+    <CustomButton onClick={handleClickOpenAdd}>Add factory</CustomButton>
+  );
+  const handleAddFactory = (factoryData: {
+    factoryId: string;
+    name: string;
+    address: string;
+  }) => {
+    setAddError(null);
+    return postFactory({
+      companyId: "a0000000-0000-0000-0000-000000000001", // TODO: replace with real company ID from auth
+      name: factoryData.name,
+      address: factoryData.address,
+    })
+      .then(() => {
+        fetchFactories();
+        setOpenAdd(false);
+        //show("Gateway added successfully", SNACKBAR_SEVERITY.SUCCESS);
+      })
+      .catch(() => {
+        setAddError(
+          "Failed to add gateway.", // TODO: throw non-hardcoded error messages - based on actual error
+        );
+        //show("Failed to add gateway", SNACKBAR_SEVERITY.ERROR);
+      });
+  };
 
   const fetchFactories = () => {
     getFactories().then((data) => {
@@ -71,7 +110,7 @@ export default function Factories() {
   return (
     <div className="flex h-screen">
       <PageContent>
-        <SubPageHeader title="Factories" />
+        <SubPageHeader title="Factories" action={addButton} />
         <PageDivider />
         <CategoryHeader
           categories={factoryDetails}
@@ -85,7 +124,6 @@ export default function Factories() {
           {sorted.map((factory) => (
             <DeviceRow key={factory.id}>
               <FactoryInfo
-                id={factory.id}
                 name={factory.name}
                 address={factory.address}
                 createdAt={formatTimestamp(factory.createdAt.toString())}
@@ -96,6 +134,20 @@ export default function Factories() {
           ))}
         </CategoryHeader>
         {!isLoading && sorted.length === 0 && <NoDeviceFoundCard />}
+        <AddEntityDialog
+          open={openAdd}
+          title="Add factory"
+          fields={["Name", "Address"]}
+          onClose={handleCloseAdd}
+          onSubmit={(values) =>
+            handleAddFactory({
+              name: values["Name"],
+              factoryId: values["Factory ID"],
+              address: values["Address"],
+            })
+          }
+          submitError={addError}
+        />
       </PageContent>
     </div>
   );
