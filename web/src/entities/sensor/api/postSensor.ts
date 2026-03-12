@@ -11,8 +11,10 @@ export const postSensor = async (
 ): Promise<void> => {
   await apiRequest(serviceClient, API_ROUTES.sensors, "POST", {
     company_id: sensorData.companyId,
+    factory: sensorData.factory,
     device_eui: sensorData.deviceEui,
     device_profile_id: sensorData.sensorProfileId,
+    app_key: sensorData.appKey,
     name: sensorData.name,
     description: "hardcoded description", //TODO: remove hardcoded when description is added to form"
   });

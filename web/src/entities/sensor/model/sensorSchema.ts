@@ -11,6 +11,7 @@ export interface SensorApiResponse {
   id: string;
   deviceEui: string;
   name: string;
+  factory: string;
   status: number;
   machine: string;
   lastReading: string;
@@ -26,7 +27,9 @@ export interface SensorReadingApiResponse {
 
 export interface CreateSensorRequest {
   companyId: string;
+  factory: string;
   deviceEui: string;
+  appKey: string;
   sensorProfileId: string;
   name: string;
 }

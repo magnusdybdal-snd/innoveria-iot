@@ -9,6 +9,7 @@ const makeSensor = (
   id: "1",
   deviceEui: "abc",
   name: "Sensor A",
+  factory: "Factory A",
   status: 0,
   machine: "Machine A",
   lastReading: "1 min",
