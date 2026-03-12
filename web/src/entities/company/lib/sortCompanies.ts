@@ -1,4 +1,4 @@
-import type { CompanyApiResponse } from "@entities/company/model/companySchema";
+import type { CompanyApiResponse } from "@entities/company";
 
 export type SortDirection = "asc" | "desc";
 export type CompanySortKey = "Name" | "Address" | "Created at" | "Updated at";

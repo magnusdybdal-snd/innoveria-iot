@@ -1,4 +1,4 @@
-import type { CompanyApiResponse } from "@entities/company/model/companySchema";
+import type { CompanyApiResponse } from "@entities/company";
 import { apiRequest, serviceClient } from "@shared/api";
 import { API_ROUTES } from "@shared/api/routes";
 
