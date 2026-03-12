@@ -64,9 +64,11 @@ export function AddEntityDialog({
     }
 
     setFillError(false);
-    onSubmit(values).then(() => {
-      setValues({});
-    });
+    onSubmit(values)
+      .then(() => {
+        setValues({});
+      })
+      .catch(() => {});
   };
 
   return (
