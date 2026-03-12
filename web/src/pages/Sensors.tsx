@@ -13,17 +13,21 @@ import {
   type SensorSortKey,
   type SortDirection,
 } from "@entities/sensor";
+import { deleteSensor } from "@entities/sensor/api/deleteSensor";
 import { AddDevice } from "@features/addDevice";
 import { formatTimestamp } from "@shared/lib";
+import { CustomButton } from "@shared/ui/Button";
 import { CategoryHeader } from "@shared/ui/CategoryHeader";
 import { DeviceRow } from "@shared/ui/DeviceRow";
 import { NoDeviceFoundCard } from "@shared/ui/NoDeviceFoundCard";
 import { PageContent } from "@shared/ui/PageContent";
 import { PageDivider } from "@shared/ui/PageDivider";
+import {
+  AppSnackbar,
+  SNACKBAR_SEVERITY,
+  useSnackbar,
+} from "@shared/ui/snackbar";
 import { SubPageHeader } from "@shared/ui/SubPageHeader";
-
-import { deleteSensor } from "@/entities/sensor/api/deleteSensor";
-import { CustomButton } from "@/shared/ui/Button";
 
 const sensorMainDetails: string[] = ["Status", "Name", "Last reading"];
 const addSensorDetails: string[] = [
@@ -49,15 +53,22 @@ export default function Sensors() {
     SensorProfileApiResponse[]
   >([]);
 
+  const { show, hide, snackbar } = useSnackbar();
+
   useEffect(() => {
     getSensorProfiles().then(setSensorProfiles);
   }, []);
 
   // Handler for deleting a sensor; refreshes list on success
   const handleDeleteSensor = (id: string) => {
-    deleteSensor(id).then(() => {
-      refetch();
-    });
+    deleteSensor(id)
+      .then(() => {
+        refetch();
+        show("Sensor deleted successfully", SNACKBAR_SEVERITY.SUCCESS);
+      })
+      .catch(() => {
+        show("Failed to delete sensor.", SNACKBAR_SEVERITY.ERROR);
+      });
   };
   // Handler for opening and closing add sensor pop-up
   const handleClickOpenAdd = () => {
@@ -86,9 +97,11 @@ export default function Sensors() {
       .then(() => {
         refetch();
         setOpenAdd(false);
+        show("Sensor added successfully", SNACKBAR_SEVERITY.SUCCESS);
       })
       .catch((err: unknown) => {
-        setAddError("Failed to add sensor. The EUI may already be registered.");
+        setAddError("Something went wrong adding sensor"); // TODO: improve error handling with specific messages based on error type
+        show("Failed to add sensor.", SNACKBAR_SEVERITY.ERROR);
         throw err;
       });
   };
@@ -181,6 +194,12 @@ export default function Sensors() {
         profileOptions={sensorProfiles}
         onAdd={handleAddSensor}
         submitError={addError}
+      />
+      <AppSnackbar
+        open={snackbar?.open ?? false}
+        message={snackbar?.message ?? ""}
+        severity={snackbar?.severity}
+        onClose={hide}
       />
     </div>
   );
