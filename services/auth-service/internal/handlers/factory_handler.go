@@ -97,6 +97,7 @@ func GetAllFactories(svc domain.AuthService) http.HandlerFunc {
 // @Param id path string true "id"
 // @Success 200 {object} dto.FactoryResponse
 // @Failure 400
+// @Failure 404
 // @Failure 500
 // @Router /factories/{id} [get]
 func GetOneFactory(svc domain.AuthService) http.HandlerFunc {

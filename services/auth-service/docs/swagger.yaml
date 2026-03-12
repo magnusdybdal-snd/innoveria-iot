@@ -222,6 +222,8 @@ paths:
             $ref: '#/definitions/dto.FactoryResponse'
         "400":
           description: Bad Request
+        "404":
+          description: Not Found
         "500":
           description: Internal Server Error
       summary: Get one factory
