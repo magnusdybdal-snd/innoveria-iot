@@ -13,9 +13,11 @@ export interface AddDeviceProps {
   onClose: () => void;
   addOptions: string[];
   profileOptions?: { id: string; name: string }[];
+  factoryOptions?: { id: string; name: string }[];
   onAdd: (sensor: {
     name: string;
     deviceEui: string;
+    factory: string;
     machine: string;
     appKey: string;
     senProf: string;
@@ -47,7 +49,14 @@ const inputLengthError: Record<string, string> = {
  * @returns The rendered add-device dialog
  */
 export function AddDevice(props: AddDeviceProps) {
-  const { onClose, open, addOptions, profileOptions = [], submitError } = props;
+  const {
+    onClose,
+    open,
+    addOptions,
+    profileOptions = [],
+    factoryOptions = [],
+    submitError,
+  } = props;
   const [values, setValues] = useState<Record<string, string>>({});
   const [fillError, setFillError] = useState(false);
   const [lengthErrors, setLengthErrors] = useState<Record<string, boolean>>({});
@@ -83,6 +92,7 @@ export function AddDevice(props: AddDeviceProps) {
       .onAdd({
         name: values["Name"],
         deviceEui: values["DeviceEUI"],
+        factory: values["Factory"],
         machine: values["Machine"],
         appKey: values["Application key"],
         senProf: values["Sensor profile"],
@@ -118,6 +128,7 @@ export function AddDevice(props: AddDeviceProps) {
           options={addOptions}
           values={values}
           profileOptions={profileOptions}
+          factoryOptions={factoryOptions}
           lengthErrors={lengthErrors}
           lengthErrorMessages={inputLengthError}
           inputHints={inputHints}

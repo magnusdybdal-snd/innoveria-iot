@@ -29,15 +29,23 @@ import {
 } from "@shared/ui/snackbar";
 import { SubPageHeader } from "@shared/ui/SubPageHeader";
 
+import { getFactories, type FactoryApiResponse } from "@/entities/factory";
+
 const sensorMainDetails: string[] = ["Status", "Name", "Last reading"];
 const addSensorDetails: string[] = [
   "Name",
   "DeviceEUI",
+  "Factory",
   "Machine",
   "Application key",
   "Sensor profile",
 ];
-const sortableColumns: SensorSortKey[] = ["Status", "Name", "Last reading"];
+const sortableColumns: SensorSortKey[] = [
+  "Status",
+  "Factory",
+  "Name",
+  "Last reading",
+];
 
 /**
  * Full-page view listing all LoRaWAN sensors with sortable columns, summary statistics, and add/detail dialogs.
@@ -52,6 +60,7 @@ export default function Sensors() {
   const [sensorProfiles, setSensorProfiles] = useState<
     SensorProfileApiResponse[]
   >([]);
+  const [factory, setFactory] = useState<FactoryApiResponse[]>([]); // factory location sensor
 
   const { show, hide, snackbar } = useSnackbar();
 
@@ -59,6 +68,9 @@ export default function Sensors() {
     getSensorProfiles().then(setSensorProfiles);
   }, []);
 
+  useEffect(() => {
+    getFactories().then(setFactory);
+  }, []);
   // Handler for deleting a sensor; refreshes list on success
   const handleDeleteSensor = (id: string) => {
     deleteSensor(id)
@@ -83,6 +95,7 @@ export default function Sensors() {
   const handleAddSensor = (sensorData: {
     name: string;
     deviceEui: string;
+    factory: string;
     machine: string;
     appKey: string;
     senProf: string;
@@ -194,6 +207,7 @@ export default function Sensors() {
         profileOptions={sensorProfiles}
         onAdd={handleAddSensor}
         submitError={addError}
+        factoryOptions={factory}
       />
       <AppSnackbar
         open={snackbar?.open ?? false}
