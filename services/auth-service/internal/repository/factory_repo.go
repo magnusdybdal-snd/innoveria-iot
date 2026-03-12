@@ -121,7 +121,7 @@ func (r *FactoryRepoImpl) FindByID(ctx context.Context, factoryID string) (domai
 			return domain.Factory{}, fmt.Errorf("find factory by id %w", domain.ErrFactoryNotFound)
 		}
 		// Internal server error, code: 500
-		return out, fmt.Errorf("find factory by id: %w", err)
+		return domain.Factory{}, fmt.Errorf("find factory by id: %w", err)
 	}
 
 	return out, nil

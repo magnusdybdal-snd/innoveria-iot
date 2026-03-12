@@ -7,6 +7,8 @@ import (
 	"innoveria-iot/auth-service/internal/domain"
 	"innoveria-iot/auth-service/internal/handlers/dto"
 	"innoveria-iot/pkg/json"
+
+	"github.com/google/uuid"
 )
 
 // PostCompany handles company creation requests.
@@ -84,6 +86,7 @@ func GetAllCompanies(svc domain.AuthService) http.HandlerFunc {
 // @Param id path string true "id"
 // @Success 200 {object} dto.CompanyResponse
 // @Failure 400
+// @Failure 404
 // @Failure 500
 // @Router /companies/{id} [get]
 func GetOneCompany(svc domain.AuthService) http.HandlerFunc {
@@ -93,6 +96,12 @@ func GetOneCompany(svc domain.AuthService) http.HandlerFunc {
 		companyID := r.PathValue("id")
 		if companyID == "" {
 			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("missing id path parameter"), "id is required")
+			return
+		}
+
+		// Check for valid uuid
+		if _, err := uuid.Parse(companyID); err != nil {
+			json.HandleError(w, http.StatusBadRequest, err, "invalid company id (uuid)")
 			return
 		}
 
@@ -116,6 +125,7 @@ func GetOneCompany(svc domain.AuthService) http.HandlerFunc {
 // @Param id path string true "id"
 // @Success 204
 // @Failure 400
+// @Failure 404
 // @Failure 500
 // @Router /companies/{id} [delete]
 func DeleteCompany(svc domain.AuthService) http.HandlerFunc {
@@ -124,6 +134,12 @@ func DeleteCompany(svc domain.AuthService) http.HandlerFunc {
 		companyID := r.PathValue("id")
 		if companyID == "" {
 			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("missing id path parameter"), "id is required")
+			return
+		}
+
+		// Check for valid uuid
+		if _, err := uuid.Parse(companyID); err != nil {
+			json.HandleError(w, http.StatusBadRequest, err, "invalid company id (uuid)")
 			return
 		}
 
