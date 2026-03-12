@@ -11,8 +11,6 @@ var (
 	ErrCompanyNotFound = errors.New("company not found")
 	// ErrFactoryNotFound trigger when there is no factory in db
 	ErrFactoryNotFound = errors.New("factory not found")
-	// ErrInvalidInput trigger when there is an invalid input for factory
-	ErrInvalidInput = errors.New("invalid input")
 )
 
 // Factory is the domain model for factory
