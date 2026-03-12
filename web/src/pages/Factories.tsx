@@ -8,10 +8,14 @@ import {
   type FactorySortKey,
   type SortDirection,
 } from "@entities/factory";
+import { postFactory } from "@entities/factory/api/postFactory";
 import { FactoryInfo } from "@entities/factory/ui/FactoryInfo";
 import { formatTimestamp } from "@shared/lib";
+import { AddEntityDialog } from "@shared/ui/AddEntityDialog";
+import { CustomButton } from "@shared/ui/Button";
 import { CategoryHeader } from "@shared/ui/CategoryHeader";
 import { DeviceRow } from "@shared/ui/DeviceRow";
+import { NoDeviceFoundCard } from "@shared/ui/NoDeviceFoundCard";
 import { PageContent } from "@shared/ui/PageContent";
 import { PageDivider } from "@shared/ui/PageDivider";
 import {
@@ -20,13 +24,6 @@ import {
   useSnackbar,
 } from "@shared/ui/snackbar";
 import { SubPageHeader } from "@shared/ui/SubPageHeader";
-
-import { postFactory } from "@/entities/factory/api/postFactory";
-import { AddEntityDialog } from "@/shared/ui/AddEntityDialog";
-import { CustomButton } from "@/shared/ui/Button";
-import { NoDeviceFoundCard } from "@/shared/ui/NoDeviceFoundCard";
-
-//TODO: Add post request functionality through button and schema
 
 const factoryDetails: string[] = [
   "Name",
