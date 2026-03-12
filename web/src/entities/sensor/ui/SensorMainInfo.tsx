@@ -10,6 +10,7 @@ import { useTheme } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { ActionMenu } from "@shared/ui/actionMenu";
+import { DeleteConfirmation } from "@shared/ui/DeleteConfirmation";
 
 type InfoMainProps = {
   name: string;
@@ -55,17 +56,14 @@ export function SensorMainInfo({
     setEditOpen(false);
   };
 
-  const handleDeleteOpen = () => {
-    setDeleteOpen(true);
-  };
-
   const handleDeleteConfirm = () => {
     onDelete();
+    setDeleteOpen(false);
   };
 
   const menuItems = [
     { label: "Rename", onClick: handleEditOpen },
-    { label: "Delete", onClick: handleDeleteOpen },
+    { label: "Delete", onClick: () => setDeleteOpen(true) },
   ];
 
   const statusColor = (status: number) => {
@@ -127,15 +125,11 @@ export function SensorMainInfo({
           </Button>
         </DialogActions>
       </Dialog>
-      <Dialog open={deleteOpen} onClose={() => setEditOpen(false)}>
-        <DialogTitle>Delete senor</DialogTitle>
-        <DialogActions>
-          <Button onClick={() => setDeleteOpen(false)}>Cancel</Button>
-          <Button variant="contained" onClick={handleDeleteConfirm}>
-            Confirm
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <DeleteConfirmation
+        open={deleteOpen}
+        onClose={() => setDeleteOpen(false)}
+        onConfirm={handleDeleteConfirm}
+      />
     </>
   );
 }
