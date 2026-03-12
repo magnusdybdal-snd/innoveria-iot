@@ -30,7 +30,7 @@ func (c *AuthClient) CreateCompany(ctx context.Context, company domain.Company) 
 	resp, err := httpclient.DoRequest[dto.AuthCreateCompanyResponse](
 		c.client,
 		ctx,
-		c.baseURL+"/api/v1/auth/companies",
+		fmt.Sprintf("%s/api/v1/auth/companies", c.baseURL),
 		http.MethodPost,
 		dto.AuthCreateCompanyRequest{Name: company.Name, Address: company.Address},
 		nil,
@@ -43,7 +43,18 @@ func (c *AuthClient) CreateCompany(ctx context.Context, company domain.Company) 
 }
 
 // DeleteCompany calls the auth service to delete a company by ID (compensating transaction).
-// TODO: not yet implemented in auth-service.
-func (c *AuthClient) DeleteCompany(_ context.Context, _ string) error {
-	return fmt.Errorf("not implemented")
+func (c *AuthClient) DeleteCompany(ctx context.Context, companyID string) error {
+	_, err := httpclient.DoRaw(
+		c.client,
+		ctx,
+		fmt.Sprintf("%s/api/v1/auth/companies/%s", c.baseURL, companyID),
+		http.MethodDelete,
+		nil,
+		nil,
+	)
+	if err != nil {
+		return fmt.Errorf("auth client delete company: %w", err)
+	}
+
+	return nil
 }

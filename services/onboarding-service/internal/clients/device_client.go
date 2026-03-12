@@ -29,7 +29,7 @@ func (c *DeviceClient) CreateCompanyConfig(ctx context.Context, companyID string
 	resp, err := httpclient.DoRequest[dto.CreateCompanyConfigResponse](
 		c.client,
 		ctx,
-		c.baseURL+"/api/v1/device/company-config",
+		fmt.Sprintf("%s/api/v1/device/company-config", c.baseURL),
 		http.MethodPost,
 		dto.CreateCompanyConfigRequest{CompanyID: companyID, Name: name},
 		nil,
