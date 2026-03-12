@@ -28,7 +28,7 @@ func (c *CollectionClient) CreateCompanyConfig(ctx context.Context, companyID st
 	resp, err := httpclient.DoRaw(
 		c.client,
 		ctx,
-		c.baseURL+"/api/v1/collection/company-config",
+		fmt.Sprintf("%s/api/v1/collection/company-config", c.baseURL),
 		http.MethodPost,
 		dto.CreateTenantMappingRequest{CompanyID: companyID, TenantID: tenantID},
 		nil,
