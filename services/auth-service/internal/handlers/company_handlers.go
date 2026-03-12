@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -107,8 +108,13 @@ func GetOneCompany(svc domain.AuthService) http.HandlerFunc {
 
 		company, err := svc.GetOneCompany(ctx, companyID)
 		if err != nil {
-			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
-			return
+			switch {
+			case errors.Is(err, domain.ErrCompanyNotFound):
+				json.HandleError(w, http.StatusNotFound, err, "company not found")
+			default:
+				json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+				return
+			}
 		}
 
 		resp := dto.MapCompanyFromDomain(company)
@@ -144,8 +150,13 @@ func DeleteCompany(svc domain.AuthService) http.HandlerFunc {
 		}
 
 		if err := svc.DeleteCompany(ctx, companyID); err != nil {
-			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
-			return
+			switch {
+			case errors.Is(err, domain.ErrCompanyNotFound):
+				json.HandleError(w, http.StatusNotFound, err, "company not found")
+			default:
+				json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+				return
+			}
 		}
 
 		w.WriteHeader(http.StatusNoContent)
