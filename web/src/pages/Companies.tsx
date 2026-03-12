@@ -140,12 +140,12 @@ export default function Companies() {
           {isLoading && <p>Loading...</p>}{" "}
           {/*TODO: make a better looking loading indicator */}
           {sorted.map((company) => (
-            <DeviceRow key={company.company_id}>
+            <DeviceRow key={company.companyId}>
               <CompanyInfo
                 name={company.name}
                 address={company.address}
-                created_at={formatTimestamp(company.created_at)}
-                updated_at={formatTimestamp(company.updated_at)}
+                created_at={formatTimestamp(company.createdAt)}
+                updated_at={formatTimestamp(company.updatedAt)}
                 addUser={addAdminUser}
               />
             </DeviceRow>
