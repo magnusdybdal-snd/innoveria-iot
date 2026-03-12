@@ -56,6 +56,16 @@ func MapChirpstackSensorRequest(sensor domain.Sensor, applicationID string) dto.
 	}
 }
 
+// MapChirpstackSensorKeyRequest builds a Chirpstack device key request from a domain Sensor.
+func MapChirpstackSensorKeyRequest(sensor domain.Sensor) dto.ChirpstackSensorKeyRequest {
+	return dto.ChirpstackSensorKeyRequest{
+		DeviceKeys: dto.SensorKeysPayload{
+			DevEUI: sensor.DeviceEUI,
+			NwkKey: sensor.AppKey,
+		},
+	}
+}
+
 func derefString(s *string) string {
 	if s == nil {
 		return ""
