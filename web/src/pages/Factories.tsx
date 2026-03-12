@@ -81,13 +81,13 @@ export default function Factories() {
       .then(() => {
         fetchFactories();
         setOpenAdd(false);
-        show("Gateway added successfully", SNACKBAR_SEVERITY.SUCCESS);
+        show("Factory added successfully", SNACKBAR_SEVERITY.SUCCESS);
       })
       .catch(() => {
         setAddError(
-          "Failed to add gateway.", // TODO: throw non-hardcoded error messages - based on actual error
+          "Failed to add factory.", // TODO: throw non-hardcoded error messages - based on actual error
         );
-        show("Failed to add gateway", SNACKBAR_SEVERITY.ERROR);
+        show("Failed to add factory", SNACKBAR_SEVERITY.ERROR);
       });
   };
 
