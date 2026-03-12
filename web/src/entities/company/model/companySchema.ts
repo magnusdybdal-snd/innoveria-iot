@@ -3,11 +3,11 @@
  * It defines the structure of the data returned by the API when fetching company information.
  */
 export interface CompanyApiResponse {
-  company_id: string;
+  companyId: string;
   name: string;
   address: string;
-  created_at: string; // RFC1123 - directly parsable in JS.
-  updated_at: string;
+  createdAt: string; // RFC1123 - directly parsable in JS.
+  updatedAt: string;
 }
 
 export interface CompanyListApiResponse {
