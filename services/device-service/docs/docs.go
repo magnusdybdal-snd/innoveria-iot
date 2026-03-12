@@ -401,12 +401,17 @@ const docTemplate = `{
         "dto.CreateSensorRequest": {
             "type": "object",
             "required": [
+                "app_key",
                 "company_id",
                 "device_eui",
                 "device_profile_id",
+                "factory_id",
                 "name"
             ],
             "properties": {
+                "app_key": {
+                    "type": "string"
+                },
                 "company_id": {
                     "description": "TODO: CompanyID should be extracted from auth",
                     "type": "string"
@@ -422,6 +427,9 @@ const docTemplate = `{
                 },
                 "factory_area_id": {
                     "description": "Optional — UUID, omit if service not yet available",
+                    "type": "string"
+                },
+                "factory_id": {
                     "type": "string"
                 },
                 "name": {
@@ -543,6 +551,9 @@ const docTemplate = `{
         "dto.SensorResponse": {
             "type": "object",
             "properties": {
+                "app_key": {
+                    "type": "string"
+                },
                 "company_id": {
                     "type": "string"
                 },
@@ -559,6 +570,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "factory_area_id": {
+                    "type": "string"
+                },
+                "factory_id": {
                     "type": "string"
                 },
                 "id": {
@@ -588,6 +602,7 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "device_profile_id",
+                "factory_id",
                 "name"
             ],
             "properties": {
@@ -599,6 +614,9 @@ const docTemplate = `{
                 },
                 "factory_area_id": {
                     "description": "Optional — UUID, omit if service not yet available",
+                    "type": "string"
+                },
+                "factory_id": {
                     "type": "string"
                 },
                 "name": {
