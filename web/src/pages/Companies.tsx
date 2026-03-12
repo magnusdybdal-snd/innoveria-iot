@@ -10,6 +10,7 @@ import {
   type SortDirection,
 } from "@entities/company";
 import { AddCompany } from "@features/addCompany";
+import { formatTimestamp } from "@shared/lib";
 import { CategoryHeader } from "@shared/ui/CategoryHeader";
 import { DeviceRow } from "@shared/ui/DeviceRow";
 import { NoDeviceFoundCard } from "@shared/ui/NoDeviceFoundCard";
@@ -143,8 +144,8 @@ export default function Companies() {
               <CompanyInfo
                 name={company.name}
                 address={company.address}
-                created_at={company.created_at}
-                updated_at={company.updated_at}
+                created_at={formatTimestamp(company.created_at)}
+                updated_at={formatTimestamp(company.updated_at)}
                 addUser={addAdminUser}
               />
             </DeviceRow>
