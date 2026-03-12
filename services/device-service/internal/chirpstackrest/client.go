@@ -379,6 +379,31 @@ func (c *Client) CreateSensor(ctx context.Context, body dto.ChirpstackSensorRequ
 	return nil
 }
 
+// SetSensorKey sets the OTAA root key for a device in Chirpstack.
+// Must be called after CreateSensor - Chirpstack requires the device to exist first.
+func (c *Client) SetSensorKey(ctx context.Context, body dto.ChirpstackSensorKeyRequest) error {
+	url := fmt.Sprintf("%s/api/devices/%s/keys", c.baseURL, body.DeviceKeys.DevEUI)
+	resp, err := httpclient.DoRaw(
+		c.httpClient,
+		ctx,
+		url,
+		http.MethodPost,
+		body,
+		map[string]string{
+			"Authorization": c.authHeader(),
+		},
+	)
+	if err != nil {
+		return handleChirpstackError(err)
+	}
+
+	if err := resp.Body.Close(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // UpdateSensor updates a device's name, description and device profile in Chirpstack.
 // DeviceEUI identifies the device and cannot be changed.
 func (c *Client) UpdateSensor(ctx context.Context, body dto.ChirpstackSensorRequest) error {
