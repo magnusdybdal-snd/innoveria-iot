@@ -9,7 +9,7 @@ import { API_ROUTES } from "@shared/api/routes";
 export const postCompany = async (
   companyData: CreateCompanyRequest,
 ): Promise<void> => {
-  await apiRequest(serviceClient, API_ROUTES.companies, "POST", {
+  await apiRequest(serviceClient, API_ROUTES.companiesPost, "POST", {
     name: companyData.name,
     address: companyData.address,
   });

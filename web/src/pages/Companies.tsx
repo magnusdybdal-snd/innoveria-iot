@@ -10,11 +10,17 @@ import {
   type SortDirection,
 } from "@entities/company";
 import { AddCompany } from "@features/addCompany";
+import { formatTimestamp } from "@shared/lib";
 import { CategoryHeader } from "@shared/ui/CategoryHeader";
 import { DeviceRow } from "@shared/ui/DeviceRow";
 import { NoDeviceFoundCard } from "@shared/ui/NoDeviceFoundCard";
 import { PageContent } from "@shared/ui/PageContent";
 import { PageDivider } from "@shared/ui/PageDivider";
+import {
+  AppSnackbar,
+  SNACKBAR_SEVERITY,
+  useSnackbar,
+} from "@shared/ui/snackbar";
 import { SubPageHeader } from "@shared/ui/SubPageHeader";
 
 import { CustomButton } from "@/shared/ui/Button";
@@ -48,6 +54,9 @@ export default function Companies() {
   const [companies, setCompanies] = useState<CompanyApiResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [addError, setAddError] = useState<string | null>(null);
+
+  // State for controlling success snackbar
+  const { show, hide, snackbar } = useSnackbar();
 
   const fetchCompanies = () => {
     getCompanies().then((data) => {
@@ -86,11 +95,13 @@ export default function Companies() {
       .then(() => {
         fetchCompanies();
         setOpenAdd(false);
+        show("Company added successfully", SNACKBAR_SEVERITY.SUCCESS);
       })
       .catch(() => {
         setAddError(
-          "Failed to add company. The name may already be registered.",
+          "Failed to add company. The name may already be registered.", // TODO: throw non-hardcoded error messages - based on actual error
         );
+        show("Failed to add company", SNACKBAR_SEVERITY.ERROR);
       });
   };
 
@@ -129,12 +140,12 @@ export default function Companies() {
           {isLoading && <p>Loading...</p>}{" "}
           {/*TODO: make a better looking loading indicator */}
           {sorted.map((company) => (
-            <DeviceRow key={company.company_id}>
+            <DeviceRow key={company.companyId}>
               <CompanyInfo
                 name={company.name}
                 address={company.address}
-                created_at={company.created_at}
-                updated_at={company.updated_at}
+                created_at={formatTimestamp(company.createdAt)}
+                updated_at={formatTimestamp(company.updatedAt)}
                 addUser={addAdminUser}
               />
             </DeviceRow>
@@ -148,6 +159,12 @@ export default function Companies() {
         addOptions={addCompanyDetails}
         onAdd={handleAddCompany}
         submitError={addError}
+      />
+      <AppSnackbar
+        open={snackbar?.open ?? false}
+        message={snackbar?.message ?? ""}
+        severity={snackbar?.severity}
+        onClose={hide}
       />
     </div>
   );

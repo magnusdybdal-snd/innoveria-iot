@@ -1,4 +1,4 @@
-import type { CompanyApiResponse } from "@entities/company/model/companySchema";
+import type { CompanyApiResponse } from "@entities/company";
 import { apiRequest, serviceClient } from "@shared/api";
 import { API_ROUTES } from "@shared/api/routes";
 
@@ -23,16 +23,16 @@ export const getCompanies = async (): Promise<CompanyApiResponse[]> => {
   try {
     const data = await apiRequest<RawCompanyListApiResponse>(
       serviceClient,
-      API_ROUTES.companies,
+      API_ROUTES.companiesGet,
       "GET",
     );
 
     return (data.companies ?? []).map((s) => ({
-      company_id: s.company_id,
+      companyId: s.company_id,
       name: s.name,
       address: s.address,
-      created_at: s.created_at,
-      updated_at: s.updated_at,
+      createdAt: s.created_at,
+      updatedAt: s.updated_at,
     }));
   } catch (error) {
     console.error("Failed to fetch companies:", error);

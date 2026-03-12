@@ -12,7 +12,6 @@ type InfoProps = {
 /**
  * Displays a single company row's data: name, address, date created, and date updated.
  * Includes an ActionMenu for adding FACTORY_SUPERUSER to the company.
- * Opens a Dialog to collect the new name on rename.
  * @param props - Component props
  * @param props.name - Display name of the company
  * @param props.address - Main address of company office
@@ -45,8 +44,9 @@ export function CompanyInfo({
           fontSize: 15,
         }}
         onClick={addUser}
+        // TODO: say first only when no company admin
       >
-        Add first company admin
+        Add first company admin has been added.
       </Button>
     </>
   );

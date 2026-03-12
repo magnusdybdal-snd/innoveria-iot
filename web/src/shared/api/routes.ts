@@ -9,4 +9,6 @@ export const API_ROUTES = {
   sensorLatest: `/v1/collection/latest?device_eui=`,
   companies: `/v1/auth/companies`,
   factories: `/v1/auth/factories`,
+  companiesGet: `/v1/auth/companies`,
+  companiesPost: `/v1/onboarding/company`,
 };
