@@ -7,7 +7,7 @@ type SensorResponse struct {
 	Name                string  `json:"name"`
 	Description         *string `json:"description"`
 	DeviceEUI           string  `json:"device_eui"`
-	ApplicationKey      string  `json:"application_key"`
+	AppKey              string  `json:"app_key"`
 	State               string  `json:"state"`
 	FactoryID           string  `json:"factory_id"`
 	FactoryAreaID       *string `json:"factory_area_id"`
@@ -41,7 +41,7 @@ type CreateSensorRequest struct {
 	CompanyID           string  `json:"company_id"            binding:"required"`
 	Name                string  `json:"name"                  binding:"required"`
 	DeviceEUI           string  `json:"device_eui"            binding:"required"`
-	ApplicationKey      string  `json:"application_key"       binding:"required"`
+	AppKey              string  `json:"app_key"               binding:"required"`
 	ChirpstackProfileID string  `json:"device_profile_id"     binding:"required"`
 	Description         *string `json:"description"`
 	FactoryID           string  `json:"factory_id"            binding:"required"`

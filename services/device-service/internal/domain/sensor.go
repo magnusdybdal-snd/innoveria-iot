@@ -12,7 +12,7 @@ type Sensor struct {
 	Id                  string
 	CompanyID           string
 	DeviceEUI           string // hardware identifier, shared key with Chirpstack
-	ApplicationKey      string // password for sensor to connect to an application
+	AppKey              string // password for sensor to connect to an application
 	Name                string
 	Description         *string
 	State               DeviceState // administrative state: ACTIVE / INACTIVE

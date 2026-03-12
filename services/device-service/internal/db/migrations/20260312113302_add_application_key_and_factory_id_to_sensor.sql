@@ -2,11 +2,11 @@
 
 -- Add application key and factory area ID to sensor for better integration with ChirpStack and factory context.
 ALTER TABLE "device"."sensor"
-    ADD COLUMN "application_key" varchar NOT NULL DEFAULT 'dev-placeholder';
+    ADD COLUMN "app_key" varchar NOT NULL DEFAULT 'dev-placeholder';
 ALTER TABLE "device"."sensor"
-    ALTER COLUMN "application_key" DROP DEFAULT;
+    ALTER COLUMN "app_key" DROP DEFAULT;
 
-COMMENT ON COLUMN "device"."sensor"."application_key" IS 'LoRaWAN OTAA AppKey - used to authenticate the sensor with the LoRaWAN network.';
+COMMENT ON COLUMN "device"."sensor"."app_key" IS 'LoRaWAN OTAA AppKey - used to authenticate the sensor with the LoRaWAN network.';
 
 ALTER TABLE "device"."sensor"
     ADD COLUMN "factory_id" uuid NOT NULL DEFAULT 'f1000000-0000-0000-0000-000000000001';
@@ -17,6 +17,6 @@ COMMENT ON COLUMN "device"."sensor"."factory_id" IS 'Reference to the factory to
 
 -- +goose Down
 ALTER TABLE "device"."sensor"
-    DROP COLUMN "application_key";
+    DROP COLUMN "app_key";
 ALTER TABLE "device"."sensor"
     DROP COLUMN "factory_id";
