@@ -95,13 +95,13 @@ export default function Companies() {
       .then(() => {
         fetchCompanies();
         setOpenAdd(false);
-        show("Gateway added successfully", SNACKBAR_SEVERITY.SUCCESS);
+        show("Company added successfully", SNACKBAR_SEVERITY.SUCCESS);
       })
       .catch(() => {
         setAddError(
           "Failed to add company. The name may already be registered.", // TODO: throw non-hardcoded error messages - based on actual error
         );
-        show("Failed to add gateway", SNACKBAR_SEVERITY.ERROR);
+        show("Failed to add company", SNACKBAR_SEVERITY.ERROR);
       });
   };
 

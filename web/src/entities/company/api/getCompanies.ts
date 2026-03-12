@@ -23,7 +23,7 @@ export const getCompanies = async (): Promise<CompanyApiResponse[]> => {
   try {
     const data = await apiRequest<RawCompanyListApiResponse>(
       serviceClient,
-      API_ROUTES.companies,
+      API_ROUTES.companiesGet,
       "GET",
     );
 
