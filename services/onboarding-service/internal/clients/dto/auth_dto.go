@@ -9,5 +9,5 @@ type AuthCreateCompanyRequest struct {
 
 // AuthCreateCompanyResponse is the response body from POST /auth/companies.
 type AuthCreateCompanyResponse struct {
-	CompanyID string `json:"company_id"`
+	CompanyID string `json:"id"`
 }
