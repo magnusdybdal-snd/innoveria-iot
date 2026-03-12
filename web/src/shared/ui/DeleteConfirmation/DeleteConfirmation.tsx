@@ -26,9 +26,7 @@ export function DeleteConfirmation({
       <DialogTitle>Delete item?</DialogTitle>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
-        <Button variant="contained" onClick={onConfirm}>
-          Confirm
-        </Button>
+        <Button onClick={onConfirm}>Confirm</Button>
       </DialogActions>
     </Dialog>
   );
