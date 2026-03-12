@@ -41,6 +41,17 @@ func (s *SensorServiceImpl) Create(ctx context.Context, payload domain.Sensor) e
 		return fmt.Errorf("create sensor: add to chirpstack: %w", err)
 	}
 
+	// Set AppKey in Chirpstack
+	sensorKeyReq := mappers.MapChirpstackSensorKeyRequest(payload)
+	if err := s.cc.SetSensorKey(ctx, sensorKeyReq); err != nil {
+		// Compensate: Remove from Chirpstack so system stays in sync.
+		if compErr := s.cc.DeleteSensor(ctx, payload.DeviceEUI); compErr != nil {
+			slog.Error("saga compensation failed: could not delete sensor from chirpstack after set key failure",
+				"eui", payload.DeviceEUI, "error", compErr)
+		}
+		return fmt.Errorf("create sensor: set app key: %w", err)
+	}
+
 	// If successfully stored in Chirpstack, try to store in database.
 	sensor, err := s.sensorRepo.Create(ctx, payload)
 	if err != nil {
@@ -155,6 +166,13 @@ func (s *SensorServiceImpl) Delete(ctx context.Context, deviceID string) error {
 		if compErr := s.cc.CreateSensor(ctx, sensorReq); compErr != nil {
 			slog.Error("saga compensation failed: could not re-create sensor in chirpstack after db delete failure",
 				"eui", sensor.DeviceEUI, "error", compErr)
+		} else {
+			// If compensation is successfull we also set the key.
+			keyReq := mappers.MapChirpstackSensorKeyRequest(sensor)
+			if compErr := s.cc.SetSensorKey(ctx, keyReq); compErr != nil {
+				slog.Error("saga compensation failed: could not re-set app key in chirpstack after db delete failure",
+					"eui", sensor.DeviceEUI, "error", compErr)
+			}
 		}
 		return fmt.Errorf("delete sensor: delete in database: %w", err)
 	}

@@ -55,6 +55,7 @@ func MapUpdateSensorDTOToDomain(from UpdateSensorRequest) domain.Sensor {
 	return domain.Sensor{
 		Name:                from.Name,
 		Description:         from.Description,
+		FactoryID:           from.FactoryID,
 		FactoryAreaID:       from.FactoryAreaID,
 		ChirpstackProfileID: from.ChirpstackProfileID,
 		ProductionResource:  from.ProductionResource,
@@ -68,7 +69,9 @@ func MapCreateSensorDTOToDomain(from CreateSensorRequest) domain.Sensor {
 		Name:                from.Name,
 		Description:         from.Description,
 		DeviceEUI:           from.DeviceEUI,
+		AppKey:              from.AppKey,
 		ChirpstackProfileID: from.ChirpstackProfileID,
+		FactoryID:           from.FactoryID,
 		FactoryAreaID:       from.FactoryAreaID,
 		ProductionResource:  from.ProductionResource,
 		State:               domain.DeviceStateActive, // Default state ACTIVE when created
@@ -97,7 +100,9 @@ func mapSensor(from domain.Sensor) SensorResponse {
 		Name:                from.Name,
 		Description:         from.Description,
 		DeviceEUI:           from.DeviceEUI,
+		AppKey:              from.AppKey,
 		State:               string(from.State),
+		FactoryID:           from.FactoryID,
 		FactoryAreaID:       from.FactoryAreaID,
 		ProductionResource:  from.ProductionResource,
 		ChirpstackProfileID: from.ChirpstackProfileID,
