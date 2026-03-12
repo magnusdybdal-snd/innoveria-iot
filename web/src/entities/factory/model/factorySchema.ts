@@ -1,5 +1,5 @@
 export interface FactoryListApiResponse {
-  total_count: number;
+  totalCount: number;
   factories: FactoryApiResponse[];
 }
 export interface FactoryApiResponse {
