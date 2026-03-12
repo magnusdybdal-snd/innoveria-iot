@@ -27,7 +27,7 @@ export interface SensorReadingApiResponse {
 
 export interface CreateSensorRequest {
   companyId: string;
-  factory: string;
+  factoryId: string;
   deviceEui: string;
   appKey: string;
   sensorProfileId: string;

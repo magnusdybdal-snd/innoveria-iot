@@ -103,7 +103,7 @@ export default function Sensors() {
     setAddError(null);
     return postSensor({
       companyId: "a0000000-0000-0000-0000-000000000001", // TODO: replace with real company ID from auth
-      factory: sensorData.factory,
+      factoryId: sensorData.factory,
       deviceEui: sensorData.deviceEui,
       sensorProfileId: sensorData.senProf,
       appKey: sensorData.appKey,
