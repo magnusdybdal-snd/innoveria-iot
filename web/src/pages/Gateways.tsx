@@ -90,7 +90,7 @@ export default function Gateways() {
     setAddError(null);
     return postGateway({
       companyId: "a0000000-0000-0000-0000-000000000001", // TODO: replace with real company ID from auth
-      deviceEui: gatewayData.deviceEui,
+      gatewayEui: gatewayData.deviceEui,
       name: gatewayData.name,
     })
       .then(() => {
@@ -145,7 +145,7 @@ export default function Gateways() {
               <GatewayInfo
                 name={gateway.name}
                 status={gateway.status}
-                device_eui={gateway.deviceEui}
+                device_eui={gateway.gatewayEui}
                 lastSeenAt={formatTimestamp(gateway.lastSeenAt)}
                 onDelete={() => handleDeleteGateway(gateway.id)}
               />

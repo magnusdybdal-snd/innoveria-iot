@@ -11,7 +11,7 @@ export const postGateway = async (
 ): Promise<void> => {
   await apiRequest(serviceClient, API_ROUTES.gateways, "POST", {
     company_id: gatewayData.companyId,
-    gateway_eui: gatewayData.deviceEui,
+    gateway_eui: gatewayData.gatewayEui,
     name: gatewayData.name,
   });
 };
