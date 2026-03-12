@@ -9,6 +9,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import { useTheme } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
+import { DeleteConfirmation } from "@shared/ui/DeleteConfirmation";
 
 import { ActionMenu } from "@/shared/ui/actionMenu";
 
@@ -43,6 +44,7 @@ export function GatewayInfo({
   const [currentName, setCurrentName] = useState(name);
   const [editOpen, setEditOpen] = useState(false);
   const [editValue, setEditValue] = useState(name);
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
   const handleEditOpen = () => {
     setEditValue(currentName);
@@ -54,9 +56,14 @@ export function GatewayInfo({
     setEditOpen(false);
   };
 
+  const handleDeleteConfirm = () => {
+    onDelete();
+    setDeleteOpen(false);
+  };
+
   const menuItems = [
     { label: "Rename", onClick: handleEditOpen },
-    { label: "Delete", onClick: onDelete },
+    { label: "Delete", onClick: () => setDeleteOpen(true) },
   ];
 
   const statusColor = (status: number) => {
@@ -105,6 +112,11 @@ export function GatewayInfo({
           </Button>
         </DialogActions>
       </Dialog>
+      <DeleteConfirmation
+        open={deleteOpen}
+        onClose={() => setDeleteOpen(false)}
+        onConfirm={handleDeleteConfirm}
+      />
     </>
   );
 }
