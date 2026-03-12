@@ -14,9 +14,11 @@ func MergeSensor(cs dto.ChirpstackSensor, db domain.Sensor) domain.Sensor {
 		Id:                  db.Id,
 		CompanyID:           db.CompanyID,
 		DeviceEUI:           db.DeviceEUI,
+		ApplicationKey:      db.ApplicationKey,
 		Name:                db.Name,
 		Description:         db.Description,
 		State:               db.State,
+		FactoryID:           db.FactoryID,
 		FactoryAreaID:       db.FactoryAreaID,
 		ProductionResource:  db.ProductionResource,
 		ChirpstackProfileID: db.ChirpstackProfileID,
@@ -40,16 +42,23 @@ func mapStatusSensor(lastSeen time.Time) domain.Status {
 	return domain.StatusOffline
 }
 
-// MapChirpstackSensorRequest builds a Chirpstack update request from a domain sensor and applicationID
+// MapChirpstackSensorRequest builds a Chirpstack registration/update request.
 func MapChirpstackSensorRequest(sensor domain.Sensor, applicationID string) dto.ChirpstackSensorRequest {
 	return dto.ChirpstackSensorRequest{
 		SensorPayload: dto.SensorPayload{
 			DeviceEUI:       sensor.DeviceEUI,
 			Name:            sensor.Name,
-			Description:     *sensor.Description,
+			Description:     derefString(sensor.Description),
 			ApplicationID:   applicationID,
 			DeviceProfileID: sensor.ChirpstackProfileID,
 			JoinEUI:         "0000000000000000", // Not an issue when we host Chirpstack privately.
 		},
 	}
+}
+
+func derefString(s *string) string {
+	if s == nil {
+		return ""
+	}
+	return *s
 }
