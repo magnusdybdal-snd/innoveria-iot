@@ -11,8 +11,8 @@ type RawFactoryApiResponse = {
   company_id: string;
   name: string;
   address: string;
-  created_at: Date;
-  updated_at: Date;
+  created_at: string;
+  updated_at: string;
 };
 /**
  * Fetches all factories from the collection-service via the API gateway.
@@ -31,8 +31,8 @@ export const getFactories = async (): Promise<FactoryApiResponse[]> => {
       companyId: a.company_id,
       name: a.name,
       address: a.address,
-      createdAt: a.created_at,
-      updatedAt: a.updated_at,
+      createdAt: new Date(a.created_at),
+      updatedAt: new Date(a.updated_at),
     }));
   } catch (error) {
     console.error("Failed to fetch factories:", error);
