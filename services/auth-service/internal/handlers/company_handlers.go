@@ -46,7 +46,7 @@ func PostCompany(svc domain.AuthService) http.HandlerFunc {
 			return
 		}
 
-		// returned response as domain
+		// Maps from domain to DTO
 		resp := dto.MapCompanyFromDomain(companyResp)
 		if err := json.Encode(w, http.StatusCreated, resp); err != nil {
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
@@ -115,6 +115,7 @@ func GetOneCompany(svc domain.AuthService) http.HandlerFunc {
 				json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
 				return
 			}
+			return
 		}
 
 		resp := dto.MapCompanyFromDomain(company)
