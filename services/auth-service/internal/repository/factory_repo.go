@@ -118,7 +118,7 @@ func (r *FactoryRepoImpl) FindByID(ctx context.Context, factoryID string) (domai
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			// domain not found, code: 404
-			return domain.Factory{}, fmt.Errorf("find factory by id %w", domain.ErrFactoryNotFound)
+			return domain.Factory{}, fmt.Errorf("find factory by id: %w", domain.ErrFactoryNotFound)
 		}
 		// Internal server error, code: 500
 		return domain.Factory{}, fmt.Errorf("find factory by id: %w", err)
