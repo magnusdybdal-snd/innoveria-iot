@@ -113,7 +113,6 @@ func GetOneCompany(svc domain.AuthService) http.HandlerFunc {
 				json.HandleError(w, http.StatusNotFound, err, "company not found")
 			default:
 				json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
-				return
 			}
 			return
 		}
@@ -156,8 +155,8 @@ func DeleteCompany(svc domain.AuthService) http.HandlerFunc {
 				json.HandleError(w, http.StatusNotFound, err, "company not found")
 			default:
 				json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
-				return
 			}
+			return
 		}
 
 		w.WriteHeader(http.StatusNoContent)
