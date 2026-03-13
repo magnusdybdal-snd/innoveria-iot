@@ -4,6 +4,7 @@ export type SortDirection = "asc" | "desc";
 export type SensorSortKey =
   | "Name"
   | "Status"
+  | "Factory"
   | "Machine"
   | "Last reading"
   | "Sensor profile";

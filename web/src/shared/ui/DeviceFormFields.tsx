@@ -9,6 +9,7 @@ interface DeviceFormFieldsProps {
   options: string[];
   values: Record<string, string>;
   profileOptions: { id: string; name: string }[];
+  factoryOptions: { id: string; name: string }[];
   lengthErrors: Record<string, boolean>;
   lengthErrorMessages: Record<string, string>;
   inputHints: Record<string, string>;
@@ -40,6 +41,7 @@ const selectSx = {
  * @param props.options - Field names to render
  * @param props.values - Current field values
  * @param props.profileOptions - Sensor profile choices for the dropdown
+ * @param props.factoryOptions
  * @param props.lengthErrors - Map of field name to whether it has a length error
  * @param props.lengthErrorMessages - Map of field name to its error message
  * @param props.inputHints - Map of field name to its placeholder hint
@@ -50,6 +52,7 @@ export function DeviceFormFields({
   options,
   values,
   profileOptions,
+  factoryOptions,
   lengthErrors,
   lengthErrorMessages,
   inputHints,
@@ -79,6 +82,26 @@ export function DeviceFormFields({
                 {profileOptions.map((prof) => (
                   <MenuItem key={prof.id} value={prof.id}>
                     {prof.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </>
+          ) : option === "Factory" ? (
+            <>
+              <InputLabel id={`label-${option}`} sx={{ display: "none" }}>
+                {option}
+              </InputLabel>
+              <Select
+                labelId={`label-${option}`}
+                sx={selectSx}
+                fullWidth
+                value={values[option] ?? ""}
+                displayEmpty
+                onChange={(e) => onChange(option, e.target.value)}
+              >
+                {factoryOptions.map((factory) => (
+                  <MenuItem key={factory.id} value={factory.id}>
+                    {factory.name}
                   </MenuItem>
                 ))}
               </Select>
