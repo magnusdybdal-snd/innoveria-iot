@@ -1,3 +1,4 @@
 [submodule "infra/config/chirpstack-device-profiles"]
 	path = infra/config/chirpstack-device-profiles
 	url = https://github.com/vinjdev/chirpstack-device-profiles.git
+	branch = master
