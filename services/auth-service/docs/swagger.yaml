@@ -120,6 +120,8 @@ paths:
           description: No Content
         "400":
           description: Bad Request
+        "404":
+          description: Not Found
         "500":
           description: Internal Server Error
       summary: Delete company
@@ -141,6 +143,8 @@ paths:
             $ref: '#/definitions/dto.CompanyResponse'
         "400":
           description: Bad Request
+        "404":
+          description: Not Found
         "500":
           description: Internal Server Error
       summary: Get one company
@@ -199,6 +203,8 @@ paths:
           description: No Content
         "400":
           description: Bad Request
+        "404":
+          description: Not Found
         "500":
           description: Internal Server Error
       summary: Delete factory
@@ -220,6 +226,8 @@ paths:
             $ref: '#/definitions/dto.FactoryResponse'
         "400":
           description: Bad Request
+        "404":
+          description: Not Found
         "500":
           description: Internal Server Error
       summary: Get one factory
