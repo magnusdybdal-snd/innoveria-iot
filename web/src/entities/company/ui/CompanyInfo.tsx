@@ -44,9 +44,9 @@ export function CompanyInfo({
           fontSize: 15,
         }}
         onClick={addUser}
-        // TODO: say first only when no company admin
+        // TODO: say first only when no company admin has been added.
       >
-        Add first company admin has been added.
+        Add first company admin
       </Button>
     </>
   );
