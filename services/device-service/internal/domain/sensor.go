@@ -6,15 +6,17 @@ import (
 )
 
 // Sensor represents a LoRaWAN sensor in our system.
-// A sensor is assigned to a chirpstack application and send data trough.
+// A sensor is assigned to a Chirpstack application and sends data through
 // whichever gateway is in range. There is no fixed gateway assignment in LoRaWAN.
 type Sensor struct {
 	Id                  string
 	CompanyID           string
 	DeviceEUI           string // hardware identifier, shared key with Chirpstack
+	AppKey              string // password for sensor to connect to an application
 	Name                string
 	Description         *string
 	State               DeviceState // administrative state: ACTIVE / INACTIVE
+	FactoryID           string      // loose cross-service ref
 	FactoryAreaID       *string     // loose cross-service ref
 	ProductionResource  *string     // loose cross-service ref
 	ChirpstackProfileID string      // LoRaWAN template that describes device model, chosen on registration
@@ -26,7 +28,7 @@ type Sensor struct {
 	LastSeenAt string
 }
 
-// SensorService is the interface for sensor methods
+// SensorService defines the business logic operations for sensors.
 type SensorService interface {
 	Create(ctx context.Context, payload Sensor) error
 	Update(ctx context.Context, deviceID string, payload Sensor) error
@@ -34,8 +36,8 @@ type SensorService interface {
 	Delete(ctx context.Context, deviceID string) error
 }
 
-// SensorRepository handles persistance of sensor meta data in our database.
-// Chirpstack operations are handled in the service layer
+// SensorRepository handles persistence of sensor metadata in the database.
+// Chirpstack operations are handled in the service layer.
 type SensorRepository interface {
 	Create(ctx context.Context, sensor Sensor) (Sensor, error)
 	FindByID(ctx context.Context, sensorID string) (Sensor, error)

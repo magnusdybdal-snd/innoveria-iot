@@ -1,5 +1,17 @@
 basePath: /api/v1/device
 definitions:
+  dto.CreateCompanyConfigRequest:
+    properties:
+      company_id:
+        type: string
+      name:
+        type: string
+    type: object
+  dto.CreateCompanyConfigResponse:
+    properties:
+      tenant_id:
+        type: string
+    type: object
   dto.CreateGatewayRequest:
     properties:
       company_id:
@@ -8,16 +20,15 @@ definitions:
         type: string
       name:
         type: string
-    type: object
-  dto.CreateSensorGroup:
-    properties:
-      company_id:
-        type: string
-      name:
-        type: string
+    required:
+    - company_id
+    - gateway_eui
+    - name
     type: object
   dto.CreateSensorRequest:
     properties:
+      app_key:
+        type: string
       company_id:
         description: 'TODO: CompanyID should be extracted from auth'
         type: string
@@ -30,15 +41,19 @@ definitions:
       factory_area_id:
         description: Optional — UUID, omit if service not yet available
         type: string
+      factory_id:
+        type: string
       name:
         type: string
       production_resource:
         description: Optional — UUID, omit if service not yet available
         type: string
     required:
+    - app_key
     - company_id
     - device_eui
     - device_profile_id
+    - factory_id
     - name
     type: object
   dto.GatewayListResponse:
@@ -54,6 +69,12 @@ definitions:
     properties:
       company_id:
         type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      factory_area_id:
+        type: string
       gateway_eui:
         type: string
       id:
@@ -62,27 +83,11 @@ definitions:
         type: string
       name:
         type: string
+      state:
+        type: string
       status:
         type: integer
-    type: object
-  dto.SensorGroupListResponse:
-    properties:
-      sensor_groups:
-        items:
-          $ref: '#/definitions/dto.SensorGroupResponse'
-        type: array
-      total_count:
-        type: integer
-    type: object
-  dto.SensorGroupResponse:
-    properties:
-      company_id:
-        type: string
-      id:
-        type: string
-      location:
-        type: string
-      name:
+      updated_at:
         type: string
     type: object
   dto.SensorListResponse:
@@ -115,15 +120,17 @@ definitions:
       region:
         description: LoRaWAN region (EU868)
         type: string
-      vendor:
-        description: Vendor name
-        type: string
       vendor_id:
         description: Identification of model producer
+        type: string
+      vendor_name:
+        description: Vendor name
         type: string
     type: object
   dto.SensorResponse:
     properties:
+      app_key:
+        type: string
       company_id:
         type: string
       created_at:
@@ -135,6 +142,8 @@ definitions:
       device_profile_id:
         type: string
       factory_area_id:
+        type: string
+      factory_id:
         type: string
       id:
         type: string
@@ -160,6 +169,8 @@ definitions:
       factory_area_id:
         description: Optional — UUID, omit if service not yet available
         type: string
+      factory_id:
+        type: string
       name:
         type: string
       production_resource:
@@ -167,6 +178,7 @@ definitions:
         type: string
     required:
     - device_profile_id
+    - factory_id
     - name
     type: object
 host: localhost:8083
@@ -176,6 +188,49 @@ info:
   title: Device Service API
   version: "1.0"
 paths:
+  /company-config:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Company config payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateCompanyConfigRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.CreateCompanyConfigResponse'
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Create company config
+      tags:
+      - company-config
+  /company-config/{companyID}:
+    delete:
+      parameters:
+      - description: Company ID
+        in: path
+        name: companyID
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Delete company config
+      tags:
+      - company-config
   /gateways:
     get:
       produces:
@@ -253,48 +308,6 @@ paths:
       summary: Update a gateway
       tags:
       - gateways
-  /sensor-groups:
-    get:
-      parameters:
-      - description: Max number of groups to return
-        in: query
-        name: limit
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/dto.SensorGroupListResponse'
-        "400":
-          description: Bad Request
-        "500":
-          description: Internal Server Error
-      summary: List all sensor groups
-      tags:
-      - sensor-groups
-    post:
-      consumes:
-      - application/json
-      parameters:
-      - description: Sensor group payload
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/dto.CreateSensorGroup'
-      responses:
-        "201":
-          description: Created
-        "400":
-          description: Bad Request
-        "500":
-          description: Internal Server Error
-      summary: Create a sensor group
-      tags:
-      - sensor-groups
   /sensor-profiles:
     get:
       description: Not authenticated — every user can access this list.

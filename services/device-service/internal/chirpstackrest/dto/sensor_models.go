@@ -47,3 +47,15 @@ type SensorPayload struct {
 	DeviceProfileID string `json:"deviceProfileId"`
 	JoinEUI         string `json:"joinEui"`
 }
+
+// ChirpstackSensorKeyRequest is the body for POST /api/devices/{devEui}/keys.
+// Chirpstack expects the request wrapped under a "deviceKeys" key
+type ChirpstackSensorKeyRequest struct {
+	DeviceKeys SensorKeysPayload `json:"deviceKeys"`
+}
+
+// SensorKeysPayload contains the OTAA root key for a device.
+type SensorKeysPayload struct {
+	DevEUI string `json:"devEui"`
+	NwkKey string `json:"nwkKey"`
+}

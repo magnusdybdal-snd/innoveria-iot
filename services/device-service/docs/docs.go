@@ -15,6 +15,73 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/company-config": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "company-config"
+                ],
+                "summary": "Create company config",
+                "parameters": [
+                    {
+                        "description": "Company config payload",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateCompanyConfigRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateCompanyConfigResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/company-config/{companyID}": {
+            "delete": {
+                "tags": [
+                    "company-config"
+                ],
+                "summary": "Delete company config",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Company ID",
+                        "name": "companyID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/gateways": {
             "get": {
                 "produces": [
@@ -124,71 +191,6 @@ const docTemplate = `{
                 "responses": {
                     "204": {
                         "description": "No Content"
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    },
-                    "500": {
-                        "description": "Internal Server Error"
-                    }
-                }
-            }
-        },
-        "/sensor-groups": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "sensor-groups"
-                ],
-                "summary": "List all sensor groups",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Max number of groups to return",
-                        "name": "limit",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/dto.SensorGroupListResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    },
-                    "500": {
-                        "description": "Internal Server Error"
-                    }
-                }
-            },
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "tags": [
-                    "sensor-groups"
-                ],
-                "summary": "Create a sensor group",
-                "parameters": [
-                    {
-                        "description": "Sensor group payload",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.CreateSensorGroup"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created"
                     },
                     "400": {
                         "description": "Bad Request"
@@ -358,8 +360,32 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "dto.CreateCompanyConfigRequest": {
+            "type": "object",
+            "properties": {
+                "company_id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.CreateCompanyConfigResponse": {
+            "type": "object",
+            "properties": {
+                "tenant_id": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.CreateGatewayRequest": {
             "type": "object",
+            "required": [
+                "company_id",
+                "gateway_eui",
+                "name"
+            ],
             "properties": {
                 "company_id": {
                     "type": "string"
@@ -372,26 +398,20 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.CreateSensorGroup": {
-            "type": "object",
-            "properties": {
-                "company_id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
         "dto.CreateSensorRequest": {
             "type": "object",
             "required": [
+                "app_key",
                 "company_id",
                 "device_eui",
                 "device_profile_id",
+                "factory_id",
                 "name"
             ],
             "properties": {
+                "app_key": {
+                    "type": "string"
+                },
                 "company_id": {
                     "description": "TODO: CompanyID should be extracted from auth",
                     "type": "string"
@@ -407,6 +427,9 @@ const docTemplate = `{
                 },
                 "factory_area_id": {
                     "description": "Optional — UUID, omit if service not yet available",
+                    "type": "string"
+                },
+                "factory_id": {
                     "type": "string"
                 },
                 "name": {
@@ -438,6 +461,15 @@ const docTemplate = `{
                 "company_id": {
                     "type": "string"
                 },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "factory_area_id": {
+                    "type": "string"
+                },
                 "gateway_eui": {
                     "type": "string"
                 },
@@ -450,38 +482,13 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
+                "state": {
+                    "type": "string"
+                },
                 "status": {
                     "type": "integer"
-                }
-            }
-        },
-        "dto.SensorGroupListResponse": {
-            "type": "object",
-            "properties": {
-                "sensor_groups": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/dto.SensorGroupResponse"
-                    }
                 },
-                "total_count": {
-                    "type": "integer"
-                }
-            }
-        },
-        "dto.SensorGroupResponse": {
-            "type": "object",
-            "properties": {
-                "company_id": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "location": {
-                    "type": "string"
-                },
-                "name": {
+                "updated_at": {
                     "type": "string"
                 }
             }
@@ -531,12 +538,12 @@ const docTemplate = `{
                     "description": "LoRaWAN region (EU868)",
                     "type": "string"
                 },
-                "vendor": {
-                    "description": "Vendor name",
-                    "type": "string"
-                },
                 "vendor_id": {
                     "description": "Identification of model producer",
+                    "type": "string"
+                },
+                "vendor_name": {
+                    "description": "Vendor name",
                     "type": "string"
                 }
             }
@@ -544,6 +551,9 @@ const docTemplate = `{
         "dto.SensorResponse": {
             "type": "object",
             "properties": {
+                "app_key": {
+                    "type": "string"
+                },
                 "company_id": {
                     "type": "string"
                 },
@@ -560,6 +570,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "factory_area_id": {
+                    "type": "string"
+                },
+                "factory_id": {
                     "type": "string"
                 },
                 "id": {
@@ -589,6 +602,7 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "device_profile_id",
+                "factory_id",
                 "name"
             ],
             "properties": {
@@ -600,6 +614,9 @@ const docTemplate = `{
                 },
                 "factory_area_id": {
                     "description": "Optional — UUID, omit if service not yet available",
+                    "type": "string"
+                },
+                "factory_id": {
                     "type": "string"
                 },
                 "name": {

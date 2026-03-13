@@ -1,14 +1,10 @@
 import { useState } from "react";
 
 import CircleIcon from "@mui/icons-material/Circle";
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogTitle from "@mui/material/DialogTitle";
 import { useTheme } from "@mui/material/styles";
-import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
+import { DeleteConfirmation } from "@shared/ui/DeleteConfirmation";
+import { RenameDialog } from "@shared/ui/RenameDialog";
 
 import { ActionMenu } from "@/shared/ui/actionMenu";
 
@@ -17,6 +13,7 @@ type InfoProps = {
   status: number;
   device_eui: string;
   lastSeenAt: string;
+  onDelete: () => void;
 };
 
 /**
@@ -26,10 +23,9 @@ type InfoProps = {
  * @param props - Component props
  * @param props.name - Display name of the gateway
  * @param props.status - Numeric status code: 0 = online, 1 = warning, 2 = offline
- * @param props.euid - EUI (Extended Unique Identifier) of the gateway
- * @param props.lastSeen - Human-readable time since last contact (e.g. "2 min ago")
  * @param props.device_eui
  * @param props.lastSeenAt
+ * @param props.onDelete
  * @returns A set of grid-aligned cells with an action menu and rename dialog
  */
 export function GatewayInfo({
@@ -37,11 +33,13 @@ export function GatewayInfo({
   status,
   device_eui,
   lastSeenAt,
+  onDelete,
 }: InfoProps) {
   const theme = useTheme();
   const [currentName, setCurrentName] = useState(name);
   const [editOpen, setEditOpen] = useState(false);
   const [editValue, setEditValue] = useState(name);
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
   const handleEditOpen = () => {
     setEditValue(currentName);
@@ -53,9 +51,14 @@ export function GatewayInfo({
     setEditOpen(false);
   };
 
+  const handleDeleteConfirm = () => {
+    onDelete();
+    setDeleteOpen(false);
+  };
+
   const menuItems = [
     { label: "Rename", onClick: handleEditOpen },
-    { label: "Delete", onClick: () => {} },
+    { label: "Delete", onClick: () => setDeleteOpen(true) },
   ];
 
   const statusColor = (status: number) => {
@@ -85,25 +88,20 @@ export function GatewayInfo({
       <Typography>{device_eui}</Typography>
       <Typography>{lastSeenAt}</Typography>
       <ActionMenu items={menuItems} />
-      <Dialog open={editOpen} onClose={() => setEditOpen(false)}>
-        <DialogTitle>Rename gateway</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            value={editValue}
-            onChange={(e) => setEditValue(e.target.value)}
-            label="Gateway name"
-            fullWidth
-            sx={{ mt: 1 }}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setEditOpen(false)}>Cancel</Button>
-          <Button variant="contained" onClick={handleEditSave}>
-            Save
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <RenameDialog
+        open={editOpen}
+        value={editValue}
+        onChange={setEditValue}
+        onClose={() => setEditOpen(false)}
+        onSave={handleEditSave}
+        label="Gateway name"
+        title="Rename gateway"
+      />
+      <DeleteConfirmation
+        open={deleteOpen}
+        onClose={() => setDeleteOpen(false)}
+        onConfirm={handleDeleteConfirm}
+      />
     </>
   );
 }

@@ -7,7 +7,7 @@ import (
 	"innoveria-iot/pkg/json"
 )
 
-// Root TODO(@vinjar): add proper documentation.
+// Root handles GET / and returns the service name and status. Returns 404 for any other path.
 func Root(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
 		http.NotFound(w, r)

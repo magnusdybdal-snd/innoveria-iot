@@ -40,10 +40,11 @@ func Run() error {
 	}
 	// repo init
 	companyRepo := repository.NewCompanyRepo(database)
-	_ = repository.NewUserRepo(database)
+
+	factoryRepo := repository.NewFactoryRepo(database)
 
 	// service init
-	authSvc := services.NewAuthServiceImpl(companyRepo)
+	authSvc := services.NewAuthServiceImpl(companyRepo, factoryRepo)
 
 	// Setting up mux and http server
 	mux := NewRouter(authSvc)

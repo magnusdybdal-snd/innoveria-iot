@@ -14,4 +14,6 @@ const (
 	// Routes:
 	LATEST_MEASUREMENT   = COLLECTION_ROUTE + "/latest"
 	MEASUREMENTS_BY_TIME = COLLECTION_ROUTE + "/measurements"
+
+	COMPANY_CONFIG_ROUTE = COLLECTION_ROUTE + "/company-config"
 )

@@ -18,7 +18,7 @@ import (
 	"time"
 )
 
-// Run TODO(@vinjar): add proper documentation.
+// Run initialises dependencies, starts the HTTP server, and blocks until a shutdown signal is received or a startup error occurs.
 func Run() error {
 	cfg := config.Load()
 
@@ -46,10 +46,10 @@ func Run() error {
 	gatewaySvc := service.NewGatewayService(chirpstackClient, gatewayRepo, companyConfigRepo)
 	sensorSvc := service.NewSensorService(chirpstackClient, sensorRepo, companyConfigRepo)
 	sensorProfileSvc := service.NewSensorProfileService(chirpstackClient)
-	sensorGroupService := service.NewDeviceGroupService(chirpstackClient)
+	companyConfigSvc := service.NewCompanyConfigService(chirpstackClient, companyConfigRepo)
 
 	// Setting up mux and http server
-	mux := NewRouter(gatewaySvc, sensorSvc, sensorProfileSvc, sensorGroupService)
+	mux := NewRouter(gatewaySvc, sensorSvc, sensorProfileSvc, companyConfigSvc)
 	server := &http.Server{
 		Addr:              cfg.Addr,
 		Handler:           mux,

@@ -4,14 +4,20 @@
  */
 export interface GatewayApiResponse {
   id: string;
-  company_id: string;
-  device_eui: string;
+  companyId: string;
+  gatewayEui: string;
   name: string;
   status: number;
   lastSeenAt: string; // RFC1123 - directly parsable in JS.
 }
 
 export interface GatewayListApiResponse {
-  totalCount: number; // TODO: check id backens uses batching of max fetched in one fetch - if so update logic to fetch again. (pagination)
+  totalCount: number;
   gateways: GatewayApiResponse[];
+}
+
+export interface CreateGatewayRequest {
+  companyId: string;
+  gatewayEui: string;
+  name: string;
 }

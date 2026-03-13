@@ -1,11 +1,14 @@
-// Package repository TODO(@Magnus Dybdal): add proper documentation.
+// Package repository implements the persistence layer for the device service.
 package repository
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"innoveria-iot/device-service/internal/domain"
 	"innoveria-iot/pkg/dbutil"
+
+	"github.com/jackc/pgx/v5"
 )
 
 const (
@@ -18,6 +21,11 @@ const (
 	findCompanyConfigByCompanyIDQuery = `
 		SELECT company_id, chirpstack_tenant_id, chirpstack_application_id, created_at
 		FROM device.company_config
+		WHERE company_id = $1
+	`
+
+	deleteCompanyConfigQuery = `
+		DELETE FROM device.company_config
 		WHERE company_id = $1
 	`
 )
@@ -68,8 +76,27 @@ func (r *CompanyConfigRepository) FindByCompanyID(ctx context.Context, companyID
 		&out.CreatedAt,
 	)
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return domain.CompanyConfig{}, fmt.Errorf("find company config by id: %w", domain.ErrNotFound)
+		}
 		return domain.CompanyConfig{}, fmt.Errorf("find company config by id: %w", err)
 	}
 
 	return out, nil
+}
+
+// Delete tries to delete a company config mapping from the database.
+// Returns an error if deletion fails or no company config is found.
+func (r *CompanyConfigRepository) Delete(ctx context.Context, companyID string) error {
+
+	tag, err := r.db.Pool.Exec(ctx, deleteCompanyConfigQuery, companyID)
+	if err != nil {
+		return fmt.Errorf("delete company config %s: %w", companyID, err)
+	}
+
+	if tag.RowsAffected() == 0 {
+		return fmt.Errorf("delete company config: %w", domain.ErrNotFound)
+	}
+
+	return nil
 }

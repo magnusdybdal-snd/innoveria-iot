@@ -12,13 +12,16 @@ import (
 )
 
 // NewRouter registers all HTTP routes and returns the configured ServeMux.
-func NewRouter(svc domain.MeasurementService) *http.ServeMux {
+func NewRouter(svc domain.MeasurementService, tenantMappingSvc domain.TenantMappingService) *http.ServeMux {
 	mux := http.NewServeMux()
 
 	// Routes:
 	mux.HandleFunc("GET /", handlers.Root)
 	mux.HandleFunc("GET "+LATEST_MEASUREMENT, handlers.HandleLatestMeasurement(svc))
 	mux.HandleFunc("GET "+MEASUREMENTS_BY_TIME, handlers.HandleMeasurementsByTimeRange(svc))
+
+	// Company config routes:
+	mux.HandleFunc("POST "+COMPANY_CONFIG_ROUTE, handlers.PostTenantMapping(tenantMappingSvc))
 
 	// Swagger
 	mux.HandleFunc("GET /swagger/", httpSwagger.WrapHandler)

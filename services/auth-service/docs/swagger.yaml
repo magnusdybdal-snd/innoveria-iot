@@ -1,12 +1,21 @@
 basePath: /api/v1/auth
 definitions:
+  dto.CompanyListResponse:
+    properties:
+      companies:
+        items:
+          $ref: '#/definitions/dto.CompanyResponse'
+        type: array
+      total_count:
+        type: integer
+    type: object
   dto.CompanyResponse:
     properties:
       address:
         type: string
-      company_id:
-        type: string
       created_at:
+        type: string
+      id:
         type: string
       name:
         type: string
@@ -20,6 +29,39 @@ definitions:
       name:
         type: string
     type: object
+  dto.CreateNewFactory:
+    properties:
+      address:
+        type: string
+      company_id:
+        type: string
+      name:
+        type: string
+    type: object
+  dto.FactoryListResponse:
+    properties:
+      factories:
+        items:
+          $ref: '#/definitions/dto.FactoryResponse'
+        type: array
+      total_count:
+        type: integer
+    type: object
+  dto.FactoryResponse:
+    properties:
+      address:
+        type: string
+      company_id:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
 host: localhost:8084
 info:
   contact: {}
@@ -28,6 +70,19 @@ info:
   version: "1.0"
 paths:
   /companies:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.CompanyListResponse'
+        "500":
+          description: Internal Server Error
+      summary: Get all companies
+      tags:
+      - companies
     post:
       consumes:
       - application/json
@@ -52,4 +107,130 @@ paths:
       summary: Register a new company
       tags:
       - companies
+  /companies/{id}:
+    delete:
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Delete company
+      tags:
+      - companies
+    get:
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.CompanyResponse'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get one company
+      tags:
+      - companies
+  /factories:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.FactoryListResponse'
+        "500":
+          description: Internal Server Error
+      summary: Get all factories
+      tags:
+      - factories
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Factory payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateNewFactory'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.FactoryResponse'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Register a new factory
+      tags:
+      - factories
+  /factories/{id}:
+    delete:
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Delete factory
+      tags:
+      - factories
+    get:
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.FactoryResponse'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get one factory
+      tags:
+      - factories
 swagger: "2.0"

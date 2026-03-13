@@ -12,12 +12,12 @@ import (
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
-// NewRouter TODO(@vinjar): add proper documentation.
+// NewRouter creates and returns an HTTP ServeMux with all device service routes registered.
 func NewRouter(
 	gatewaySvc domain.GatewayService,
 	sensorSvc domain.SensorService,
 	sensorProfileSvc domain.SensorProfileService,
-	sensorGroupSvc domain.SensorGroupService,
+	companyConfigSvc domain.CompanyConfigService,
 ) *http.ServeMux {
 	mux := http.NewServeMux()
 
@@ -38,9 +38,9 @@ func NewRouter(
 	// Sensor profile routes:
 	mux.HandleFunc("GET "+SENSOR_PROFILE_ROUTE, handlers.GetAllSensorProfiles(sensorProfileSvc))
 
-	// SensorGroup routes
-	mux.HandleFunc("POST "+SENSOR_GROUP_ROUTE, handlers.PostSensorGroup(sensorGroupSvc))
-	mux.HandleFunc("GET "+SENSOR_GROUP_ROUTE, handlers.GetAllSensorGroups(sensorGroupSvc))
+	// Company config routes:
+	mux.HandleFunc("POST "+COMPANY_CONFIG_ROUTE, handlers.PostCompanyConfig(companyConfigSvc))
+	mux.HandleFunc("DELETE "+COMPANY_CONFIG_ROUTE_ID, handlers.DeleteCompanyConfig(companyConfigSvc))
 
 	// Swagger docs
 	mux.HandleFunc("GET /swagger/", httpSwagger.WrapHandler)

@@ -91,6 +91,8 @@ services:
       dockerfile: infra/development/web.Dockerfile
     ports:
       - "3000:3000"
+    environment:
+      - API_PROXY_TARGET=http://api-gateway:8080
     volumes:
       - ./web:/app
       - /app/node_modules
@@ -202,6 +204,22 @@ services:
       - POSTGRES_USER=auth
       - POSTGRES_PASSWORD=auth
       - POSTGRES_DB=auth
+  
+  onboarding-service:
+    build:
+      context: .
+      dockerfile: infra/development/onboarding-service.Dockerfile
+    ports:
+      - "8085:8080"
+    volumes:
+      - ./services/onboarding-service:/app
+      - ./pkg:/pkg
+    environment:
+      - GO_ENV=development
+    depends_on:
+      - auth-service
+      - device-service
+      - collection-service
 
 #
 # Docker data volumes

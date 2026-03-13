@@ -11,6 +11,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { useTheme } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
+import { formatReading, formatTimestamp } from "@shared/lib";
 import { CategoryHeader } from "@shared/ui/CategoryHeader";
 import { DeviceRow } from "@shared/ui/DeviceRow";
 
@@ -26,7 +27,6 @@ type InfoAllProps = {
   sensorEui: string;
   machine: string;
   lastReading: string;
-  appKey: string;
   senProf: string;
 };
 
@@ -36,7 +36,6 @@ function SensorAllInfo({
   sensorEui: euid,
   machine,
   lastReading,
-  appKey,
   senProf,
 }: InfoAllProps) {
   const theme = useTheme();
@@ -67,8 +66,7 @@ function SensorAllInfo({
       <Typography>{name}</Typography>
       <Typography>{euid}</Typography>
       <Typography>{machine}</Typography>
-      <Typography>{lastReading}</Typography>
-      <Typography>{appKey}</Typography>
+      <Typography>{formatTimestamp(lastReading)}</Typography>
       <Typography>{senProf}</Typography>
     </>
   );
@@ -88,7 +86,7 @@ export function SensorAllInfoPopUp(props: AddDeviceProps) {
 
   useEffect(() => {
     if (!open) return;
-    fetchSensorReading("f62ccf710469ad3b").then(setReading); // TODO: replace hardcoded value with 'sensor.device_eui'
+    fetchSensorReading(sensor.deviceEui).then(setReading);
   }, [open, sensor.deviceEui]);
 
   const handleClose = () => {
@@ -101,7 +99,6 @@ export function SensorAllInfoPopUp(props: AddDeviceProps) {
     "DeviceEUI",
     "Machine",
     "Last reading",
-    "Application key",
     "Sensor profile",
   ];
 
@@ -135,8 +132,7 @@ export function SensorAllInfoPopUp(props: AddDeviceProps) {
               lastReading={sensor.lastReading}
               sensorEui={sensor.deviceEui}
               machine={sensor.machine}
-              appKey={sensor.appKey}
-              senProf={sensor.senProf}
+              senProf={sensor.sensorProfileId}
             />
           </DeviceRow>
         </CategoryHeader>
@@ -152,7 +148,7 @@ export function SensorAllInfoPopUp(props: AddDeviceProps) {
               variant="body2"
               sx={{ mb: 1, opacity: 0.7, color: "primary.main" }}
             >
-              {new Date(reading.timestamp).toLocaleString()}
+              {formatTimestamp(reading.timestamp)}
             </Typography>
             <CategoryHeader
               categories={Object.keys(reading.payload)}
@@ -160,7 +156,7 @@ export function SensorAllInfoPopUp(props: AddDeviceProps) {
             >
               <DeviceRow key="reading">
                 {Object.values(reading.payload).map((value, i) => (
-                  <Typography key={i}>{String(value)}</Typography>
+                  <Typography key={i}>{formatReading(value)}</Typography>
                 ))}
               </DeviceRow>
             </CategoryHeader>
