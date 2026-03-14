@@ -93,6 +93,12 @@ export default function Menu(menuProps: MenuProps) {
             boxSizing: "border-box",
             display: "flex",
             flexDirection: "column",
+
+            // Hide scrollbar
+            "&::-webkit-scrollbar": {
+              display: "none", // Chrome, Safari, Edge
+            },
+            scrollbarWidth: "none", // Firefox
           },
         }}
         variant="permanent"
