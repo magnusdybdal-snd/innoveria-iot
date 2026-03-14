@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-// FactoryArea is the domain model for factory area
+// FactoryArea represents a sub-unit of a factory (company -> factory -> factory_area)
 type FactoryArea struct {
 	ID          string
 	FactoryID   string
