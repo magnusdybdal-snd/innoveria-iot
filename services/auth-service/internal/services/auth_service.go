@@ -120,5 +120,9 @@ func (s *AuthServiceImpl) DeleteFactory(ctx context.Context, factoryID string) e
 
 // RegisterFactoryArea creates a new factory area
 func (s *AuthServiceImpl) RegisterFactoryArea(ctx context.Context, payload domain.FactoryArea) (domain.FactoryArea, error) {
-	return domain.FactoryArea{}, nil
+	areas, err := s.factoryAreaRepo.Create(ctx, payload)
+	if err != nil {
+		return domain.FactoryArea{}, err
+	}
+	return areas, nil
 }
