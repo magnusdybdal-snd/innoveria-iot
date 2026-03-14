@@ -36,7 +36,7 @@ func PostFactoryArea(svc domain.AuthService) http.HandlerFunc {
 
 		factoryAreaDomain := dto.MapCreateFactoryAreaToDomain(payload)
 		if factoryAreaDomain.FactoryID == "" || factoryAreaDomain.Name == "" {
-			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("missing required fields"), "company_id and name are required")
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("missing required fields"), "factory_id and name are required")
 			return
 		}
 
@@ -48,7 +48,7 @@ func PostFactoryArea(svc domain.AuthService) http.HandlerFunc {
 		factoryAreaResp, err := svc.RegisterFactoryArea(ctx, factoryAreaDomain)
 		if err != nil {
 			switch {
-			case errors.Is(err, domain.ErrCompanyNotFound):
+			case errors.Is(err, domain.ErrFactoryNotFound):
 				json.HandleError(w, http.StatusNotFound, err, "factory not found")
 			default:
 				json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
