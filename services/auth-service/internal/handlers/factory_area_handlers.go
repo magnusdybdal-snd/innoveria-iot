@@ -1,8 +1,15 @@
 package handlers
 
 import (
-	"innoveria-iot/auth-service/internal/domain"
+	"errors"
+	"fmt"
 	"net/http"
+
+	"innoveria-iot/auth-service/internal/domain"
+	"innoveria-iot/auth-service/internal/handlers/dto"
+	"innoveria-iot/pkg/json"
+
+	"github.com/google/uuid"
 )
 
 // PostFactoryArea handles factory area creation requests.
@@ -19,6 +26,39 @@ import (
 // @Router /factory-areas [post]
 func PostFactoryArea(svc domain.AuthService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 
+		payload, err := json.Decode[dto.CreateNewFactoryArea](r)
+		if err != nil {
+			json.HandleError(w, http.StatusBadRequest, err, "bad request")
+			return
+		}
+
+		factoryAreaDomain := dto.MapCreateFactoryAreaToDomain(payload)
+		if factoryAreaDomain.FactoryID == "" || factoryAreaDomain.Name == "" {
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("missing required fields"), "company_id and name are required")
+			return
+		}
+
+		if _, err := uuid.Parse(factoryAreaDomain.FactoryID); err != nil {
+			json.HandleError(w, http.StatusBadRequest, err, "invalid factory_id (uuid)")
+			return
+		}
+
+		factoryAreaResp, err := svc.RegisterFactoryArea(ctx, factoryAreaDomain)
+		if err != nil {
+			switch {
+			case errors.Is(err, domain.ErrCompanyNotFound):
+				json.HandleError(w, http.StatusNotFound, err, "factory not found")
+			default:
+				json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			}
+			return
+		}
+
+		resp := dto.MapFactoryAreaFromDomain(factoryAreaResp)
+		if err := json.Encode(w, http.StatusCreated, resp); err != nil {
+			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+		}
 	}
 }
