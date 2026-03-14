@@ -11,15 +11,21 @@ import (
 
 // AuthServiceImpl implements authentication use cases for the auth service.
 type AuthServiceImpl struct {
-	companyRepo domain.CompanyRepo
-	factoryRepo domain.FactoryRepo
+	companyRepo     domain.CompanyRepo
+	factoryRepo     domain.FactoryRepo
+	factoryAreaRepo domain.FactoryAreaRepo
 }
 
 // NewAuthServiceImpl creates a new AuthServiceImpl instance.
-func NewAuthServiceImpl(companyRepo domain.CompanyRepo, factoryRepo domain.FactoryRepo) *AuthServiceImpl {
+func NewAuthServiceImpl(
+	companyRepo domain.CompanyRepo,
+	factoryRepo domain.FactoryRepo,
+	factoryAreaRepo domain.FactoryAreaRepo,
+) *AuthServiceImpl {
 	return &AuthServiceImpl{
-		companyRepo: companyRepo,
-		factoryRepo: factoryRepo,
+		companyRepo:     companyRepo,
+		factoryRepo:     factoryRepo,
+		factoryAreaRepo: factoryAreaRepo,
 	}
 }
 
@@ -110,4 +116,9 @@ func (s *AuthServiceImpl) DeleteFactory(ctx context.Context, factoryID string) e
 
 	slog.Info("successfully deleted factory", "id", factoryID)
 	return nil
+}
+
+// RegisterFactoryArea creates a new factory area
+func (s *AuthServiceImpl) RegisterFactoryArea(ctx context.Context, payload domain.FactoryArea) (domain.FactoryArea, error) {
+	return domain.FactoryArea{}, nil
 }
