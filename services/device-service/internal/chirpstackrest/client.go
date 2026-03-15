@@ -471,3 +471,63 @@ func (c *Client) GetAllSensorProfiles(ctx context.Context, limit int) (dto.Devic
 
 	return resp, nil
 }
+
+// GetSensorProfile retrieves the full device profile by its ID.
+func (c *Client) GetSensorProfile(ctx context.Context, profileID string) (dto.DeviceProfileDetail, error) {
+	url := fmt.Sprintf("%s/api/device-profiles/%s", c.baseURL, profileID)
+	resp, err := httpclient.DoRequest[dto.DeviceProfileDetailResponse](
+		c.httpClient,
+		ctx,
+		url,
+		http.MethodGet,
+		nil,
+		map[string]string{
+			"Authorization": c.authHeader(),
+		},
+	)
+	if err != nil {
+		return dto.DeviceProfileDetail{}, handleChirpstackError(err)
+	}
+
+	return resp.DeviceProfile, nil
+}
+
+// GetTenantSensorProfiles retrieves tenant-level device profiles for the given tenant.
+func (c *Client) GetTenantSensorProfiles(ctx context.Context, tenantID string, limit int) (dto.DeviceProfileListResponse, error) {
+	url := fmt.Sprintf("%s/api/device-profiles?tenantId=%s&limit=%d", c.baseURL, tenantID, limit)
+	resp, err := httpclient.DoRequest[dto.DeviceProfileListResponse](
+		c.httpClient,
+		ctx,
+		url,
+		http.MethodGet,
+		nil,
+		map[string]string{
+			"Authorization": c.authHeader(),
+		},
+	)
+	if err != nil {
+		return dto.DeviceProfileListResponse{}, handleChirpstackError(err)
+	}
+
+	return resp, nil
+}
+
+// CreateTenantSensorProfile creates a tenant-level device profile and returns its ID.
+func (c *Client) CreateTenantSensorProfile(ctx context.Context, body dto.CreateDeviceProfileRequest) (string, error) {
+	url := fmt.Sprintf("%s/api/device-profiles", c.baseURL)
+	resp, err := httpclient.DoRequest[dto.CreateDeviceProfileResponse](
+		c.httpClient,
+		ctx,
+		url,
+		http.MethodPost,
+		body,
+		map[string]string{
+			"Authorization": c.authHeader(),
+		},
+	)
+	if err != nil {
+		return "", handleChirpstackError(err)
+	}
+
+	return resp.ID, nil
+}
