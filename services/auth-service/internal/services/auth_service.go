@@ -139,3 +139,15 @@ func (s *AuthServiceImpl) GetAllFactoryAreas(ctx context.Context) ([]domain.Fact
 
 	return areas, nil
 }
+
+// GetOneFactoryArea retrieves a single factory area by its ID.
+func (s *AuthServiceImpl) GetOneFactoryArea(ctx context.Context, areaID string) (domain.FactoryArea, error) {
+	area, err := s.factoryAreaRepo.FindByID(ctx, areaID)
+	if err != nil {
+		return domain.FactoryArea{}, err
+	}
+
+	slog.Info("successfully found factory area", "id", area.ID)
+
+	return area, nil
+}

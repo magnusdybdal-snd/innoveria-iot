@@ -83,7 +83,51 @@ func GetAllFactoryAreas(svc domain.AuthService) http.HandlerFunc {
 
 		resp := dto.MapFactoryAreaListFromDomain(areas)
 		if err := json.Encode(w, http.StatusOK, resp); err != nil {
-			json.HandleError(w, http.StatusInternalServerError, err, "internal server")
+			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+		}
+	}
+}
+
+// GetOneFactoryArea handles requests to fetch one factory area by ID.
+//
+// @Summary Get one factory area
+// @Tags factory-areas
+// @Produce json
+// @Param id path string true "id"
+// @Success 200 {object} dto.FactoryAreaResponse
+// @Failure 400
+// @Failure 404
+// @Failure 500
+// @Router /factory-areas/{id} [get]
+func GetOneFactoryArea(svc domain.AuthService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+
+		areaID := r.PathValue("id")
+		if areaID == "" {
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("missing id path parameter"), "id is required")
+			return
+		}
+
+		if _, err := uuid.Parse(areaID); err != nil {
+			json.HandleError(w, http.StatusBadRequest, err, "invalid factory area id (uuid)")
+			return
+		}
+
+		area, err := svc.GetOneFactoryArea(ctx, areaID)
+		if err != nil {
+			switch {
+			case errors.Is(err, domain.ErrFactoryAreaNotFound):
+				json.HandleError(w, http.StatusNotFound, err, "factory area not found")
+			default:
+				json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			}
+			return
+		}
+
+		resp := dto.MapFactoryAreaFromDomain(area)
+		if err := json.Encode(w, http.StatusOK, resp); err != nil {
+			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
 		}
 	}
 }

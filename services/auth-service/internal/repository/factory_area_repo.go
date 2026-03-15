@@ -10,6 +10,7 @@ import (
 	"innoveria-iot/pkg/dbutil"
 
 	"github.com/jackc/pgerrcode"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 )
 
@@ -23,6 +24,11 @@ const (
 		SELECT area_id, factory_id, name, description, created_at, updated_at
 		FROM auth.factory_area
 		ORDER BY created_at ASC
+	`
+	findFactoryAreaByIDQuery = `
+		SELECT area_id, factory_id, name, description, created_at, updated_at
+		FROM auth.factory_area
+		WHERE area_id = $1
 	`
 )
 
@@ -110,7 +116,30 @@ func (r *FactoryAreaRepoImpl) FindAll(ctx context.Context) ([]domain.FactoryArea
 
 // FindByID retrieves a factory area by id.
 func (r *FactoryAreaRepoImpl) FindByID(ctx context.Context, areaID string) (domain.FactoryArea, error) {
-	return domain.FactoryArea{}, nil
+	var out domain.FactoryArea
+	var description sql.NullString
+
+	err := r.db.Pool.QueryRow(ctx, findFactoryAreaByIDQuery, areaID).Scan(
+		&out.ID,
+		&out.FactoryID,
+		&out.Name,
+		&description,
+		&out.CreatedAt,
+		&out.UpdatedAt,
+	)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return domain.FactoryArea{}, fmt.Errorf("find factory area by id: %w", domain.ErrFactoryAreaNotFound)
+		}
+
+		return domain.FactoryArea{}, fmt.Errorf("find factory area by id: %w", err)
+	}
+
+	if description.Valid {
+		out.Description = &description.String
+	}
+
+	return out, nil
 }
 
 // DeleteByID deletes a factory area by id.

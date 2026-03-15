@@ -306,4 +306,28 @@ paths:
       summary: Register a new factory area
       tags:
       - factory-areas
+  /factory-areas/{id}:
+    get:
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.FactoryAreaResponse'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get one factory area
+      tags:
+      - factory-areas
 swagger: "2.0"
