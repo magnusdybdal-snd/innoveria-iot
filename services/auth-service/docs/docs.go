@@ -269,6 +269,26 @@ const docTemplate = `{
             }
         },
         "/factory-areas": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "factory-areas"
+                ],
+                "summary": "Get all factory areas",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.FactoryAreaListResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
             "post": {
                 "consumes": [
                     "application/json"
@@ -382,6 +402,20 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                }
+            }
+        },
+        "dto.FactoryAreaListResponse": {
+            "type": "object",
+            "properties": {
+                "factory_areas": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.FactoryAreaResponse"
+                    }
+                },
+                "total_count": {
+                    "type": "integer"
                 }
             }
         },

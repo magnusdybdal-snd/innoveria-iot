@@ -62,3 +62,28 @@ func PostFactoryArea(svc domain.AuthService) http.HandlerFunc {
 		}
 	}
 }
+
+// GetAllFactoryAreas handles requests to fetch all factory areas.
+//
+// @Summary Get all factory areas
+// @Tags factory-areas
+// @Produce json
+// @Success 200 {object} dto.FactoryAreaListResponse
+// @Failure 500
+// @Router /factory-areas [get]
+func GetAllFactoryAreas(svc domain.AuthService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+
+		areas, err := svc.GetAllFactoryAreas(ctx)
+		if err != nil {
+			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			return
+		}
+
+		resp := dto.MapFactoryAreaListFromDomain(areas)
+		if err := json.Encode(w, http.StatusOK, resp); err != nil {
+			json.HandleError(w, http.StatusInternalServerError, err, "internal server")
+		}
+	}
+}

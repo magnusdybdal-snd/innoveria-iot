@@ -120,9 +120,19 @@ func (s *AuthServiceImpl) DeleteFactory(ctx context.Context, factoryID string) e
 
 // RegisterFactoryArea creates a new factory area
 func (s *AuthServiceImpl) RegisterFactoryArea(ctx context.Context, payload domain.FactoryArea) (domain.FactoryArea, error) {
-	areas, err := s.factoryAreaRepo.Create(ctx, payload)
+	area, err := s.factoryAreaRepo.Create(ctx, payload)
 	if err != nil {
 		return domain.FactoryArea{}, err
 	}
+	return area, nil
+}
+
+// GetAllFactoryAreas retrieves all factory areas.
+func (s *AuthServiceImpl) GetAllFactoryAreas(ctx context.Context) ([]domain.FactoryArea, error) {
+	areas, err := s.factoryAreaRepo.FindAll(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	return areas, nil
 }

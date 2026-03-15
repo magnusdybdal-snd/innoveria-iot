@@ -47,6 +47,15 @@ definitions:
       name:
         type: string
     type: object
+  dto.FactoryAreaListResponse:
+    properties:
+      factory_areas:
+        items:
+          $ref: '#/definitions/dto.FactoryAreaResponse'
+        type: array
+      total_count:
+        type: integer
+    type: object
   dto.FactoryAreaResponse:
     properties:
       created_at:
@@ -258,6 +267,19 @@ paths:
       tags:
       - factories
   /factory-areas:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.FactoryAreaListResponse'
+        "500":
+          description: Internal Server Error
+      summary: Get all factory areas
+      tags:
+      - factory-areas
     post:
       consumes:
       - application/json
