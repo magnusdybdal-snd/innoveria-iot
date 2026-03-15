@@ -42,29 +42,41 @@ func (s *SensorProfileServiceImpl) GetOne(ctx context.Context) (domain.SensorPro
 }
 
 // EnsureTenantProfile ensures a tenant-level copy of the given global profile exists.
-// If one already exists (matched by name), its ID is returned. Otherwise a new one is created.
+// If the profile already belongs to the tenant it is returned as-is.
+// If it is a global profile (empty tenantId), a tenant-level copy is created (or reused if one exists).
 // Returns the tenant-level profile ID to use when registering a device.
 func (s *SensorProfileServiceImpl) EnsureTenantProfile(ctx context.Context, globalProfileID string, tenantID string) (string, error) {
-	// Fetch existing tenant profiles to check for a duplicate by name.
+	// Fetch the full profile to inspect its tenantId and settings.
+	global, err := s.cc.GetSensorProfile(ctx, globalProfileID)
+	if err != nil {
+		return "", fmt.Errorf("ensure tenant profile: fetch profile: %w", err)
+	}
+
+	// Already a tenant-level profile for this tenant — use it directly.
+	if global.TenantID == tenantID {
+		return global.ID, nil
+	}
+
+	// Global profile — check if a tenant-level copy already exists by name.
 	existing, err := s.cc.GetTenantSensorProfiles(ctx, tenantID, 1000)
 	if err != nil {
 		return "", fmt.Errorf("ensure tenant profile: fetch existing: %w", err)
 	}
 
-	// Fetch the global profile to get its name and full settings.
-	global, err := s.cc.GetSensorProfile(ctx, globalProfileID)
-	if err != nil {
-		return "", fmt.Errorf("ensure tenant profile: fetch global profile: %w", err)
-	}
-
-	// Return existing tenant profile if one with the same name already exists.
 	for _, p := range existing.Result {
 		if p.Name == global.Name {
-			return p.ID, nil
+			// Verify it is actually tenant-owned, not another global profile surfaced in the list.
+			owned, err := s.cc.GetSensorProfile(ctx, p.ID)
+			if err != nil {
+				return "", fmt.Errorf("ensure tenant profile: verify existing profile: %w", err)
+			}
+			if owned.TenantID == tenantID {
+				return owned.ID, nil
+			}
 		}
 	}
 
-	// No existing tenant profile found — create one from the global profile.
+	// No tenant-level copy found — create one from the global profile.
 	id, err := s.cc.CreateTenantSensorProfile(ctx, dto.CreateDeviceProfileRequest{
 		DeviceProfile: dto.CreateDeviceProfileBody{
 			TenantID:                tenantID,
