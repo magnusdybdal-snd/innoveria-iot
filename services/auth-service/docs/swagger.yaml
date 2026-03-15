@@ -38,6 +38,30 @@ definitions:
       name:
         type: string
     type: object
+  dto.CreateNewFactoryArea:
+    properties:
+      description:
+        type: string
+      factory_id:
+        type: string
+      name:
+        type: string
+    type: object
+  dto.FactoryAreaResponse:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      factory_id:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
   dto.FactoryListResponse:
     properties:
       factories:
@@ -233,4 +257,31 @@ paths:
       summary: Get one factory
       tags:
       - factories
+  /factory-areas:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Factory area payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateNewFactoryArea'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.FactoryAreaResponse'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Register a new factory area
+      tags:
+      - factory-areas
 swagger: "2.0"

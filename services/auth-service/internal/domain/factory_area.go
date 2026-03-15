@@ -10,7 +10,7 @@ type FactoryArea struct {
 	ID          string
 	FactoryID   string
 	Name        string
-	Description string
+	Description *string
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }

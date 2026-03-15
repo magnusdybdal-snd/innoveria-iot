@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"fmt"
 
@@ -15,7 +16,7 @@ import (
 const (
 	createFactoryAreaQuery = `
 		INSERT INTO auth.factory_area (factory_id, name, description)
-		VALUES ($1, $2 $3)
+		VALUES ($1, $2, $3)
 		RETURNING area_id, factory_id, name, description, created_at, updated_at
 	`
 )
@@ -34,15 +35,21 @@ func NewFactoryAreaRepo(db *dbutil.DB) *FactoryAreaRepoImpl {
 // Create inserts a new factory area.
 func (r *FactoryAreaRepoImpl) Create(ctx context.Context, area domain.FactoryArea) (domain.FactoryArea, error) {
 	var out domain.FactoryArea
+	var description any
+	if area.Description != nil {
+		description = *area.Description
+	}
+
+	var outDescription sql.NullString
 	err := r.db.Pool.QueryRow(ctx, createFactoryAreaQuery,
 		area.FactoryID,
 		area.Name,
-		area.Description,
+		description,
 	).Scan(
 		&out.ID,
 		&out.FactoryID,
 		&out.Name,
-		&out.Description,
+		&outDescription,
 		&out.CreatedAt,
 		&out.UpdatedAt,
 	)
@@ -52,6 +59,10 @@ func (r *FactoryAreaRepoImpl) Create(ctx context.Context, area domain.FactoryAre
 			return domain.FactoryArea{}, fmt.Errorf("create factory area : %w", domain.ErrFactoryNotFound)
 		}
 		return domain.FactoryArea{}, fmt.Errorf("create factory area: %w", err)
+	}
+
+	if outDescription.Valid {
+		out.Description = &outDescription.String
 	}
 
 	return out, nil

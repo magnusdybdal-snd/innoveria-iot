@@ -8,12 +8,12 @@ import (
 
 // FactoryAreaResponse is the response payload for factory area operations.
 type FactoryAreaResponse struct {
-	ID          string `json:"id"`
-	FactoryID   string `json:"factory_id"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	CreatedAt   string `json:"created_at"`
-	UpdatedAt   string `json:"updated_at"`
+	ID          string  `json:"id"`
+	FactoryID   string  `json:"factory_id"`
+	Name        string  `json:"name"`
+	Description *string `json:"description"`
+	CreatedAt   string  `json:"created_at"`
+	UpdatedAt   string  `json:"updated_at"`
 }
 
 // FactoryAreaListResponse wraps a list of factory areas with total count.
@@ -24,9 +24,9 @@ type FactoryAreaListResponse struct {
 
 // CreateNewFactoryArea is the request payload for creating a factory area.
 type CreateNewFactoryArea struct {
-	FactoryID   string `json:"factory_id"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
+	FactoryID   string  `json:"factory_id"`
+	Name        string  `json:"name"`
+	Description *string `json:"description"`
 }
 
 // MapCreateFactoryAreaToDomain maps a create-factory-area DTO to domain FactoryArea.
