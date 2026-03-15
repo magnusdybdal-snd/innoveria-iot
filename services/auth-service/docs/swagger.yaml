@@ -307,6 +307,25 @@ paths:
       tags:
       - factory-areas
   /factory-areas/{id}:
+    delete:
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Delete factory area
+      tags:
+      - factory-areas
     get:
       parameters:
       - description: id

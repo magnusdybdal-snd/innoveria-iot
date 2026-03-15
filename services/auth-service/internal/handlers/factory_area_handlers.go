@@ -131,3 +131,42 @@ func GetOneFactoryArea(svc domain.AuthService) http.HandlerFunc {
 		}
 	}
 }
+
+// DeleteFactoryArea handles requests to delete a factory area by ID.
+//
+// @Summary Delete factory area
+// @Tags factory-areas
+// @Param id path string true "id"
+// @Success 204
+// @Failure 400
+// @Failure 404
+// @Failure 500
+// @Router /factory-areas/{id} [delete]
+func DeleteFactoryArea(svc domain.AuthService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+
+		areaID := r.PathValue("id")
+		if areaID == "" {
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("missing id path parameter"), "id is required")
+			return
+		}
+
+		if _, err := uuid.Parse(areaID); err != nil {
+			json.HandleError(w, http.StatusBadRequest, err, "invalid factory area id (uuid)")
+			return
+		}
+
+		if err := svc.DeleteFactoryArea(ctx, areaID); err != nil {
+			switch {
+			case errors.Is(err, domain.ErrFactoryAreaNotFound):
+				json.HandleError(w, http.StatusNotFound, err, "factory area not found")
+			default:
+				json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			}
+			return
+		}
+
+		w.WriteHeader(http.StatusNoContent)
+	}
+}

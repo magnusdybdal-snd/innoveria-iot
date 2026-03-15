@@ -30,6 +30,10 @@ const (
 		FROM auth.factory_area
 		WHERE area_id = $1
 	`
+	deleteFactoryAreaByIDQuery = `
+		DELETE FROM auth.factory_area
+		WHERE area_id = $1
+	`
 )
 
 // FactoryAreaRepoImpl is the implementation of
@@ -144,5 +148,14 @@ func (r *FactoryAreaRepoImpl) FindByID(ctx context.Context, areaID string) (doma
 
 // DeleteByID deletes a factory area by id.
 func (r *FactoryAreaRepoImpl) DeleteByID(ctx context.Context, areaID string) error {
+	result, err := r.db.Pool.Exec(ctx, deleteFactoryAreaByIDQuery, areaID)
+	if err != nil {
+		return fmt.Errorf("delete factory area by id: %w", err)
+	}
+
+	if result.RowsAffected() == 0 {
+		return fmt.Errorf("delete factory area by id: %w", domain.ErrFactoryAreaNotFound)
+	}
+
 	return nil
 }

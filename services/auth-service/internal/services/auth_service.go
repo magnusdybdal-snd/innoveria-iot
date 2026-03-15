@@ -151,3 +151,13 @@ func (s *AuthServiceImpl) GetOneFactoryArea(ctx context.Context, areaID string) 
 
 	return area, nil
 }
+
+// DeleteFactoryArea deletes a factory area by ID.
+func (s *AuthServiceImpl) DeleteFactoryArea(ctx context.Context, areaID string) error {
+	if err := s.factoryAreaRepo.DeleteByID(ctx, areaID); err != nil {
+		return err
+	}
+
+	slog.Info("successfully deleted factory area", "id", areaID)
+	return nil
+}

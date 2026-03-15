@@ -28,4 +28,5 @@ type AuthService interface {
 	RegisterFactoryArea(ctx context.Context, payload FactoryArea) (FactoryArea, error)
 	GetAllFactoryAreas(ctx context.Context) ([]FactoryArea, error)
 	GetOneFactoryArea(ctx context.Context, areaID string) (FactoryArea, error)
+	DeleteFactoryArea(ctx context.Context, areaID string) error
 }

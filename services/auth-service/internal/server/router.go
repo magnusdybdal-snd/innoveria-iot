@@ -33,6 +33,7 @@ func NewRouter(authSvc domain.AuthService) *http.ServeMux {
 	mux.HandleFunc("POST "+FACTORY_AREA_ROUTE, handlers.PostFactoryArea(authSvc))
 	mux.HandleFunc("GET "+FACTORY_AREA_ROUTE, handlers.GetAllFactoryAreas(authSvc))
 	mux.HandleFunc("GET "+FACTORY_AREA_ID_ROUTE, handlers.GetOneFactoryArea(authSvc))
+	mux.HandleFunc("DELETE "+FACTORY_AREA_ID_ROUTE, handlers.DeleteFactoryArea(authSvc))
 
 	// Swagger docs
 	mux.HandleFunc("GET /swagger/", httpSwagger.WrapHandler)
