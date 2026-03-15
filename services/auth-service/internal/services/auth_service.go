@@ -124,6 +124,7 @@ func (s *AuthServiceImpl) RegisterFactoryArea(ctx context.Context, payload domai
 	if err != nil {
 		return domain.FactoryArea{}, err
 	}
+	slog.Info("successfully registered factory area", "id", area.ID)
 	return area, nil
 }
 
@@ -133,6 +134,8 @@ func (s *AuthServiceImpl) GetAllFactoryAreas(ctx context.Context) ([]domain.Fact
 	if err != nil {
 		return nil, err
 	}
+
+	slog.Info("successfully found all factory areas")
 
 	return areas, nil
 }
