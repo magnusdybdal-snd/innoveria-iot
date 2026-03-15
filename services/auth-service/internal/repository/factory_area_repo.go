@@ -19,6 +19,11 @@ const (
 		VALUES ($1, $2, $3)
 		RETURNING area_id, factory_id, name, description, created_at, updated_at
 	`
+	findAllFactoryAreaQuery = `
+		SELECT area_id, factory_id, name, description, created_at, updated_at
+		FROM auth.factory_area
+		ORDER BY created_at ASC
+	`
 )
 
 // FactoryAreaRepoImpl is the implementation of
@@ -70,7 +75,37 @@ func (r *FactoryAreaRepoImpl) Create(ctx context.Context, area domain.FactoryAre
 
 // FindAll retrieves all factory areas.
 func (r *FactoryAreaRepoImpl) FindAll(ctx context.Context) ([]domain.FactoryArea, error) {
-	return nil, nil
+	rows, err := r.db.Pool.Query(ctx, findAllFactoryAreaQuery)
+	if err != nil {
+		return nil, fmt.Errorf("find all factory areas: %w", err)
+	}
+	defer rows.Close()
+
+	var out []domain.FactoryArea
+
+	for rows.Next() {
+		var area domain.FactoryArea
+		var desc sql.NullString
+		if err := rows.Scan(
+			&area.ID,
+			&area.FactoryID,
+			&area.Name,
+			&desc,
+			&area.CreatedAt,
+			&area.UpdatedAt,
+		); err != nil {
+			return nil, fmt.Errorf("scan factory area: %w", err)
+		}
+
+		if desc.Valid {
+			area.Description = &desc.String
+		}
+		out = append(out, area)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("iterate factory area: %w", err)
+	}
+	return out, nil
 }
 
 // FindByID retrieves a factory area by id.
