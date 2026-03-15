@@ -38,7 +38,7 @@ func (s *SensorServiceImpl) Create(ctx context.Context, payload domain.Sensor) e
 	}
 
 	// Ensure a tenant-level copy of the selected profile exists, get its ID.
-	tenantProfileID, err := s.sensorProfileService.EnsureTenantProfile(ctx, payload.ChirpstackProfileID, cfg.ChirpstackTenantID)
+	tenantProfileID, err := s.sensorProfileService.EnsureTenantProfile(ctx, payload.ChirpstackProfileID, cfg.ChirpstackTenantID) // payload.ChirpstackProfileID may be global or tenant-level
 	if err != nil {
 		return fmt.Errorf("create sensor: ensure tenant profile: %w", err)
 	}

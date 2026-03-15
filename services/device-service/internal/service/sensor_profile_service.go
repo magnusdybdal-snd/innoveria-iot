@@ -41,31 +41,33 @@ func (s *SensorProfileServiceImpl) GetOne(ctx context.Context) (domain.SensorPro
 	return domain.SensorProfile{}, nil
 }
 
-// EnsureTenantProfile ensures a tenant-level copy of the given global profile exists.
-// If the profile already belongs to the tenant it is returned as-is.
-// If it is a global profile (empty tenantId), a tenant-level copy is created (or reused if one exists).
+// EnsureTenantProfile ensures a tenant-level copy of the given profile exists.
+// profileID may point to either a global profile or an already tenant-owned profile.
+// If it is already owned by the tenant it is returned as-is.
+// Otherwise a tenant-level copy is created (or reused if one with the same name already exists).
 // Returns the tenant-level profile ID to use when registering a device.
-func (s *SensorProfileServiceImpl) EnsureTenantProfile(ctx context.Context, globalProfileID string, tenantID string) (string, error) {
-	// Fetch the full profile to inspect its tenantId and settings.
-	global, err := s.cc.GetSensorProfile(ctx, globalProfileID)
+func (s *SensorProfileServiceImpl) EnsureTenantProfile(ctx context.Context, profileID string, tenantID string) (string, error) {
+	// Fetch the profile by ID — works for both global and tenant-level profiles.
+	profile, err := s.cc.GetSensorProfile(ctx, profileID)
 	if err != nil {
 		return "", fmt.Errorf("ensure tenant profile: fetch profile: %w", err)
 	}
 
-	// Already a tenant-level profile for this tenant — use it directly.
-	if global.TenantID == tenantID {
-		return global.ID, nil
+	// Profile is already owned by this tenant — nothing to do.
+	if profile.TenantID == tenantID {
+		return profile.ID, nil
 	}
 
-	// Global profile — check if a tenant-level copy already exists by name.
+	// Profile is global — check if a tenant-level copy already exists by name.
+	// Note: GetTenantSensorProfiles returns both global and tenant-level profiles mixed,
+	// so we verify ownership of each match individually.
 	existing, err := s.cc.GetTenantSensorProfiles(ctx, tenantID, 1000)
 	if err != nil {
 		return "", fmt.Errorf("ensure tenant profile: fetch existing: %w", err)
 	}
 
 	for _, p := range existing.Result {
-		if p.Name == global.Name {
-			// Verify it is actually tenant-owned, not another global profile surfaced in the list.
+		if p.Name == profile.Name {
 			owned, err := s.cc.GetSensorProfile(ctx, p.ID)
 			if err != nil {
 				return "", fmt.Errorf("ensure tenant profile: verify existing profile: %w", err)
@@ -80,21 +82,21 @@ func (s *SensorProfileServiceImpl) EnsureTenantProfile(ctx context.Context, glob
 	id, err := s.cc.CreateTenantSensorProfile(ctx, dto.CreateDeviceProfileRequest{
 		DeviceProfile: dto.CreateDeviceProfileBody{
 			TenantID:                tenantID,
-			Name:                    global.Name,
-			Description:             global.Description,
-			Region:                  global.Region,
-			MACVersion:              global.MACVersion,
-			RegParamsRevision:       global.RegParamsRevision,
-			ADRAlgorithmID:          global.ADRAlgorithmID,
-			PayloadCodecRuntime:     global.PayloadCodecRuntime,
-			PayloadCodecScript:      global.PayloadCodecScript,
-			FlushQueueOnActivate:    global.FlushQueueOnActivate,
-			UplinkInterval:          global.UplinkInterval,
-			DeviceStatusReqInterval: global.DeviceStatusReqInterval,
-			SupportsOtaa:            global.SupportsOtaa,
-			SupportsClassB:          global.SupportsClassB,
-			SupportsClassC:          global.SupportsClassC,
-			Tags:                    global.Tags,
+			Name:                    profile.Name,
+			Description:             profile.Description,
+			Region:                  profile.Region,
+			MACVersion:              profile.MACVersion,
+			RegParamsRevision:       profile.RegParamsRevision,
+			ADRAlgorithmID:          profile.ADRAlgorithmID,
+			PayloadCodecRuntime:     profile.PayloadCodecRuntime,
+			PayloadCodecScript:      profile.PayloadCodecScript,
+			FlushQueueOnActivate:    profile.FlushQueueOnActivate,
+			UplinkInterval:          profile.UplinkInterval,
+			DeviceStatusReqInterval: profile.DeviceStatusReqInterval,
+			SupportsOtaa:            profile.SupportsOtaa,
+			SupportsClassB:          profile.SupportsClassB,
+			SupportsClassC:          profile.SupportsClassC,
+			Tags:                    profile.Tags,
 		},
 	})
 	if err != nil {
