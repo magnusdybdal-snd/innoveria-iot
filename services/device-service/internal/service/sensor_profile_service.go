@@ -47,6 +47,13 @@ func (s *SensorProfileServiceImpl) GetOne(ctx context.Context) (domain.SensorPro
 // Otherwise a tenant-level copy is created (or reused if one with the same name already exists).
 // Returns the tenant-level profile ID to use when registering a device.
 func (s *SensorProfileServiceImpl) EnsureTenantProfile(ctx context.Context, profileID string, tenantID string) (string, error) {
+	if profileID == "" {
+		return "", fmt.Errorf("ensure tenant profile: profileID must not be empty")
+	}
+	if tenantID == "" {
+		return "", fmt.Errorf("ensure tenant profile: tenantID must not be empty")
+	}
+
 	// Fetch the profile by ID — works for both global and tenant-level profiles.
 	profile, err := s.cc.GetSensorProfile(ctx, profileID)
 	if err != nil {
