@@ -6,6 +6,7 @@ type RawSensor = {
   id: string;
   device_eui: string;
   name: string;
+  factory_id: string;
   status: number;
   production_resource: string | null;
   last_seen_at: string;
@@ -34,6 +35,7 @@ export const getSensors = async (): Promise<SensorApiResponse[]> => {
       id: s.id,
       deviceEui: s.device_eui,
       name: s.name,
+      factory: s.factory_id,
       status: s.status,
       machine: s.production_resource ?? "",
       lastReading: s.last_seen_at,

@@ -15,7 +15,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./infra/config/chirpstack:/etc/chirpstack
-      - ./infra/config/chirpstack-device-profiles:/profiles
+      - ./infra/config/chirpstack-device-profiles:/opt/lorawan-devices:ro
       - ./scripts/startChirpstack.sh:/scripts/startChirpstack.sh
       - ./infra/seed/seed-chirpstack.sql:/seed/seed-chirpstack.sql
       - chirpstack-secrets:/secrets

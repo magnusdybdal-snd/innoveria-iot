@@ -22,6 +22,12 @@ export function PageContent({ children }: PageContentProps) {
         paddingBottom: 5,
         paddingLeft: 2,
         paddingRight: 2,
+
+        // Hide scrollbar
+        "&::-webkit-scrollbar": {
+          display: "none", // Chrome, Safari, Edge
+        },
+        scrollbarWidth: "none", // Firefox
       }}
       className="flex-1 overflow-auto"
     >

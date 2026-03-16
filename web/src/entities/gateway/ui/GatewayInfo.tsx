@@ -1,15 +1,10 @@
 import { useState } from "react";
 
 import CircleIcon from "@mui/icons-material/Circle";
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogTitle from "@mui/material/DialogTitle";
 import { useTheme } from "@mui/material/styles";
-import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { DeleteConfirmation } from "@shared/ui/DeleteConfirmation";
+import { RenameDialog } from "@shared/ui/RenameDialog";
 
 import { ActionMenu } from "@/shared/ui/actionMenu";
 
@@ -93,25 +88,15 @@ export function GatewayInfo({
       <Typography>{device_eui}</Typography>
       <Typography>{lastSeenAt}</Typography>
       <ActionMenu items={menuItems} />
-      <Dialog open={editOpen} onClose={() => setEditOpen(false)}>
-        <DialogTitle>Rename gateway</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            value={editValue}
-            onChange={(e) => setEditValue(e.target.value)}
-            label="Gateway name"
-            fullWidth
-            sx={{ mt: 1 }}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setEditOpen(false)}>Cancel</Button>
-          <Button variant="contained" onClick={handleEditSave}>
-            Save
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <RenameDialog
+        open={editOpen}
+        value={editValue}
+        onChange={setEditValue}
+        onClose={() => setEditOpen(false)}
+        onSave={handleEditSave}
+        label="Gateway name"
+        title="Rename gateway"
+      />
       <DeleteConfirmation
         open={deleteOpen}
         onClose={() => setDeleteOpen(false)}
