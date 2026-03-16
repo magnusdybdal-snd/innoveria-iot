@@ -101,12 +101,7 @@ src/
     ├── lib/
     │   ├── formatter/            # Formats strings
     ├── mocks/                    # Dev mock data (sensors, gateways)
-    └── ui/                       # Generic UI primitives:
-        │                         #   actionMenu, AddEntityDialog, Button
-        │                         #   CategoryHeader, DeleteConfirmation, DeviceRow
-        │                         #   MenuBox, NoDeviceFoundCard, PageContent
-        │                         #   PageDivider, Path, RenameDialog
-        │                         #   snackbar, SubPageHeader
+    └── ui/                       # Generic UI primitives
         └── (each component has ComponentName.tsx + index.ts)
 ```
 
