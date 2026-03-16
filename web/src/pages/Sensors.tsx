@@ -196,8 +196,7 @@ export default function Sensors() {
             aria-label="scrollable auto tabs example"
           >
             <Tab label="All" value={0} />
-            <Tab label="Factory 1" value={1} />
-            {sorted.map((factory) => (
+            {factory.map((factory) => (
               <Tab label={factory.name} value={factory.id} />
             ))}
           </Tabs>
@@ -209,17 +208,19 @@ export default function Sensors() {
           sortConfig={sortConfig}
           onSort={handleSort}
         >
-          {sorted.map((sensor) => (
-            <DeviceRow key={sensor.id}>
-              <SensorMainInfo
-                name={sensor.name}
-                status={sensor.status}
-                lastReading={formatTimestamp(sensor.lastReading)}
-                onClick={() => handleRowClick(sensor)}
-                onDelete={() => handleDeleteSensor(sensor.id)}
-              />
-            </DeviceRow>
-          ))}
+          {sorted.map((sensor) => {
+            return (
+              <DeviceRow key={sensor.id}>
+                <SensorMainInfo
+                  name={sensor.name}
+                  status={sensor.status}
+                  lastReading={formatTimestamp(sensor.lastReading)}
+                  onClick={() => handleRowClick(sensor)}
+                  onDelete={() => handleDeleteSensor(sensor.id)}
+                />
+              </DeviceRow>
+            );
+          })}
         </CategoryHeader>
         {selectedSensor && (
           <SensorAllInfoPopUp
