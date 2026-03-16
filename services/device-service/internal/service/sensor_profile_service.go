@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"log/slog"
 
 	"innoveria-iot/device-service/internal/chirpstackrest"
 	"innoveria-iot/device-service/internal/chirpstackrest/dto"
@@ -38,7 +39,7 @@ func (s *SensorProfileServiceImpl) GetAll(ctx context.Context, limit int) ([]dom
 
 // GetOne is not yet implemented.
 func (s *SensorProfileServiceImpl) GetOne(ctx context.Context) (domain.SensorProfile, error) {
-	return domain.SensorProfile{}, nil
+	return domain.SensorProfile{}, fmt.Errorf("GetOne: not implemented")
 }
 
 // EnsureTenantProfile ensures a tenant-level copy of the given profile exists.
@@ -62,6 +63,7 @@ func (s *SensorProfileServiceImpl) EnsureTenantProfile(ctx context.Context, prof
 
 	// Profile is already owned by this tenant — nothing to do.
 	if profile.TenantID == tenantID {
+		slog.Debug("ensure tenant profile: profile already tenant-owned", "profileID", profileID, "tenantID", tenantID)
 		return profile.ID, nil
 	}
 
@@ -84,12 +86,16 @@ func (s *SensorProfileServiceImpl) EnsureTenantProfile(ctx context.Context, prof
 				return "", fmt.Errorf("ensure tenant profile: verify existing profile: %w", err)
 			}
 			if owned.TenantID == tenantID {
+				slog.Debug("ensure tenant profile: reusing existing tenant-level copy", "profileID", owned.ID, "name", profile.Name, "tenantID", tenantID)
 				return owned.ID, nil
 			}
+			slog.Warn("ensure tenant profile: name match found but profile is not tenant-owned — skipping",
+				"matchedProfileID", p.ID, "expectedTenantID", tenantID, "actualTenantID", owned.TenantID)
 		}
 	}
 
 	// No tenant-level copy found — create one from the global profile.
+	slog.Info("ensure tenant profile: creating new tenant-level copy", "globalProfileID", profileID, "name", profile.Name, "tenantID", tenantID)
 	id, err := s.cc.CreateTenantSensorProfile(ctx, dto.CreateDeviceProfileRequest{
 		DeviceProfile: dto.CreateDeviceProfileBody{
 			TenantID:                tenantID,
@@ -114,5 +120,6 @@ func (s *SensorProfileServiceImpl) EnsureTenantProfile(ctx context.Context, prof
 		return "", fmt.Errorf("ensure tenant profile: create tenant profile: %w", err)
 	}
 
+	slog.Info("ensure tenant profile: created tenant-level copy", "newProfileID", id, "name", profile.Name, "tenantID", tenantID)
 	return id, nil
 }
