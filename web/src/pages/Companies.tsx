@@ -13,7 +13,7 @@ import { AddCompany } from "@features/addCompany";
 import { formatTimestamp } from "@shared/lib";
 import { CategoryHeader } from "@shared/ui/CategoryHeader";
 import { DeviceRow } from "@shared/ui/DeviceRow";
-import { NoDeviceFoundCard } from "@shared/ui/NoDeviceFoundCard";
+import { NotFoundCard } from "@shared/ui/NotFoundCard";
 import { PageContent } from "@shared/ui/PageContent";
 import { PageDivider } from "@shared/ui/PageDivider";
 import {
@@ -151,7 +151,7 @@ export default function Companies() {
             </DeviceRow>
           ))}
         </CategoryHeader>
-        {!isLoading && sorted.length === 0 && <NoDeviceFoundCard />}
+        {!isLoading && sorted.length === 0 && <NotFoundCard page="companies" />}
       </PageContent>
       <AddCompany
         open={openAdd}
