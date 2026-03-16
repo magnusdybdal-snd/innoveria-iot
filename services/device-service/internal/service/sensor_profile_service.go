@@ -66,6 +66,10 @@ func (s *SensorProfileServiceImpl) EnsureTenantProfile(ctx context.Context, prof
 		return "", fmt.Errorf("ensure tenant profile: fetch existing: %w", err)
 	}
 
+	if existing.TotalCount > len(existing.Result) {
+		return "", fmt.Errorf("ensure tenant profile: result truncated (%d of %d profiles returned) — increase limit", len(existing.Result), existing.TotalCount)
+	}
+
 	for _, p := range existing.Result {
 		if p.Name == profile.Name {
 			owned, err := s.cc.GetSensorProfile(ctx, p.ID)
