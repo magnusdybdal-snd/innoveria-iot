@@ -58,6 +58,13 @@ export function DeviceFormFields({
   inputHints,
   onChange,
 }: DeviceFormFieldsProps) {
+  const maxLengths: Record<string, number> = {
+    Name: 100,
+    DeviceEUI: 16,
+    "Application key": 32,
+    Machine: 100,
+  };
+
   return (
     <Box display="flex" flexDirection="column" gap={2}>
       {options.map((option) => (
@@ -116,6 +123,11 @@ export function DeviceFormFields({
               }
               error={!!lengthErrors[option]}
               value={values[option] ?? ""}
+              slotProps={{
+                htmlInput: {
+                  maxLength: maxLengths[option],
+                },
+              }}
               onChange={(e) => {
                 let value = e.target.value;
                 if (option === "DeviceEUI" || option === "Application key") {
