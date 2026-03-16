@@ -68,8 +68,7 @@ func (s *SensorProfileServiceImpl) EnsureTenantProfile(ctx context.Context, prof
 	}
 
 	// Profile is global — check if a tenant-level copy already exists by name.
-	// Note: GetTenantSensorProfiles returns both global and tenant-level profiles mixed,
-	// so we verify ownership of each match individually.
+	// tenantOnly=true ensures the list contains only tenant-owned profiles, so a name match is sufficient.
 	existing, err := s.cc.GetTenantSensorProfiles(ctx, tenantID, 1000)
 	if err != nil {
 		return "", fmt.Errorf("ensure tenant profile: fetch existing: %w", err)
@@ -81,16 +80,8 @@ func (s *SensorProfileServiceImpl) EnsureTenantProfile(ctx context.Context, prof
 
 	for _, p := range existing.Result {
 		if p.Name == profile.Name {
-			owned, err := s.cc.GetSensorProfile(ctx, p.ID)
-			if err != nil {
-				return "", fmt.Errorf("ensure tenant profile: verify existing profile: %w", err)
-			}
-			if owned.TenantID == tenantID {
-				slog.Debug("ensure tenant profile: reusing existing tenant-level copy", "profileID", owned.ID, "name", profile.Name, "tenantID", tenantID)
-				return owned.ID, nil
-			}
-			slog.Warn("ensure tenant profile: name match found but profile is not tenant-owned — skipping",
-				"matchedProfileID", p.ID, "expectedTenantID", tenantID, "actualTenantID", owned.TenantID)
+			slog.Debug("ensure tenant profile: reusing existing tenant-level copy", "profileID", p.ID, "name", profile.Name, "tenantID", tenantID)
+			return p.ID, nil
 		}
 	}
 

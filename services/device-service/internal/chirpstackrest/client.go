@@ -492,9 +492,10 @@ func (c *Client) GetSensorProfile(ctx context.Context, profileID string) (dto.De
 	return resp.DeviceProfile, nil
 }
 
-// GetTenantSensorProfiles retrieves tenant-level device profiles for the given tenant.
+// GetTenantSensorProfiles retrieves only tenant-owned device profiles for the given tenant.
+// tenantOnly=true excludes global profiles from the result, so no ownership verification is needed on the caller side.
 func (c *Client) GetTenantSensorProfiles(ctx context.Context, tenantID string, limit int) (dto.DeviceProfileListResponse, error) {
-	url := fmt.Sprintf("%s/api/device-profiles?tenantId=%s&limit=%d", c.baseURL, tenantID, limit)
+	url := fmt.Sprintf("%s/api/device-profiles?tenantId=%s&limit=%d&tenantOnly=true", c.baseURL, tenantID, limit)
 	resp, err := httpclient.DoRequest[dto.DeviceProfileListResponse](
 		c.httpClient,
 		ctx,
