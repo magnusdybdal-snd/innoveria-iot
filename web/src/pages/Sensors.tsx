@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   getSensorProfiles,
@@ -15,13 +15,15 @@ import {
 } from "@entities/sensor";
 import { deleteSensor } from "@entities/sensor/api/deleteSensor";
 import { AddDevice } from "@features/addDevice";
+import Box from "@mui/material/Box";
+import Tab from "@mui/material/Tab";
+import Tabs from "@mui/material/Tabs";
 import { formatTimestamp } from "@shared/lib";
 import { CustomButton } from "@shared/ui/Button";
 import { CategoryHeader } from "@shared/ui/CategoryHeader";
 import { DeviceRow } from "@shared/ui/DeviceRow";
 import { NotFoundCard } from "@shared/ui/NotFoundCard";
 import { PageContent } from "@shared/ui/PageContent";
-import { PageDivider } from "@shared/ui/PageDivider";
 import {
   AppSnackbar,
   SNACKBAR_SEVERITY,
@@ -63,6 +65,7 @@ export default function Sensors() {
   const [factory, setFactory] = useState<FactoryApiResponse[]>([]); // factory location sensor
 
   const { show, hide, snackbar } = useSnackbar();
+  const [value, setValue] = React.useState(0);
 
   useEffect(() => {
     getSensorProfiles().then(setSensorProfiles);
@@ -71,6 +74,11 @@ export default function Sensors() {
   useEffect(() => {
     getFactories().then(setFactory);
   }, []);
+
+  const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
+    setValue(newValue);
+  };
+
   // Handler for deleting a sensor; refreshes list on success
   const handleDeleteSensor = (id: string) => {
     deleteSensor(id)
@@ -172,7 +180,28 @@ export default function Sensors() {
             <SensorsGenInfo key={key} title={key} count={value} />
           ))}
         </div>
-        <PageDivider />
+        <Box
+          sx={{
+            borderBottom: 1,
+            borderColor: "divider",
+            marginTop: 2,
+            marginBottom: 5,
+          }}
+        >
+          <Tabs
+            value={value}
+            onChange={handleChange}
+            variant="scrollable"
+            scrollButtons="auto"
+            aria-label="scrollable auto tabs example"
+          >
+            <Tab label="All" value={0} />
+            <Tab label="Factory 1" value={1} />
+            {sorted.map((factory) => (
+              <Tab label={factory.name} value={factory.id} />
+            ))}
+          </Tabs>
+        </Box>
         <CategoryHeader
           categories={sensorMainDetails}
           columns={sensorMainDetails.length + 2}
