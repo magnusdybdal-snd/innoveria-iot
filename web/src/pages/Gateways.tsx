@@ -15,7 +15,7 @@ import { formatTimestamp } from "@shared/lib";
 import { CustomButton } from "@shared/ui/Button";
 import { CategoryHeader } from "@shared/ui/CategoryHeader";
 import { DeviceRow } from "@shared/ui/DeviceRow";
-import { NoDeviceFoundCard } from "@shared/ui/NoDeviceFoundCard";
+import { NotFoundCard } from "@shared/ui/NotFoundCard";
 import { PageContent } from "@shared/ui/PageContent";
 import { PageDivider } from "@shared/ui/PageDivider";
 import {
@@ -152,7 +152,7 @@ export default function Gateways() {
             </DeviceRow>
           ))}
         </CategoryHeader>
-        {!isLoading && sorted.length === 0 && <NoDeviceFoundCard />}
+        {!isLoading && sorted.length === 0 && <NotFoundCard page="gateways" />}
       </PageContent>
       <AddDevice
         open={openAdd}

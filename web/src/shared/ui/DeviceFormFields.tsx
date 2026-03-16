@@ -1,9 +1,7 @@
 import Box from "@mui/material/Box";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import Select from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
+import { DropDownSelect } from "@shared/ui/DropDownSelect";
 
 interface DeviceFormFieldsProps {
   options: string[];
@@ -16,6 +14,11 @@ interface DeviceFormFieldsProps {
   onChange: (option: string, value: string) => void;
 }
 
+const dropdownOptions: Record<string, string> = {
+  "Sensor profile": "profileOptions",
+  Factory: "factoryOptions",
+};
+
 const fieldSx = {
   "& .MuiOutlinedInput-root": {
     color: "primary.main",
@@ -25,23 +28,13 @@ const fieldSx = {
   },
 };
 
-const selectSx = {
-  color: "primary.main",
-  "& .MuiOutlinedInput-notchedOutline": { borderColor: "primary.main" },
-  "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "primary.main" },
-  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-    borderColor: "primary.main",
-  },
-  "& .MuiSelect-icon": { color: "primary.main" },
-};
-
 /**
  * Renders a vertical list of form fields for device registration.
  * @param props - Component props
  * @param props.options - Field names to render
  * @param props.values - Current field values
  * @param props.profileOptions - Sensor profile choices for the dropdown
- * @param props.factoryOptions
+ * @param props.factoryOptions - Factory choices for the dropdown
  * @param props.lengthErrors - Map of field name to whether it has a length error
  * @param props.lengthErrorMessages - Map of field name to its error message
  * @param props.inputHints - Map of field name to its placeholder hint
@@ -58,6 +51,18 @@ export function DeviceFormFields({
   inputHints,
   onChange,
 }: DeviceFormFieldsProps) {
+  const dropdownData: Record<string, { id: string; name: string }[]> = {
+    profileOptions,
+    factoryOptions,
+  };
+
+  const maxLengths: Record<string, number> = {
+    Name: 100,
+    DeviceEUI: 16,
+    "Application key": 32,
+    Machine: 100,
+  };
+
   return (
     <Box display="flex" flexDirection="column" gap={2}>
       {options.map((option) => (
@@ -66,46 +71,12 @@ export function DeviceFormFields({
             {option}
           </Typography>
 
-          {option === "Sensor profile" ? (
-            <>
-              <InputLabel id={`label-${option}`} sx={{ display: "none" }}>
-                {option}
-              </InputLabel>
-              <Select
-                labelId={`label-${option}`}
-                sx={selectSx}
-                fullWidth
-                value={values[option] ?? ""}
-                displayEmpty
-                onChange={(e) => onChange(option, e.target.value)}
-              >
-                {profileOptions.map((prof) => (
-                  <MenuItem key={prof.id} value={prof.id}>
-                    {prof.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </>
-          ) : option === "Factory" ? (
-            <>
-              <InputLabel id={`label-${option}`} sx={{ display: "none" }}>
-                {option}
-              </InputLabel>
-              <Select
-                labelId={`label-${option}`}
-                sx={selectSx}
-                fullWidth
-                value={values[option] ?? ""}
-                displayEmpty
-                onChange={(e) => onChange(option, e.target.value)}
-              >
-                {factoryOptions.map((factory) => (
-                  <MenuItem key={factory.id} value={factory.id}>
-                    {factory.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </>
+          {option in dropdownOptions ? (
+            <DropDownSelect
+              options={dropdownData[dropdownOptions[option]]}
+              value={values[option] ?? ""}
+              onChange={(value) => onChange(option, value)}
+            />
           ) : (
             <TextField
               sx={fieldSx}
@@ -116,6 +87,11 @@ export function DeviceFormFields({
               }
               error={!!lengthErrors[option]}
               value={values[option] ?? ""}
+              slotProps={{
+                htmlInput: {
+                  maxLength: maxLengths[option],
+                },
+              }}
               onChange={(e) => {
                 let value = e.target.value;
                 if (option === "DeviceEUI" || option === "Application key") {

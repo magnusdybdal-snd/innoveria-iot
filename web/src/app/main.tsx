@@ -8,6 +8,7 @@ import "@/app/providers/styles/index.css";
 import { useState } from "react";
 
 import AppRoutes from "@app/routes/index.tsx";
+import Box from "@mui/material/Box";
 import { DarkMode } from "@shared/config/theme/darkMode";
 import { LightMode } from "@shared/config/theme/lightMode";
 import { ThemeContext } from "@shared/config/theme/themeContext";
@@ -38,7 +39,18 @@ export default function Root() {
         <StyledEngineProvider injectFirst>
           <ThemeProvider theme={mode ? DarkMode : LightMode}>
             <CssBaseline />
-            <AppRoutes />
+            <Box // Hide scrollbar for whole page
+              sx={{
+                height: "100vh",
+                overflowY: "auto",
+                "&::-webkit-scrollbar": {
+                  display: "none",
+                },
+                scrollbarWidth: "none",
+              }}
+            >
+              <AppRoutes />
+            </Box>
           </ThemeProvider>
         </StyledEngineProvider>
       </BrowserRouter>

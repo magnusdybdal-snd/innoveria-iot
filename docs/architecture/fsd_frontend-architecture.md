@@ -71,22 +71,16 @@ src/
 ├── assets/                       # Static files (SVG, PNG). Alias: @assets
 │
 ├── entities/                     # Domain models
-│   ├── sensor/
-│   │   ├── api/                  # getSensors.ts, getSensorReading.ts
-│   │   ├── model/                # sensorSchema.ts (types), useSensors.ts (hook)
-│   │   ├── lib/                  # sortSensors.ts + sortSensors.test.ts
+│   ├── (entity_name)/
+│   │   ├── api/                  # HTTP calls — functions that talk to the backend
+│   │   ├── model/                # Stateful logic — hooks (`use*.ts`), TypeScript interfaces/schemas
+│   │   ├── lib/                  # Pure utility functions — no state, no side effects
 │   │   ├── ui/                   # SensorMainInfo, SensorAllInfoPopUp, SensorsGenInfo
-│   │   └── index.ts              # Public barrel export
-│   ├── gateway/
-│   │   ├── api/                  # getGateways.ts
-│   │   ├── model/                # gatewaySchema.ts
-│   │   ├── lib/                  # sortGateways.ts
-│   │   ├── ui/                   # GatewayInfo
-│   │   └── index.ts
+│   │   └── index.ts              # React components that belong to this slice
 │
 ├── features/                     # User interactions
-│   └── addSensor/
-│       ├── ui/                   # AddDevice.tsx — form modal for registering a sensor
+│   └── (feature_name)/
+│       ├── ui/                   # Form modal for adding/other features
 │       └── index.ts
 │
 ├── widgets/                      # Composite UI blocks
@@ -95,22 +89,19 @@ src/
 │
 ├── pages/                        # Full-page components
 │   ├── Home.tsx
-│   ├── Login.tsx
-│   ├── Dashboard.tsx
-│   ├── Sensors.tsx
-│   ├── Gateways.tsx
-│   └── Devices.tsx               # Defined but not yet registered in the router
+│   ├── (Device_page).tsx
+│   ├── (Admin_page).tsx
+│   ├── StatusPage.tsx            # 404 page
 │
 └── shared/                       # No domain logic — reusable across everything
     ├── api/                      # Axios instance + generic apiRequest<T>() helper
     ├── config/
     │   ├── theme/                # MUI dark/light themes + ThemeContext
     │   └── navigation/           # mainPageList, subPageList config
+    ├── lib/
+    │   ├── formatter/            # Formats strings
     ├── mocks/                    # Dev mock data (sensors, gateways)
-    └── ui/                       # Generic UI primitives:
-        │                         #   CategoryHeader, DeviceRow, MenuBox
-        │                         #   PageContent, PageDivider, SubPageHeader
-        │                         #   Path, NoDeviceFoundCard, actionMenu
+    └── ui/                       # Generic UI primitives
         └── (each component has ComponentName.tsx + index.ts)
 ```
 
