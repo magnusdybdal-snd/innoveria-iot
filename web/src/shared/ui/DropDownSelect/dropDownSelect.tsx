@@ -1,48 +1,58 @@
-import MenuItem from "@mui/material/MenuItem";
-import Select from "@mui/material/Select";
+import Autocomplete from "@mui/material/Autocomplete";
+import TextField from "@mui/material/TextField";
+
+interface Option {
+  id: string;
+  name: string;
+}
 
 interface DropDownSelectProps {
-  options: { id: string; name: string }[];
+  options: Option[];
   value: string;
   onChange: (value: string) => void;
 }
 
-const selectSx = {
-  color: "primary.main",
-  "& .MuiOutlinedInput-notchedOutline": { borderColor: "primary.main" },
-  "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "primary.main" },
-  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-    borderColor: "primary.main",
+const autocompleteSx = {
+  "& .MuiOutlinedInput-root": {
+    color: "primary.main",
+    "& .MuiOutlinedInput-notchedOutline": { borderColor: "primary.main" },
+    "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "primary.main" },
+    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+      borderColor: "primary.main",
+    },
   },
-  "& .MuiSelect-icon": { color: "primary.main" },
+  "& .MuiSvgIcon-root": { color: "primary.main" },
 };
 
 /**
- * Generic styled dropdown select.
+ * Generic styled dropdown select with keyboard/type-to-filter support.
+ * Only emits ids that exist in the options array.
  * @param props - Component props
  * @param props.options - Items to display in the dropdown
  * @param props.value - Currently selected item id
  * @param props.onChange - Called with the selected item id on change
- * @returns The rendered select element
+ * @returns The rendered autocomplete select element
  */
 export function DropDownSelect({
   options,
   value,
   onChange,
 }: DropDownSelectProps) {
+  const selected = options.find((o) => o.id === value);
+
   return (
-    <Select
-      sx={selectSx}
+    <Autocomplete
+      sx={autocompleteSx}
       fullWidth
-      value={value}
-      displayEmpty
-      onChange={(e) => onChange(e.target.value)}
-    >
-      {options.map((option) => (
-        <MenuItem key={option.id} value={option.id}>
-          {option.name}
-        </MenuItem>
-      ))}
-    </Select>
+      disableClearable
+      options={options}
+      getOptionLabel={(option) => option.name}
+      isOptionEqualToValue={(option, val) => option.id === val.id}
+      value={selected}
+      onChange={(_, newValue) => {
+        if (newValue) onChange(newValue.id);
+      }}
+      renderInput={(params) => <TextField {...params} />}
+    />
   );
 }
