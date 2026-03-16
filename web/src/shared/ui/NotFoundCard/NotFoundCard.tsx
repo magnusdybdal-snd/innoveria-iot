@@ -3,11 +3,18 @@ import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import { yellow } from "@mui/material/colors";
 
+type NotFoundProps = {
+  page: string;
+};
+
 /**
- * NoDeviceFoundCard
- * @returns card with message that no device has been found
+ * NotFoundCard
+ * @param NotFoundProps - Component props
+ * @param NotFoundProps.children - Name of page not found in
+ * @param NotFoundProps.page
+ * @returns card with message that no object has been found
  */
-export function NoDeviceFoundCard() {
+export function NotFoundCard({ page }: NotFoundProps) {
   return (
     <>
       <Card
@@ -27,7 +34,7 @@ export function NoDeviceFoundCard() {
           }}
         >
           <ErrorIcon sx={{ margin: 1, color: yellow[500] }} />
-          <p>No devices found</p>
+          <p>No {page} found</p>
         </Box>
       </Card>
     </>
