@@ -12,22 +12,22 @@ import (
 )
 
 // NewRouter builds and returns the service HTTP router.
-func NewRouter(authSvc domain.AuthService) *http.ServeMux {
+func NewRouter(companySvc domain.CompanyService, factorySvc domain.FactoryService) *http.ServeMux {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /", handlers.Root)
 
 	// Company
-	mux.HandleFunc("GET "+COMPANY_ROUTE, handlers.GetAllCompanies(authSvc))
-	mux.HandleFunc("GET "+COMPANY_ID_ROUTE, handlers.GetOneCompany(authSvc))
-	mux.HandleFunc("POST "+COMPANY_ROUTE, handlers.PostCompany(authSvc))
-	mux.HandleFunc("DELETE "+COMPANY_ID_ROUTE, handlers.DeleteCompany(authSvc))
+	mux.HandleFunc("GET "+COMPANY_ROUTE, handlers.GetAllCompanies(companySvc))
+	mux.HandleFunc("GET "+COMPANY_ID_ROUTE, handlers.GetOneCompany(companySvc))
+	mux.HandleFunc("POST "+COMPANY_ROUTE, handlers.PostCompany(companySvc))
+	mux.HandleFunc("DELETE "+COMPANY_ID_ROUTE, handlers.DeleteCompany(companySvc))
 
 	// Factory
-	mux.HandleFunc("GET "+FACTORY_ROUTE, handlers.GetAllFactories(authSvc))
-	mux.HandleFunc("GET "+FACTORY_ID_ROUTE, handlers.GetOneFactory(authSvc))
-	mux.HandleFunc("POST "+FACTORY_ROUTE, handlers.PostFactory(authSvc))
-	mux.HandleFunc("DELETE "+FACTORY_ID_ROUTE, handlers.DeleteFactory(authSvc))
+	mux.HandleFunc("GET "+FACTORY_ROUTE, handlers.GetAllFactories(factorySvc))
+	mux.HandleFunc("GET "+FACTORY_ID_ROUTE, handlers.GetOneFactory(factorySvc))
+	mux.HandleFunc("POST "+FACTORY_ROUTE, handlers.PostFactory(factorySvc))
+	mux.HandleFunc("DELETE "+FACTORY_ID_ROUTE, handlers.DeleteFactory(factorySvc))
 
 	// Swagger docs
 	mux.HandleFunc("GET /swagger/", httpSwagger.WrapHandler)

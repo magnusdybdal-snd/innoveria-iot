@@ -44,10 +44,11 @@ func Run() error {
 	factoryRepo := repository.NewFactoryRepo(database)
 
 	// service init
-	authSvc := services.NewAuthServiceImpl(companyRepo, factoryRepo)
+	companySvc := services.NewCompanyService(companyRepo)
+	factorySvc := services.NewFactoryService(factoryRepo)
 
 	// Setting up mux and http server
-	mux := NewRouter(authSvc)
+	mux := NewRouter(companySvc, factorySvc)
 	server := &http.Server{
 		Addr:              cfg.Addr,
 		Handler:           mux,
