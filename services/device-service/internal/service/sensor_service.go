@@ -91,6 +91,13 @@ func (s *SensorServiceImpl) Update(ctx context.Context, sensorID string, payload
 		return fmt.Errorf("update sensor: finding company tenant ID: %w", err)
 	}
 
+	// Ensure a tenant-level copy of the selected profile exists, get its ID.
+	tenantProfileID, err := s.sensorProfileService.EnsureTenantProfile(ctx, payload.ChirpstackProfileID, companycfg.ChirpstackTenantID)
+	if err != nil {
+		return fmt.Errorf("update sensor: ensure tenant profile: %w", err)
+	}
+	payload.ChirpstackProfileID = tenantProfileID
+
 	// Retain old values before merging payload, needed for potential compensation.
 	oldSensor := sensor
 
