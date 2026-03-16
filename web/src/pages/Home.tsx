@@ -1,15 +1,20 @@
-import { JokeViewer } from "@/API/getJoke";
-import { PageContent } from "@/components/pageContent";
-import { SubPageHeader } from "@/components/subPageHeader";
-import Menu from "@/Menu.tsx";
+import Typography from "@mui/material/Typography";
+import { PageContent } from "@shared/ui/PageContent";
+import { SubPageHeader } from "@shared/ui/SubPageHeader";
 
+/**
+ * Home page that displays a placholder text, wrapped in the main Menu layout.
+ * This is the default landing page after login.
+ * @returns The rendered Home page
+ */
 export default function Home() {
   return (
     <div className="flex h-screen">
-      <Menu />
       <PageContent>
         <SubPageHeader />
-        <JokeViewer />
+        <Typography variant="h5" sx={{ mt: 2 }}>
+          Home Page content placeholder
+        </Typography>
       </PageContent>
     </div>
   );

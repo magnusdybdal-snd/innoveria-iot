@@ -1,13 +1,14 @@
 import Box from "@mui/material/Box";
+import { Path } from "@shared/ui/Path";
+import { AddBox } from "@widgets/dashboard";
 
-import { AddBox } from "@/components/addCompBox";
-import { Path } from "@/components/path";
-import Menu from "@/Menu.tsx";
-
+/**
+ * Dashboard page that displays the current breadcrumb path and a placeholder to add new dashboard components.
+ * @returns The rendered Dashboard page
+ */
 export default function Home() {
   return (
     <div className="flex h-screen">
-      <Menu />
       <Box
         sx={{
           backgroundColor: "primary.dark",

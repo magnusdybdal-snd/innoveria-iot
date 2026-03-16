@@ -1,3 +1,4 @@
+// Package mappers provides functions for converting between domain, Chirpstack, and database models.
 package mappers
 
 import (
@@ -10,32 +11,37 @@ import (
 /*
 	Gateway mapping
 */
-// Mapping for the chirpstack gateway domain to device service gateway domain
-func MapChirpstackGateway(from dto.ChirpstackGateway) domain.Gateway {
+
+// MergeGateway merges Chirpstack runtime data with database domain data into a domain Gateway.
+func MergeGateway(cs dto.ChirpstackGateway, db domain.Gateway) domain.Gateway {
 	return domain.Gateway{
-		Id:         from.GatewayEUI, // TODO: Change this to internal database id
-		CompanyId:  from.TenantID,   // TODO: look up company mapping in DB
-		GatewayEUI: from.GatewayEUI,
-		Name:       from.Name,
-		Status:     mapStatus(from.State, from.LastSeenAt),
-		LastSeenAt: from.LastSeenAt.Format(time.RFC1123),
+		Id:            db.Id,
+		CompanyId:     db.CompanyId,
+		GatewayEUI:    db.GatewayEUI,
+		Name:          db.Name,
+		Description:   db.Description,
+		State:         db.State,
+		FactoryAreaID: db.FactoryAreaID,
+		CreatedAt:     db.CreatedAt,
+		UpdatedAt:     db.UpdatedAt,
+		Status:        mapStatus(cs.State, cs.LastSeenAt),
+		LastSeenAt:    cs.LastSeenAt.Format(time.RFC3339),
 	}
 }
 
-// Mapping for gateway domain to chirpstack post and put requests
-// Tennant id is chirpstacks internal understanding of companies
-func MapCreateChirpstackGateway(from domain.Gateway, chirpstackTennantId string) dto.CreateChirpstackGatewayRequest {
-	return dto.CreateChirpstackGatewayRequest{
-		CreateGatewayPayload: dto.CreateGatewayPayload{
+// MapChirpstackGatewayRequest maps a domain Gateway and a Chirpstack tenant ID to a CreateChirpstackGatewayRequest.
+func MapChirpstackGatewayRequest(from domain.Gateway, chirpstackTenantID string) dto.ChirpstackGatewayRequest {
+	return dto.ChirpstackGatewayRequest{
+		GatewayPayload: dto.GatewayPayload{
 			GatewayEUI: from.GatewayEUI,
 			Name:       from.Name,
-			TenantID:   chirpstackTennantId,
+			TenantID:   chirpstackTenantID,
 		},
 	}
 }
 
-// Mapping for status
-// Do number instead. And it will display as offline if last seen is bigger then 5 min
+// mapStatus converts a Chirpstack status string to a domain Status.
+// Falls back to online/offline based on last seen time if the status string is unrecognised.
 func mapStatus(status string, lastSeen time.Time) domain.Status {
 	switch status {
 	case "ONLINE":
@@ -46,6 +52,9 @@ func mapStatus(status string, lastSeen time.Time) domain.Status {
 		return domain.StatusOffline
 	default:
 		// Fallback in case there is no status
+		if lastSeen.IsZero() {
+			return domain.StatusNeverSeen
+		}
 		if time.Since(lastSeen) < 5*time.Minute {
 			return domain.StatusOnline
 		}

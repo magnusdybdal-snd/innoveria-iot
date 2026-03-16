@@ -3,6 +3,29 @@ variables:
   FRONTEND_PROJECT_DIR: "web"
   HUSKY: "0" # Disable githook in ci/cd
 
+sql-check:
+  stage: check
+  tags:
+    - dind
+  image: oven/bun:1.3.9
+  before_script:
+    - cd "$FRONTEND_PROJECT_DIR"
+    - bun install --frozen-lockfile
+  script:
+    - |
+      FAILED=0
+      for file in $(find "$CI_PROJECT_DIR" -name "*.sql" -not -path "*/node_modules/*"); do
+        echo "  Checking $file..."
+        OUTPUT=$(bunx sql-lint --driver postgres "$file")
+        if [ -n "$OUTPUT" ]; then
+          echo "$OUTPUT"
+          FAILED=1
+        fi
+      done
+      if [ "$FAILED" -eq 1 ]; then exit 1; fi
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+
 web-check:
   before_script:
     - cd "$FRONTEND_PROJECT_DIR"

@@ -1,3 +1,4 @@
+// Package env TODO(@vinjar): add proper documentation.
 package env
 
 import (
@@ -5,8 +6,9 @@ import (
 	"strings"
 )
 
-// Enviroment variable handler
-// Will fallback if the value is empty
+// Enviroment variable handeling
+
+// Get will fallback if the value is empty
 func Get(key, fallback string) string {
 	if v := os.Getenv(key); v != "" {
 		return v
@@ -14,7 +16,7 @@ func Get(key, fallback string) string {
 	return fallback
 }
 
-// For reading enviroment variables from a file
+// GetFile is for reading enviroment variables from a file
 func GetFile(path string) string {
 	data, err := os.ReadFile(path)
 	if err != nil {

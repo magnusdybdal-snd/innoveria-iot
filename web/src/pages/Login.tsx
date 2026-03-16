@@ -1,16 +1,19 @@
 import { useContext } from "react";
 
+import innLogoDark from "@assets/innoveriaDark.png";
+import innLogoLight from "@assets/innoveriaLight.png";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import { green } from "@mui/material/colors";
 import Link from "@mui/material/Link";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
+import { ThemeContext } from "@shared/config/theme/themeContext";
 
-import innLogoDark from "@/assets/innoveriaDark.png";
-import innLogoLight from "@/assets/innoveriaLight.png";
-import { ThemeContext } from "@/theme/color/themeContext";
-
+/**
+ * Login page with username and password fields and a link to account registration.
+ * @returns The rendered Login page
+ */
 export default function Base() {
   const { mode } = useContext(ThemeContext);
 

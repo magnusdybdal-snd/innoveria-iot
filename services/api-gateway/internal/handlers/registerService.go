@@ -6,6 +6,7 @@ import (
 	"innoveria-iot/pkg/json"
 )
 
+// RegisterServiceError TODO(@vinjar): add proper documentation.
 func RegisterServiceError(mux *http.ServeMux, route, name string) {
 	handler := func(w http.ResponseWriter, r *http.Request) {
 		_ = json.Encode(w, http.StatusServiceUnavailable, map[string]string{
@@ -17,6 +18,7 @@ func RegisterServiceError(mux *http.ServeMux, route, name string) {
 	mux.HandleFunc(route+"/", handler)
 }
 
+// RegisterServiceInfo TODO(@vinjar): add proper documentation.
 func RegisterServiceInfo(mux *http.ServeMux, route, name string, paths []string) {
 	mux.HandleFunc(route, func(w http.ResponseWriter, r *http.Request) {
 		full := make([]string, len(paths))
@@ -30,6 +32,7 @@ func RegisterServiceInfo(mux *http.ServeMux, route, name string, paths []string)
 	})
 }
 
+// RegisterProxyService TODO(@vinjar): add proper documentation.
 func RegisterProxyService(
 	mux *http.ServeMux,
 	route string,

@@ -1,3 +1,7 @@
+#
+# Docker compose for: Development
+#
+
 services:
   #
   # CHIRPSTACK / LoRaWAN Handling
@@ -11,17 +15,21 @@ services:
     restart: unless-stopped
     volumes:
       - ./infra/config/chirpstack:/etc/chirpstack
-      - ./infra/config/chirpstack-device-profiles:/profiles
+      - ./infra/config/chirpstack-device-profiles:/opt/lorawan-devices:ro
       - ./scripts/startChirpstack.sh:/scripts/startChirpstack.sh
+      - ./infra/seed/seed-chirpstack.sql:/seed/seed-chirpstack.sql
       - chirpstack-secrets:/secrets
     depends_on:
-      - chirpstack-postgres
+      - chirpstack-db
       - mosquitto
       - redis
     environment:
       - MQTT_BROKER_HOST=mosquitto
       - REDIS_HOST=redis
-      - POSTGRESQL_HOST=chirpstack-postgres
+      - POSTGRES_HOST=chirpstack-db
+      - POSTGRES_USER=chirpstack
+      - POSTGRES_PASSWORD=chirpstack
+      - CHIRPSTACK_SEED=true
     ports:
       - "8080:8080"
 
@@ -48,16 +56,16 @@ services:
     depends_on:
       - chirpstack
 
-  chirpstack-postgres:
+  chirpstack-db:
     image: postgres:16-alpine
     restart: unless-stopped
     volumes:
       - ./infra/config/postgresql/initdb:/docker-entrypoint-initdb.d
-      - postgresqldata:/var/lib/postgresql/data
+      - chirpstackdata:/var/lib/postgresql/data
     environment:
       - POSTGRES_USER=chirpstack
       - POSTGRES_PASSWORD=chirpstack
-      - POSTGRES_DB=chirpstack
+      - POSTGRES_DB=chirpstack-db
 
   redis:
     image: redis:7-alpine
@@ -83,6 +91,8 @@ services:
       dockerfile: infra/development/web.Dockerfile
     ports:
       - "3000:3000"
+    environment:
+      - API_PROXY_TARGET=http://api-gateway:8080
     volumes:
       - ./web:/app
       - /app/node_modules
@@ -169,14 +179,55 @@ services:
       - POSTGRES_USER=device
       - POSTGRES_PASSWORD=device
       - POSTGRES_DB=device
-      
+  auth-service:
+    build:
+      context: .
+      dockerfile: infra/development/auth-service.Dockerfile
+    ports:
+      - "8084:8080"
+    volumes:
+      - ./services/auth-service:/app
+      - ./pkg:/pkg
+    environment:
+      - GO_ENV=development
+    depends_on:
+      - auth-db
+
+  auth-db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    ports:
+      - "5435:5432"
+    volumes:
+      - authdata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=auth
+      - POSTGRES_PASSWORD=auth
+      - POSTGRES_DB=auth
+  
+  onboarding-service:
+    build:
+      context: .
+      dockerfile: infra/development/onboarding-service.Dockerfile
+    ports:
+      - "8085:8080"
+    volumes:
+      - ./services/onboarding-service:/app
+      - ./pkg:/pkg
+    environment:
+      - GO_ENV=development
+    depends_on:
+      - auth-service
+      - device-service
+      - collection-service
 
 #
 # Docker data volumes
 #
 volumes:
   collectiondata:
-  postgresqldata:
+  chirpstackdata:
   redisdata:
   devicedata:
+  authdata:
   chirpstack-secrets: # for api key

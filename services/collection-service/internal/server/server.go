@@ -18,7 +18,7 @@ import (
 	"innoveria-iot/collection-service/internal/service"
 )
 
-// Server entry point
+// Run is the server entry point
 func Run() error {
 	cfg := config.Load()
 
@@ -40,6 +40,8 @@ func Run() error {
 
 	repo := repository.NewMeasurementRepository(database)
 	svc := service.NewMeasurementService(repo)
+	tenantMappingRepo := repository.NewTenantMappingRepository(database)
+	tenantMappingSvc := service.NewTenantMappingService(tenantMappingRepo)
 
 	// Starting up a new collector
 	coll := mqtt.NewCollector(1000, cfg.MQTTWorkerCount, svc)
@@ -58,7 +60,7 @@ func Run() error {
 		return fmt.Errorf("mqtt subscribe: %w", err)
 	}
 
-	mux := NewRouter(svc)
+	mux := NewRouter(svc, tenantMappingSvc)
 	server := &http.Server{
 		Addr:              cfg.Addr,
 		Handler:           mux,

@@ -1,9 +1,9 @@
 # CI for Go services and shared pkg/
 variables:
   # golangci-lint version must match the version in each service's go.mod
-  GOLANGCI_LINT_VERSION: "v2.9.0"
+  GOLANGCI_LINT_VERSION: "v2.11.3"
   # pkg/ must be first — services depend on it via replace directive.
-  GO_SERVICES: "pkg/ services/api-gateway services/collection-service services/device-service"
+  GO_SERVICES: "pkg/ services/api-gateway services/collection-service services/device-service services/auth-service services/onboarding-service"
 
 go-check:
   stage: check
@@ -22,6 +22,20 @@ go-check:
         go mod tidy
         golangci-lint run ./...
       done
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+
+# checks staged sql files for 'simple syntax errors'.
+sql-check:
+  stage: check
+  tags:
+    - dind
+  image: oven/bun:1.3.9
+  before_script:
+    - cd web
+    - bun install --frozen-lockfile
+  script:
+    - find "$CI_PROJECT_DIR" -name "*.sql" -exec ./node_modules/.bin/sql-lint --driver postgres {} \;
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 

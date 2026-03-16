@@ -1,3 +1,4 @@
+// Package handlers TODO(@vinjar): add proper documentation.
 package handlers
 
 import (
@@ -9,7 +10,14 @@ import (
 	"innoveria-iot/pkg/json"
 )
 
-// GetGateway returns a json with all available gateways and their status from chirpstack
+// GetGateways returns all gateways.
+//
+// @Summary		List all gateways
+// @Tags		gateways
+// @Produce		json
+// @Success		200	{object}	dto.GatewayListResponse
+// @Failure		500
+// @Router		/gateways [get]
 func GetGateways(svc domain.GatewayService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -32,6 +40,16 @@ func GetGateways(svc domain.GatewayService) http.HandlerFunc {
 	}
 }
 
+// PostGateway creates a new gateway.
+//
+// @Summary		Create a gateway
+// @Tags		gateways
+// @Accept		json
+// @Param		body	body	dto.CreateGatewayRequest	true	"Gateway payload"
+// @Success		201
+// @Failure		400
+// @Failure		500
+// @Router		/gateways [post]
 func PostGateway(svc domain.GatewayService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -53,6 +71,17 @@ func PostGateway(svc domain.GatewayService) http.HandlerFunc {
 	}
 }
 
+// PutGateway updates a gateway by its internal ID.
+//
+// @Summary		Update a gateway
+// @Tags		gateways
+// @Accept		json
+// @Param		id		path	string						true	"Gateway ID"
+// @Param		body	body	dto.CreateGatewayRequest	true	"Update payload"
+// @Success		204
+// @Failure		400
+// @Failure		500
+// @Router		/gateways/{id} [put]
 func PutGateway(svc domain.GatewayService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -68,6 +97,7 @@ func PutGateway(svc domain.GatewayService) http.HandlerFunc {
 			json.HandleError(w, http.StatusBadRequest, err, "bad request")
 			return
 		}
+
 		data := dto.MapGatewayDTOToDomain(payload)
 
 		if err := svc.Update(ctx, id, data); err != nil {
@@ -79,6 +109,15 @@ func PutGateway(svc domain.GatewayService) http.HandlerFunc {
 	}
 }
 
+// DeleteGateway deletes a gateway by its internal ID.
+//
+// @Summary		Delete a gateway
+// @Tags		gateways
+// @Param		id	path	string	true	"Gateway ID"
+// @Success		204
+// @Failure		400
+// @Failure		500
+// @Router		/gateways/{id} [delete]
 func DeleteGateway(svc domain.GatewayService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()

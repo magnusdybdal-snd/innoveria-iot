@@ -1,3 +1,4 @@
+// Package server TODO(@vinjar): add proper documentation.
 package server
 
 import "net/http"
@@ -5,7 +6,10 @@ import "net/http"
 // corsMiddleware adds CORS headers to allow the frontend dev server to call the api-gateway
 func corsMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+		origin := r.Header.Get("Origin")
+		if origin != "" {
+			w.Header().Set("Access-Control-Allow-Origin", origin)
+		}
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 

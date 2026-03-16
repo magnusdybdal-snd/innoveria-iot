@@ -10,6 +10,7 @@ import (
 
 const disconnectTime = 250 // in millis
 
+// Client TODO(@vinjar): add proper documentation.
 type Client struct {
 	client mqtt.Client
 }
@@ -57,7 +58,7 @@ func (c *Client) Subscribe(topic string) error {
 	return token.Error()
 }
 
-// Closing the connection after x time
+// Close is closing the connection after x time
 func (c *Client) Close() {
 	c.client.Disconnect(disconnectTime)
 }

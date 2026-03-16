@@ -1,0 +1,106 @@
+basePath: /api/v1/collection
+definitions:
+  domain.SensorMeasurement:
+    properties:
+      company_id:
+        type: string
+      device_eui:
+        type: string
+      payload:
+        additionalProperties: {}
+        type: object
+      timestamp:
+        type: string
+    type: object
+  dto.CreateTenantMappingRequest:
+    properties:
+      company_id:
+        type: string
+      tenant_id:
+        type: string
+    type: object
+host: localhost:8082
+info:
+  contact: {}
+  description: Handles ingestion and retrieval of sensor measurements
+  title: Collection Service API
+  version: "1.0"
+paths:
+  /company-config:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Tenant mapping payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateTenantMappingRequest'
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Create tenant mapping
+      tags:
+      - company-config
+  /latest:
+    get:
+      parameters:
+      - description: DeviceEUI
+        in: query
+        name: device_eui
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.SensorMeasurement'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+      summary: Get latest measurement
+      tags:
+      - measurements
+  /measurements:
+    get:
+      parameters:
+      - description: Device EUI
+        in: query
+        name: device_eui
+        required: true
+        type: string
+      - description: Start time (RFC3339, e.g. 2024-01-01T00:00:00Z)
+        in: query
+        name: from
+        required: true
+        type: string
+      - description: End time (RFC3339, e.g. 2024-01-02T00:00:00Z)
+        in: query
+        name: to
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.SensorMeasurement'
+            type: array
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Get measurements by time range
+      tags:
+      - measurements
+swagger: "2.0"

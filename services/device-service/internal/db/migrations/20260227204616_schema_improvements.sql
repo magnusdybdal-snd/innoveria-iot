@@ -1,6 +1,6 @@
 -- +goose Up
 
--- Rename device status enum to device_state for clarity. 
+-- Rename device status enum to device_state for clarity.
 ALTER TYPE "device"."device_status"
     RENAME TO "device_state";
 
@@ -48,9 +48,9 @@ ALTER TABLE "device"."sensor_metric"
     DROP CONSTRAINT "sensor_metric_sensor_id_fkey";
 
 ALTER TABLE "device"."sensor_metric"
-    ADD CONSTRAINT "sensor_metric_sensor_id_fkey" 
-    FOREIGN KEY ("sensor_id") 
-    REFERENCES "device"."sensor"("sensor_id") 
+    ADD CONSTRAINT "sensor_metric_sensor_id_fkey"
+    FOREIGN KEY ("sensor_id")
+    REFERENCES "device"."sensor"("sensor_id")
     ON DELETE CASCADE;
 
 -- +goose Down

@@ -1,44 +1,71 @@
 import { useEffect, useState } from "react";
 
-import { fetchGateways } from "@/API/fetch/fetchGateways";
-import { CategoryHeader } from "@/components/CategoryHeader";
-import { GatewayInfo } from "@/components/gatewayInfo";
 import {
-  DeviceRow,
+  deleteGateway,
+  GatewayInfo,
+  getGateways,
+  postGateway,
   sortGateways,
+  type GatewayApiResponse,
   type GatewaySortKey,
   type SortDirection,
-} from "@/components/gatewayRow";
-import { NoDeviceFoundCard } from "@/components/noDeviceFoundCard";
-import { PageContent } from "@/components/pageContent";
-import { PageDivider } from "@/components/pageDivider";
-import { SubPageHeader } from "@/components/subPageHeader";
-import Menu from "@/Menu";
-import type { Gateway } from "@/mocks/gateways";
+} from "@entities/gateway";
+import { AddDevice } from "@features/addDevice";
+import { formatTimestamp } from "@shared/lib";
+import { CustomButton } from "@shared/ui/Button";
+import { CategoryHeader } from "@shared/ui/CategoryHeader";
+import { DeviceRow } from "@shared/ui/DeviceRow";
+import { NotFoundCard } from "@shared/ui/NotFoundCard";
+import { PageContent } from "@shared/ui/PageContent";
+import { PageDivider } from "@shared/ui/PageDivider";
+import {
+  AppSnackbar,
+  SNACKBAR_SEVERITY,
+  useSnackbar,
+} from "@shared/ui/snackbar";
+import { SubPageHeader } from "@shared/ui/SubPageHeader";
 
-// Column labels rendered by CategoryHeader; order determines grid layout
 const gatewayDetails: string[] = ["Status", "Name", "EUI", "Last seen"];
-
-// EUI is display-only; excluded because the ChirpStack identifier is not a meaningful value to sort by.
 const sortableColumns: GatewaySortKey[] = ["Status", "Name", "Last seen"];
+const addGatewayDetails: string[] = ["Name", "DeviceEUI"];
 
 /**
- * Full-page view listing all LoRaWAN gateways registered in ChirpStack.
+ * Full-page view listing all LoRaWAN gateways registered in database.
  *
  * Fetches live gateway data from the device-service on mount and manages
  * column sort state. Delegates row rendering to GatewayRow/GatewayInfo.
+ * @returns The rendered Gateways page
  */
 export default function Gateways() {
-  const [gateways, setGateways] = useState<Gateway[]>([]);
+  const [gateways, setGateways] = useState<GatewayApiResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [addError, setAddError] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchGateways().then((data) => {
+  // State for controlling success snackbar
+  const { show, hide, snackbar } = useSnackbar();
+
+  const fetchGateways = () => {
+    getGateways().then((data) => {
       setGateways(data);
       setIsLoading(false);
     });
-  }, []);
+  };
 
+  const handleDeleteGateway = (id: string) => {
+    deleteGateway(id)
+      .then(() => {
+        fetchGateways();
+        show("Gateway deleted successfully", SNACKBAR_SEVERITY.SUCCESS);
+      })
+      .catch(() => {
+        show("Failed to delete gateway.", SNACKBAR_SEVERITY.ERROR);
+      });
+  };
+
+  useEffect(() => {
+    fetchGateways();
+  }, []);
+  const [openAdd, setOpenAdd] = useState(false);
   const [sortConfig, setSortConfig] = useState<{
     key: GatewaySortKey | null;
     direction: SortDirection;
@@ -47,9 +74,44 @@ export default function Gateways() {
     direction: "asc",
   });
 
+  // Handler for opening and closing add gateway pop-up
+  const handleClickOpenAdd = () => {
+    setOpenAdd(true);
+  };
+  const handleCloseAdd = () => {
+    setOpenAdd(false);
+    setAddError(null);
+  };
+  // Handler for submitting add gateway form; shows success or error snackbar based on result.
+  const handleAddGateway = (gatewayData: {
+    name: string;
+    deviceEui: string;
+  }) => {
+    setAddError(null);
+    return postGateway({
+      companyId: "a0000000-0000-0000-0000-000000000001", // TODO: replace with real company ID from auth
+      gatewayEui: gatewayData.deviceEui,
+      name: gatewayData.name,
+    })
+      .then(() => {
+        fetchGateways();
+        setOpenAdd(false);
+        show("Gateway added successfully", SNACKBAR_SEVERITY.SUCCESS);
+      })
+      .catch(() => {
+        setAddError(
+          "Failed to add gateway. The EUI may already be registered.", // TODO: throw non-hardcoded error messages - based on actual error
+        );
+        show("Failed to add gateway", SNACKBAR_SEVERITY.ERROR);
+      });
+  };
+
+  const addButton = (
+    <CustomButton onClick={handleClickOpenAdd}>Add gateway</CustomButton>
+  );
+
   /**
    * Updates sort state when a column header is clicked.
-   *
    * @param column - The column label passed up from CategoryHeader's onSort callback
    */
   function handleSort(column: string) {
@@ -66,9 +128,8 @@ export default function Gateways() {
 
   return (
     <div className="flex h-screen">
-      <Menu />
       <PageContent>
-        <SubPageHeader title="Gateways" />
+        <SubPageHeader title="Gateways" action={addButton} />
         <PageDivider />
         <CategoryHeader
           categories={gatewayDetails}
@@ -84,14 +145,28 @@ export default function Gateways() {
               <GatewayInfo
                 name={gateway.name}
                 status={gateway.status}
-                euid={gateway.euid}
-                lastSeen={gateway.lastSeen}
+                device_eui={gateway.gatewayEui}
+                lastSeenAt={formatTimestamp(gateway.lastSeenAt)}
+                onDelete={() => handleDeleteGateway(gateway.id)}
               />
             </DeviceRow>
           ))}
         </CategoryHeader>
-        {!isLoading && sorted.length === 0 && <NoDeviceFoundCard />}
+        {!isLoading && sorted.length === 0 && <NotFoundCard page="gateways" />}
       </PageContent>
+      <AddDevice
+        open={openAdd}
+        onClose={handleCloseAdd}
+        addOptions={addGatewayDetails}
+        onAdd={handleAddGateway}
+        submitError={addError}
+      />
+      <AppSnackbar
+        open={snackbar?.open ?? false}
+        message={snackbar?.message ?? ""}
+        severity={snackbar?.severity}
+        onClose={hide}
+      />
     </div>
   );
 }

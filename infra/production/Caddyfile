@@ -1,0 +1,16 @@
+# reading enviroment variable from .env.production
+{$DOMAIN} {
+    root * /usr/share/caddy
+    encode gzip zstd
+    file_server
+
+    # Send API requests to the gateway
+    handle /api/* {
+        reverse_proxy api-gateway:8080
+    }
+
+    # React SPA fallback
+    handle {
+        reverse_proxy web:3000
+    }
+}

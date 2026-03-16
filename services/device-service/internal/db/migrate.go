@@ -1,3 +1,4 @@
+// Package db embeds and runs SQL migrations and seeds for the device service database.
 package db
 
 import (
@@ -13,7 +14,7 @@ import (
 //go:embed migrations/*.sql
 var migrations embed.FS
 
-// Thin wrapper around RunMigrations in pkg/dbutil
+// RunMigrations runs all embedded SQL migration files against the given database pool.
 func RunMigrations(pool *pgxpool.Pool) error {
 	return dbutil.RunMigrations(pool, migrations)
 }

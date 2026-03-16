@@ -24,6 +24,7 @@ type Gateway struct {
 	LastSeenAt string
 }
 
+// GatewayService defines the business logic operations for gateways.
 type GatewayService interface {
 	Create(ctx context.Context, payload Gateway) error
 	Update(ctx context.Context, gatewayId string, payload Gateway) error
@@ -39,4 +40,6 @@ type GatewayRepository interface {
 	FindAllByCompanyID(ctx context.Context, companyID string) ([]Gateway, error)
 	FindByEUI(ctx context.Context, gatewayEUI string) (Gateway, error)
 	UpdateState(ctx context.Context, gatewayID string, state DeviceState) error
+	Update(ctx context.Context, gatewayID string, payload Gateway) error
+	Delete(ctx context.Context, gatewayID string) error
 }

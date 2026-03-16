@@ -7,6 +7,7 @@ import (
 	"innoveria-iot/device-service/internal/chirpstackrest"
 	"innoveria-iot/device-service/internal/config"
 	"innoveria-iot/device-service/internal/db"
+	"innoveria-iot/device-service/internal/repository"
 	"innoveria-iot/device-service/internal/service"
 	"innoveria-iot/pkg/dbutil"
 	"log/slog"
@@ -17,6 +18,7 @@ import (
 	"time"
 )
 
+// Run initialises dependencies, starts the HTTP server, and blocks until a shutdown signal is received or a startup error occurs.
 func Run() error {
 	cfg := config.Load()
 
@@ -38,13 +40,16 @@ func Run() error {
 
 	// Service init
 	chirpstackClient := chirpstackrest.New(*cfg)
-	gatewaySvc := service.NewGatewayService(chirpstackClient)
-	sensorSvc := service.NewSensorService(chirpstackClient)
+	companyConfigRepo := repository.NewCompanyConfigRepository(database)
+	gatewayRepo := repository.NewGatewayRepository(database)
+	sensorRepo := repository.NewSensorRepository(database)
+	gatewaySvc := service.NewGatewayService(chirpstackClient, gatewayRepo, companyConfigRepo)
 	sensorProfileSvc := service.NewSensorProfileService(chirpstackClient)
-	sensorGroupService := service.NewDeviceGroupService(chirpstackClient)
+	sensorSvc := service.NewSensorService(chirpstackClient, sensorRepo, companyConfigRepo, sensorProfileSvc)
+	companyConfigSvc := service.NewCompanyConfigService(chirpstackClient, companyConfigRepo)
 
 	// Setting up mux and http server
-	mux := NewRouter(gatewaySvc, sensorSvc, sensorProfileSvc, sensorGroupService)
+	mux := NewRouter(gatewaySvc, sensorSvc, sensorProfileSvc, companyConfigSvc)
 	server := &http.Server{
 		Addr:              cfg.Addr,
 		Handler:           mux,

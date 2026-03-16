@@ -1,3 +1,4 @@
+// Package server provides HTTP server for startup
 package server
 
 import (
@@ -5,13 +6,18 @@ import (
 
 	"innoveria-iot/device-service/internal/domain"
 	"innoveria-iot/device-service/internal/handlers"
+
+	_ "innoveria-iot/device-service/docs"
+
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
+// NewRouter creates and returns an HTTP ServeMux with all device service routes registered.
 func NewRouter(
 	gatewaySvc domain.GatewayService,
 	sensorSvc domain.SensorService,
 	sensorProfileSvc domain.SensorProfileService,
-	sensorGroupSvc domain.SensorGroupService,
+	companyConfigSvc domain.CompanyConfigService,
 ) *http.ServeMux {
 	mux := http.NewServeMux()
 
@@ -24,15 +30,20 @@ func NewRouter(
 	mux.HandleFunc("DELETE "+GATEWAY_ROUTE_ID, handlers.DeleteGateway(gatewaySvc))
 
 	// Sensor Routes:
-	// mux.HandleFunc("GET "+SENSOR_ROUTE, handlers.GetSensors(sensorSvc))
-	// mux.HandleFunc("POST "+SENSOR_ROUTE, handlers.PostSensors(sensorSvc)) // TODO: add this, when logic is right
+	mux.HandleFunc("GET "+SENSOR_ROUTE, handlers.GetSensors(sensorSvc))
+	mux.HandleFunc("POST "+SENSOR_ROUTE, handlers.PostSensor(sensorSvc))
+	mux.HandleFunc("DELETE "+SENSOR_ROUTE_ID, handlers.DeleteSensor(sensorSvc))
+	mux.HandleFunc("PUT "+SENSOR_ROUTE_ID, handlers.PutSensor(sensorSvc))
 
 	// Sensor profile routes:
 	mux.HandleFunc("GET "+SENSOR_PROFILE_ROUTE, handlers.GetAllSensorProfiles(sensorProfileSvc))
 
-	// SensorGroup routes
-	mux.HandleFunc("POST "+SENSOR_GROUP_ROUTE, handlers.PostSensorGroup(sensorGroupSvc))
-	mux.HandleFunc("GET "+SENSOR_GROUP_ROUTE, handlers.GetAllSensorGroups(sensorGroupSvc))
+	// Company config routes:
+	mux.HandleFunc("POST "+COMPANY_CONFIG_ROUTE, handlers.PostCompanyConfig(companyConfigSvc))
+	mux.HandleFunc("DELETE "+COMPANY_CONFIG_ROUTE_ID, handlers.DeleteCompanyConfig(companyConfigSvc))
+
+	// Swagger docs
+	mux.HandleFunc("GET /swagger/", httpSwagger.WrapHandler)
 
 	return mux
 }

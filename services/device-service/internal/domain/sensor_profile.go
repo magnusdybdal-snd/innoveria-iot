@@ -2,9 +2,8 @@ package domain
 
 import "context"
 
-// SensorProfile is the LoRaWAN device profile template
-// used when register sensors in the network
-// It defines the network configuration for a specific hardware model
+// SensorProfile is the LoRaWAN device profile template used when registering sensors in the network.
+// It defines the network configuration for a specific hardware model.
 type SensorProfile struct {
 	Id         string // device profile id
 	Name       string
@@ -15,7 +14,9 @@ type SensorProfile struct {
 	// IsCustom       bool // TODO: add a custom device profiles
 }
 
+// SensorProfileService defines the business logic operations for sensor profiles.
 type SensorProfileService interface {
 	GetAll(ctx context.Context, limit int) ([]SensorProfile, error)
 	GetOne(ctx context.Context) (SensorProfile, error)
+	EnsureTenantProfile(ctx context.Context, profileID string, tenantID string) (string, error)
 }
