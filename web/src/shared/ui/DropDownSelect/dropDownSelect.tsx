@@ -46,6 +46,7 @@ export function DropDownSelect({
       fullWidth
       disableClearable
       options={options}
+      getOptionKey={(option) => option.id}
       getOptionLabel={(option) => option.name}
       isOptionEqualToValue={(option, val) => option.id === val.id}
       value={selected}
