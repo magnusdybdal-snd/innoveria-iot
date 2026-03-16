@@ -26,7 +26,16 @@ export function DeleteConfirmation({
       <DialogTitle>Delete item?</DialogTitle>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
-        <Button onClick={onConfirm}>Confirm</Button>
+        <Button
+          sx={{
+            backgroundColor: "primary.main",
+            color: "primary.dark",
+            "&:hover": { backgroundColor: "primary.main" },
+          }}
+          onClick={onConfirm}
+        >
+          Confirm
+        </Button>
       </DialogActions>
     </Dialog>
   );
