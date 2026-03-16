@@ -15,7 +15,7 @@ import { AddEntityDialog } from "@shared/ui/AddEntityDialog";
 import { CustomButton } from "@shared/ui/Button";
 import { CategoryHeader } from "@shared/ui/CategoryHeader";
 import { DeviceRow } from "@shared/ui/DeviceRow";
-import { NoDeviceFoundCard } from "@shared/ui/NoDeviceFoundCard";
+import { NotFoundCard } from "@shared/ui/NotFoundCard";
 import { PageContent } from "@shared/ui/PageContent";
 import { PageDivider } from "@shared/ui/PageDivider";
 import {
@@ -147,7 +147,7 @@ export default function Factories() {
             </DeviceRow>
           ))}
         </CategoryHeader>
-        {!isLoading && sorted.length === 0 && <NoDeviceFoundCard />}
+        {!isLoading && sorted.length === 0 && <NotFoundCard page="factories" />}
         <AddEntityDialog
           open={openAdd}
           title="Add factory"

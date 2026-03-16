@@ -11,17 +11,19 @@ import (
 
 // SensorServiceImpl implements domain.SensorService, coordinating between the database and Chirpstack.
 type SensorServiceImpl struct {
-	cc             *chirpstackrest.Client
-	companycfgRepo domain.CompanyConfigRepository
-	sensorRepo     domain.SensorRepository
+	cc                   *chirpstackrest.Client
+	companycfgRepo       domain.CompanyConfigRepository
+	sensorRepo           domain.SensorRepository
+	sensorProfileService domain.SensorProfileService
 }
 
 // NewSensorService creates a new SensorServiceImpl with the given Chirpstack client and repositories.
-func NewSensorService(cc *chirpstackrest.Client, sensorRepo domain.SensorRepository, companycfgRepo domain.CompanyConfigRepository) *SensorServiceImpl {
+func NewSensorService(cc *chirpstackrest.Client, sensorRepo domain.SensorRepository, companycfgRepo domain.CompanyConfigRepository, sensorProfileService domain.SensorProfileService) *SensorServiceImpl {
 	return &SensorServiceImpl{
-		cc:             cc,
-		sensorRepo:     sensorRepo,
-		companycfgRepo: companycfgRepo,
+		cc:                   cc,
+		sensorRepo:           sensorRepo,
+		companycfgRepo:       companycfgRepo,
+		sensorProfileService: sensorProfileService,
 	}
 }
 
@@ -34,6 +36,13 @@ func (s *SensorServiceImpl) Create(ctx context.Context, payload domain.Sensor) e
 	if err != nil {
 		return fmt.Errorf("create sensor: finding company tenant ID: %w", err)
 	}
+
+	// Ensure a tenant-level copy of the selected profile exists, get its ID.
+	tenantProfileID, err := s.sensorProfileService.EnsureTenantProfile(ctx, payload.ChirpstackProfileID, cfg.ChirpstackTenantID) // payload.ChirpstackProfileID may be global or tenant-level
+	if err != nil {
+		return fmt.Errorf("create sensor: ensure tenant profile: %w", err)
+	}
+	payload.ChirpstackProfileID = tenantProfileID
 
 	// Post request to Chirpstack
 	sensorReq := mappers.MapChirpstackSensorRequest(payload, cfg.ChirpstackApplicationID)
@@ -81,6 +90,13 @@ func (s *SensorServiceImpl) Update(ctx context.Context, sensorID string, payload
 	if err != nil {
 		return fmt.Errorf("update sensor: finding company tenant ID: %w", err)
 	}
+
+	// Ensure a tenant-level copy of the selected profile exists, get its ID.
+	tenantProfileID, err := s.sensorProfileService.EnsureTenantProfile(ctx, payload.ChirpstackProfileID, companycfg.ChirpstackTenantID)
+	if err != nil {
+		return fmt.Errorf("update sensor: ensure tenant profile: %w", err)
+	}
+	payload.ChirpstackProfileID = tenantProfileID
 
 	// Retain old values before merging payload, needed for potential compensation.
 	oldSensor := sensor
