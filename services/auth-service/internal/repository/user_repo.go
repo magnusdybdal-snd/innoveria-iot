@@ -3,8 +3,21 @@ package repository
 
 import (
 	"context"
+	"errors"
+	"fmt"
+
 	"innoveria-iot/auth-service/internal/domain"
 	"innoveria-iot/pkg/dbutil"
+
+	"github.com/jackc/pgx/v5"
+)
+
+const (
+	findUserByEmailQuery = `
+		SELECT user_id, company_id, name, email, password_hash, role, last_logged_in, created_at, updated_at
+		FROM auth."user"
+		WHERE email = $1
+	`
 )
 
 // UserRepoImpl is the PostgreSQL-backed implementation of
@@ -22,7 +35,29 @@ func NewUserRepo(db *dbutil.DB) *UserRepoImpl {
 
 // FindByEmail retrieves one user by email.
 func (r *UserRepoImpl) FindByEmail(ctx context.Context, email string) (domain.User, error) {
-	return domain.User{}, nil
+	var out domain.User
+	err := r.db.Pool.QueryRow(ctx, findUserByEmailQuery,
+		email,
+	).Scan(
+		&out.ID,
+		&out.CompanyID,
+		&out.Name,
+		&out.Email,
+		&out.PasswordHash,
+		&out.Role,
+		&out.LastLoggedIn,
+		&out.CreatedAt,
+		&out.UpdatedAt,
+	)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			// domain not found, code: 404
+			return domain.User{}, fmt.Errorf("find user by email: %w", domain.ErrUserNotFound)
+		}
+		// Internal server error, code 500
+		return domain.User{}, fmt.Errorf("find user by email: %w", err)
+	}
+	return out, nil
 }
 
 // UpdateLastLoggedIn updates the user's last login timestamp.
