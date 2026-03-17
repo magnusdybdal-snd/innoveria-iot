@@ -71,7 +71,7 @@ func PostGateway(svc domain.GatewayService) http.HandlerFunc {
 	}
 }
 
-// PutGateway updates a gateway by its internal ID.
+// PatchGateway updates a gateway by its internal ID.
 //
 // @Summary		Update a gateway
 // @Tags		gateways
@@ -82,7 +82,7 @@ func PostGateway(svc domain.GatewayService) http.HandlerFunc {
 // @Failure		400
 // @Failure		500
 // @Router		/gateways/{id} [put]
-func PutGateway(svc domain.GatewayService) http.HandlerFunc {
+func PatchGateway(svc domain.GatewayService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 

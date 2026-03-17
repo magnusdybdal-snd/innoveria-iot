@@ -72,7 +72,7 @@ func PostSensor(svc domain.SensorService) http.HandlerFunc {
 	}
 }
 
-// PutSensor updates a sensor by its internal ID
+// PatchSensor updates a sensor by its internal ID
 //
 // @Summary 	Update a sensor
 // @Tags		sensors
@@ -83,7 +83,7 @@ func PostSensor(svc domain.SensorService) http.HandlerFunc {
 // @Failure		400
 // @Failure		500
 // @Router		/sensors/{id} [put]
-func PutSensor(svc domain.SensorService) http.HandlerFunc {
+func PatchSensor(svc domain.SensorService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
