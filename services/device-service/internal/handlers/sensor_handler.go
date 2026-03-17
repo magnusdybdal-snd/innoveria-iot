@@ -82,7 +82,7 @@ func PostSensor(svc domain.SensorService) http.HandlerFunc {
 // @Success		204
 // @Failure		400
 // @Failure		500
-// @Router		/sensors/{id} [put]
+// @Router		/sensors/{id} [patch]
 func PatchSensor(svc domain.SensorService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()

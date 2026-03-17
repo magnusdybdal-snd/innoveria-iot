@@ -176,10 +176,6 @@ definitions:
       production_resource:
         description: Optional — UUID, omit if service not yet available
         type: string
-    required:
-    - device_profile_id
-    - factory_id
-    - name
     type: object
 host: localhost:8083
 info:

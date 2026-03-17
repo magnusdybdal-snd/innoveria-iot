@@ -77,11 +77,11 @@ func PostGateway(svc domain.GatewayService) http.HandlerFunc {
 // @Tags		gateways
 // @Accept		json
 // @Param		id		path	string						true	"Gateway ID"
-// @Param		body	body	dto.CreateGatewayRequest	true	"Update payload"
+// @Param		body	body	dto.UpdateGatewayRequest	true	"Update payload"
 // @Success		204
 // @Failure		400
 // @Failure		500
-// @Router		/gateways/{id} [put]
+// @Router		/gateways/{id} [patch]
 func PatchGateway(svc domain.GatewayService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()

@@ -600,11 +600,6 @@ const docTemplate = `{
         },
         "dto.UpdateSensorRequest": {
             "type": "object",
-            "required": [
-                "device_profile_id",
-                "factory_id",
-                "name"
-            ],
             "properties": {
                 "description": {
                     "type": "string"
