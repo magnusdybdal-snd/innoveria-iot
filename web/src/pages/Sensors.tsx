@@ -65,7 +65,14 @@ export default function Sensors() {
   const [factory, setFactory] = useState<FactoryApiResponse[]>([]); // factory location sensor
 
   const { show, hide, snackbar } = useSnackbar();
-  const [value, setValue] = React.useState(0);
+  const [tabValue, setTabValue] = useState<number | string>(0);
+
+  const handleTabChange = (
+    _event: React.SyntheticEvent,
+    newValue: number | string,
+  ) => {
+    setTabValue(newValue);
+  };
 
   useEffect(() => {
     getSensorProfiles().then(setSensorProfiles);
@@ -74,10 +81,6 @@ export default function Sensors() {
   useEffect(() => {
     getFactories().then(setFactory);
   }, []);
-
-  const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
-  };
 
   // Handler for deleting a sensor; refreshes list on success
   const handleDeleteSensor = (id: string) => {
@@ -90,6 +93,7 @@ export default function Sensors() {
         show("Failed to delete sensor.", SNACKBAR_SEVERITY.ERROR);
       });
   };
+
   // Handler for opening and closing add sensor pop-up
   const handleClickOpenAdd = () => {
     setOpenAdd(true);
@@ -158,6 +162,12 @@ export default function Sensors() {
 
   const sorted = sortSensors(sensors, sortConfig.key, sortConfig.direction);
 
+  // Filter sensors to only show thos from chosen factory
+  const filteredSensors = sorted.filter((sensor) => {
+    if (tabValue === 0) return true;
+    return sensor.factory === tabValue;
+  });
+
   const sensorInfos = new Map<string, number>();
   sensorInfos.set("Total sensors", sorted.length);
   sensorInfos.set(
@@ -189,8 +199,8 @@ export default function Sensors() {
           }}
         >
           <Tabs
-            value={value}
-            onChange={handleChange}
+            value={tabValue}
+            onChange={handleTabChange}
             variant="scrollable"
             scrollButtons="auto"
             aria-label="scrollable auto tabs example"
@@ -208,19 +218,17 @@ export default function Sensors() {
           sortConfig={sortConfig}
           onSort={handleSort}
         >
-          {sorted.map((sensor) => {
-            return (
-              <DeviceRow key={sensor.id}>
-                <SensorMainInfo
-                  name={sensor.name}
-                  status={sensor.status}
-                  lastReading={formatTimestamp(sensor.lastReading)}
-                  onClick={() => handleRowClick(sensor)}
-                  onDelete={() => handleDeleteSensor(sensor.id)}
-                />
-              </DeviceRow>
-            );
-          })}
+          {filteredSensors.map((sensor) => (
+            <DeviceRow key={sensor.id}>
+              <SensorMainInfo
+                name={sensor.name}
+                status={sensor.status}
+                lastReading={formatTimestamp(sensor.lastReading)}
+                onClick={() => handleRowClick(sensor)}
+                onDelete={() => handleDeleteSensor(sensor.id)}
+              />
+            </DeviceRow>
+          ))}
         </CategoryHeader>
         {selectedSensor && (
           <SensorAllInfoPopUp
