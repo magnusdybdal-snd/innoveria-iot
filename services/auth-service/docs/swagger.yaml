@@ -38,6 +38,39 @@ definitions:
       name:
         type: string
     type: object
+  dto.CreateNewFactoryArea:
+    properties:
+      description:
+        type: string
+      factory_id:
+        type: string
+      name:
+        type: string
+    type: object
+  dto.FactoryAreaListResponse:
+    properties:
+      factory_areas:
+        items:
+          $ref: '#/definitions/dto.FactoryAreaResponse'
+        type: array
+      total_count:
+        type: integer
+    type: object
+  dto.FactoryAreaResponse:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      factory_id:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
   dto.FactoryListResponse:
     properties:
       factories:
@@ -233,4 +266,87 @@ paths:
       summary: Get one factory
       tags:
       - factories
+  /factory-areas:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.FactoryAreaListResponse'
+        "500":
+          description: Internal Server Error
+      summary: Get all factory areas
+      tags:
+      - factory-areas
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Factory area payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateNewFactoryArea'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.FactoryAreaResponse'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Register a new factory area
+      tags:
+      - factory-areas
+  /factory-areas/{id}:
+    delete:
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Delete factory area
+      tags:
+      - factory-areas
+    get:
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.FactoryAreaResponse'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get one factory area
+      tags:
+      - factory-areas
 swagger: "2.0"
