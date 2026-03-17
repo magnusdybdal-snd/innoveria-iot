@@ -1,6 +1,9 @@
 package domain
 
-import "time"
+import (
+	"context"
+	"time"
+)
 
 // ContextData is the domain model for contextdata
 type ContextData struct {
@@ -15,4 +18,9 @@ type ContextData struct {
 	PeriodStart          time.Time
 	PeriodEnd            time.Time
 	CalculatedAt         time.Time
+}
+
+// ContextDataService defines teh context service needed by context domain.
+type ContextDataService interface {
+	GetContextData(ctx context.Context, context ContextData) (ContextData, error)
 }
