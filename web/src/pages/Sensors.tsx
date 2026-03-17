@@ -237,7 +237,9 @@ export default function Sensors() {
             sensor={selectedSensor}
           />
         )}
-        {!isLoading && sorted.length === 0 && <NotFoundCard page="sensors" />}
+        {!isLoading && filteredSensors.length === 0 && (
+          <NotFoundCard page="sensors" isEmpty={sorted.length === 0} />
+        )}
       </PageContent>
 
       <AddDevice

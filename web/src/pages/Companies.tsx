@@ -151,7 +151,9 @@ export default function Companies() {
             </DeviceRow>
           ))}
         </CategoryHeader>
-        {!isLoading && sorted.length === 0 && <NotFoundCard page="companies" />}
+        {!isLoading && sorted.length === 0 && (
+          <NotFoundCard page="companies" isEmpty={true} />
+        )}
       </PageContent>
       <AddCompany
         open={openAdd}
