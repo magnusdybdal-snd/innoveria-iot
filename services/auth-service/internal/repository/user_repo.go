@@ -3,6 +3,7 @@ package repository
 
 import (
 	"context"
+	"innoveria-iot/auth-service/internal/domain"
 	"innoveria-iot/pkg/dbutil"
 )
 
@@ -19,7 +20,12 @@ func NewUserRepo(db *dbutil.DB) *UserRepoImpl {
 	}
 }
 
-// Create inserts a new user in the database
-func (r *UserRepoImpl) Create(ctx context.Context) error {
+// FindByEmail retrieves one user by email.
+func (r *UserRepoImpl) FindByEmail(ctx context.Context, email string) (domain.User, error) {
+	return domain.User{}, nil
+}
+
+// UpdateLastLoggedIn updates the user's last login timestamp.
+func (r *UserRepoImpl) UpdateLastLoggedIn(ctx context.Context, userID string) error {
 	return nil
 }
