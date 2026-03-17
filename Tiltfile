@@ -51,6 +51,11 @@ dc_resource(
 )
 
 dc_resource(
+    'context-service',
+    labels=['microservice']
+)
+
+dc_resource(
     'chirpstack',
     labels=['chirpstack']
 )
