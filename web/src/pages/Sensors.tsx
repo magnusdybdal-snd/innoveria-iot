@@ -162,21 +162,21 @@ export default function Sensors() {
 
   const sorted = sortSensors(sensors, sortConfig.key, sortConfig.direction);
 
-  // Filter sensors to only show thos from chosen factory
+  // Filter sensors to only show those from chosen factory
   const filteredSensors = sorted.filter((sensor) => {
     if (tabValue === 0) return true;
     return sensor.factory === tabValue;
   });
 
   const sensorInfos = new Map<string, number>();
-  sensorInfos.set("Total sensors", sorted.length);
+  sensorInfos.set("Total sensors", filteredSensors.length);
   sensorInfos.set(
     "Online sensors",
-    sorted.filter((sensor) => sensor.status === 0).length,
+    filteredSensors.filter((sensor) => sensor.status === 0).length,
   );
   sensorInfos.set(
     "Offline sensors",
-    sorted.filter((sensor) => sensor.status === 2).length,
+    filteredSensors.filter((sensor) => sensor.status === 2).length,
   );
   sensorInfos.set("Last seen 24hr", 0);
   sensorInfos.set("Error last 24hr", 0);
@@ -185,17 +185,12 @@ export default function Sensors() {
     <div className="flex h-screen">
       <PageContent>
         <SubPageHeader title="Sensor devices" action={addButton} />
-        <div className="flex justify-between flex-wrap">
-          {Array.from(sensorInfos.entries()).map(([key, value]) => (
-            <SensorsGenInfo key={key} title={key} count={value} />
-          ))}
-        </div>
         <Box
           sx={{
             borderBottom: 1,
             borderColor: "divider",
             marginTop: 2,
-            marginBottom: 5,
+            marginBottom: 2,
           }}
         >
           <Tabs
@@ -210,6 +205,18 @@ export default function Sensors() {
               <Tab label={factory.name} value={factory.id} />
             ))}
           </Tabs>
+        </Box>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+            marginBottom: 5,
+          }}
+        >
+          {Array.from(sensorInfos.entries()).map(([key, value]) => (
+            <SensorsGenInfo key={key} title={key} count={value} />
+          ))}
         </Box>
         <CategoryHeader
           categories={sensorMainDetails}
@@ -238,7 +245,7 @@ export default function Sensors() {
           />
         )}
         {!isLoading && filteredSensors.length === 0 && (
-          <NotFoundCard page="sensors" isEmpty={sorted.length === 0} />
+          <NotFoundCard page="Sensors" isEmpty={sorted.length === 0} />
         )}
       </PageContent>
 
