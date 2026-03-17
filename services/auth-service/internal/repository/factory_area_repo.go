@@ -50,21 +50,16 @@ func NewFactoryAreaRepo(db *dbutil.DB) *FactoryAreaRepoImpl {
 // Create inserts a new factory area.
 func (r *FactoryAreaRepoImpl) Create(ctx context.Context, area domain.FactoryArea) (domain.FactoryArea, error) {
 	var out domain.FactoryArea
-	var description any
-	if area.Description != nil {
-		description = *area.Description
-	}
 
-	var outDescription sql.NullString
 	err := r.db.Pool.QueryRow(ctx, createFactoryAreaQuery,
 		area.FactoryID,
 		area.Name,
-		description,
+		area.Description,
 	).Scan(
 		&out.ID,
 		&out.FactoryID,
 		&out.Name,
-		&outDescription,
+		&out.Description,
 		&out.CreatedAt,
 		&out.UpdatedAt,
 	)
@@ -74,10 +69,6 @@ func (r *FactoryAreaRepoImpl) Create(ctx context.Context, area domain.FactoryAre
 			return domain.FactoryArea{}, fmt.Errorf("create factory area: %w", domain.ErrFactoryNotFound)
 		}
 		return domain.FactoryArea{}, fmt.Errorf("create factory area: %w", err)
-	}
-
-	if outDescription.Valid {
-		out.Description = &outDescription.String
 	}
 
 	return out, nil
