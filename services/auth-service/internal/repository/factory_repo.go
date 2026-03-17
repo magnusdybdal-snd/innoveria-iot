@@ -127,8 +127,8 @@ func (r *FactoryRepoImpl) FindByID(ctx context.Context, factoryID string) (domai
 	return out, nil
 }
 
-// DeleteByID deletes a factory by id.
-func (r *FactoryRepoImpl) DeleteByID(ctx context.Context, factoryID string) error {
+// Delete deletes a factory by id.
+func (r *FactoryRepoImpl) Delete(ctx context.Context, factoryID string) error {
 	result, err := r.db.Pool.Exec(ctx, deleteFactoryByIDQuery, factoryID)
 
 	// Internal server error, code: 500

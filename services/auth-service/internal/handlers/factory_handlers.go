@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"innoveria-iot/auth-service/internal/domain"
 	"innoveria-iot/auth-service/internal/handlers/dto"
@@ -33,6 +34,10 @@ func PostFactory(svc domain.FactoryService) http.HandlerFunc {
 			json.HandleError(w, http.StatusBadRequest, err, "bad request")
 			return
 		}
+
+		payload.CompanyID = strings.TrimSpace(payload.CompanyID)
+		payload.Name = strings.TrimSpace(payload.Name)
+		payload.Address = strings.TrimSpace(payload.Address)
 
 		factoryDomain := dto.MapCreateFactoryToDomain(payload)
 		if factoryDomain.CompanyID == "" || factoryDomain.Name == "" {

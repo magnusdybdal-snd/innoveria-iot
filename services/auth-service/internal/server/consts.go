@@ -14,4 +14,7 @@ const (
 
 	FACTORY_ROUTE    = AUTH_ROUTE + "/factories"
 	FACTORY_ID_ROUTE = FACTORY_ROUTE + "/{id}"
+
+	FACTORY_AREA_ROUTE    = AUTH_ROUTE + "/factory-areas"
+	FACTORY_AREA_ID_ROUTE = FACTORY_AREA_ROUTE + "/{id}"
 )

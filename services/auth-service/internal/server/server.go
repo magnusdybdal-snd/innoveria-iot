@@ -42,13 +42,15 @@ func Run() error {
 	companyRepo := repository.NewCompanyRepo(database)
 
 	factoryRepo := repository.NewFactoryRepo(database)
+	factoryAreaRepo := repository.NewFactoryAreaRepo(database)
 
 	// service init
 	companySvc := services.NewCompanyService(companyRepo)
 	factorySvc := services.NewFactoryService(factoryRepo)
+	factoryAreaSvc := services.NewFactoryAreaService(factoryAreaRepo)
 
 	// Setting up mux and http server
-	mux := NewRouter(companySvc, factorySvc)
+	mux := NewRouter(companySvc, factorySvc, factoryAreaSvc)
 	server := &http.Server{
 		Addr:              cfg.Addr,
 		Handler:           mux,

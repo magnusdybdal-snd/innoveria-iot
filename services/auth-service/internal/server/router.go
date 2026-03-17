@@ -12,7 +12,7 @@ import (
 )
 
 // NewRouter builds and returns the service HTTP router.
-func NewRouter(companySvc domain.CompanyService, factorySvc domain.FactoryService) *http.ServeMux {
+func NewRouter(companySvc domain.CompanyService, factorySvc domain.FactoryService, factoryAreaSvc domain.FactoryAreaService) *http.ServeMux {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /", handlers.Root)
@@ -28,6 +28,12 @@ func NewRouter(companySvc domain.CompanyService, factorySvc domain.FactoryServic
 	mux.HandleFunc("GET "+FACTORY_ID_ROUTE, handlers.GetOneFactory(factorySvc))
 	mux.HandleFunc("POST "+FACTORY_ROUTE, handlers.PostFactory(factorySvc))
 	mux.HandleFunc("DELETE "+FACTORY_ID_ROUTE, handlers.DeleteFactory(factorySvc))
+
+	// Factory Area
+	mux.HandleFunc("POST "+FACTORY_AREA_ROUTE, handlers.PostFactoryArea(factoryAreaSvc))
+	mux.HandleFunc("GET "+FACTORY_AREA_ROUTE, handlers.GetAllFactoryAreas(factoryAreaSvc))
+	mux.HandleFunc("GET "+FACTORY_AREA_ID_ROUTE, handlers.GetOneFactoryArea(factoryAreaSvc))
+	mux.HandleFunc("DELETE "+FACTORY_AREA_ID_ROUTE, handlers.DeleteFactoryArea(factoryAreaSvc))
 
 	// Swagger docs
 	mux.HandleFunc("GET /swagger/", httpSwagger.WrapHandler)

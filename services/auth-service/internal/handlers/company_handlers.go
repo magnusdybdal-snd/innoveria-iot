@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"innoveria-iot/auth-service/internal/domain"
 	"innoveria-iot/auth-service/internal/handlers/dto"
@@ -32,6 +33,9 @@ func PostCompany(svc domain.CompanyService) http.HandlerFunc {
 			json.HandleError(w, http.StatusBadRequest, err, "bad request")
 			return
 		}
+
+		payload.Name = strings.TrimSpace(payload.Name)
+		payload.Address = strings.TrimSpace(payload.Address)
 
 		// Dto to domain, only name and address
 		companyDomain := dto.MapCreateCompanyToDomain(payload)

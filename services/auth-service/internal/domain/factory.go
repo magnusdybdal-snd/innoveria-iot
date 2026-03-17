@@ -20,7 +20,7 @@ type FactoryRepo interface {
 	Create(ctx context.Context, factory Factory) (Factory, error)
 	FindAll(ctx context.Context) ([]Factory, error)
 	FindByID(ctx context.Context, factoryID string) (Factory, error)
-	DeleteByID(ctx context.Context, factoryID string) error
+	Delete(ctx context.Context, factoryID string) error
 }
 
 // FactoryService defines factory use-cases exposed by the service layer.

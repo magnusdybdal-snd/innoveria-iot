@@ -52,7 +52,7 @@ func (s *FactoryServiceImpl) GetAllFactories(ctx context.Context) ([]domain.Fact
 
 // DeleteFactory deletes a factory by ID.
 func (s *FactoryServiceImpl) DeleteFactory(ctx context.Context, factoryID string) error {
-	if err := s.factoryRepo.DeleteByID(ctx, factoryID); err != nil {
+	if err := s.factoryRepo.Delete(ctx, factoryID); err != nil {
 		return err
 	}
 
