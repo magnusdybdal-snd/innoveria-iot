@@ -136,7 +136,33 @@ const docTemplate = `{
             }
         },
         "/gateways/{id}": {
-            "put": {
+            "delete": {
+                "tags": [
+                    "gateways"
+                ],
+                "summary": "Delete a gateway",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Gateway ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "patch": {
                 "consumes": [
                     "application/json"
                 ],
@@ -158,34 +184,8 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.CreateGatewayRequest"
+                            "$ref": "#/definitions/dto.UpdateGatewayRequest"
                         }
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No Content"
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    },
-                    "500": {
-                        "description": "Internal Server Error"
-                    }
-                }
-            },
-            "delete": {
-                "tags": [
-                    "gateways"
-                ],
-                "summary": "Delete a gateway",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Gateway ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -293,7 +293,33 @@ const docTemplate = `{
             }
         },
         "/sensors/{id}": {
-            "put": {
+            "delete": {
+                "tags": [
+                    "sensors"
+                ],
+                "summary": "Delete a sensor",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "SensorID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "patch": {
                 "consumes": [
                     "application/json"
                 ],
@@ -317,32 +343,6 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.UpdateSensorRequest"
                         }
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No Content"
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    },
-                    "500": {
-                        "description": "Internal Server Error"
-                    }
-                }
-            },
-            "delete": {
-                "tags": [
-                    "sensors"
-                ],
-                "summary": "Delete a sensor",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "SensorID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -594,6 +594,20 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.UpdateGatewayRequest": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "factory_area_id": {
+                    "type": "string"
+                },
+                "name": {
                     "type": "string"
                 }
             }

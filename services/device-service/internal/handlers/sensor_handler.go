@@ -99,6 +99,11 @@ func PatchSensor(svc domain.SensorService) http.HandlerFunc {
 			return
 		}
 
+		if json.IsEmpty(payload) {
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("no fields provided"), "bad request")
+			return
+		}
+
 		data := dto.MapUpdateSensorDTOToDomain(payload)
 
 		if err := svc.Update(ctx, id, data); err != nil {

@@ -98,6 +98,11 @@ func PatchGateway(svc domain.GatewayService) http.HandlerFunc {
 			return
 		}
 
+		if json.IsEmpty(payload) {
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("no fields provided"), "bad request")
+			return
+		}
+
 		data := dto.MapUpdateGatewayDTOToDomain(payload)
 
 		if err := svc.Update(ctx, id, data); err != nil {

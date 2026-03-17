@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"reflect"
 )
 
 // Encode writes the given value as JSON and sets the provided http status code
@@ -25,4 +26,23 @@ func Decode[T any](r *http.Request) (T, error) {
 		return data, fmt.Errorf("error: decoding json: %w", err)
 	}
 	return data, nil
+}
+
+// IsEmpty reports wether all fields in a struct are nil pointers.
+// Useful for rejecting patch requests where no fields were provided.
+func IsEmpty(v any) bool {
+	rv := reflect.ValueOf(v)
+	if rv.Kind() == reflect.Ptr {
+		rv = rv.Elem()
+	}
+	if rv.Kind() != reflect.Struct {
+		return false
+	}
+	for i := range rv.NumField() {
+		f := rv.Field(i)
+		if f.Kind() != reflect.Ptr || !f.IsNil() {
+			return false
+		}
+	}
+	return true
 }
