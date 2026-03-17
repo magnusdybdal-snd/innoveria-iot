@@ -146,8 +146,8 @@ func (r *FactoryAreaRepoImpl) FindByID(ctx context.Context, areaID string) (doma
 	return out, nil
 }
 
-// DeleteByID deletes a factory area by id.
-func (r *FactoryAreaRepoImpl) DeleteByID(ctx context.Context, areaID string) error {
+// Delete deletes a factory area by id.
+func (r *FactoryAreaRepoImpl) Delete(ctx context.Context, areaID string) error {
 	result, err := r.db.Pool.Exec(ctx, deleteFactoryAreaByIDQuery, areaID)
 	if err != nil {
 		return fmt.Errorf("delete factory area by id: %w", err)

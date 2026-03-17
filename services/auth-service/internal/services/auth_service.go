@@ -110,7 +110,7 @@ func (s *AuthServiceImpl) GetAllFactories(ctx context.Context) ([]domain.Factory
 
 // DeleteFactory deletes a factory by ID.
 func (s *AuthServiceImpl) DeleteFactory(ctx context.Context, factoryID string) error {
-	if err := s.factoryRepo.DeleteByID(ctx, factoryID); err != nil {
+	if err := s.factoryRepo.Delete(ctx, factoryID); err != nil {
 		return err
 	}
 
@@ -154,7 +154,7 @@ func (s *AuthServiceImpl) GetOneFactoryArea(ctx context.Context, areaID string) 
 
 // DeleteFactoryArea deletes a factory area by ID.
 func (s *AuthServiceImpl) DeleteFactoryArea(ctx context.Context, areaID string) error {
-	if err := s.factoryAreaRepo.DeleteByID(ctx, areaID); err != nil {
+	if err := s.factoryAreaRepo.Delete(ctx, areaID); err != nil {
 		return err
 	}
 

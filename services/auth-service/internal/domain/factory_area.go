@@ -20,5 +20,5 @@ type FactoryAreaRepo interface {
 	Create(ctx context.Context, area FactoryArea) (FactoryArea, error)
 	FindAll(ctx context.Context) ([]FactoryArea, error)
 	FindByID(ctx context.Context, areaID string) (FactoryArea, error)
-	DeleteByID(ctx context.Context, areaID string) error
+	Delete(ctx context.Context, areaID string) error
 }
