@@ -85,9 +85,25 @@ func (s *SensorServiceImpl) Update(ctx context.Context, sensorID string, payload
 	// Retain old values before merging payload, needed for potential compensation.
 	oldSensor := sensor
 
-	sensor.Name = payload.Name
-	sensor.Description = payload.Description
-	sensor.ChirpstackProfileID = payload.ChirpstackProfileID
+	// Update values if not nil / empty string.
+	if payload.Name != "" {
+		sensor.Name = payload.Name
+	}
+	if payload.Description != nil {
+		sensor.Description = payload.Description
+	}
+	if payload.ChirpstackProfileID != "" {
+		sensor.ChirpstackProfileID = payload.ChirpstackProfileID
+	}
+	if payload.FactoryID != "" {
+		sensor.FactoryID = payload.FactoryID
+	}
+	if payload.FactoryAreaID != nil {
+		sensor.FactoryAreaID = payload.FactoryAreaID
+	}
+	if payload.ProductionResource != nil {
+		sensor.ProductionResource = payload.ProductionResource
+	}
 
 	// Chirpstack Put request.
 	newReq := mappers.MapChirpstackSensorRequest(sensor, companycfg.ChirpstackApplicationID)
@@ -96,7 +112,7 @@ func (s *SensorServiceImpl) Update(ctx context.Context, sensorID string, payload
 	}
 
 	// If successfully updated in Chirpstack, try to update in database.
-	if err := s.sensorRepo.Update(ctx, sensorID, payload); err != nil {
+	if err := s.sensorRepo.Update(ctx, sensorID, sensor); err != nil {
 		// Compensate: revert Chirpstack to old values.
 		oldReq := mappers.MapChirpstackSensorRequest(oldSensor, companycfg.ChirpstackApplicationID)
 		if compErr := s.cc.UpdateSensor(ctx, oldReq); compErr != nil {
