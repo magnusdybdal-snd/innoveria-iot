@@ -2,10 +2,14 @@ package domain
 
 import (
 	"context"
+	"errors"
 	"time"
 )
 
-// ContextData is the domain model for contextdata
+// ErrNotFound is returned when a requested resource does not exist.
+var ErrNotFound = errors.New("not found")
+
+// ContextData is the domain model for context data.
 type ContextData struct {
 	ID                   string
 	CompanyID            string
@@ -20,7 +24,14 @@ type ContextData struct {
 	CalculatedAt         time.Time
 }
 
-// ContextDataService defines teh context service needed by context domain.
-type ContextDataService interface {
-	GetContextData(ctx context.Context, context ContextData) (ContextData, error)
+// ContextService defines the context service interface for the context domain.
+type ContextService interface {
+	GetContextData(
+		ctx context.Context,
+		companyID,
+		deviceEUI,
+		contextType string,
+		from,
+		to time.Time,
+	) (ContextData, error)
 }
