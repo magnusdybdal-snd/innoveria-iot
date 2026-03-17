@@ -71,7 +71,7 @@ func (r *FactoryAreaRepoImpl) Create(ctx context.Context, area domain.FactoryAre
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == pgerrcode.ForeignKeyViolation {
-			return domain.FactoryArea{}, fmt.Errorf("create factory area : %w", domain.ErrFactoryNotFound)
+			return domain.FactoryArea{}, fmt.Errorf("create factory area: %w", domain.ErrFactoryNotFound)
 		}
 		return domain.FactoryArea{}, fmt.Errorf("create factory area: %w", err)
 	}
