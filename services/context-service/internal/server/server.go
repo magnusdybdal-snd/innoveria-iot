@@ -16,19 +16,11 @@ import (
 	// "innoveria-iot/context-service/internal/db"
 	// "innoveria-iot/context-service/internal/repository"
 	// "innoveria-iot/context-service/internal/services"
-	"innoveria-iot/pkg/dbutil"
 )
 
 // Run starts the context service HTTP server and handles graceful shutdown.
 func Run() error {
 	cfg := config.Load()
-
-	// Init connection to context database
-	database, err := dbutil.New(cfg.DB_URL, "context-db")
-	if err != nil {
-		return fmt.Errorf("db error: %w", err)
-	}
-	defer database.Close()
 
 	// Setting up mux and http server
 	mux := NewRouter()
