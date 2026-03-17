@@ -92,13 +92,13 @@ func PatchGateway(svc domain.GatewayService) http.HandlerFunc {
 			return
 		}
 
-		payload, err := json.Decode[dto.CreateGatewayRequest](r)
+		payload, err := json.Decode[dto.UpdateGatewayRequest](r)
 		if err != nil {
 			json.HandleError(w, http.StatusBadRequest, err, "bad request")
 			return
 		}
 
-		data := dto.MapGatewayDTOToDomain(payload)
+		data := dto.MapUpdateGatewayDTOToDomain(payload)
 
 		if err := svc.Update(ctx, id, data); err != nil {
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
