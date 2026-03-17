@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"innoveria-iot/device-service/internal/domain"
+	"innoveria-iot/pkg/ptrutil"
 )
 
 // MapGatewayDomainToDTO maps a slice of domain Gateways to a GatewayListResponse.
@@ -53,12 +54,21 @@ func MapGatewayDTOToDomain(from CreateGatewayRequest) domain.Gateway {
 // MapUpdateSensorDTOToDomain maps an UpdateSensorRequest to a domain Sensor.
 func MapUpdateSensorDTOToDomain(from UpdateSensorRequest) domain.Sensor {
 	return domain.Sensor{
-		Name:                from.Name,
+		Name:                ptrutil.Deref(from.Name),
 		Description:         from.Description,
-		FactoryID:           from.FactoryID,
+		FactoryID:           ptrutil.Deref(from.FactoryID),
 		FactoryAreaID:       from.FactoryAreaID,
-		ChirpstackProfileID: from.ChirpstackProfileID,
+		ChirpstackProfileID: ptrutil.Deref(from.ChirpstackProfileID),
 		ProductionResource:  from.ProductionResource,
+	}
+}
+
+// MapUpdateGatewayDTOToDomain maps an UpdateGatewayRequest to a domain Gateway.
+func MapUpdateGatewayDTOToDomain(from UpdateGatewayRequest) domain.Gateway {
+	return domain.Gateway{
+		Name:          ptrutil.Deref(from.Name),
+		Description:   from.Description,
+		FactoryAreaID: from.FactoryAreaID,
 	}
 }
 
