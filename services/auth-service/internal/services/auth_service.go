@@ -5,6 +5,7 @@ import (
 	"context"
 	"time"
 
+	"golang.org/x/crypto/bcrypt"
 	"innoveria-iot/auth-service/internal/domain"
 )
 
@@ -33,10 +34,16 @@ func NewAuthServiceImpl(
 
 // Login authenticates a user.
 func (s *AuthServiceImpl) Login(ctx context.Context, email, password string) (domain.LoginResult, error) {
-	_, err := s.userRepo.FindByEmail(ctx, email)
+	user, err := s.userRepo.FindByEmail(ctx, email)
 	if err != nil {
 		return domain.LoginResult{}, err
 	}
+	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password)); err != nil {
+		return domain.LoginResult{}, nil
+	}
+
+	// Update last login
+
 	return domain.LoginResult{}, nil
 }
 
