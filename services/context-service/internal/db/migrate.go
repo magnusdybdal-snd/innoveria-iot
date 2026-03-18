@@ -1,3 +1,4 @@
+// Package db provides database migration and seed utilities for context-service.
 package db
 
 import (
