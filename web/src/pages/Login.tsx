@@ -21,7 +21,7 @@ const textFieldSx = {
 };
 
 /**
- * Login page with username and password fields and a link to account registration.
+ * Login page with email and password fields and a link to account registration.
  * @returns The rendered Login page
  */
 export default function Base() {
@@ -29,7 +29,7 @@ export default function Base() {
   const [values, setValues] = useState<Record<string, string>>({});
   const [error, setError] = useState(false);
 
-  const loginFields = ["Username", "Password"];
+  const loginFields = ["Email", "Password"];
 
   const handleLogin = () => {
     const allFilled = loginFields.every(
@@ -73,12 +73,12 @@ export default function Base() {
         />
         <Typography variant="h5">Log in</Typography>
         <TextField
-          label="Username"
+          label="Email"
           fullWidth
           sx={textFieldSx}
-          value={values["Username"] ?? ""}
+          value={values["Email"] ?? ""}
           onChange={(e) =>
-            setValues((prev) => ({ ...prev, Username: e.target.value }))
+            setValues((prev) => ({ ...prev, Email: e.target.value }))
           }
         />
         <TextField
