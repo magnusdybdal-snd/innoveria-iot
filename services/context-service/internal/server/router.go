@@ -8,7 +8,7 @@ import (
 )
 
 // NewRouter builds and returns the service HTTP router.
-func NewRouter(svc domain.ContextService) *http.ServeMux {
+func NewRouter(contextSvc domain.ContextService) *http.ServeMux {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /", handlers.Root)

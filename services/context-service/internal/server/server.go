@@ -37,10 +37,10 @@ func Run() error {
 		return fmt.Errorf("seeds: %w", err)
 	}
 	client := clients.NewCollectionClient(cfg.CollectionSvcURL)
-	svc := services.NewContextServiceImpl(client)
+	contextSvc := services.NewContextServiceImpl(client)
 
 	// Setting up mux and http server
-	mux := NewRouter(svc)
+	mux := NewRouter(contextSvc)
 	server := &http.Server{
 		Addr:              cfg.Addr,
 		Handler:           mux,
