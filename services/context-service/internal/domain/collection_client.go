@@ -7,10 +7,10 @@ import (
 
 // MeasurementReading is a single sensor measurement returned from the collection service.
 type MeasurementReading struct {
-	DeviceEUI string         `json:"device_eui"`
-	Timestamp time.Time      `json:"timestamp"`
-	Payload   map[string]any `json:"payload"`
-	CompanyID string         `json:"company_id"`
+	DeviceEUI string         
+	Timestamp time.Time      
+	Payload   map[string]any 
+	CompanyID string         
 }
 
 // CollectionClient defines the operations context-service needs from the collection service.
