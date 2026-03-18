@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 
 import innLogoDark from "@assets/innoveriaDark.png";
 import innLogoLight from "@assets/innoveriaLight.png";
@@ -26,6 +26,23 @@ const textFieldSx = {
  */
 export default function Base() {
   const { mode } = useContext(ThemeContext);
+  const [values, setValues] = useState<Record<string, string>>({});
+  const [error, setError] = useState(false);
+
+  const loginFields = ["Username", "Password"];
+
+  const handleLogin = () => {
+    const allFilled = loginFields.every(
+      (field) => (values[field] ?? "").trim() !== "",
+    );
+
+    if (!allFilled) {
+      setError(true);
+      return;
+    }
+
+    setError(false);
+  };
 
   return (
     <Box
@@ -54,19 +71,29 @@ export default function Base() {
           alt="Innoveria logo"
           style={{ width: 310 }}
         />
-
         <Typography variant="h5">Log in</Typography>
-
-        <TextField label="Username" fullWidth sx={textFieldSx} />
+        <TextField
+          label="Username"
+          fullWidth
+          sx={textFieldSx}
+          value={values["Username"] ?? ""}
+          onChange={(e) =>
+            setValues((prev) => ({ ...prev, Username: e.target.value }))
+          }
+        />
         <TextField
           label="Password"
           type="password"
           fullWidth
           sx={textFieldSx}
+          value={values["Password"] ?? ""}
+          onChange={(e) =>
+            setValues((prev) => ({ ...prev, Password: e.target.value }))
+          }
         />
-
         <Button
-          href="/"
+          onClick={handleLogin}
+          {...(!error ? { href: "/" } : {})} // Go to home page if no error
           fullWidth
           sx={{
             backgroundColor: green[500],
@@ -74,8 +101,11 @@ export default function Base() {
             "&:hover": { backgroundColor: green[800] },
           }}
         >
-          Log i
+          Log in
         </Button>
+        {error && (
+          <Typography color="error">All fields must be filled</Typography>
+        )}
       </Box>
     </Box>
   );
