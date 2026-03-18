@@ -1,13 +1,16 @@
 // Package domain defines auth-service core interfaces and domain contracts.
 package domain
 
-import "context"
+import (
+	"context"
+	"time"
+)
 
 // LoginResult contains token metadata returned by a successful login.
 type LoginResult struct {
 	AccessToken string
 	TokenType   string
-	ExpiresIn   string
+	ExpiresIn   time.Duration
 }
 
 // AuthService defines authentication and session operations exposed by

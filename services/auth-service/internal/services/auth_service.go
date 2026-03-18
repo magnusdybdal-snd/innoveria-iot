@@ -10,7 +10,6 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
-	"strconv"
 	"time"
 
 	"innoveria-iot/auth-service/internal/domain"
@@ -99,7 +98,7 @@ func (s *AuthServiceImpl) Me(ctx context.Context, token string) {
 }
 
 // generateAccessToken generates a short lived jwt token used by the client
-func (s *AuthServiceImpl) generateAccessToken(user domain.User) (string, string, error) {
+func (s *AuthServiceImpl) generateAccessToken(user domain.User) (string, time.Duration, error) {
 	now := time.Now().UTC()
 	expiresAt := now.Add(s.accessTTL)
 
@@ -115,10 +114,10 @@ func (s *AuthServiceImpl) generateAccessToken(user domain.User) (string, string,
 
 	signed, err := token.SignedString(s.jwtSecret)
 	if err != nil {
-		return "", "", fmt.Errorf("sign access token: %w", err)
+		return "", time.Duration(0), fmt.Errorf("sign access token: %w", err)
 	}
 
-	expiresIn := strconv.FormatInt(int64(s.accessTTL.Seconds()), 10)
+	expiresIn := s.accessTTL
 
 	return signed, expiresIn, nil
 }

@@ -1,20 +1,24 @@
 package dto
 
-import "innoveria-iot/auth-service/internal/domain"
+import (
+	"time"
+
+	"innoveria-iot/auth-service/internal/domain"
+)
 
 // LoginResult is the JSON response returned from a successful login.
 type LoginResult struct {
-	AccessToken string `json:"access_token"`
-	TokenType   string `json:"token_type"`
-	ExpiresIn   string `json:"expires_in"`
+	AccessToken string        `json:"access_token"`
+	TokenType   string        `json:"token_type"`
+	ExpiresIn   time.Duration `json:"expires_in"`
 }
 
 // ToLoginResult maps a domain login result to a login response DTO.
-func ToLoginResult(result domain.LoginResult) LoginResult {
+func ToLoginResult(from domain.LoginResult) LoginResult {
 	return LoginResult{
-		AccessToken: result.AccessToken,
-		TokenType:   result.TokenType,
-		ExpiresIn:   result.ExpiresIn,
+		AccessToken: from.AccessToken,
+		TokenType:   from.TokenType,
+		ExpiresIn:   time.Duration(from.ExpiresIn.Minutes()),
 	}
 }
 
