@@ -40,17 +40,19 @@ func Run() error {
 	}
 	// repo init
 	companyRepo := repository.NewCompanyRepo(database)
-
 	factoryRepo := repository.NewFactoryRepo(database)
 	factoryAreaRepo := repository.NewFactoryAreaRepo(database)
+	userRepo := repository.NewUserRepo(database)
+	refreshTokenRepo := repository.NewRefreshTokenRepo(database)
 
 	// service init
 	companySvc := services.NewCompanyService(companyRepo)
 	factorySvc := services.NewFactoryService(factoryRepo)
 	factoryAreaSvc := services.NewFactoryAreaService(factoryAreaRepo)
+	authSvc := services.NewAuthServiceImpl(userRepo, refreshTokenRepo, cfg.JWT_SECRET, cfg.JWTIssuer, cfg.JWTAccessTTL, cfg.JWTRefreshTokenTTL)
 
 	// Setting up mux and http server
-	mux := NewRouter(companySvc, factorySvc, factoryAreaSvc)
+	mux := NewRouter(companySvc, factorySvc, factoryAreaSvc, authSvc)
 	server := &http.Server{
 		Addr:              cfg.Addr,
 		Handler:           mux,

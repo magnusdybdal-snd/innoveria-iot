@@ -3,6 +3,10 @@ package services
 
 import (
 	"context"
+	"crypto/hmac"
+	"crypto/rand"
+	"crypto/sha256"
+	"encoding/base64"
 	"fmt"
 	"strconv"
 	"time"
@@ -57,7 +61,12 @@ func (s *AuthServiceImpl) Login(ctx context.Context, email, password string) (do
 		return domain.LoginResult{}, err
 	}
 
-	refreshToken := s.generateRefreshToken()
+	rawRefreshToken, err := s.generateRefreshToken()
+	if err != nil {
+		return domain.LoginResult{}, fmt.Errorf("generating refresh token: %w", err)
+	}
+
+	refreshToken := s.hasRefreshTokenHMAC(rawRefreshToken)
 
 	if err := s.refreshTokenRepo.Create(ctx, domain.RefreshToken{
 		UserID:    user.ID,
@@ -81,7 +90,7 @@ func (s *AuthServiceImpl) Me(ctx context.Context, token string) {
 	_, _ = ctx, token
 }
 
-// generateAccessToken generates a short lived token used by the client
+// generateAccessToken generates a short lived jwt token used by the client
 func (s *AuthServiceImpl) generateAccessToken(user domain.User) (string, string, error) {
 	now := time.Now().UTC()
 	expiresAt := now.Add(s.accessTTL)
@@ -92,7 +101,7 @@ func (s *AuthServiceImpl) generateAccessToken(user domain.User) (string, string,
 		"role":       user.Role,        // user role
 		"iss":        s.jwtIssuer,      // issuer of the jwt (auth-service)
 		"exp":        expiresAt.Unix(), // expiration time, when jwt expires
-		"iat":        now.Unix(),
+		"iat":        now.Unix(),       // issued at time. Time at which jwt token was created
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
@@ -106,7 +115,22 @@ func (s *AuthServiceImpl) generateAccessToken(user domain.User) (string, string,
 	return signed, expiresIn, nil
 }
 
-// generateRefreshToken generates a long term token stored in the db
-func (s *AuthServiceImpl) generateRefreshToken() string {
-	return ""
+// generateRefreshToken generates a long term jwt token stored in the db
+// is applied hashing after this function
+func (s *AuthServiceImpl) generateRefreshToken() (string, error) {
+	b := make([]byte, 32) // 256 bit random gen
+	if _, err := rand.Read(b); err != nil {
+		return "", err
+	}
+
+	return base64.RawURLEncoding.EncodeToString(b), nil
+}
+
+// hasRefreshTokenHMAC creates a deterministic lookup value for DB storage.
+// only the server with secret can reproduce/check this
+// important with good pepper incase db leak
+func (s *AuthServiceImpl) hasRefreshTokenHMAC(token string) string {
+	mac := hmac.New(sha256.New, s.jwtSecret) // TODO: Change this with refresh_token_pepper
+	mac.Write([]byte(token))
+	return base64.RawURLEncoding.EncodeToString(mac.Sum(nil))
 }

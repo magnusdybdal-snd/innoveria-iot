@@ -3,6 +3,8 @@ package config
 
 import (
 	"fmt"
+	"log/slog"
+	"os"
 	"time"
 
 	"innoveria-iot/pkg/env"
@@ -10,11 +12,12 @@ import (
 
 // Config holds auth-service runtime configuration.
 type Config struct {
-	Addr         string
-	DB_URL       string
-	JWT_SECRET   string
-	JWTIssuer    string
-	JWTAccessTTL time.Duration
+	Addr               string
+	DB_URL             string
+	JWT_SECRET         string
+	JWTIssuer          string
+	JWTAccessTTL       time.Duration
+	JWTRefreshTokenTTL time.Duration
 }
 
 // Load reads configuration from environment variables.
@@ -25,6 +28,18 @@ func Load() *Config {
 	dbPassword := env.Get("DB_PASSWORD", "auth")
 	dbName := env.Get("DB_NAME", "auth")
 	sslmode := env.Get("DB_SSLMODE", "disable")
+
+	jwtAccessTTL, err := time.ParseDuration(env.Get("JWT_ACCESS_TTL", "15m"))
+	if err != nil {
+		slog.Error("invalid JWT_ACCESS_TTL", "error", err)
+		os.Exit(1)
+	}
+
+	jwtRefreshTTL, err := time.ParseDuration(env.Get("JWT_REFRESH_TTL", "720h")) // 30 days
+	if err != nil {
+		slog.Error("invalid JWT_REFRESH_TTL", "error", err)
+		os.Exit(1)
+	}
 
 	return &Config{
 		Addr: ":" + env.Get("PORT", "8080"),
@@ -37,7 +52,9 @@ func Load() *Config {
 			dbName,
 			sslmode,
 		),
-		JWT_SECRET: env.Get("JWT_SECRET", "secret"), // jwt secret laoding
-		JWTIssuer:  env.Get("JWT_ISSUER", "auth-service"),
+		JWT_SECRET:         env.Get("JWT_SECRET", "secret"), // jwt secret laoding
+		JWTIssuer:          env.Get("JWT_ISSUER", "auth-service"),
+		JWTAccessTTL:       jwtAccessTTL,
+		JWTRefreshTokenTTL: jwtRefreshTTL,
 	}
 }

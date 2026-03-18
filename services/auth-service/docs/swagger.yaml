@@ -95,6 +95,22 @@ definitions:
       updated_at:
         type: string
     type: object
+  dto.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  dto.LoginResult:
+    properties:
+      access_token:
+        type: string
+      expires_in:
+        type: string
+      token_type:
+        type: string
+    type: object
 host: localhost:8084
 info:
   contact: {}
@@ -349,4 +365,29 @@ paths:
       summary: Get one factory area
       tags:
       - factory-areas
+  /login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Login payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.LoginResult'
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Login with email and password
+      tags:
+      - auth
 swagger: "2.0"
