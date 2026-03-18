@@ -190,6 +190,7 @@ services:
       - ./pkg:/pkg
     environment:
       - GO_ENV=development
+      - JWT_SECRET=secret
     depends_on:
       - auth-db
 

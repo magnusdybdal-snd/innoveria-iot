@@ -173,6 +173,7 @@ services:
       dockerfile: infra/production/auth-service.Dockerfile
     environment:
       - GO_ENV=${GO_ENV}
+      - JWT_SECRET=${JWT_SECRET}
       - DB_HOST=auth-db
       - DB_USER=${AUTH_DB_USER}
       - DB_PASSWORD=${AUTH_DB_PASSWORD}

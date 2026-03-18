@@ -3,18 +3,19 @@ package config
 
 import (
 	"fmt"
+
 	"innoveria-iot/pkg/env"
 )
 
 // Config holds auth-service runtime configuration.
 type Config struct {
-	Addr   string
-	DB_URL string
+	Addr       string
+	DB_URL     string
+	JWT_SECRET string
 }
 
 // Load reads configuration from environment variables.
 func Load() *Config {
-
 	dbHost := env.Get("DB_HOST", "auth-db")
 	dbPort := env.Get("DB_PORT", "5432")
 	dbUser := env.Get("DB_USER", "auth")
@@ -33,5 +34,6 @@ func Load() *Config {
 			dbName,
 			sslmode,
 		),
+		JWT_SECRET: env.Get("JWT_SECRET", "secret"), // jwt secret laoding
 	}
 }
