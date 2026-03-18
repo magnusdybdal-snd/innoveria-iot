@@ -10,7 +10,7 @@ type LoginResult struct {
 // LoginRequest is the JSON payload accepted by the login endpoint.
 type LoginRequest struct {
 	Email    string `json:"email"`
-	Password string `json:"passwod"`
+	Password string `json:"password"`
 }
 
 // MeResponse is the JSON response returned by the me endpoint.
