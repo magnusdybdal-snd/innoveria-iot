@@ -9,6 +9,17 @@ import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { ThemeContext } from "@shared/config/theme/themeContext";
 
+const textFieldSx = {
+  "& .MuiOutlinedInput-root": {
+    color: "primary.main",
+    "& fieldset": { borderColor: "primary.main" },
+    "&:hover fieldset": { borderColor: "primary.main" },
+    "&.Mui-focused fieldset": { borderColor: "primary.main" },
+  },
+  "& .MuiInputLabel-root": { color: "primary.main" },
+  "& .MuiInputLabel-root.Mui-focused": { color: "primary.main" },
+};
+
 /**
  * Login page with username and password fields and a link to account registration.
  * @returns The rendered Login page
@@ -17,114 +28,55 @@ export default function Base() {
   const { mode } = useContext(ThemeContext);
 
   return (
-    <div className="flex h-screen">
+    <Box
+      className="flex h-screen"
+      sx={{
+        backgroundColor: "primary.dark",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
       <Box
         sx={{
-          backgroundColor: "primary.dark",
-          color: "primary.main",
+          backgroundColor: "secondary.light",
+          borderRadius: 3,
+          width: 400,
+          p: 4,
           display: "flex",
+          flexDirection: "column",
           alignItems: "center",
-          justifyContent: "center",
-          textAlign: "center",
+          gap: 2,
         }}
-        className="flex-1 overflow-auto"
       >
-        <Box
+        <img
+          src={mode ? innLogoDark : innLogoLight}
+          alt="Innoveria logo"
+          style={{ width: 310 }}
+        />
+
+        <Typography variant="h5">Log in</Typography>
+
+        <TextField label="Username" fullWidth sx={textFieldSx} />
+        <TextField
+          label="Password"
+          type="password"
+          fullWidth
+          sx={textFieldSx}
+        />
+
+        <Button
+          href="/"
+          fullWidth
           sx={{
-            backgroundColor: "secondary.light",
-            color: "primary.main",
-            margin: 1,
-            borderRadius: 3,
-            border: "3px grey",
-            width: 400,
-            height: 400,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            textAlign: "center",
+            backgroundColor: green[500],
+            color: "white",
+            "&:hover": { backgroundColor: green[800] },
           }}
         >
-          <div className="w-64 text-white flex flex-col">
-            <img
-              src={mode ? innLogoDark : innLogoLight}
-              alt="Innoveria logo"
-              style={{
-                width: "310px",
-                height: "auto",
-                marginBottom: 20,
-              }}
-            />
-            <Typography className="font-normal text-3xl">Log in:</Typography>
-            <TextField
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  color: "primary.main", // input text color
-                  "& fieldset": {
-                    borderColor: "primary.main", // default border
-                  },
-                  "&:hover fieldset": {
-                    borderColor: "primary.main", // hover border
-                  },
-                  "&.Mui-focused fieldset": {
-                    borderColor: "primary.main", // focused border
-                  },
-                },
-                "& .MuiInputLabel-root": {
-                  color: "primary.main", // default label
-                },
-                "& .MuiInputLabel-root.Mui-focused": {
-                  color: "primary.main", // focused label
-                },
-              }}
-              id="username"
-              label="Username"
-              variant="outlined"
-            />
-            <br />
-            <TextField
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  color: "primary.main", // input text color
-                  "& fieldset": {
-                    borderColor: "primary.main", // default border
-                  },
-                  "&:hover fieldset": {
-                    borderColor: "primary.main", // hover border
-                  },
-                  "&.Mui-focused fieldset": {
-                    borderColor: "primary.main", // focused border
-                  },
-                },
-                "& .MuiInputLabel-root": {
-                  color: "primary.main", // default label
-                },
-                "& .MuiInputLabel-root.Mui-focused": {
-                  color: "primary.main", // focused label
-                },
-              }}
-              id="password"
-              label="Password"
-              type="password"
-              variant="outlined"
-            />
-            <br />
-            <Button
-              href={"/"}
-              variant="outlined"
-              sx={{
-                backgroundColor: green[500],
-                color: "white",
-                "&:hover": {
-                  backgroundColor: green[800],
-                },
-                borderRadius: 2,
-              }}
-            >
-              Log in
-            </Button>
-          </div>
-        </Box>
+          Log i
+        </Button>
       </Box>
-    </div>
+    </Box>
   );
 }
