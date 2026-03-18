@@ -16,6 +16,7 @@ import (
 	"innoveria-iot/context-service/internal/config"
 	"innoveria-iot/context-service/internal/db"
 	"innoveria-iot/context-service/internal/services"
+	"innoveria-iot/pkg/dbutil"
 )
 
 // Run starts the context service HTTP server and handles graceful shutdown.
@@ -23,7 +24,7 @@ func Run() error {
 	cfg := config.Load()
 
 	// Init connection to database
-	database, err := db.New(cfg.DB_URL)
+	database, err := dbutil.New(cfg.DB_URL, "context-db")
 	if err != nil {
 		return fmt.Errorf("db error: %w", err)
 	}
