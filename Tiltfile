@@ -56,6 +56,11 @@ dc_resource(
 )
 
 dc_resource(
+    'context-db',
+    labels=['database']
+)
+
+dc_resource(
     'chirpstack',
     labels=['chirpstack']
 )
