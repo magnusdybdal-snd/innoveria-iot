@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"innoveria-iot/context-service/internal/clients/dto"
+	"innoveria-iot/context-service/internal/clients/mappers"
 	"innoveria-iot/context-service/internal/domain"
 	"innoveria-iot/pkg/httpclient"
 )
@@ -39,13 +40,8 @@ func (c *CollectionClient) GetMeasurements(ctx context.Context, deviceEUI string
 	}
 
 	readings := make([]domain.MeasurementReading, len(resp))
-	for i, m := range resp {
-		readings[i] = domain.MeasurementReading{
-			DeviceEUI: m.DeviceEUI,
-			Timestamp: m.Timestamp,
-			Payload:   m.Payload,
-			CompanyID: m.CompanyID,
-		}
+	for idx, measurement := range resp {
+		readings[idx] = mappers.ToMeasurementReading(measurement)
 	}
 	return readings, nil
 }
