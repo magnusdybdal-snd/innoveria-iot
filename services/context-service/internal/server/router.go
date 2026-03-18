@@ -3,11 +3,12 @@ package server
 import (
 	"net/http"
 
+	"innoveria-iot/context-service/internal/domain"
 	"innoveria-iot/context-service/internal/handlers"
 )
 
 // NewRouter builds and returns the service HTTP router.
-func NewRouter() *http.ServeMux {
+func NewRouter(svc domain.ContextService) *http.ServeMux {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /", handlers.Root)

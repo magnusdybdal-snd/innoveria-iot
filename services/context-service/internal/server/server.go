@@ -12,18 +12,34 @@ import (
 	"syscall"
 	"time"
 
+	"innoveria-iot/context-service/internal/clients"
 	"innoveria-iot/context-service/internal/config"
-	// "innoveria-iot/context-service/internal/db"
-	// "innoveria-iot/context-service/internal/repository"
-	// "innoveria-iot/context-service/internal/services"
+	"innoveria-iot/context-service/internal/db"
+	"innoveria-iot/context-service/internal/services"
 )
 
 // Run starts the context service HTTP server and handles graceful shutdown.
 func Run() error {
 	cfg := config.Load()
 
+	// Init connection to database
+	database, err := db.New(cfg.DB_URL)
+	if err != nil {
+		return fmt.Errorf("db error: %w", err)
+	}
+	defer database.Close()
+
+	if err := db.RunMigrations(database.Pool); err != nil {
+		return fmt.Errorf("migrations: %w", err)
+	}
+	if err := db.RunSeeds(database.Pool); err != nil {
+		return fmt.Errorf("seeds: %w", err)
+	}
+	client := clients.NewCollectionClient(cfg.CollectionSvcURL)
+	svc := services.NewContextServiceImpl(client)
+
 	// Setting up mux and http server
-	mux := NewRouter()
+	mux := NewRouter(svc)
 	server := &http.Server{
 		Addr:              cfg.Addr,
 		Handler:           mux,
@@ -33,7 +49,7 @@ func Run() error {
 	// main startup function
 	serverErrors := make(chan error, 1)
 	go func() {
-		slog.Info("context-service listning")
+		slog.Info("context-service listening")
 		err := server.ListenAndServe()
 		serverErrors <- err
 	}()
