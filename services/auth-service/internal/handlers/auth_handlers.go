@@ -2,11 +2,12 @@ package handlers
 
 import (
 	"errors"
+	"net/http"
+	"strings"
+
 	"innoveria-iot/auth-service/internal/domain"
 	"innoveria-iot/auth-service/internal/handlers/dto"
 	"innoveria-iot/pkg/json"
-	"net/http"
-	"strings"
 )
 
 // PostLogin handles user login requests.
@@ -44,9 +45,8 @@ func PostLogin(svc domain.AuthService) http.HandlerFunc {
 		}
 
 		resp := dto.ToLoginResult(result)
-		if err := json.Encode(w, http.StatusCreated, resp); err != nil {
+		if err := json.Encode(w, http.StatusOK, resp); err != nil {
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
 		}
-
 	}
 }

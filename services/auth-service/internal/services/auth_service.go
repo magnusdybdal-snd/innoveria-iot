@@ -58,6 +58,7 @@ func (s *AuthServiceImpl) Login(ctx context.Context, email, password string) (do
 
 		return domain.LoginResult{}, err
 	}
+
 	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password)); err != nil {
 		return domain.LoginResult{}, domain.ErrUnauthorized
 	}
@@ -72,7 +73,7 @@ func (s *AuthServiceImpl) Login(ctx context.Context, email, password string) (do
 		return domain.LoginResult{}, fmt.Errorf("generating refresh token: %w", err)
 	}
 
-	refreshToken := s.hasRefreshTokenHMAC(rawRefreshToken)
+	refreshToken := s.hashRefreshTokenHMAC(rawRefreshToken)
 
 	if err := s.refreshTokenRepo.Create(ctx, domain.RefreshToken{
 		UserID:    user.ID,
@@ -136,7 +137,7 @@ func (s *AuthServiceImpl) generateRefreshToken() (string, error) {
 // hasRefreshTokenHMAC creates a deterministic lookup value for DB storage.
 // only the server with secret can reproduce/check this
 // important with good pepper incase db leak
-func (s *AuthServiceImpl) hasRefreshTokenHMAC(token string) string {
+func (s *AuthServiceImpl) hashRefreshTokenHMAC(token string) string {
 	mac := hmac.New(sha256.New, s.jwtSecret) // TODO: Change this with refresh_token_pepper
 	mac.Write([]byte(token))
 	return base64.RawURLEncoding.EncodeToString(mac.Sum(nil))
