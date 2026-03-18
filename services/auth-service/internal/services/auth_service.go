@@ -7,7 +7,9 @@ import (
 	"crypto/rand"
 	"crypto/sha256"
 	"encoding/base64"
+	"errors"
 	"fmt"
+	"log/slog"
 	"strconv"
 	"time"
 
@@ -50,10 +52,14 @@ func NewAuthServiceImpl(
 func (s *AuthServiceImpl) Login(ctx context.Context, email, password string) (domain.LoginResult, error) {
 	user, err := s.userRepo.FindByEmail(ctx, email)
 	if err != nil {
+		if errors.Is(err, domain.ErrUserNotFound) {
+			return domain.LoginResult{}, domain.ErrUnauthorized
+		}
+
 		return domain.LoginResult{}, err
 	}
 	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password)); err != nil {
-		return domain.LoginResult{}, nil
+		return domain.LoginResult{}, domain.ErrUnauthorized
 	}
 
 	accessToken, expiresIn, err := s.generateAccessToken(user)
@@ -78,6 +84,7 @@ func (s *AuthServiceImpl) Login(ctx context.Context, email, password string) (do
 
 	// Update last login
 
+	slog.Info("successfully authenticate user", "id", user.ID)
 	return domain.LoginResult{
 		AccessToken: accessToken,
 		TokenType:   "Bearer", // How the token is sendt over http

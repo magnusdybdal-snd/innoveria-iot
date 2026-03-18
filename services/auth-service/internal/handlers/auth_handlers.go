@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"errors"
 	"innoveria-iot/auth-service/internal/domain"
 	"innoveria-iot/auth-service/internal/handlers/dto"
 	"innoveria-iot/pkg/json"
@@ -33,7 +34,12 @@ func PostLogin(svc domain.AuthService) http.HandlerFunc {
 
 		result, err := svc.Login(ctx, payload.Email, payload.Password)
 		if err != nil {
-			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			switch {
+			case errors.Is(err, domain.ErrUnauthorized):
+				json.HandleError(w, http.StatusUnauthorized, err, "invalid credentials")
+			default:
+				json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			}
 			return
 		}
 

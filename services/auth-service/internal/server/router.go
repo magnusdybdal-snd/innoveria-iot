@@ -41,7 +41,7 @@ func NewRouter(
 	mux.HandleFunc("DELETE "+FACTORY_AREA_ID_ROUTE, handlers.DeleteFactoryArea(factoryAreaSvc))
 
 	// Auth
-	mux.HandleFunc("POST"+LOGIN_ROUTE, handlers.PostLogin(authSvc))
+	mux.HandleFunc("POST "+LOGIN_ROUTE, handlers.PostLogin(authSvc))
 
 	// Swagger docs
 	mux.HandleFunc("GET /swagger/", httpSwagger.WrapHandler)
