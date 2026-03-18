@@ -11,7 +11,8 @@ CREATE TABLE "context"."aggregation_rule" (
   time_bucket_minutes   INTEGER NOT NULL,
   is_active             BOOLEAN NOT NULL DEFAULT TRUE,
   created_at            TIMESTAMPTZ NOT NULL DEFAULT now(),
-  updated_at            TIMESTAMPTZ NOT NULL DEFAULT now()
+  updated_at            TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (company_id, context_type)
 );
 
 CREATE TABLE "context"."context_data" (
@@ -25,7 +26,8 @@ CREATE TABLE "context"."context_data" (
   unit                   VARCHAR NOT NULL,
   period_start           TIMESTAMPTZ NOT NULL,
   period_end             TIMESTAMPTZ NOT NULL,
-  calculated_at          TIMESTAMPTZ NOT NULL DEFAULT now()
+  calculated_at          TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (company_id, device_eui, context_type, period_start, period_end)
 );
 
 CREATE INDEX idx_context_data_company_type_calc
