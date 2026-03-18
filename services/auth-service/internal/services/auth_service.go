@@ -32,8 +32,12 @@ func NewAuthServiceImpl(
 }
 
 // Login authenticates a user.
-func (s *AuthServiceImpl) Login(ctx context.Context, email, password string) {
-	_, _, _ = ctx, email, password
+func (s *AuthServiceImpl) Login(ctx context.Context, email, password string) (domain.LoginResult, error) {
+	_, err := s.userRepo.FindByEmail(ctx, email)
+	if err != nil {
+		return domain.LoginResult{}, err
+	}
+	return domain.LoginResult{}, nil
 }
 
 // Me returns the authenticated user profile.

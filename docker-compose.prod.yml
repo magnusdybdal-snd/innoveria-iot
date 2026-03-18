@@ -172,7 +172,7 @@ services:
       context: .
       dockerfile: infra/production/auth-service.Dockerfile
     environment:
-      - GO_ENV=${GO_ENV}
+      - GO_ENV=${GO_ENV_AUTH} # for seeded users
       - JWT_SECRET=${JWT_SECRET}
       - DB_HOST=auth-db
       - DB_USER=${AUTH_DB_USER}

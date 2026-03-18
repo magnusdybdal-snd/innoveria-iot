@@ -3,15 +3,18 @@ package config
 
 import (
 	"fmt"
+	"time"
 
 	"innoveria-iot/pkg/env"
 )
 
 // Config holds auth-service runtime configuration.
 type Config struct {
-	Addr       string
-	DB_URL     string
-	JWT_SECRET string
+	Addr         string
+	DB_URL       string
+	JWT_SECRET   string
+	JWTIssuer    string
+	JWTAccessTTL time.Duration
 }
 
 // Load reads configuration from environment variables.
@@ -35,5 +38,6 @@ func Load() *Config {
 			sslmode,
 		),
 		JWT_SECRET: env.Get("JWT_SECRET", "secret"), // jwt secret laoding
+		JWTIssuer:  env.Get("JWT_ISSUER", "auth-service"),
 	}
 }
