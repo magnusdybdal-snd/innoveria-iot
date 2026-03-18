@@ -3,7 +3,7 @@ variables:
   # golangci-lint version must match the version in each service's go.mod
   GOLANGCI_LINT_VERSION: "v2.11.3"
   # pkg/ must be first — services depend on it via replace directive.
-  GO_SERVICES: "pkg/ services/api-gateway services/collection-service services/device-service services/auth-service services/onboarding-service"
+  GO_SERVICES: "pkg/ services/api-gateway services/collection-service services/device-service services/auth-service services/onboarding-service services/context-service"
 
 go-check:
   stage: check
