@@ -235,6 +235,19 @@ services:
       - COLLECTION_SERVICE=http://collection-service:8080
     depends_on:
       - collection-service
+      - context-db
+
+  context-db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    ports:
+      - "5436:5432"
+    volumes:
+      - contextdata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=context
+      - POSTGRES_PASSWORD=context
+      - POSTGRES_DB=context
 
 #
 # Docker data volumes
@@ -245,4 +258,5 @@ volumes:
   redisdata:
   devicedata:
   authdata:
+  contextdata:
   chirpstack-secrets: # for api key
