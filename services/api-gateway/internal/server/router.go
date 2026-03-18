@@ -25,6 +25,9 @@ func NewRouter(cfg *config.Config) *http.ServeMux {
 	handlers.RegisterProxyService(mux, AUTHENTICATION_ROUTE, "auth-service", cfg.AuthSvcURL, []string{
 		"/companies",
 		"/factories",
+		"/factory-areas",
+		"/login",
+		"/me",
 	})
 
 	// Device service
