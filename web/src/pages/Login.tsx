@@ -5,7 +5,6 @@ import innLogoLight from "@assets/innoveriaLight.png";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import { green } from "@mui/material/colors";
-import Link from "@mui/material/Link";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { ThemeContext } from "@shared/config/theme/themeContext";
@@ -123,10 +122,6 @@ export default function Base() {
             >
               Log in
             </Button>
-            <br />
-            <Link href={"/"} fontSize={12} color={"primary"}>
-              New user? Make an account here!
-            </Link>
           </div>
         </Box>
       </Box>
