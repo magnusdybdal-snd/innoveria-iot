@@ -2,6 +2,7 @@ package server
 
 import (
 	"net/http"
+	"time"
 
 	"innoveria-iot/auth-service/internal/domain"
 	"innoveria-iot/auth-service/internal/handlers"
@@ -17,6 +18,7 @@ func NewRouter(
 	factorySvc domain.FactoryService,
 	factoryAreaSvc domain.FactoryAreaService,
 	authSvc domain.AuthService,
+	refreshTTL time.Duration,
 ) *http.ServeMux {
 	mux := http.NewServeMux()
 
@@ -41,7 +43,7 @@ func NewRouter(
 	mux.HandleFunc("DELETE "+FACTORY_AREA_ID_ROUTE, handlers.DeleteFactoryArea(factoryAreaSvc))
 
 	// Auth
-	mux.HandleFunc("POST "+LOGIN_ROUTE, handlers.PostLogin(authSvc))
+	mux.HandleFunc("POST "+LOGIN_ROUTE, handlers.PostLogin(authSvc, refreshTTL))
 
 	// Swagger docs
 	mux.HandleFunc("GET /swagger/", httpSwagger.WrapHandler)

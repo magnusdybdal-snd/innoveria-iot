@@ -19,6 +19,7 @@ type LoginResult struct {
 // Login, Refresh, Logout and Me.
 type AuthService interface {
 	// TODO: Add Register
-	Login(ctx context.Context, email, password string) (LoginResult, error)
+	Login(ctx context.Context, email, password string) (LoginResult, string, error)
+	Refresh(ctx context.Context, rawRefreshToken string) (LoginResult, string, error)
 	Me(ctx context.Context, token string)
 }

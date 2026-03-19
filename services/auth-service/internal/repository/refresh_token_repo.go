@@ -38,3 +38,13 @@ func (r *RefreshTokenRepoImpl) Create(ctx context.Context, token domain.RefreshT
 
 	return nil
 }
+
+// UpdateRefreshToken stores a new fresh refresh token in the db
+func (r *RefreshTokenRepoImpl) UpdateRefreshToken(ctx context.Context, token domain.RefreshToken) error {
+	return nil
+}
+
+// FindActiveByHash will look for an active refresh token in db
+func (r *RefreshTokenRepoImpl) FindActiveByHash(ctx context.Context, oldHash string) (domain.RefreshToken, error) {
+	return domain.RefreshToken{}, nil
+}

@@ -48,28 +48,28 @@ func NewAuthServiceImpl(
 }
 
 // Login authenticates a user. By creating an accesss token and a refresh token
-func (s *AuthServiceImpl) Login(ctx context.Context, email, password string) (domain.LoginResult, error) {
+func (s *AuthServiceImpl) Login(ctx context.Context, email, password string) (domain.LoginResult, string, error) {
 	user, err := s.userRepo.FindByEmail(ctx, email)
 	if err != nil {
 		if errors.Is(err, domain.ErrUserNotFound) {
-			return domain.LoginResult{}, domain.ErrUnauthorized
+			return domain.LoginResult{}, "", domain.ErrUnauthorized
 		}
 
-		return domain.LoginResult{}, err
+		return domain.LoginResult{}, "", err
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password)); err != nil {
-		return domain.LoginResult{}, domain.ErrUnauthorized
+		return domain.LoginResult{}, "", domain.ErrUnauthorized
 	}
 
 	accessToken, expiresIn, err := s.generateAccessToken(user)
 	if err != nil {
-		return domain.LoginResult{}, err
+		return domain.LoginResult{}, "", err
 	}
 
 	rawRefreshToken, err := s.generateRefreshToken()
 	if err != nil {
-		return domain.LoginResult{}, fmt.Errorf("generating refresh token: %w", err)
+		return domain.LoginResult{}, "", fmt.Errorf("generating refresh token: %w", err)
 	}
 
 	refreshToken := s.hashRefreshTokenHMAC(rawRefreshToken)
@@ -79,12 +79,12 @@ func (s *AuthServiceImpl) Login(ctx context.Context, email, password string) (do
 		TokenHash: refreshToken,
 		ExpiresAt: time.Now().UTC().Add(s.refreshTTL),
 	}); err != nil {
-		return domain.LoginResult{}, err
+		return domain.LoginResult{}, "", err
 	}
 
 	// Update last login in user db
 	if err := s.userRepo.UpdateLastLoggedIn(ctx, user.ID); err != nil {
-		return domain.LoginResult{}, err
+		return domain.LoginResult{}, "", err
 	}
 
 	slog.Info("successfully authenticate user", "id", user.ID)
@@ -92,12 +92,45 @@ func (s *AuthServiceImpl) Login(ctx context.Context, email, password string) (do
 		AccessToken: accessToken,
 		TokenType:   "Bearer", // How the token is sendt over http
 		ExpiresIn:   expiresIn,
-	}, nil
+	}, refreshToken, nil
 }
 
 // Refresh is used to revoke the refresh token so the user has a fresh access token
-func (s *AuthServiceImpl) Refresh(ctx context.Context, token string) {
+func (s *AuthServiceImpl) Refresh(ctx context.Context, refreshToken string) (domain.LoginResult, string, error) {
+	if refreshToken == "" {
+		return domain.LoginResult{}, "", domain.ErrUnauthorized
+	}
+	tokenHash := s.hashRefreshTokenHMAC(refreshToken)
 
+	stored, err := s.refreshTokenRepo.FindActiveByHash(ctx, tokenHash)
+	if err != nil {
+		return domain.LoginResult{}, "", domain.ErrUnauthorized
+	}
+
+	if time.Now().UTC().After(stored.ExpiresAt) {
+		return domain.LoginResult{}, "", domain.ErrUnauthorized
+	}
+
+	user, err := s.userRepo.FindByID(ctx, stored.ID)
+	if err != nil {
+		return domain.LoginResult{}, "", domain.ErrUnauthorized
+	}
+
+	accessToken, expiresIn, err := s.generateAccessToken(user)
+	if err != nil {
+		return domain.LoginResult{}, "", fmt.Errorf("generate access token: %w", err)
+	}
+
+	newRefreshToken, err := s.generateRefreshToken()
+	if err != nil {
+		return domain.LoginResult{}, "", fmt.Errorf("generate refresh token: %w", err)
+	}
+
+	return domain.LoginResult{
+		AccessToken: accessToken,
+		TokenType:   "Bearer",
+		ExpiresIn:   expiresIn,
+	}, newRefreshToken, nil
 }
 
 // Me returns the authenticated user profile.
