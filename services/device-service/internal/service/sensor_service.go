@@ -98,7 +98,7 @@ func (s *SensorServiceImpl) Update(ctx context.Context, sensorID string, payload
 	if payload.FactoryID != "" {
 		sensor.FactoryID = payload.FactoryID
 	}
-	if payload.FactoryAreaID != nil {
+	if payload.FactoryAreaID != "" {
 		sensor.FactoryAreaID = payload.FactoryAreaID
 	}
 	if payload.ProductionResource != nil {

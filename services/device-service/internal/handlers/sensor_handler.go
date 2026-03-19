@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"innoveria-iot/device-service/internal/domain"
 	"innoveria-iot/device-service/internal/handlers/dto"
@@ -57,6 +58,19 @@ func PostSensor(svc domain.SensorService) http.HandlerFunc {
 		payload, err := json.Decode[dto.CreateSensorRequest](r)
 		if err != nil {
 			json.HandleError(w, http.StatusBadRequest, err, "bad request")
+			return
+		}
+
+		payload.CompanyID = strings.TrimSpace(payload.CompanyID)
+		payload.Name = strings.TrimSpace(payload.Name)
+		payload.DeviceEUI = strings.TrimSpace(payload.DeviceEUI)
+		payload.AppKey = strings.TrimSpace(payload.AppKey)
+		payload.ChirpstackProfileID = strings.TrimSpace(payload.ChirpstackProfileID)
+		payload.FactoryID = strings.TrimSpace(payload.FactoryID)
+		payload.FactoryAreaID = strings.TrimSpace(payload.FactoryAreaID)
+
+		if payload.CompanyID == "" || payload.Name == "" || payload.DeviceEUI == "" || payload.AppKey == "" || payload.ChirpstackProfileID == "" || payload.FactoryID == "" || payload.FactoryAreaID == "" {
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("company_id, name, device_eui, app_key, device_profile_id, factory_id and factory_area_id are required"), "bad request")
 			return
 		}
 
