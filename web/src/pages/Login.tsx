@@ -8,6 +8,7 @@ import { green } from "@mui/material/colors";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { ThemeContext } from "@shared/config/theme/themeContext";
+import { useNavigate } from "react-router";
 
 const textFieldSx = {
   "& .MuiOutlinedInput-root": {
@@ -26,22 +27,49 @@ const textFieldSx = {
  */
 export default function Base() {
   const { mode } = useContext(ThemeContext);
-  const [values, setValues] = useState<Record<string, string>>({});
-  const [error, setError] = useState(false);
+  const [loginValues, setLoginValues] = useState<Record<string, string>>({});
+  const [newValues, setNewValues] = useState<Record<string, string>>({});
+  const [fillError, setFillError] = useState(false);
+  const [equalError, setEqualError] = useState(false);
+  const [firstLogin, setFirstLogin] = useState(false);
+  const navigate = useNavigate();
 
-  const loginFields = ["Email", "Password"];
+  const loginFields = ["email", "password"];
+  const newPassFields = ["newPassword", "repeatPass"];
 
   const handleLogin = () => {
     const allFilled = loginFields.every(
-      (field) => (values[field] ?? "").trim() !== "",
+      (field) => (loginValues[field] ?? "").trim() !== "",
+    );
+    const equalPass = newValues.newPassword === newValues.repeatPass;
+
+    const newCreated = newPassFields.every(
+      (field) => (newValues[field] ?? "").trim() !== "",
     );
 
     if (!allFilled) {
-      setError(true);
+      setFillError(true);
       return;
     }
 
-    setError(false);
+    if (!equalPass) {
+      setEqualError(true);
+      return;
+    }
+
+    if (!firstLogin) {
+      setFirstLogin(true);
+      return;
+    } else {
+      if (!newCreated) {
+        setFillError(true);
+        return;
+      }
+    }
+
+    setFillError(false);
+    setFillError(false);
+    navigate("/");
   };
 
   return (
@@ -71,29 +99,59 @@ export default function Base() {
           alt="Innoveria logo"
           style={{ width: 310 }}
         />
-        <Typography variant="h5">Log in</Typography>
-        <TextField
-          label="Email"
-          fullWidth
-          sx={textFieldSx}
-          value={values["Email"] ?? ""}
-          onChange={(e) =>
-            setValues((prev) => ({ ...prev, Email: e.target.value }))
-          }
-        />
-        <TextField
-          label="Password"
-          type="password"
-          fullWidth
-          sx={textFieldSx}
-          value={values["Password"] ?? ""}
-          onChange={(e) =>
-            setValues((prev) => ({ ...prev, Password: e.target.value }))
-          }
-        />
+        <Typography variant="h5">
+          {firstLogin ? "Create a new password" : "Log in"}
+        </Typography>
+        {!firstLogin && (
+          <TextField
+            label="Email"
+            fullWidth
+            sx={textFieldSx}
+            value={loginValues.email ?? ""}
+            onChange={(e) =>
+              setLoginValues((prev) => ({ ...prev, email: e.target.value }))
+            }
+          />
+        )}
+        {!firstLogin && (
+          <TextField
+            label="Password"
+            type="password"
+            fullWidth
+            sx={textFieldSx}
+            value={loginValues.password ?? ""}
+            onChange={(e) =>
+              setLoginValues((prev) => ({ ...prev, password: e.target.value }))
+            }
+          />
+        )}
+        {firstLogin && (
+          <TextField
+            label="New password"
+            type="password"
+            fullWidth
+            sx={textFieldSx}
+            value={newValues.newPassword ?? ""}
+            onChange={(e) =>
+              setNewValues((prev) => ({ ...prev, newPassword: e.target.value }))
+            }
+          />
+        )}
+        {firstLogin && (
+          <TextField
+            label="Repeat password"
+            type="password"
+            fullWidth
+            sx={textFieldSx}
+            value={newValues.repeatPass ?? ""}
+            onChange={(e) =>
+              setNewValues((prev) => ({ ...prev, repeatPass: e.target.value }))
+            }
+          />
+        )}
         <Button
           onClick={handleLogin}
-          {...(!error ? { href: "/" } : {})} // Go to home page if no error
+          //{...(!error ? { href: "/" } : {})} // Go to home page if no error
           fullWidth
           sx={{
             backgroundColor: green[500],
@@ -103,8 +161,15 @@ export default function Base() {
         >
           Log in
         </Button>
-        {error && (
+        {fillError && (
           <Typography color="error">All fields must be filled</Typography>
+        )}
+        {equalError && (
+          <Typography color="error">
+            The repeated password is not the same
+            <br />
+            as the new password
+          </Typography>
         )}
       </Box>
     </Box>
