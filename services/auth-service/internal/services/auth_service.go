@@ -150,9 +150,13 @@ func (s *AuthServiceImpl) Refresh(ctx context.Context, refreshToken string) (dom
 }
 
 // Me returns the authenticated user profile.
-func (s *AuthServiceImpl) Me(ctx context.Context, token string) (domain.User, error) {
-
-	return domain.User{}, nil
+// this is a protected route
+func (s *AuthServiceImpl) Me(ctx context.Context, userID string) (domain.User, error) {
+	user, err := s.userRepo.FindByID(ctx, userID)
+	if err != nil {
+		return domain.User{}, err
+	}
+	return user, nil
 }
 
 // generateAccessToken generates a short lived jwt token used by the client

@@ -130,3 +130,41 @@ func PostRefresh(svc domain.AuthService, refreshTTL time.Duration) http.HandlerF
 		}
 	}
 }
+
+// GetMe returns the authenticated user's profile.
+//
+// @Summary Get current user profile
+// @Description Returns profile details for the authenticated user.
+// @Tags auth
+// @Produce json
+// @Success 200 {object} dto.MeResponse
+// @Failure 401
+// @Failure 500
+// @Router /me [get]
+func GetMe(svc domain.AuthService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+
+		userID := r.Header.Get("X-Auth-User-Id")
+		if userID == "" {
+			json.HandleError(w, http.StatusUnauthorized, errors.New("missing auth user id"), "unauthorized")
+			return
+		}
+
+		user, err := svc.Me(ctx, userID)
+		if err != nil {
+			switch {
+			case errors.Is(err, domain.ErrUserNotFound):
+				json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
+			default:
+				json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			}
+			return
+		}
+
+		resp := dto.ToMeResponse(user)
+		if err := json.Encode(w, http.StatusOK, resp); err != nil {
+			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+		}
+	}
+}

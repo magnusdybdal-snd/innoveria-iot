@@ -36,3 +36,14 @@ type MeResponse struct {
 	Email     string `json:"email"`
 	Role      string `json:"role"`
 }
+
+// ToMeResponse maps a domain user to a user response DTO.
+func ToMeResponse(from domain.User) MeResponse {
+	return MeResponse{
+		UserID:    from.ID,
+		CompanyID: from.CompanyID,
+		Name:      from.Name,
+		Email:     from.Email,
+		Role:      string(from.Role),
+	}
+}
