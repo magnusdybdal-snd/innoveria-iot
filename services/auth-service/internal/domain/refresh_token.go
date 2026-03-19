@@ -22,5 +22,6 @@ type RefreshToken struct {
 type RefreshTokenRepo interface {
 	Create(ctx context.Context, token RefreshToken) error
 	UpdateRefreshToken(ctx context.Context, token RefreshToken) error
+	UpsertForLogin(ctx context.Context, token RefreshToken) error
 	FindActiveByHash(ctx context.Context, oldHash string) (RefreshToken, error)
 }

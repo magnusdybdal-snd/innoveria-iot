@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
 	"innoveria-iot/auth-service/internal/domain"
 	"innoveria-iot/pkg/dbutil"
 
@@ -25,6 +26,16 @@ const (
 		WHERE token_id = $4
 			AND revoked_at IS NULL
 			AND expires_at > NOW()
+	`
+	upsertRefreshTokenQuery = `
+		UPDATE auth.refresh_token
+		SET token_hash = $1,
+			expires_at = $2,
+			revoked_at = NULL,
+			ip_address = COALESCE($3, ip_address)
+		WHERE user_id = $4
+			AND COALESCE(device_info, '') = COALESCE($5, '')
+			AND revoked_at IS NULL
 	`
 	findActiveRefreshTokenHashQuery = `
 		SELECT token_id, user_id, token_hash, expires_at, created_at
@@ -77,6 +88,26 @@ func (r *RefreshTokenRepoImpl) UpdateRefreshToken(ctx context.Context, token dom
 
 	if resp.RowsAffected() == 0 {
 		return fmt.Errorf("update refresh token: %w", domain.ErrUnauthorized)
+	}
+	return nil
+}
+
+// UpsertForLogin will only insert a refresh token if user_id and device info is not the same
+func (r *RefreshTokenRepoImpl) UpsertForLogin(ctx context.Context, token domain.RefreshToken) error {
+	resp, err := r.db.Pool.Exec(ctx, upsertRefreshTokenQuery,
+		token.TokenHash,
+		token.ExpiresAt,
+		token.IPAddress,
+		token.UserID,
+		token.DeviceInfo,
+	)
+	if err != nil {
+		return fmt.Errorf("upsert refresh token: %w", err)
+	}
+	if resp.RowsAffected() == 0 {
+		if err := r.Create(ctx, token); err != nil {
+			return fmt.Errorf("upsert refresh token: %w", err)
+		}
 	}
 	return nil
 }

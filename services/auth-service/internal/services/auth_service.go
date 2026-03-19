@@ -80,7 +80,7 @@ func (s *AuthServiceImpl) Login(ctx context.Context, email, password, deviceInfo
 
 	refreshToken := s.hashRefreshTokenHMAC(rawRefreshToken)
 
-	if err := s.refreshTokenRepo.Create(ctx, domain.RefreshToken{
+	if err := s.refreshTokenRepo.UpsertForLogin(ctx, domain.RefreshToken{
 		UserID:     user.ID,
 		TokenHash:  refreshToken, // storing hmac version in db
 		ExpiresAt:  time.Now().UTC().Add(s.refreshTTL),
