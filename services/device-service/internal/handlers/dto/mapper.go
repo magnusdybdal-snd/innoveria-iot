@@ -42,13 +42,16 @@ func mapGateway(from domain.Gateway) GatewayResponse {
 // MapGatewayDTOToDomain maps a CreateGatewayRequest to a domain Gateway, setting defaults for State and Status.
 func MapGatewayDTOToDomain(from CreateGatewayRequest) domain.Gateway {
 	return domain.Gateway{
-		Id:         "", // converted later in db
-		CompanyId:  from.CompanyId,
-		GatewayEUI: from.GatewayEUI,
-		Name:       from.Name,
-		State:      domain.DeviceStateActive,
-		Status:     domain.StatusNeverSeen,
-		LastSeenAt: "", // converted later after chirpstack
+		Id:            "", // converted later in db
+		CompanyId:     from.CompanyId,
+		GatewayEUI:    from.GatewayEUI,
+		Name:          from.Name,
+		Description:   from.Description,
+		FactoryID:     from.FactoryID,
+		FactoryAreaID: from.FactoryAreaID,
+		State:         domain.DeviceStateActive,
+		Status:        domain.StatusNeverSeen,
+		LastSeenAt:    "", // converted later after chirpstack
 	}
 }
 
@@ -69,6 +72,7 @@ func MapUpdateGatewayDTOToDomain(from UpdateGatewayRequest) domain.Gateway {
 	return domain.Gateway{
 		Name:          ptrutil.Deref(from.Name),
 		Description:   from.Description,
+		FactoryID:     ptrutil.Deref(from.FactoryID),
 		FactoryAreaID: ptrutil.Deref(from.FactoryAreaID),
 	}
 }
