@@ -128,8 +128,8 @@ services:
       - ./pkg:/pkg
     environment:
       - GO_ENV=development
-    depends_on:
       - ENABLE_SWAGGER=true
+    depends_on:
       - mosquitto
       - collection-db 
 

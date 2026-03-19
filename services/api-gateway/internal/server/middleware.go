@@ -38,8 +38,9 @@ func authMiddleware(cfg *config.Config, next http.Handler) http.Handler {
 		// Check if its a public path
 		if isPublicPath(r) {
 			next.ServeHTTP(w, r)
+			return
 		}
-		// checks if its public
+
 		tokenStr, err := request.AuthorizationHeaderExtractor.ExtractToken(r)
 		if err != nil {
 			json.HandleError(w, http.StatusUnauthorized, errors.New("missing bearer token"), "unauthorized")
@@ -87,7 +88,7 @@ func isPublicPath(r *http.Request) bool {
 		return true
 	}
 
-	if strings.HasPrefix(p, "/swagger/") {
+	if p == "/swagger" || strings.HasPrefix(p, "/swagger/") {
 		return true
 	}
 
