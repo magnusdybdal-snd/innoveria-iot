@@ -75,7 +75,7 @@ func (r *UserRepoImpl) FindByEmail(ctx context.Context, email string) (domain.Us
 // Used by /me
 func (r *UserRepoImpl) FindByID(ctx context.Context, userID string) (domain.User, error) {
 	var out domain.User
-	err := r.db.Pool.QueryRow(ctx, userID,
+	err := r.db.Pool.QueryRow(ctx, findUserByIDQuery,
 		userID,
 	).Scan(
 		&out.ID,
