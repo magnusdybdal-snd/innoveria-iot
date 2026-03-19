@@ -15,6 +15,7 @@ type Config struct {
 	Addr               string
 	DB_URL             string
 	JWT_SECRET         string
+	RefreshPepper      string
 	JWTIssuer          string
 	JWTAccessTTL       time.Duration
 	JWTRefreshTokenTTL time.Duration
@@ -53,7 +54,8 @@ func Load() *Config {
 			dbName,
 			sslmode,
 		),
-		JWT_SECRET:         env.Get("JWT_SECRET", "secret"), // jwt secret laoding
+		JWT_SECRET:         env.Get("JWT_SECRET", "secret"),     // jwt secret laoding
+		RefreshPepper:      env.Get("REFRESH_PEPPER", "secret"), // jwt secret laoding
 		JWTIssuer:          env.Get("JWT_ISSUER", "auth-service"),
 		JWTAccessTTL:       jwtAccessTTL,
 		JWTRefreshTokenTTL: jwtRefreshTTL,

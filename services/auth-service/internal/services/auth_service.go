@@ -24,6 +24,7 @@ type AuthServiceImpl struct {
 	userRepo         domain.UserRepo
 	refreshTokenRepo domain.RefreshTokenRepo
 	jwtSecret        []byte // converted to byte in initializer
+	refreshPepper    []byte
 	jwtIssuer        string
 	accessTTL        time.Duration
 	refreshTTL       time.Duration
@@ -37,6 +38,7 @@ func NewAuthServiceImpl(
 	jwtIssuer string,
 	accessTTL time.Duration,
 	refreshTokenTTL time.Duration,
+	refreshPepper string,
 ) *AuthServiceImpl {
 	return &AuthServiceImpl{
 		userRepo:         userRepo,
@@ -45,6 +47,7 @@ func NewAuthServiceImpl(
 		jwtIssuer:        jwtIssuer,
 		accessTTL:        accessTTL,
 		refreshTTL:       refreshTokenTTL,
+		refreshPepper:    []byte(refreshPepper),
 	}
 }
 
@@ -199,7 +202,7 @@ func (s *AuthServiceImpl) generateRefreshToken() (string, error) {
 // only the server with secret can reproduce/check this
 // important with good pepper incase db leak
 func (s *AuthServiceImpl) hashRefreshTokenHMAC(token string) string {
-	mac := hmac.New(sha256.New, s.jwtSecret) // TODO: Change this with refresh_token_pepper
+	mac := hmac.New(sha256.New, s.refreshPepper)
 	mac.Write([]byte(token))
 	return base64.RawURLEncoding.EncodeToString(mac.Sum(nil))
 }

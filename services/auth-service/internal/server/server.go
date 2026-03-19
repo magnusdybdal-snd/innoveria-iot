@@ -49,7 +49,7 @@ func Run() error {
 	companySvc := services.NewCompanyService(companyRepo)
 	factorySvc := services.NewFactoryService(factoryRepo)
 	factoryAreaSvc := services.NewFactoryAreaService(factoryAreaRepo)
-	authSvc := services.NewAuthServiceImpl(userRepo, refreshTokenRepo, cfg.JWT_SECRET, cfg.JWTIssuer, cfg.JWTAccessTTL, cfg.JWTRefreshTokenTTL)
+	authSvc := services.NewAuthServiceImpl(userRepo, refreshTokenRepo, cfg.JWT_SECRET, cfg.JWTIssuer, cfg.JWTAccessTTL, cfg.JWTRefreshTokenTTL, cfg.RefreshPepper)
 
 	// Setting up mux and http server
 	mux := NewRouter(companySvc, factorySvc, factoryAreaSvc, authSvc, cfg.JWTRefreshTokenTTL, cfg.EnableSwagger)
