@@ -18,7 +18,7 @@ func ToLoginResult(from domain.LoginResult) LoginResult {
 	return LoginResult{
 		AccessToken: from.AccessToken,
 		TokenType:   from.TokenType,
-		ExpiresIn:   time.Duration(from.ExpiresIn.Minutes()),
+		ExpiresIn:   time.Duration(from.ExpiresIn),
 	}
 }
 

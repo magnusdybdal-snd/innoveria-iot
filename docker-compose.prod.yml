@@ -108,6 +108,8 @@ services:
       - DEVICE_SERVICE=${DEVICE_SERVICE}
       - ONBOARDING_SERVICE=${ONBOARDING_SERVICE}
       - GO_ENV=${GO_ENV}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_ISSUER=auth-service
     restart: unless-stopped
 
   collection-service:
