@@ -46,7 +46,7 @@ func PostLogin(svc domain.AuthService, refreshTTL time.Duration) http.HandlerFun
 		payload.Email = strings.TrimSpace(payload.Email)
 		payload.Password = strings.TrimSpace(payload.Password)
 
-		accessToken, refreshToken, err := svc.Login(ctx, payload.Email, payload.Password)
+		loginResult, refreshToken, err := svc.Login(ctx, payload.Email, payload.Password)
 		if err != nil {
 			switch {
 			case errors.Is(err, domain.ErrUnauthorized):
@@ -59,7 +59,40 @@ func PostLogin(svc domain.AuthService, refreshTTL time.Duration) http.HandlerFun
 
 		setRefreshCookie(w, refreshToken, refreshTTL)
 
-		resp := dto.ToLoginResult(accessToken)
+		resp := dto.ToLoginResult(loginResult)
+		if err := json.Encode(w, http.StatusOK, resp); err != nil {
+			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+		}
+	}
+}
+
+// PostRefresh refreshes an access token using the refresh_token cookie.
+//
+// @Summary Refresh access token
+// @Description Validates the refresh_token cookie, rotates it, and returns a new access token.
+// @Tags auth
+// @Produce json
+// @Success 200 {object} dto.LoginResult
+// @Failure 401
+// @Failure 500
+// @Router /refresh [post]
+func PostRefresh(svc domain.AuthService, refreshTTL time.Duration) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		c, err := r.Cookie("refresh_token")
+		if err != nil || c.Value == "" {
+			json.HandleError(w, http.StatusUnauthorized, domain.ErrUnauthorized, "missing refresh token")
+			return
+		}
+
+		loginResult, newRawRefreshToken, err := svc.Refresh(ctx, c.Value)
+		if err != nil {
+			json.HandleError(w, http.StatusUnauthorized, err, "invalid refresh token")
+			return
+		}
+		setRefreshCookie(w, newRawRefreshToken, refreshTTL)
+
+		resp := dto.ToLoginResult(loginResult)
 		if err := json.Encode(w, http.StatusOK, resp); err != nil {
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
 		}

@@ -44,6 +44,7 @@ func NewRouter(
 
 	// Auth
 	mux.HandleFunc("POST "+LOGIN_ROUTE, handlers.PostLogin(authSvc, refreshTTL))
+	mux.HandleFunc("POST "+REFRESH_ROUTE, handlers.PostRefresh(authSvc, refreshTTL))
 
 	// Swagger docs
 	mux.HandleFunc("GET /swagger/", httpSwagger.WrapHandler)

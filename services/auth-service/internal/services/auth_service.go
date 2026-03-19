@@ -76,7 +76,7 @@ func (s *AuthServiceImpl) Login(ctx context.Context, email, password string) (do
 
 	if err := s.refreshTokenRepo.Create(ctx, domain.RefreshToken{
 		UserID:    user.ID,
-		TokenHash: refreshToken,
+		TokenHash: refreshToken, // storing hmac version in db
 		ExpiresAt: time.Now().UTC().Add(s.refreshTTL),
 	}); err != nil {
 		return domain.LoginResult{}, "", err
@@ -92,7 +92,7 @@ func (s *AuthServiceImpl) Login(ctx context.Context, email, password string) (do
 		AccessToken: accessToken,
 		TokenType:   "Bearer", // How the token is sendt over http
 		ExpiresIn:   expiresIn,
-	}, refreshToken, nil
+	}, rawRefreshToken, nil // returns the rawrefresh token, and the hmac version is in db
 }
 
 // Refresh is used to revoke the refresh token so the user has a fresh access token
@@ -102,11 +102,13 @@ func (s *AuthServiceImpl) Refresh(ctx context.Context, refreshToken string) (dom
 	}
 	tokenHash := s.hashRefreshTokenHMAC(refreshToken)
 
+	// check db for active hash
 	stored, err := s.refreshTokenRepo.FindActiveByHash(ctx, tokenHash)
 	if err != nil {
 		return domain.LoginResult{}, "", domain.ErrUnauthorized
 	}
 
+	// check to see if expired, else log out
 	if time.Now().UTC().After(stored.ExpiresAt) {
 		return domain.LoginResult{}, "", domain.ErrUnauthorized
 	}
@@ -116,14 +118,25 @@ func (s *AuthServiceImpl) Refresh(ctx context.Context, refreshToken string) (dom
 		return domain.LoginResult{}, "", domain.ErrUnauthorized
 	}
 
+	// Generate a fresh access token
 	accessToken, expiresIn, err := s.generateAccessToken(user)
 	if err != nil {
 		return domain.LoginResult{}, "", fmt.Errorf("generate access token: %w", err)
 	}
 
+	// Generate a fresh refresh token
 	newRefreshToken, err := s.generateRefreshToken()
 	if err != nil {
 		return domain.LoginResult{}, "", fmt.Errorf("generate refresh token: %w", err)
+	}
+
+	// Updates the refresh token in db
+	if err := s.refreshTokenRepo.UpdateRefreshToken(ctx, domain.RefreshToken{
+		UserID:    stored.UserID,
+		TokenHash: s.hashRefreshTokenHMAC(newRefreshToken), // hmac hash in db
+		ExpiresAt: time.Now().UTC().Add(s.refreshTTL),
+	}); err != nil {
+		return domain.LoginResult{}, "", err
 	}
 
 	return domain.LoginResult{

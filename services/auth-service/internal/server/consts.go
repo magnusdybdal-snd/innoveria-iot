@@ -23,7 +23,8 @@ const (
 	FACTORY_AREA_ID_ROUTE = FACTORY_AREA_ROUTE + "/{id}"
 
 	// auth routes:
-	LOGIN_ROUTE = AUTH_ROUTE + "/login"
-	ME_ROUTE    = AUTH_ROUTE + "/me"
+	LOGIN_ROUTE   = AUTH_ROUTE + "/login"
+	REFRESH_ROUTE = AUTH_ROUTE + "/refresh"
+	ME_ROUTE      = AUTH_ROUTE + "/me"
 	// REGISTER_ROUTE = AUTH_ROUTE + "/register"
 )
