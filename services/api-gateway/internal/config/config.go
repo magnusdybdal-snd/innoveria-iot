@@ -14,8 +14,8 @@ type Config struct {
 	DeviceSvcURL     string
 	AuthSvcURL       string
 	OnboardingSvcURL string
-	// Some serviceURL
-	// Some serviceAPIKEY?
+	JWTSecret        string
+	JWTIssuer        string
 }
 
 // Load the spesific enviroment variables
@@ -26,6 +26,8 @@ func Load() *Config {
 		DeviceSvcURL:     strings.TrimSpace(env.Get("DEVICE_SERVICE", "http://device-service:8080")),
 		AuthSvcURL:       strings.TrimSpace(env.Get("AUTH_SERVICE", "http://auth-service:8080")),
 		OnboardingSvcURL: strings.TrimSpace(env.Get("ONBOARDING_SERVICE", "http://onboarding-service:8080")),
+		JWTSecret:        env.Get("JWT_SECRET", "secret"), // jwt secret laoding
+		JWTIssuer:        env.Get("JWT_ISSUER", "auth-service"),
 	}
 
 	return &cfg

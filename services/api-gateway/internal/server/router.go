@@ -27,6 +27,7 @@ func NewRouter(cfg *config.Config) *http.ServeMux {
 		"/factories",
 		"/factory-areas",
 		"/login",
+		"/refresh",
 		"/me",
 	})
 
