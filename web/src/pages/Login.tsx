@@ -48,10 +48,19 @@ export default function Base() {
   const hasSymbol = (str: string) => /[!@#$%^&*()_\-+=]/.test(str);
 
   const [passErrors, setPassErrors] = useState({
+    length: false,
     lowercase: false,
     uppercase: false,
     number: false,
     symbol: false,
+  });
+
+  const validatePassword = (password: string) => ({
+    length: password.length < 8,
+    lowercase: !hasLowercase(password),
+    uppercase: !hasUppercase(password),
+    number: !hasNumber(password),
+    symbol: !hasSymbol(password),
   });
 
   const handleLogin = () => {
@@ -85,12 +94,7 @@ export default function Base() {
 
       const password = newValues.newPassword ?? "";
 
-      const errors = {
-        lowercase: !hasLowercase(password),
-        uppercase: !hasUppercase(password),
-        number: !hasNumber(password),
-        symbol: !hasSymbol(password),
-      };
+      const errors = validatePassword(password);
 
       setPassErrors(errors);
 
@@ -174,12 +178,7 @@ export default function Base() {
                 newPassword: value,
               }));
 
-              setPassErrors({
-                lowercase: !hasLowercase(value),
-                uppercase: !hasUppercase(value),
-                number: !hasNumber(value),
-                symbol: !hasSymbol(value),
-              });
+              setPassErrors(validatePassword(value));
             }}
           />
         )}
@@ -197,7 +196,6 @@ export default function Base() {
         )}
         <Button
           onClick={handleLogin}
-          //{...(!error ? { href: "/" } : {})} // Go to home page if no error
           fullWidth
           sx={{
             backgroundColor: green[500],
@@ -216,6 +214,9 @@ export default function Base() {
             <br />
             as the new password
           </Typography>
+        )}
+        {passErrors.length && (
+          <Typography color="error">Must at least 8 characters</Typography>
         )}
         {passErrors.lowercase && (
           <Typography color="error">Must contain a lowercase letter</Typography>
