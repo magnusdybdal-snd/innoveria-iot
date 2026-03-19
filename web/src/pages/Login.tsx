@@ -21,31 +21,48 @@ const textFieldSx = {
   "& .MuiInputLabel-root.Mui-focused": { color: "primary.main" },
 };
 
+const loginFields = ["email", "password"];
+const newPassFields = ["newPassword", "repeatPass"];
+
 /**
  * Login page with email and password fields and a link to account registration.
  * @returns The rendered Login page
  */
 export default function Base() {
   const { mode } = useContext(ThemeContext);
+
+  // Field values
   const [loginValues, setLoginValues] = useState<Record<string, string>>({});
   const [newValues, setNewValues] = useState<Record<string, string>>({});
+
+  // Error types
   const [fillError, setFillError] = useState(false);
   const [equalError, setEqualError] = useState(false);
+
   const [firstLogin, setFirstLogin] = useState(false);
   const navigate = useNavigate();
 
-  const loginFields = ["email", "password"];
-  const newPassFields = ["newPassword", "repeatPass"];
+  const hasLowercase = (str: string) => /[a-z]/.test(str);
+  const hasUppercase = (str: string) => /[A-Z]/.test(str);
+  const hasNumber = (str: string) => /[0-9]/.test(str);
+  const hasSymbol = (str: string) => /[!@#$%^&*()_\-+=]/.test(str);
+
+  const [passErrors, setPassErrors] = useState({
+    lowercase: false,
+    uppercase: false,
+    number: false,
+    symbol: false,
+  });
 
   const handleLogin = () => {
     const allFilled = loginFields.every(
       (field) => (loginValues[field] ?? "").trim() !== "",
     );
-    const equalPass = newValues.newPassword === newValues.repeatPass;
-
     const newCreated = newPassFields.every(
       (field) => (newValues[field] ?? "").trim() !== "",
     );
+
+    const equalPass = newValues.newPassword === newValues.repeatPass;
 
     if (!allFilled) {
       setFillError(true);
@@ -65,10 +82,27 @@ export default function Base() {
         setFillError(true);
         return;
       }
+
+      const password = newValues.newPassword ?? "";
+
+      const errors = {
+        lowercase: !hasLowercase(password),
+        uppercase: !hasUppercase(password),
+        number: !hasNumber(password),
+        symbol: !hasSymbol(password),
+      };
+
+      setPassErrors(errors);
+
+      const hasAnyError = Object.values(errors).some(Boolean);
+
+      if (hasAnyError) {
+        return;
+      }
     }
 
     setFillError(false);
-    setFillError(false);
+    setEqualError(false);
     navigate("/");
   };
 
@@ -132,9 +166,21 @@ export default function Base() {
             fullWidth
             sx={textFieldSx}
             value={newValues.newPassword ?? ""}
-            onChange={(e) =>
-              setNewValues((prev) => ({ ...prev, newPassword: e.target.value }))
-            }
+            onChange={(e) => {
+              const value = e.target.value;
+
+              setNewValues((prev) => ({
+                ...prev,
+                newPassword: value,
+              }));
+
+              setPassErrors({
+                lowercase: !hasLowercase(value),
+                uppercase: !hasUppercase(value),
+                number: !hasNumber(value),
+                symbol: !hasSymbol(value),
+              });
+            }}
           />
         )}
         {firstLogin && (
@@ -170,6 +216,20 @@ export default function Base() {
             <br />
             as the new password
           </Typography>
+        )}
+        {passErrors.lowercase && (
+          <Typography color="error">Must contain a lowercase letter</Typography>
+        )}
+        {passErrors.uppercase && (
+          <Typography color="error">
+            Must contain an uppercase letter
+          </Typography>
+        )}
+        {passErrors.number && (
+          <Typography color="error">Must contain a number</Typography>
+        )}
+        {passErrors.symbol && (
+          <Typography color="error">Must contain a symbol (!@#$...)</Typography>
         )}
       </Box>
     </Box>
