@@ -416,6 +416,7 @@ const docTemplate = `{
                 "company_id",
                 "device_eui",
                 "device_profile_id",
+                "factory_area_id",
                 "factory_id",
                 "name"
             ],
@@ -437,7 +438,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "factory_area_id": {
-                    "description": "Optional — UUID, omit if service not yet available",
                     "type": "string"
                 },
                 "factory_id": {
