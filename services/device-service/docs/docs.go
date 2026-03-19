@@ -383,11 +383,22 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "company_id",
+                "factory_area_id",
+                "factory_id",
                 "gateway_eui",
                 "name"
             ],
             "properties": {
                 "company_id": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "factory_area_id": {
+                    "type": "string"
+                },
+                "factory_id": {
                     "type": "string"
                 },
                 "gateway_eui": {
@@ -468,6 +479,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "factory_area_id": {
+                    "type": "string"
+                },
+                "factory_id": {
                     "type": "string"
                 },
                 "gateway_eui": {
@@ -605,6 +619,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "factory_area_id": {
+                    "type": "string"
+                },
+                "factory_id": {
                     "type": "string"
                 },
                 "name": {
