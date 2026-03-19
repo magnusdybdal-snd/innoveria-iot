@@ -9,7 +9,8 @@ type GatewayResponse struct {
 	Name          string  `json:"name"`
 	Description   *string `json:"description"`
 	State         string  `json:"state"`
-	FactoryAreaID *string `json:"factory_area_id"`
+	FactoryID     string  `json:"factory_id"`
+	FactoryAreaID string  `json:"factory_area_id"`
 	Status        int     `json:"status"`
 	LastSeenAt    string  `json:"last_seen_at"`
 	CreatedAt     string  `json:"created_at"`

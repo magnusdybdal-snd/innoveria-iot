@@ -79,9 +79,6 @@ func (g *GatewayServiceImpl) Update(ctx context.Context, gatewayId string, paylo
 	if payload.Description != nil {
 		gateway.Description = payload.Description
 	}
-	if payload.FactoryAreaID != nil {
-		gateway.FactoryAreaID = payload.FactoryAreaID
-	}
 
 	// Only update in Chirpstack (and apply saga) if the name has changed (Chirpstack only allows name updates)
 	if gateway.Name != oldGateway.Name {

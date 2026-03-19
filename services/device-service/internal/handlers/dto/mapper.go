@@ -31,6 +31,7 @@ func mapGateway(from domain.Gateway) GatewayResponse {
 		Description:   from.Description,
 		Status:        int(from.Status),
 		State:         string(from.State),
+		FactoryID:     from.FactoryID,
 		FactoryAreaID: from.FactoryAreaID,
 		LastSeenAt:    from.LastSeenAt,
 		CreatedAt:     from.CreatedAt.Format(time.RFC3339),
@@ -68,7 +69,7 @@ func MapUpdateGatewayDTOToDomain(from UpdateGatewayRequest) domain.Gateway {
 	return domain.Gateway{
 		Name:          ptrutil.Deref(from.Name),
 		Description:   from.Description,
-		FactoryAreaID: from.FactoryAreaID,
+		FactoryAreaID: ptrutil.Deref(from.FactoryAreaID),
 	}
 }
 
