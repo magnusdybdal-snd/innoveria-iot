@@ -4,6 +4,7 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"innoveria-iot/device-service/internal/domain"
 	"innoveria-iot/device-service/internal/handlers/dto"
@@ -57,6 +58,17 @@ func PostGateway(svc domain.GatewayService) http.HandlerFunc {
 		payload, err := json.Decode[dto.CreateGatewayRequest](r)
 		if err != nil {
 			json.HandleError(w, http.StatusBadRequest, err, "bad request")
+			return
+		}
+
+		payload.CompanyId = strings.TrimSpace(payload.CompanyId)
+		payload.GatewayEUI = strings.TrimSpace(payload.GatewayEUI)
+		payload.Name = strings.TrimSpace(payload.Name)
+		payload.FactoryID = strings.TrimSpace(payload.FactoryID)
+		payload.FactoryAreaID = strings.TrimSpace(payload.FactoryAreaID)
+
+		if payload.CompanyId == "" || payload.GatewayEUI == "" || payload.Name == "" || payload.FactoryID == "" || payload.FactoryAreaID == "" {
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("company_id, gateway_eui, name, factory_id and factory_area_id are required"), "bad request")
 			return
 		}
 
