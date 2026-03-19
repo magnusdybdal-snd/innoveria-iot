@@ -61,7 +61,7 @@ func MapUpdateSensorDTOToDomain(from UpdateSensorRequest) domain.Sensor {
 		Name:                ptrutil.Deref(from.Name),
 		Description:         from.Description,
 		FactoryID:           ptrutil.Deref(from.FactoryID),
-		FactoryAreaID:       from.FactoryAreaID,
+		FactoryAreaID:       ptrutil.Deref(from.FactoryAreaID),
 		ChirpstackProfileID: ptrutil.Deref(from.ChirpstackProfileID),
 		ProductionResource:  from.ProductionResource,
 	}
