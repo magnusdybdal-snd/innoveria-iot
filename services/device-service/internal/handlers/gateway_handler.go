@@ -1,4 +1,4 @@
-// Package handlers TODO(@vinjar): add proper documentation.
+// Package handlers implements the HTTP handlers for the device service.
 package handlers
 
 import (

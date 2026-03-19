@@ -28,7 +28,7 @@ func Decode[T any](r *http.Request) (T, error) {
 	return data, nil
 }
 
-// IsEmpty reports wether all fields in a struct are nil pointers.
+// IsEmpty reports whether all fields in a struct are nil pointers.
 // Useful for rejecting patch requests where no fields were provided.
 func IsEmpty(v any) bool {
 	rv := reflect.ValueOf(v)
