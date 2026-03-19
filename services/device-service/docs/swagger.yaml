@@ -160,6 +160,15 @@ definitions:
       updated_at:
         type: string
     type: object
+  dto.UpdateGatewayRequest:
+    properties:
+      description:
+        type: string
+      factory_area_id:
+        type: string
+      name:
+        type: string
+    type: object
   dto.UpdateSensorRequest:
     properties:
       description:
@@ -176,10 +185,6 @@ definitions:
       production_resource:
         description: Optional — UUID, omit if service not yet available
         type: string
-    required:
-    - device_profile_id
-    - factory_id
-    - name
     type: object
 host: localhost:8083
 info:
@@ -283,7 +288,7 @@ paths:
       summary: Delete a gateway
       tags:
       - gateways
-    put:
+    patch:
       consumes:
       - application/json
       parameters:
@@ -297,7 +302,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/dto.CreateGatewayRequest'
+          $ref: '#/definitions/dto.UpdateGatewayRequest'
       responses:
         "204":
           description: No Content
@@ -385,7 +390,7 @@ paths:
       summary: Delete a sensor
       tags:
       - sensors
-    put:
+    patch:
       consumes:
       - application/json
       parameters:

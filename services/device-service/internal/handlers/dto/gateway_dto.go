@@ -28,3 +28,10 @@ type CreateGatewayRequest struct {
 	GatewayEUI string `json:"gateway_eui"   binding:"required"`
 	Name       string `json:"name"          binding:"required"`
 }
+
+// UpdateGatewayRequest represents the fields a caller can update on a gateway.
+type UpdateGatewayRequest struct {
+	Name          *string `json:"name"`
+	Description   *string `json:"description"`
+	FactoryAreaID *string `json:"factory_area_id"`
+}

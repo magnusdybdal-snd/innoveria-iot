@@ -72,7 +72,7 @@ func PostSensor(svc domain.SensorService) http.HandlerFunc {
 	}
 }
 
-// PutSensor updates a sensor by its internal ID
+// PatchSensor updates a sensor by its internal ID
 //
 // @Summary 	Update a sensor
 // @Tags		sensors
@@ -82,8 +82,8 @@ func PostSensor(svc domain.SensorService) http.HandlerFunc {
 // @Success		204
 // @Failure		400
 // @Failure		500
-// @Router		/sensors/{id} [put]
-func PutSensor(svc domain.SensorService) http.HandlerFunc {
+// @Router		/sensors/{id} [patch]
+func PatchSensor(svc domain.SensorService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
@@ -96,6 +96,11 @@ func PutSensor(svc domain.SensorService) http.HandlerFunc {
 		payload, err := json.Decode[dto.UpdateSensorRequest](r)
 		if err != nil {
 			json.HandleError(w, http.StatusBadRequest, err, "bad request")
+			return
+		}
+
+		if payload.Name == nil && payload.Description == nil && payload.FactoryID == nil && payload.FactoryAreaID == nil && payload.ChirpstackProfileID == nil && payload.ProductionResource == nil {
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("no fields provided"), "bad request")
 			return
 		}
 

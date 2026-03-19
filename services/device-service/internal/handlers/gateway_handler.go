@@ -71,18 +71,18 @@ func PostGateway(svc domain.GatewayService) http.HandlerFunc {
 	}
 }
 
-// PutGateway updates a gateway by its internal ID.
+// PatchGateway updates a gateway by its internal ID.
 //
 // @Summary		Update a gateway
 // @Tags		gateways
 // @Accept		json
 // @Param		id		path	string						true	"Gateway ID"
-// @Param		body	body	dto.CreateGatewayRequest	true	"Update payload"
+// @Param		body	body	dto.UpdateGatewayRequest	true	"Update payload"
 // @Success		204
 // @Failure		400
 // @Failure		500
-// @Router		/gateways/{id} [put]
-func PutGateway(svc domain.GatewayService) http.HandlerFunc {
+// @Router		/gateways/{id} [patch]
+func PatchGateway(svc domain.GatewayService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
@@ -92,13 +92,18 @@ func PutGateway(svc domain.GatewayService) http.HandlerFunc {
 			return
 		}
 
-		payload, err := json.Decode[dto.CreateGatewayRequest](r)
+		payload, err := json.Decode[dto.UpdateGatewayRequest](r)
 		if err != nil {
 			json.HandleError(w, http.StatusBadRequest, err, "bad request")
 			return
 		}
 
-		data := dto.MapGatewayDTOToDomain(payload)
+		if payload.Name == nil && payload.Description == nil && payload.FactoryAreaID == nil {
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("no fields provided"), "bad request")
+			return
+		}
+
+		data := dto.MapUpdateGatewayDTOToDomain(payload)
 
 		if err := svc.Update(ctx, id, data); err != nil {
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
