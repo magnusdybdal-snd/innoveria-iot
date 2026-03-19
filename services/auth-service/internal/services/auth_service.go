@@ -72,6 +72,11 @@ func (s *AuthServiceImpl) Login(ctx context.Context, email, password string) (do
 		return domain.LoginResult{}, "", fmt.Errorf("generating refresh token: %w", err)
 	}
 
+	// Update last login in user db
+	if err := s.userRepo.UpdateLastLoggedIn(ctx, user.ID); err != nil {
+		return domain.LoginResult{}, "", err
+	}
+
 	refreshToken := s.hashRefreshTokenHMAC(rawRefreshToken)
 
 	if err := s.refreshTokenRepo.Create(ctx, domain.RefreshToken{
@@ -79,11 +84,6 @@ func (s *AuthServiceImpl) Login(ctx context.Context, email, password string) (do
 		TokenHash: refreshToken, // storing hmac version in db
 		ExpiresAt: time.Now().UTC().Add(s.refreshTTL),
 	}); err != nil {
-		return domain.LoginResult{}, "", err
-	}
-
-	// Update last login in user db
-	if err := s.userRepo.UpdateLastLoggedIn(ctx, user.ID); err != nil {
 		return domain.LoginResult{}, "", err
 	}
 
@@ -113,7 +113,7 @@ func (s *AuthServiceImpl) Refresh(ctx context.Context, refreshToken string) (dom
 		return domain.LoginResult{}, "", domain.ErrUnauthorized
 	}
 
-	user, err := s.userRepo.FindByID(ctx, stored.ID)
+	user, err := s.userRepo.FindByID(ctx, stored.UserID)
 	if err != nil {
 		return domain.LoginResult{}, "", domain.ErrUnauthorized
 	}
@@ -132,7 +132,7 @@ func (s *AuthServiceImpl) Refresh(ctx context.Context, refreshToken string) (dom
 
 	// Updates the refresh token in db
 	if err := s.refreshTokenRepo.UpdateRefreshToken(ctx, domain.RefreshToken{
-		UserID:    stored.UserID,
+		ID:        stored.ID,
 		TokenHash: s.hashRefreshTokenHMAC(newRefreshToken), // hmac hash in db
 		ExpiresAt: time.Now().UTC().Add(s.refreshTTL),
 	}); err != nil {

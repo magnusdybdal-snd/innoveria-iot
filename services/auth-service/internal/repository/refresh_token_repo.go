@@ -19,7 +19,7 @@ const (
 	updateRefreshTokenQuery = `
 		UPDATE auth.refresh_token
 		SET token_hash = $1, expires_at = $2, revoked_at = NULL
-		WHERE token_id $3
+		WHERE token_id = $3
 			AND revoked_at IS NULL
 			AND expires_at > NOW()
 	`
