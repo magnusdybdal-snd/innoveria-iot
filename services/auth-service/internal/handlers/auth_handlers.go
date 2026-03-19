@@ -2,7 +2,9 @@ package handlers
 
 import (
 	"errors"
+	"net"
 	"net/http"
+	"net/netip"
 	"strings"
 	"time"
 
@@ -21,6 +23,27 @@ func setRefreshCookie(w http.ResponseWriter, token string, ttl time.Duration) {
 		SameSite: http.SameSiteLaxMode,
 		MaxAge:   int(ttl.Seconds()),
 	})
+}
+
+func parseClientIP(r *http.Request) *netip.Addr {
+	if xff := strings.TrimSpace(r.Header.Get("X-Forwarded-For")); xff != "" {
+		first := strings.TrimSpace(strings.Split(xff, ",")[0])
+		if ip, err := netip.ParseAddr(first); err == nil {
+			return &ip
+		}
+	}
+	if xrip := strings.TrimSpace(r.Header.Get("X-Real-IP")); xrip != "" {
+		if ip, err := netip.ParseAddr(xrip); err == nil {
+			return &ip
+		}
+	}
+	host, _, err := net.SplitHostPort(strings.TrimSpace(r.RemoteAddr))
+	if err == nil {
+		if ip, err := netip.ParseAddr(host); err == nil {
+			return &ip
+		}
+	}
+	return nil
 }
 
 // PostLogin handles user login requests.
@@ -46,7 +69,16 @@ func PostLogin(svc domain.AuthService, refreshTTL time.Duration) http.HandlerFun
 		payload.Email = strings.TrimSpace(payload.Email)
 		payload.Password = strings.TrimSpace(payload.Password)
 
-		loginResult, refreshToken, err := svc.Login(ctx, payload.Email, payload.Password)
+		ipAddress := parseClientIP(r)
+		deviceInfo := strings.TrimSpace(r.UserAgent())
+
+		loginResult, refreshToken, err := svc.Login(
+			ctx,
+			payload.Email,
+			payload.Password,
+			deviceInfo,
+			ipAddress,
+		)
 		if err != nil {
 			switch {
 			case errors.Is(err, domain.ErrUnauthorized):

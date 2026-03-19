@@ -10,6 +10,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"net/netip"
 	"time"
 
 	"innoveria-iot/auth-service/internal/domain"
@@ -48,7 +49,7 @@ func NewAuthServiceImpl(
 }
 
 // Login authenticates a user. By creating an accesss token and a refresh token
-func (s *AuthServiceImpl) Login(ctx context.Context, email, password string) (domain.LoginResult, string, error) {
+func (s *AuthServiceImpl) Login(ctx context.Context, email, password, deviceInfo string, ip *netip.Addr) (domain.LoginResult, string, error) {
 	user, err := s.userRepo.FindByEmail(ctx, email)
 	if err != nil {
 		if errors.Is(err, domain.ErrUserNotFound) {
@@ -80,9 +81,11 @@ func (s *AuthServiceImpl) Login(ctx context.Context, email, password string) (do
 	refreshToken := s.hashRefreshTokenHMAC(rawRefreshToken)
 
 	if err := s.refreshTokenRepo.Create(ctx, domain.RefreshToken{
-		UserID:    user.ID,
-		TokenHash: refreshToken, // storing hmac version in db
-		ExpiresAt: time.Now().UTC().Add(s.refreshTTL),
+		UserID:     user.ID,
+		TokenHash:  refreshToken, // storing hmac version in db
+		ExpiresAt:  time.Now().UTC().Add(s.refreshTTL),
+		DeviceInfo: deviceInfo,
+		IPAddress:  ip,
 	}); err != nil {
 		return domain.LoginResult{}, "", err
 	}

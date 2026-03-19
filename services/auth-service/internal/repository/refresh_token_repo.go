@@ -13,13 +13,16 @@ import (
 // TODO: Handle ip and device info
 const (
 	createRefreshTokenQuery = `
-		INSERT INTO auth.refresh_token (user_id, token_hash, expires_at)
-		VALUES ($1, $2, $3)
+		INSERT INTO auth.refresh_token (user_id, token_hash, expires_at, device_info, ip_address)
+		VALUES ($1, $2, $3, $4, $5)
 	`
 	updateRefreshTokenQuery = `
 		UPDATE auth.refresh_token
-		SET token_hash = $1, expires_at = $2, revoked_at = NULL
-		WHERE token_id = $3
+		SET token_hash = $1, 
+			expires_at = $2, 
+			revoked_at = NULL, 
+			ip_address = COALESCE($3, ip_address)
+		WHERE token_id = $4
 			AND revoked_at IS NULL
 			AND expires_at > NOW()
 	`
@@ -50,6 +53,8 @@ func (r *RefreshTokenRepoImpl) Create(ctx context.Context, token domain.RefreshT
 		token.UserID,
 		token.TokenHash,
 		token.ExpiresAt,
+		token.DeviceInfo,
+		token.IPAddress,
 	)
 	if err != nil {
 		return fmt.Errorf("create refresh token: %w", err)
@@ -63,6 +68,7 @@ func (r *RefreshTokenRepoImpl) UpdateRefreshToken(ctx context.Context, token dom
 	resp, err := r.db.Pool.Exec(ctx, updateRefreshTokenQuery,
 		token.TokenHash,
 		token.ExpiresAt,
+		token.IPAddress,
 		token.ID,
 	)
 	if err != nil {
