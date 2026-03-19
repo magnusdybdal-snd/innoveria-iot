@@ -47,7 +47,7 @@ func NewAuthServiceImpl(
 	}
 }
 
-// Login authenticates a user.
+// Login authenticates a user. By creating an accesss token and a refresh token
 func (s *AuthServiceImpl) Login(ctx context.Context, email, password string) (domain.LoginResult, error) {
 	user, err := s.userRepo.FindByEmail(ctx, email)
 	if err != nil {
@@ -82,7 +82,10 @@ func (s *AuthServiceImpl) Login(ctx context.Context, email, password string) (do
 		return domain.LoginResult{}, err
 	}
 
-	// Update last login
+	// Update last login in user db
+	if err := s.userRepo.UpdateLastLoggedIn(ctx, user.ID); err != nil {
+		return domain.LoginResult{}, err
+	}
 
 	slog.Info("successfully authenticate user", "id", user.ID)
 	return domain.LoginResult{
@@ -90,6 +93,11 @@ func (s *AuthServiceImpl) Login(ctx context.Context, email, password string) (do
 		TokenType:   "Bearer", // How the token is sendt over http
 		ExpiresIn:   expiresIn,
 	}, nil
+}
+
+// Refresh is used to revoke the refresh token so the user has a fresh access token
+func (s *AuthServiceImpl) Refresh(ctx context.Context, token string) {
+
 }
 
 // Me returns the authenticated user profile.

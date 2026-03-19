@@ -23,6 +23,11 @@ const (
 		FROM auth."user"
 		WHERE user_id = $1
 	`
+	updateLastLoggedInQuery = `
+		UPDATE auth."user"
+		SET last_logged_in = NOW()
+		WHERE user_id = $1
+	`
 )
 
 // UserRepoImpl is the PostgreSQL-backed implementation of
@@ -96,5 +101,14 @@ func (r *UserRepoImpl) FindByID(ctx context.Context, userID string) (domain.User
 
 // UpdateLastLoggedIn updates the user's last login timestamp.
 func (r *UserRepoImpl) UpdateLastLoggedIn(ctx context.Context, userID string) error {
+	res, err := r.db.Pool.Exec(ctx, updateLastLoggedInQuery, userID)
+	if err != nil {
+		return fmt.Errorf("update user last login: %w", err)
+	}
+
+	if res.RowsAffected() == 0 {
+		return fmt.Errorf("update user last login: %w", domain.ErrUserNotFound)
+	}
+
 	return nil
 }

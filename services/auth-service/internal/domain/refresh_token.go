@@ -21,4 +21,5 @@ type RefreshToken struct {
 // RefreshTokenRepo is the interface contract for refresh token repository
 type RefreshTokenRepo interface {
 	Create(ctx context.Context, token RefreshToken) error
+	UpdateRefreshToken(ctx context.Context, token RefreshToken) error
 }
