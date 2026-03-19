@@ -98,7 +98,7 @@ func PatchGateway(svc domain.GatewayService) http.HandlerFunc {
 			return
 		}
 
-		if json.IsEmpty(payload) {
+		if payload.Name == nil && payload.Description == nil && payload.FactoryAreaID == nil {
 			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("no fields provided"), "bad request")
 			return
 		}

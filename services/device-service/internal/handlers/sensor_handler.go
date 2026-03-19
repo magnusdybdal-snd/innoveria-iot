@@ -99,7 +99,7 @@ func PatchSensor(svc domain.SensorService) http.HandlerFunc {
 			return
 		}
 
-		if json.IsEmpty(payload) {
+		if payload.Name == nil && payload.Description == nil && payload.FactoryID == nil && payload.FactoryAreaID == nil && payload.ChirpstackProfileID == nil && payload.ProductionResource == nil {
 			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("no fields provided"), "bad request")
 			return
 		}
