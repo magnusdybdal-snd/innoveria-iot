@@ -150,8 +150,9 @@ func (s *AuthServiceImpl) Refresh(ctx context.Context, refreshToken string) (dom
 }
 
 // Me returns the authenticated user profile.
-func (s *AuthServiceImpl) Me(ctx context.Context, token string) {
-	_, _ = ctx, token
+func (s *AuthServiceImpl) Me(ctx context.Context, token string) (domain.User, error) {
+
+	return domain.User{}, nil
 }
 
 // generateAccessToken generates a short lived jwt token used by the client
