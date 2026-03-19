@@ -18,6 +18,7 @@ type Config struct {
 	JWTIssuer          string
 	JWTAccessTTL       time.Duration
 	JWTRefreshTokenTTL time.Duration
+	EnableSwagger      bool
 }
 
 // Load reads configuration from environment variables.
@@ -56,5 +57,6 @@ func Load() *Config {
 		JWTIssuer:          env.Get("JWT_ISSUER", "auth-service"),
 		JWTAccessTTL:       jwtAccessTTL,
 		JWTRefreshTokenTTL: jwtRefreshTTL,
+		EnableSwagger:      env.GetBool("ENABLE_SWAGGER", false),
 	}
 }

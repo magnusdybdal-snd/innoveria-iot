@@ -18,6 +18,7 @@ func NewRouter(
 	sensorSvc domain.SensorService,
 	sensorProfileSvc domain.SensorProfileService,
 	companyConfigSvc domain.CompanyConfigService,
+	enableSwagger bool,
 ) *http.ServeMux {
 	mux := http.NewServeMux()
 
@@ -43,7 +44,9 @@ func NewRouter(
 	mux.HandleFunc("DELETE "+COMPANY_CONFIG_ROUTE_ID, handlers.DeleteCompanyConfig(companyConfigSvc))
 
 	// Swagger docs
-	mux.HandleFunc("GET /swagger/", httpSwagger.WrapHandler)
+	if enableSwagger {
+		mux.HandleFunc("GET /swagger/", httpSwagger.WrapHandler)
+	}
 
 	return mux
 }

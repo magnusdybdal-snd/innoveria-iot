@@ -3,6 +3,7 @@ package env
 
 import (
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -12,6 +13,18 @@ import (
 func Get(key, fallback string) string {
 	if v := os.Getenv(key); v != "" {
 		return v
+	}
+	return fallback
+}
+
+// GetBool will fallback if the value is missing or not a bool
+func GetBool(key string, fallback bool) bool {
+	if v := os.Getenv(key); v != "" {
+		boolVal, err := strconv.ParseBool(v)
+		if err != nil {
+			return fallback
+		}
+		return boolVal
 	}
 	return fallback
 }

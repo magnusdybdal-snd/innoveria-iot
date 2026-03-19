@@ -51,8 +51,10 @@ func NewRouter(cfg *config.Config) *http.ServeMux {
 	})
 
 	// Swagger — merged spec from all services, served via the gateway
-	mux.HandleFunc("GET /swagger/doc.json", handlers.MergedSwaggerSpec(cfg.DeviceSvcURL, cfg.CollSvcURL, cfg.AuthSvcURL, cfg.OnboardingSvcURL))
-	mux.HandleFunc("GET /swagger/", httpSwagger.Handler(httpSwagger.URL("/swagger/doc.json")))
+	if cfg.EnableSwagger {
+		mux.HandleFunc("GET /swagger/doc.json", handlers.MergedSwaggerSpec(cfg.DeviceSvcURL, cfg.CollSvcURL, cfg.AuthSvcURL, cfg.OnboardingSvcURL))
+		mux.HandleFunc("GET /swagger/", httpSwagger.Handler(httpSwagger.URL("/swagger/doc.json")))
+	}
 
 	return mux
 }

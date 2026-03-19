@@ -19,6 +19,7 @@ func NewRouter(
 	factoryAreaSvc domain.FactoryAreaService,
 	authSvc domain.AuthService,
 	refreshTTL time.Duration,
+	enableSwagger bool,
 ) *http.ServeMux {
 	mux := http.NewServeMux()
 
@@ -47,7 +48,9 @@ func NewRouter(
 	mux.HandleFunc("POST "+REFRESH_ROUTE, handlers.PostRefresh(authSvc, refreshTTL))
 
 	// Swagger docs
-	mux.HandleFunc("GET /swagger/", httpSwagger.WrapHandler)
+	if enableSwagger {
+		mux.HandleFunc("GET /swagger/", httpSwagger.WrapHandler)
+	}
 
 	return mux
 }

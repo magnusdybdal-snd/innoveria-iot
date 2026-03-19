@@ -52,7 +52,7 @@ func Run() error {
 	authSvc := services.NewAuthServiceImpl(userRepo, refreshTokenRepo, cfg.JWT_SECRET, cfg.JWTIssuer, cfg.JWTAccessTTL, cfg.JWTRefreshTokenTTL)
 
 	// Setting up mux and http server
-	mux := NewRouter(companySvc, factorySvc, factoryAreaSvc, authSvc, cfg.JWTRefreshTokenTTL)
+	mux := NewRouter(companySvc, factorySvc, factoryAreaSvc, authSvc, cfg.JWTRefreshTokenTTL, cfg.EnableSwagger)
 	server := &http.Server{
 		Addr:              cfg.Addr,
 		Handler:           mux,

@@ -9,8 +9,9 @@ import (
 
 // Config holds all runtime configuration values for the device service.
 type Config struct {
-	Addr   string
-	DB_url string
+	Addr          string
+	DB_url        string
+	EnableSwagger bool
 
 	ChirpstackURL        string // chirpstack rest api url
 	ChirpstackSecretPath string // chirpstack api token (bearer token)
@@ -37,6 +38,7 @@ func Load() *Config {
 			dbName,
 			sslmode,
 		),
+		EnableSwagger:        env.GetBool("ENABLE_SWAGGER", false),
 		ChirpstackURL:        env.Get("CHIRPSTACK_REST", "http://chirpstack-rest-api:8090"),
 		ChirpstackSecretPath: "/secrets/chirpstack-api-key",
 	}

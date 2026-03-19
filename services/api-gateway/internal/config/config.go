@@ -16,6 +16,7 @@ type Config struct {
 	OnboardingSvcURL string
 	JWTSecret        string
 	JWTIssuer        string
+	EnableSwagger    bool
 }
 
 // Load the spesific enviroment variables
@@ -28,6 +29,7 @@ func Load() *Config {
 		OnboardingSvcURL: strings.TrimSpace(env.Get("ONBOARDING_SERVICE", "http://onboarding-service:8080")),
 		JWTSecret:        env.Get("JWT_SECRET", "secret"), // jwt secret laoding
 		JWTIssuer:        env.Get("JWT_ISSUER", "auth-service"),
+		EnableSwagger:    env.GetBool("ENABLE_SWAGGER", false),
 	}
 
 	return &cfg

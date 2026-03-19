@@ -14,6 +14,7 @@ import (
 // NewRouter creates and returns an HTTP ServeMux with all onboarding service routes registered.
 func NewRouter(
 	onboardingSvc domain.OnboardingService,
+	enableSwagger bool,
 ) *http.ServeMux {
 	mux := http.NewServeMux()
 
@@ -23,7 +24,9 @@ func NewRouter(
 	mux.HandleFunc("POST "+COMPANY_ROUTE, handlers.PostCompany(onboardingSvc))
 
 	// Swagger docs
-	mux.HandleFunc("GET /swagger/", httpSwagger.WrapHandler)
+	if enableSwagger {
+		mux.HandleFunc("GET /swagger/", httpSwagger.WrapHandler)
+	}
 
 	return mux
 }
