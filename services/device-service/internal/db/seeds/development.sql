@@ -5,8 +5,8 @@ VALUES ('a0000000-0000-0000-0000-000000000001', 'd0000000-0000-0000-0000-0000000
 ON CONFLICT DO NOTHING;
 
 -- Gateway (matches chirpstack seed.)
-INSERT INTO "device"."gateway" ("gateway_id", "company_id", "gateway_eui", "name", "state")
-VALUES ('b0000000-0000-0000-0000-000000000001', 'a0000000-0000-0000-0000-000000000001', 'a000000000000001', 'Dev Gateway', 'ACTIVE')
+INSERT INTO "device"."gateway" ("gateway_id", "company_id", "gateway_eui", "name", "state", "factory_id", "factory_area_id")
+VALUES ('b0000000-0000-0000-0000-000000000001', 'a0000000-0000-0000-0000-000000000001', 'a000000000000001', 'Dev Gateway', 'ACTIVE', 'f1000000-0000-0000-0000-000000000001', 'f2000000-0000-0000-0000-000000000001')
 ON CONFLICT DO NOTHING;
 
 -- Sensors (matches chirpstack seed.)
