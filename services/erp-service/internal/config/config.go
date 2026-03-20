@@ -7,8 +7,8 @@ import (
 
 // Config holds erp-service runtime configuration.
 type Config struct {
-	Addr          string
-	EnableSwagger bool
+	Addr string
+	//EnableSwagger bool
 }
 
 // Load reads configuration from environment variables.

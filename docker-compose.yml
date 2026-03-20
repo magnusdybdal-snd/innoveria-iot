@@ -236,6 +236,7 @@ services:
     depends_on:
       - collection-service
       - context-db
+      - erp-service
 
   context-db:
     image: postgres:16-alpine
@@ -248,6 +249,18 @@ services:
       - POSTGRES_USER=context
       - POSTGRES_PASSWORD=context
       - POSTGRES_DB=context
+
+  erp-service:
+    build:
+      context: .
+      dockerfile: infra/development/erp-service.Dockerfile
+    ports:
+      - "8087:8080"
+    volumes:
+      - ./services/erp-service:/app
+      - ./pkg:/pkg
+    environment:
+      - GO_ENV=development
 
 #
 # Docker data volumes
