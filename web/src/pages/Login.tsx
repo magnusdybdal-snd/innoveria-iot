@@ -1,10 +1,14 @@
-import { useContext, useState } from "react";
+import React, { useContext, useState } from "react";
 
 import innLogoDark from "@assets/innoveriaDark.png";
 import innLogoLight from "@assets/innoveriaLight.png";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import { green } from "@mui/material/colors";
+import IconButton from "@mui/material/IconButton";
+import InputAdornment from "@mui/material/InputAdornment";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { ThemeContext } from "@shared/config/theme/themeContext";
@@ -41,6 +45,50 @@ export default function Base() {
 
   const [firstLogin, setFirstLogin] = useState(false);
   const navigate = useNavigate();
+
+  // Show password
+  const [showPassword, setShowPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+  const handleClickShowNewPassword = () => setShowNewPassword((show) => !show);
+
+  const handleMouseDownPassword = (
+    event: React.MouseEvent<HTMLButtonElement>,
+  ) => {
+    event.preventDefault();
+  };
+
+  const handleMouseUpPassword = (
+    event: React.MouseEvent<HTMLButtonElement>,
+  ) => {
+    event.preventDefault();
+  };
+
+  const passwordAdornment = (
+    <InputAdornment position="end">
+      <IconButton
+        onClick={handleClickShowPassword}
+        onMouseDown={handleMouseDownPassword}
+        onMouseUp={handleMouseUpPassword}
+        edge="end"
+      >
+        {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+      </IconButton>
+    </InputAdornment>
+  );
+
+  const newPasswordAdornment = (
+    <InputAdornment position="end">
+      <IconButton
+        onClick={handleClickShowNewPassword}
+        onMouseDown={handleMouseDownPassword}
+        onMouseUp={handleMouseUpPassword}
+        edge="end"
+      >
+        {showNewPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+      </IconButton>
+    </InputAdornment>
+  );
 
   const hasLowercase = (str: string) => /[a-z]/.test(str);
   const hasUppercase = (str: string) => /[A-Z]/.test(str);
@@ -154,7 +202,12 @@ export default function Base() {
         {!firstLogin && (
           <TextField
             label="Password"
-            type="password"
+            type={showPassword ? "text" : "password"}
+            slotProps={{
+              input: {
+                endAdornment: passwordAdornment,
+              },
+            }}
             fullWidth
             sx={textFieldSx}
             value={loginValues.password ?? ""}
@@ -166,7 +219,12 @@ export default function Base() {
         {firstLogin && (
           <TextField
             label="New password"
-            type="password"
+            type={showNewPassword ? "text" : "password"}
+            slotProps={{
+              input: {
+                endAdornment: newPasswordAdornment,
+              },
+            }}
             fullWidth
             sx={textFieldSx}
             value={newValues.newPassword ?? ""}
@@ -185,7 +243,12 @@ export default function Base() {
         {firstLogin && (
           <TextField
             label="Repeat password"
-            type="password"
+            type={showNewPassword ? "text" : "password"}
+            slotProps={{
+              input: {
+                endAdornment: newPasswordAdornment,
+              },
+            }}
             fullWidth
             sx={textFieldSx}
             value={newValues.repeatPass ?? ""}
