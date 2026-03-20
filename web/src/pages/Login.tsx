@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 
 import innLogoDark from "@assets/innoveriaDark.png";
 import innLogoLight from "@assets/innoveriaLight.png";
