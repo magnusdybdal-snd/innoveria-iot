@@ -47,49 +47,26 @@ export default function Base() {
   const navigate = useNavigate();
 
   // Show password
-  const [showPassword, setShowPassword] = useState(false);
-  const [showNewPassword, setShowNewPassword] = useState(false);
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
-  const handleClickShowNewPassword = () => setShowNewPassword((show) => !show);
-
-  const handleMouseDownPassword = (
-    event: React.MouseEvent<HTMLButtonElement>,
-  ) => {
-    event.preventDefault();
+  const [showPassword, setShowPassword] = useState({
+    login: false,
+    new: false,
+  });
+  const togglePassword = (key: "login" | "new") => {
+    setShowPassword((prev) => ({
+      ...prev,
+      [key]: !prev[key],
+    }));
   };
 
-  const handleMouseUpPassword = (
-    event: React.MouseEvent<HTMLButtonElement>,
-  ) => {
-    event.preventDefault();
-  };
-
-  const passwordAdornment = (
+  const getPasswordAdornment = (key: "login" | "new") => (
     <InputAdornment position="end">
-      <IconButton
-        onClick={handleClickShowPassword}
-        onMouseDown={handleMouseDownPassword}
-        onMouseUp={handleMouseUpPassword}
-        edge="end"
-      >
-        {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+      <IconButton onClick={() => togglePassword(key)} edge="end">
+        {showPassword[key] ? <VisibilityOffIcon /> : <VisibilityIcon />}
       </IconButton>
     </InputAdornment>
   );
 
-  const newPasswordAdornment = (
-    <InputAdornment position="end">
-      <IconButton
-        onClick={handleClickShowNewPassword}
-        onMouseDown={handleMouseDownPassword}
-        onMouseUp={handleMouseUpPassword}
-        edge="end"
-      >
-        {showNewPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
-      </IconButton>
-    </InputAdornment>
-  );
-
+  // Password validation helpers
   const hasLowercase = (str: string) => /[a-z]/.test(str);
   const hasUppercase = (str: string) => /[A-Z]/.test(str);
   const hasNumber = (str: string) => /[0-9]/.test(str);
@@ -134,23 +111,21 @@ export default function Base() {
     if (!firstLogin) {
       setFirstLogin(true);
       return;
-    } else {
-      if (!newCreated) {
-        setFillError(true);
-        return;
-      }
+    }
 
-      const password = newValues.newPassword ?? "";
+    if (!newCreated) {
+      setFillError(true);
+      return;
+    }
 
-      const errors = validatePassword(password);
+    const password = newValues.newPassword ?? "";
 
-      setPassErrors(errors);
+    const errors = validatePassword(password);
 
-      const hasAnyError = Object.values(errors).some(Boolean);
+    setPassErrors(errors);
 
-      if (hasAnyError) {
-        return;
-      }
+    if (Object.values(errors).some(Boolean)) {
+      return;
     }
 
     setFillError(false);
@@ -202,29 +177,24 @@ export default function Base() {
         {!firstLogin && (
           <TextField
             label="Password"
-            type={showPassword ? "text" : "password"}
-            slotProps={{
-              input: {
-                endAdornment: passwordAdornment,
-              },
-            }}
+            type={showPassword.login ? "text" : "password"}
             fullWidth
             sx={textFieldSx}
             value={loginValues.password ?? ""}
             onChange={(e) =>
               setLoginValues((prev) => ({ ...prev, password: e.target.value }))
             }
+            slotProps={{
+              input: {
+                endAdornment: getPasswordAdornment("login"),
+              },
+            }}
           />
         )}
         {firstLogin && (
           <TextField
             label="New password"
-            type={showNewPassword ? "text" : "password"}
-            slotProps={{
-              input: {
-                endAdornment: newPasswordAdornment,
-              },
-            }}
+            type={showPassword.new ? "text" : "password"}
             fullWidth
             sx={textFieldSx}
             value={newValues.newPassword ?? ""}
@@ -238,23 +208,28 @@ export default function Base() {
 
               setPassErrors(validatePassword(value));
             }}
+            slotProps={{
+              input: {
+                endAdornment: getPasswordAdornment("new"),
+              },
+            }}
           />
         )}
         {firstLogin && (
           <TextField
             label="Repeat password"
-            type={showNewPassword ? "text" : "password"}
-            slotProps={{
-              input: {
-                endAdornment: newPasswordAdornment,
-              },
-            }}
+            type={showPassword.new ? "text" : "password"}
             fullWidth
             sx={textFieldSx}
             value={newValues.repeatPass ?? ""}
             onChange={(e) =>
               setNewValues((prev) => ({ ...prev, repeatPass: e.target.value }))
             }
+            slotProps={{
+              input: {
+                endAdornment: getPasswordAdornment("new"),
+              },
+            }}
           />
         )}
         <Button
@@ -279,7 +254,7 @@ export default function Base() {
           </Typography>
         )}
         {passErrors.length && (
-          <Typography color="error">Must at least 8 characters</Typography>
+          <Typography color="error">Must be at least 8 characters</Typography>
         )}
         {passErrors.lowercase && (
           <Typography color="error">Must contain a lowercase letter</Typography>
