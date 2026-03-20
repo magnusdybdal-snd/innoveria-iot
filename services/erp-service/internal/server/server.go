@@ -15,7 +15,7 @@ import (
 	"innoveria-iot/erp-service/internal/config"
 )
 
-// Run starts the auth service HTTP server and handles graceful shutdown.
+// Run starts the erp service HTTP server and handles graceful shutdown.
 func Run() error {
 	cfg := config.Load()
 
