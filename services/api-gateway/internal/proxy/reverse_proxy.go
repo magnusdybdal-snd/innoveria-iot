@@ -63,6 +63,14 @@ func NewReverseProxy(base *url.URL) *httputil.ReverseProxy {
 			// Set trusted forwarding headers from gateway request
 			pr.SetXForwarded()
 
+			// rewrite the header for auth-service to strip
+			if host, _, err := net.SplitHostPort(pr.In.RemoteAddr); err == nil && host != "" {
+				pr.Out.Header.Set("X-Real-IP", host)
+				pr.Out.Header.Set("X-Client-IP", host)
+			} else {
+				pr.Out.Header.Del("X-Real-IP")
+				pr.Out.Header.Del("X-Client-IP")
+			}
 		},
 
 		// Transport for configuring own tranpsport. So we dont use the default transport config
