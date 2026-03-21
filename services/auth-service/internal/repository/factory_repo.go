@@ -9,6 +9,7 @@ import (
 	"innoveria-iot/pkg/dbutil"
 
 	"github.com/jackc/pgerrcode"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn" // for error handling
 )
 
@@ -115,21 +116,29 @@ func (r *FactoryRepoImpl) FindByID(ctx context.Context, factoryID string) (domai
 		&out.UpdatedAt,
 	)
 	if err != nil {
-		return out, fmt.Errorf("find factory by id: %w", err)
+		if errors.Is(err, pgx.ErrNoRows) {
+			// domain not found, code: 404
+			return domain.Factory{}, fmt.Errorf("find factory by id: %w", domain.ErrFactoryNotFound)
+		}
+		// Internal server error, code: 500
+		return domain.Factory{}, fmt.Errorf("find factory by id: %w", err)
 	}
 
 	return out, nil
 }
 
-// DeleteByID deletes a factory by id.
-func (r *FactoryRepoImpl) DeleteByID(ctx context.Context, factoryID string) error {
+// Delete deletes a factory by id.
+func (r *FactoryRepoImpl) Delete(ctx context.Context, factoryID string) error {
 	result, err := r.db.Pool.Exec(ctx, deleteFactoryByIDQuery, factoryID)
+
+	// Internal server error, code: 500
 	if err != nil {
 		return fmt.Errorf("delete factory by id: %w", err)
 	}
 
+	// Domain not found, code: 404
 	if result.RowsAffected() == 0 {
-		return fmt.Errorf("delete factory by id: factory not found")
+		return fmt.Errorf("delete factory by id: %w", domain.ErrFactoryNotFound)
 	}
 
 	return nil

@@ -23,7 +23,10 @@ export function CustomButton({ onClick, children }: CustomButtonProps) {
         textTransform: "none",
         fontSize: 20,
       }}
-      onClick={onClick}
+      onClick={(e) => {
+        e.currentTarget.blur(); // prevent aria-hidden conflict when a MUI portal opens
+        onClick();
+      }}
     >
       {children}
     </Button>

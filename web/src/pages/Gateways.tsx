@@ -15,7 +15,7 @@ import { formatTimestamp } from "@shared/lib";
 import { CustomButton } from "@shared/ui/Button";
 import { CategoryHeader } from "@shared/ui/CategoryHeader";
 import { DeviceRow } from "@shared/ui/DeviceRow";
-import { NoDeviceFoundCard } from "@shared/ui/NoDeviceFoundCard";
+import { NotFoundCard } from "@shared/ui/NotFoundCard";
 import { PageContent } from "@shared/ui/PageContent";
 import { PageDivider } from "@shared/ui/PageDivider";
 import {
@@ -90,7 +90,7 @@ export default function Gateways() {
     setAddError(null);
     return postGateway({
       companyId: "a0000000-0000-0000-0000-000000000001", // TODO: replace with real company ID from auth
-      deviceEui: gatewayData.deviceEui,
+      gatewayEui: gatewayData.deviceEui,
       name: gatewayData.name,
     })
       .then(() => {
@@ -145,14 +145,14 @@ export default function Gateways() {
               <GatewayInfo
                 name={gateway.name}
                 status={gateway.status}
-                device_eui={gateway.deviceEui}
+                device_eui={gateway.gatewayEui}
                 lastSeenAt={formatTimestamp(gateway.lastSeenAt)}
                 onDelete={() => handleDeleteGateway(gateway.id)}
               />
             </DeviceRow>
           ))}
         </CategoryHeader>
-        {!isLoading && sorted.length === 0 && <NoDeviceFoundCard />}
+        {!isLoading && sorted.length === 0 && <NotFoundCard page="gateways" />}
       </PageContent>
       <AddDevice
         open={openAdd}

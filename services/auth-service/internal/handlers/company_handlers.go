@@ -1,12 +1,16 @@
 package handlers
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"innoveria-iot/auth-service/internal/domain"
 	"innoveria-iot/auth-service/internal/handlers/dto"
 	"innoveria-iot/pkg/json"
+
+	"github.com/google/uuid"
 )
 
 // PostCompany handles company creation requests.
@@ -30,6 +34,9 @@ func PostCompany(svc domain.AuthService) http.HandlerFunc {
 			return
 		}
 
+		payload.Name = strings.TrimSpace(payload.Name)
+		payload.Address = strings.TrimSpace(payload.Address)
+
 		// Dto to domain, only name and address
 		companyDomain := dto.MapCreateCompanyToDomain(payload)
 		if companyDomain.Name == "" {
@@ -43,7 +50,7 @@ func PostCompany(svc domain.AuthService) http.HandlerFunc {
 			return
 		}
 
-		// returned response as domain
+		// Maps from domain to DTO
 		resp := dto.MapCompanyFromDomain(companyResp)
 		if err := json.Encode(w, http.StatusCreated, resp); err != nil {
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
@@ -84,6 +91,7 @@ func GetAllCompanies(svc domain.AuthService) http.HandlerFunc {
 // @Param id path string true "id"
 // @Success 200 {object} dto.CompanyResponse
 // @Failure 400
+// @Failure 404
 // @Failure 500
 // @Router /companies/{id} [get]
 func GetOneCompany(svc domain.AuthService) http.HandlerFunc {
@@ -96,9 +104,20 @@ func GetOneCompany(svc domain.AuthService) http.HandlerFunc {
 			return
 		}
 
+		// Check for valid uuid
+		if _, err := uuid.Parse(companyID); err != nil {
+			json.HandleError(w, http.StatusBadRequest, err, "invalid company id (uuid)")
+			return
+		}
+
 		company, err := svc.GetOneCompany(ctx, companyID)
 		if err != nil {
-			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			switch {
+			case errors.Is(err, domain.ErrCompanyNotFound):
+				json.HandleError(w, http.StatusNotFound, err, "company not found")
+			default:
+				json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			}
 			return
 		}
 
@@ -116,6 +135,7 @@ func GetOneCompany(svc domain.AuthService) http.HandlerFunc {
 // @Param id path string true "id"
 // @Success 204
 // @Failure 400
+// @Failure 404
 // @Failure 500
 // @Router /companies/{id} [delete]
 func DeleteCompany(svc domain.AuthService) http.HandlerFunc {
@@ -127,8 +147,19 @@ func DeleteCompany(svc domain.AuthService) http.HandlerFunc {
 			return
 		}
 
+		// Check for valid uuid
+		if _, err := uuid.Parse(companyID); err != nil {
+			json.HandleError(w, http.StatusBadRequest, err, "invalid company id (uuid)")
+			return
+		}
+
 		if err := svc.DeleteCompany(ctx, companyID); err != nil {
-			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			switch {
+			case errors.Is(err, domain.ErrCompanyNotFound):
+				json.HandleError(w, http.StatusNotFound, err, "company not found")
+			default:
+				json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			}
 			return
 		}
 

@@ -20,6 +20,14 @@ const subPages: Map<string, SubPage[]> = new Map([
     ],
   ],
   ["Reports", []],
+  [
+    "Admin",
+    [
+      { name: "Companies", path: "/Admin/Companies" },
+      { name: "Factories", path: "/Admin/Factories" },
+      { name: "Users", path: "/Admin/Users" },
+    ],
+  ],
 ]);
 
 export default subPages;

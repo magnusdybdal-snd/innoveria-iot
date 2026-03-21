@@ -19,7 +19,7 @@ import { formatTimestamp } from "@shared/lib";
 import { CustomButton } from "@shared/ui/Button";
 import { CategoryHeader } from "@shared/ui/CategoryHeader";
 import { DeviceRow } from "@shared/ui/DeviceRow";
-import { NoDeviceFoundCard } from "@shared/ui/NoDeviceFoundCard";
+import { NotFoundCard } from "@shared/ui/NotFoundCard";
 import { PageContent } from "@shared/ui/PageContent";
 import { PageDivider } from "@shared/ui/PageDivider";
 import {
@@ -29,15 +29,23 @@ import {
 } from "@shared/ui/snackbar";
 import { SubPageHeader } from "@shared/ui/SubPageHeader";
 
+import { getFactories, type FactoryApiResponse } from "@/entities/factory";
+
 const sensorMainDetails: string[] = ["Status", "Name", "Last reading"];
 const addSensorDetails: string[] = [
   "Name",
   "DeviceEUI",
+  "Factory",
   "Machine",
   "Application key",
   "Sensor profile",
 ];
-const sortableColumns: SensorSortKey[] = ["Status", "Name", "Last reading"];
+const sortableColumns: SensorSortKey[] = [
+  "Status",
+  "Factory",
+  "Name",
+  "Last reading",
+];
 
 /**
  * Full-page view listing all LoRaWAN sensors with sortable columns, summary statistics, and add/detail dialogs.
@@ -52,6 +60,7 @@ export default function Sensors() {
   const [sensorProfiles, setSensorProfiles] = useState<
     SensorProfileApiResponse[]
   >([]);
+  const [factory, setFactory] = useState<FactoryApiResponse[]>([]); // factory location sensor
 
   const { show, hide, snackbar } = useSnackbar();
 
@@ -59,6 +68,9 @@ export default function Sensors() {
     getSensorProfiles().then(setSensorProfiles);
   }, []);
 
+  useEffect(() => {
+    getFactories().then(setFactory);
+  }, []);
   // Handler for deleting a sensor; refreshes list on success
   const handleDeleteSensor = (id: string) => {
     deleteSensor(id)
@@ -83,6 +95,7 @@ export default function Sensors() {
   const handleAddSensor = (sensorData: {
     name: string;
     deviceEui: string;
+    factory: string;
     machine: string;
     appKey: string;
     senProf: string;
@@ -90,8 +103,10 @@ export default function Sensors() {
     setAddError(null);
     return postSensor({
       companyId: "a0000000-0000-0000-0000-000000000001", // TODO: replace with real company ID from auth
+      factoryId: sensorData.factory,
       deviceEui: sensorData.deviceEui,
       sensorProfileId: sensorData.senProf,
+      appKey: sensorData.appKey,
       name: sensorData.name,
     })
       .then(() => {
@@ -184,7 +199,7 @@ export default function Sensors() {
             sensor={selectedSensor}
           />
         )}
-        {!isLoading && sorted.length === 0 && <NoDeviceFoundCard />}
+        {!isLoading && sorted.length === 0 && <NotFoundCard page="sensors" />}
       </PageContent>
 
       <AddDevice
@@ -194,6 +209,7 @@ export default function Sensors() {
         profileOptions={sensorProfiles}
         onAdd={handleAddSensor}
         submitError={addError}
+        factoryOptions={factory}
       />
       <AppSnackbar
         open={snackbar?.open ?? false}

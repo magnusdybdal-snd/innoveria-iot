@@ -15,7 +15,7 @@ export const getSensorProfiles = async (): Promise<
   try {
     const data = await apiRequest<SensorProfileListApiResponse>(
       serviceClient,
-      `${API_ROUTES.sensorProfile}?limit=10`, // TODO: remove hardcoded limit once pagination is implemented
+      `${API_ROUTES.sensorProfile}?limit=1000`, // TODO: remove hardcoded limit once pagination is implemented
       "GET",
     );
 
