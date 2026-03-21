@@ -1,6 +1,9 @@
 -- +goose Up
 
--- Add application key and factory area ID to sensor for better integration with ChirpStack and factory context.
+-- Add application key and factory_id to sensor.
+-- Temporary DEFAULTs are dev placeholders so the migration can run on existing dev DBs.
+-- On a clean (wiped) DB these defaults are never used. Do not run against a DB with real
+-- data without first populating app_key and factory_id with correct values.
 ALTER TABLE "device"."sensor"
     ADD COLUMN "app_key" varchar NOT NULL DEFAULT 'dev-placeholder';
 ALTER TABLE "device"."sensor"

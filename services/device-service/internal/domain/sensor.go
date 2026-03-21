@@ -17,7 +17,7 @@ type Sensor struct {
 	Description         *string
 	State               DeviceState // administrative state: ACTIVE / INACTIVE
 	FactoryID           string      // loose cross-service ref
-	FactoryAreaID       *string     // loose cross-service ref
+	FactoryAreaID       string      // loose cross-service ref
 	ProductionResource  *string     // loose cross-service ref
 	ChirpstackProfileID string      // LoRaWAN template that describes device model, chosen on registration
 	CreatedAt           time.Time

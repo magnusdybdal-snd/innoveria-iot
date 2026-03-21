@@ -1,13 +1,16 @@
-// Package handlers TODO(@vinjar): add proper documentation.
+// Package handlers implements the HTTP handlers for the device service.
 package handlers
 
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"innoveria-iot/device-service/internal/domain"
 	"innoveria-iot/device-service/internal/handlers/dto"
 	"innoveria-iot/pkg/json"
+
+	"github.com/google/uuid"
 )
 
 // GetGateways returns all gateways.
@@ -60,6 +63,17 @@ func PostGateway(svc domain.GatewayService) http.HandlerFunc {
 			return
 		}
 
+		payload.CompanyId = strings.TrimSpace(payload.CompanyId)
+		payload.GatewayEUI = strings.TrimSpace(payload.GatewayEUI)
+		payload.Name = strings.TrimSpace(payload.Name)
+		payload.FactoryID = strings.TrimSpace(payload.FactoryID)
+		payload.FactoryAreaID = strings.TrimSpace(payload.FactoryAreaID)
+
+		if payload.CompanyId == "" || payload.GatewayEUI == "" || payload.Name == "" || payload.FactoryID == "" || payload.FactoryAreaID == "" {
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("company_id, gateway_eui, name, factory_id and factory_area_id are required"), "bad request")
+			return
+		}
+
 		data := dto.MapGatewayDTOToDomain(payload)
 
 		if err := svc.Create(ctx, data); err != nil {
@@ -92,6 +106,11 @@ func PatchGateway(svc domain.GatewayService) http.HandlerFunc {
 			return
 		}
 
+		if _, err := uuid.Parse(id); err != nil {
+			json.HandleError(w, http.StatusBadRequest, err, "bad request")
+			return
+		}
+
 		payload, err := json.Decode[dto.UpdateGatewayRequest](r)
 		if err != nil {
 			json.HandleError(w, http.StatusBadRequest, err, "bad request")
@@ -101,6 +120,13 @@ func PatchGateway(svc domain.GatewayService) http.HandlerFunc {
 		if payload.Name == nil && payload.Description == nil && payload.FactoryAreaID == nil {
 			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("no fields provided"), "bad request")
 			return
+		}
+
+		if payload.FactoryAreaID != nil {
+			if _, err := uuid.Parse(*payload.FactoryAreaID); err != nil {
+				json.HandleError(w, http.StatusBadRequest, err, "bad request")
+				return
+			}
 		}
 
 		data := dto.MapUpdateGatewayDTOToDomain(payload)
@@ -130,6 +156,11 @@ func DeleteGateway(svc domain.GatewayService) http.HandlerFunc {
 		id := r.PathValue("id")
 		if id == "" {
 			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("no gateway id found"), "bad request")
+			return
+		}
+
+		if _, err := uuid.Parse(id); err != nil {
+			json.HandleError(w, http.StatusBadRequest, err, "bad request")
 			return
 		}
 

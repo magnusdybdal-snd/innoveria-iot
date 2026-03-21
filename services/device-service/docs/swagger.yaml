@@ -16,12 +16,20 @@ definitions:
     properties:
       company_id:
         type: string
+      description:
+        type: string
+      factory_area_id:
+        type: string
+      factory_id:
+        type: string
       gateway_eui:
         type: string
       name:
         type: string
     required:
     - company_id
+    - factory_area_id
+    - factory_id
     - gateway_eui
     - name
     type: object
@@ -39,7 +47,6 @@ definitions:
       device_profile_id:
         type: string
       factory_area_id:
-        description: Optional — UUID, omit if service not yet available
         type: string
       factory_id:
         type: string
@@ -53,6 +60,7 @@ definitions:
     - company_id
     - device_eui
     - device_profile_id
+    - factory_area_id
     - factory_id
     - name
     type: object
@@ -74,6 +82,8 @@ definitions:
       description:
         type: string
       factory_area_id:
+        type: string
+      factory_id:
         type: string
       gateway_eui:
         type: string
@@ -165,6 +175,8 @@ definitions:
       description:
         type: string
       factory_area_id:
+        type: string
+      factory_id:
         type: string
       name:
         type: string

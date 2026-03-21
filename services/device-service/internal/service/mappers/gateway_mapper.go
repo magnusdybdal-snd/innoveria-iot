@@ -21,6 +21,7 @@ func MergeGateway(cs dto.ChirpstackGateway, db domain.Gateway) domain.Gateway {
 		Name:          db.Name,
 		Description:   db.Description,
 		State:         db.State,
+		FactoryID:     db.FactoryID,
 		FactoryAreaID: db.FactoryAreaID,
 		CreatedAt:     db.CreatedAt,
 		UpdatedAt:     db.UpdatedAt,

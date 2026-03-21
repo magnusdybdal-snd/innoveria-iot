@@ -79,7 +79,10 @@ func (g *GatewayServiceImpl) Update(ctx context.Context, gatewayId string, paylo
 	if payload.Description != nil {
 		gateway.Description = payload.Description
 	}
-	if payload.FactoryAreaID != nil {
+	if payload.FactoryID != "" {
+		gateway.FactoryID = payload.FactoryID
+	}
+	if payload.FactoryAreaID != "" {
 		gateway.FactoryAreaID = payload.FactoryAreaID
 	}
 
