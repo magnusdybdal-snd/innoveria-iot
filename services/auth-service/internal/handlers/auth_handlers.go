@@ -78,7 +78,6 @@ func PostLogin(svc domain.AuthService, refreshTTL time.Duration) http.HandlerFun
 		}
 
 		payload.Email = strings.TrimSpace(payload.Email)
-		payload.Password = strings.TrimSpace(payload.Password)
 
 		ipAddress := parseClientIP(r)
 		deviceInfo := strings.TrimSpace(r.UserAgent())
