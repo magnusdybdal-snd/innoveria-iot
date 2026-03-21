@@ -56,28 +56,34 @@ func (s *AuthServiceImpl) Login(ctx context.Context, email, password, deviceInfo
 	user, err := s.userRepo.FindByEmail(ctx, email)
 	if err != nil {
 		if errors.Is(err, domain.ErrUserNotFound) {
+			slog.Warn("login failed: user not found", "email", email)
 			return domain.LoginResult{}, "", domain.ErrUnauthorized
 		}
 
+		slog.Error("login failed: find user by email", "email", email, "error", err)
 		return domain.LoginResult{}, "", err
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password)); err != nil {
+		slog.Warn("login failed: invalid credentials", "email", email, "user_id", user.ID)
 		return domain.LoginResult{}, "", domain.ErrUnauthorized
 	}
 
 	accessToken, expiresIn, err := s.generateAccessToken(user)
 	if err != nil {
+		slog.Error("login failed: generate access token", "user_id", user.ID, "error", err)
 		return domain.LoginResult{}, "", err
 	}
 
 	rawRefreshToken, err := s.generateRefreshToken()
 	if err != nil {
+		slog.Error("login failed: generate refresh token", "user_id", user.ID, "error", err)
 		return domain.LoginResult{}, "", fmt.Errorf("generating refresh token: %w", err)
 	}
 
 	// Update last login in user db
 	if err := s.userRepo.UpdateLastLoggedIn(ctx, user.ID); err != nil {
+		slog.Error("login failed: update last login", "user_id", user.ID, "error", err)
 		return domain.LoginResult{}, "", err
 	}
 
@@ -90,6 +96,7 @@ func (s *AuthServiceImpl) Login(ctx context.Context, email, password, deviceInfo
 		DeviceInfo: deviceInfo,
 		IPAddress:  ip,
 	}); err != nil {
+		slog.Error("login failed: upsert refresh token", "user_id", user.ID, "error", err)
 		return domain.LoginResult{}, "", err
 	}
 
@@ -104,6 +111,7 @@ func (s *AuthServiceImpl) Login(ctx context.Context, email, password, deviceInfo
 // Refresh is used to revoke the refresh token so the user has a fresh access token
 func (s *AuthServiceImpl) Refresh(ctx context.Context, refreshToken string) (domain.LoginResult, string, error) {
 	if refreshToken == "" {
+		slog.Warn("refresh failed: empty refresh token")
 		return domain.LoginResult{}, "", domain.ErrUnauthorized
 	}
 	tokenHash := s.hashRefreshTokenHMAC(refreshToken)
@@ -111,28 +119,33 @@ func (s *AuthServiceImpl) Refresh(ctx context.Context, refreshToken string) (dom
 	// check db for active hash
 	stored, err := s.refreshTokenRepo.FindActiveByHash(ctx, tokenHash)
 	if err != nil {
+		slog.Warn("refresh failed: refresh token not active", "error", err)
 		return domain.LoginResult{}, "", domain.ErrUnauthorized
 	}
 
 	// check to see if expired, else log out
 	if time.Now().UTC().After(stored.ExpiresAt) {
+		slog.Warn("refresh failed: refresh token expired", "refresh_token_id", stored.ID, "user_id", stored.UserID)
 		return domain.LoginResult{}, "", domain.ErrUnauthorized
 	}
 
 	user, err := s.userRepo.FindByID(ctx, stored.UserID)
 	if err != nil {
+		slog.Warn("refresh failed: user not found", "user_id", stored.UserID, "error", err)
 		return domain.LoginResult{}, "", domain.ErrUnauthorized
 	}
 
 	// Generate a fresh access token
 	accessToken, expiresIn, err := s.generateAccessToken(user)
 	if err != nil {
+		slog.Error("refresh failed: generate access token", "user_id", user.ID, "error", err)
 		return domain.LoginResult{}, "", fmt.Errorf("generate access token: %w", err)
 	}
 
 	// Generate a fresh refresh token
 	newRefreshToken, err := s.generateRefreshToken()
 	if err != nil {
+		slog.Error("refresh failed: generate refresh token", "user_id", user.ID, "error", err)
 		return domain.LoginResult{}, "", fmt.Errorf("generate refresh token: %w", err)
 	}
 
@@ -142,6 +155,7 @@ func (s *AuthServiceImpl) Refresh(ctx context.Context, refreshToken string) (dom
 		TokenHash: s.hashRefreshTokenHMAC(newRefreshToken), // hmac hash in db
 		ExpiresAt: time.Now().UTC().Add(s.refreshTTL),
 	}); err != nil {
+		slog.Error("refresh failed: rotate refresh token", "refresh_token_id", stored.ID, "user_id", stored.UserID, "error", err)
 		return domain.LoginResult{}, "", err
 	}
 
