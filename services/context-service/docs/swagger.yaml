@@ -55,5 +55,5 @@ paths:
           description: Internal Server Error
       summary: Get Aggregation Rules
       tags:
-      - Rules
+      - context
 swagger: "2.0"

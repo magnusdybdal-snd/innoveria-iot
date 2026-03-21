@@ -24,7 +24,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Rules"
+                    "context"
                 ],
                 "summary": "Get Aggregation Rules",
                 "parameters": [

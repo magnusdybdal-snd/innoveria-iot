@@ -112,6 +112,7 @@ services:
       - ./pkg:/pkg
     environment:
       - GO_ENV=development
+      - CONTEXT_SERVICE=http://context-service:8080
 
   #
   # Microservices

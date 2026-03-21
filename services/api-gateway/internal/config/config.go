@@ -14,6 +14,7 @@ type Config struct {
 	DeviceSvcURL     string
 	AuthSvcURL       string
 	OnboardingSvcURL string
+	ContextSvcURL    string
 	// Some serviceURL
 	// Some serviceAPIKEY?
 }
@@ -26,6 +27,7 @@ func Load() *Config {
 		DeviceSvcURL:     strings.TrimSpace(env.Get("DEVICE_SERVICE", "http://device-service:8080")),
 		AuthSvcURL:       strings.TrimSpace(env.Get("AUTH_SERVICE", "http://auth-service:8080")),
 		OnboardingSvcURL: strings.TrimSpace(env.Get("ONBOARDING_SERVICE", "http://onboarding-service:8080")),
+		ContextSvcURL:    strings.TrimSpace(env.Get("CONTEXT_SERVICE", "http://context-service:8080")),
 	}
 
 	return &cfg
