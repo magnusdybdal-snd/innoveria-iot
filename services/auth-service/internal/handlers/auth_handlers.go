@@ -26,17 +26,28 @@ func setRefreshCookie(w http.ResponseWriter, token string, ttl time.Duration) {
 }
 
 func parseClientIP(r *http.Request) *netip.Addr {
+	if xff := strings.TrimSpace(r.Header.Get("X-Client-IP")); xff != "" {
+		first := strings.TrimSpace(strings.Split(xff, ",")[0])
+		if ip, err := netip.ParseAddr(first); err == nil {
+			return &ip
+		}
+	}
+
+	if xrip := strings.TrimSpace(r.Header.Get("X-Real-IP")); xrip != "" {
+		if ip, err := netip.ParseAddr(xrip); err == nil {
+			return &ip
+		}
+	}
+
+	// Fallback: gateway managed x-forwarded-for
 	if xff := strings.TrimSpace(r.Header.Get("X-Forwarded-For")); xff != "" {
 		first := strings.TrimSpace(strings.Split(xff, ",")[0])
 		if ip, err := netip.ParseAddr(first); err == nil {
 			return &ip
 		}
 	}
-	if xrip := strings.TrimSpace(r.Header.Get("X-Real-IP")); xrip != "" {
-		if ip, err := netip.ParseAddr(xrip); err == nil {
-			return &ip
-		}
-	}
+
+	// last fallback
 	host, _, err := net.SplitHostPort(strings.TrimSpace(r.RemoteAddr))
 	if err == nil {
 		if ip, err := netip.ParseAddr(host); err == nil {
