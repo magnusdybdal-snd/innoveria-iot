@@ -11,7 +11,7 @@ import (
 
 // @title       Erp Service API
 // @version     1.0
-// @description Manages prouduction resource data from monitor erp
+// @description Manages production resource data from monitor erp
 
 // @host        localhost:8087
 // @BasePath    /api/v1/erp
