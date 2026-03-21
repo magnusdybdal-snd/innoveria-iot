@@ -19,7 +19,7 @@ const (
 		WHERE email = $1
 	`
 	findUserByIDQuery = `
-		SELECT user_id, company_id, name, email, password_hash, role, last_logged_in, created_at, updated_at
+		SELECT user_id, company_id, name, email, role, last_logged_in, created_at, updated_at
 		FROM auth."user"
 		WHERE user_id = $1
 	`
@@ -54,7 +54,6 @@ func (r *UserRepoImpl) FindByEmail(ctx context.Context, email string) (domain.Us
 		&out.CompanyID,
 		&out.Name,
 		&out.Email,
-		&out.PasswordHash,
 		&out.Role,
 		&out.LastLoggedIn,
 		&out.CreatedAt,
