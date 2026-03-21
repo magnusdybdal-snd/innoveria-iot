@@ -11,7 +11,6 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-// TODO: Handle ip and device info
 const (
 	createRefreshTokenQuery = `
 		INSERT INTO auth.refresh_token (user_id, token_hash, expires_at, device_info, ip_address)
