@@ -27,7 +27,7 @@ func corsMiddleware(cfg *config.Config, next http.Handler) http.Handler {
 			w.Header().Set("Access-Control-Allow-Origin", origin)
 			w.Header().Set("Access-Control-Allow-Credentials", "true")
 		}
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
 		if r.Method == http.MethodOptions {
@@ -71,7 +71,6 @@ func authMiddleware(cfg *config.Config, next http.Handler) http.Handler {
 				return nil, errors.New("invalid signing method")
 			}
 			return []byte(cfg.JWTSecret), nil
-
 		}, jwt.WithIssuer(cfg.JWTIssuer))
 		if err != nil || !token.Valid {
 			json.HandleError(w, http.StatusUnauthorized, errors.New("invalid token"), "unauthorized")
