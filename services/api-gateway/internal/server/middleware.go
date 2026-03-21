@@ -13,16 +13,22 @@ import (
 	"github.com/golang-jwt/jwt/v5/request"
 )
 
-// corsMiddleware adds CORS headers to allow the frontend dev server to call the api-gateway
-func corsMiddleware(next http.Handler) http.Handler {
+// corsMiddleware adds CORS headers for configured frontend origins.
+func corsMiddleware(cfg *config.Config, next http.Handler) http.Handler {
+	allowedOrigins := parseAllowedOrigins(cfg.CorsAllowedOrigins)
+
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		origin := r.Header.Get("Origin")
-		if origin != "" {
+		w.Header().Add("Vary", "Origin")
+		w.Header().Add("Vary", "Access-Control-Request-Method")
+		w.Header().Add("Vary", "Access-Control-Request-Headers")
+
+		if origin != "" && allowedOrigins[origin] {
 			w.Header().Set("Access-Control-Allow-Origin", origin)
+			w.Header().Set("Access-Control-Allow-Credentials", "true")
 		}
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-		w.Header().Set("Access-Control-Allow-Credentials", "true")
 
 		if r.Method == http.MethodOptions {
 			w.WriteHeader(http.StatusNoContent)
@@ -31,6 +37,18 @@ func corsMiddleware(next http.Handler) http.Handler {
 
 		next.ServeHTTP(w, r)
 	})
+}
+
+func parseAllowedOrigins(raw string) map[string]bool {
+	allowed := make(map[string]bool)
+	for _, origin := range strings.Split(raw, ",") {
+		origin = strings.TrimSpace(origin)
+		if origin == "" {
+			continue
+		}
+		allowed[origin] = true
+	}
+	return allowed
 }
 
 // authMiddleware validates bearer JWTs and forwards trusted auth headers.

@@ -112,6 +112,7 @@ services:
       - ./pkg:/pkg
     environment:
       - GO_ENV=development
+      - JWT_SECRET=secret
       - ENABLE_SWAGGER=true
 
   #
@@ -196,6 +197,7 @@ services:
       - JWT_SECRET=secret
       - REFRESH_PEPPER=secret
       - ENABLE_SWAGGER=true
+      - CORS_ALLOWED_ORIGINS=http://localhost:3000
     depends_on:
       - auth-db
 
