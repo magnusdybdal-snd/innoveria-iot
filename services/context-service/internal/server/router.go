@@ -8,10 +8,11 @@ import (
 )
 
 // NewRouter builds and returns the service HTTP router.
-func NewRouter(contextSvc domain.ContextService) *http.ServeMux {
+func NewRouter(contextSvc domain.ContextService, ruleSvc domain.RuleService) *http.ServeMux {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /", handlers.Root)
+	mux.HandleFunc("GET /rules", handlers.GetRules(ruleSvc))
 
 	// Swagger docs
 	// mux.HandleFunc("GET /swagger/", httpSwagger.WrapHandler)
