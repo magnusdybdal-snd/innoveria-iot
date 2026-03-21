@@ -194,6 +194,7 @@ services:
     environment:
       - GO_ENV=development
       - JWT_SECRET=secret
+      - REFRESH_PEPPER=secret
       - ENABLE_SWAGGER=true
     depends_on:
       - auth-db

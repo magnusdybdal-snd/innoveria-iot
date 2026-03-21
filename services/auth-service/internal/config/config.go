@@ -43,6 +43,18 @@ func Load() *Config {
 		os.Exit(1)
 	}
 
+	jwtSecret, err := env.Required("JWT_SECRET")
+	if err != nil {
+		slog.Error("invalid jwt secret", "error", err)
+		os.Exit(1)
+	}
+
+	refreshPepper, err := env.Required("REFRESH_PEPPER")
+	if err != nil {
+		slog.Error("invalid refresh pepper", "error", err)
+		os.Exit(1)
+	}
+
 	return &Config{
 		Addr: ":" + env.Get("PORT", "8080"),
 		DB_URL: fmt.Sprintf(
@@ -54,8 +66,8 @@ func Load() *Config {
 			dbName,
 			sslmode,
 		),
-		JWT_SECRET:         env.Get("JWT_SECRET", "secret"),     // jwt secret laoding
-		RefreshPepper:      env.Get("REFRESH_PEPPER", "secret"), // jwt secret laoding
+		JWT_SECRET:         jwtSecret,     // jwt secret loading
+		RefreshPepper:      refreshPepper, // jwt refresh loading
 		JWTIssuer:          env.Get("JWT_ISSUER", "auth-service"),
 		JWTAccessTTL:       jwtAccessTTL,
 		JWTRefreshTokenTTL: jwtRefreshTTL,

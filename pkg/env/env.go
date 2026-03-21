@@ -2,6 +2,7 @@
 package env
 
 import (
+	"fmt"
 	"os"
 	"strconv"
 	"strings"
@@ -15,6 +16,16 @@ func Get(key, fallback string) string {
 		return v
 	}
 	return fallback
+}
+
+// Required will return error if env value is not set
+// used for secrets loading
+func Required(key string) (string, error) {
+	v := strings.TrimSpace(os.Getenv(key))
+	if v == "" {
+		return "", fmt.Errorf("missing required env: %s", key)
+	}
+	return v, nil
 }
 
 // GetBool will fallback if the value is missing or not a bool
