@@ -2,6 +2,8 @@
 package config
 
 import (
+	"log/slog"
+	"os"
 	"strings"
 
 	"innoveria-iot/pkg/env"
@@ -21,13 +23,18 @@ type Config struct {
 
 // Load the spesific enviroment variables
 func Load() *Config {
+	jwtSecret, err := env.Required("JWT_SECRET")
+	if err != nil {
+		slog.Error("invalid jwt secret", "error", err)
+		os.Exit(1)
+	}
 	cfg := Config{
 		Addr:             ":" + env.Get("PORT", "8080"),
 		CollSvcURL:       strings.TrimSpace(env.Get("COLLECTION_SERVICE", "http://collection-service:8080")),
 		DeviceSvcURL:     strings.TrimSpace(env.Get("DEVICE_SERVICE", "http://device-service:8080")),
 		AuthSvcURL:       strings.TrimSpace(env.Get("AUTH_SERVICE", "http://auth-service:8080")),
 		OnboardingSvcURL: strings.TrimSpace(env.Get("ONBOARDING_SERVICE", "http://onboarding-service:8080")),
-		JWTSecret:        env.Get("JWT_SECRET", "secret"), // jwt secret laoding
+		JWTSecret:        jwtSecret, // jwt secret laoding
 		JWTIssuer:        env.Get("JWT_ISSUER", "auth-service"),
 		EnableSwagger:    env.GetBool("ENABLE_SWAGGER", false),
 	}
