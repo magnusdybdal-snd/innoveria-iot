@@ -19,7 +19,7 @@ type AggregationRule struct {
 	UpdatedAt         time.Time
 }
 
-// RuleRepository deines persistence operations for aggregation rules.
+// RuleRepository defines persistence operations for aggregation rules.
 type RuleRepository interface {
 	GetByCompanyID(ctx context.Context, companyID string) ([]AggregationRule, error)
 }
