@@ -1,0 +1,59 @@
+basePath: /api/v1/context
+definitions:
+  dto.AggregationRuleResponse:
+    properties:
+      aggregation_method:
+        type: string
+      company_id:
+        type: string
+      context_type:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      is_active:
+        type: boolean
+      measurement_type:
+        type: string
+      name:
+        type: string
+      time_bucket_minutes:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+host: localhost:8086
+info:
+  contact: {}
+  description: Handles context management for sensor data
+  title: Context Service API
+  version: "1.0"
+paths:
+  /rules:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Company ID
+        in: query
+        name: company_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.AggregationRuleResponse'
+            type: array
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Get Aggregation Rules
+      tags:
+      - Rules
+swagger: "2.0"

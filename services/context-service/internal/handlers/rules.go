@@ -10,6 +10,15 @@ import (
 )
 
 // GetRules retrieves all aggregation rules for a given company ID.
+// @Summary 		Get Aggregation Rules
+// @Tags 			Rules
+// @Accept 			json
+// @Produce 		json
+// @Param 			company_id query string true "Company ID"
+// @Success 		200 {array} dto.AggregationRuleResponse
+// @Failure 		400
+// @Failure 		500
+// @Router 			/rules [get]
 func GetRules(svc domain.RuleService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
