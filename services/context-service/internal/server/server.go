@@ -38,8 +38,8 @@ func Run() error {
 		return fmt.Errorf("seeds: %w", err)
 	}
 	client := clients.NewCollectionClient(cfg.CollectionSvcURL)
-	contextSvc := services.NewContextServiceImpl(client)
 	repo := repository.NewRuleMappingRepository(database)
+	contextSvc := services.NewContextServiceImpl(client, repo)
 	ruleSvc := services.NewRuleServiceImpl(repo)
 
 	// Setting up mux and http server

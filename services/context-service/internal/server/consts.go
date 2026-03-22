@@ -12,5 +12,6 @@ const (
 	CONTEXT_ROUTE = API_ROUTE + "/context"
 
 	// Routes:
-	RULES_ROUTE = CONTEXT_ROUTE + "/rules"
+	RULES_ROUTE        = CONTEXT_ROUTE + "/rules"
+	CONTEXT_DATA_ROUTE = CONTEXT_ROUTE + "/data"
 )
