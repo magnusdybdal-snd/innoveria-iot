@@ -104,10 +104,13 @@ services:
       context: .
       dockerfile: infra/production/api-gateway.Dockerfile
     environment:
+      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS}
       - COLLECTION_SERVICE=${COLLECTION_SERVICE}
       - DEVICE_SERVICE=${DEVICE_SERVICE}
       - ONBOARDING_SERVICE=${ONBOARDING_SERVICE}
       - GO_ENV=${GO_ENV}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_ISSUER=auth-service
     restart: unless-stopped
 
   collection-service:
@@ -172,7 +175,12 @@ services:
       context: .
       dockerfile: infra/production/auth-service.Dockerfile
     environment:
-      - GO_ENV=${GO_ENV}
+      - GO_ENV=${GO_ENV_AUTH} # for seeded users
+      - JWT_SECRET=${JWT_SECRET}
+      - REFRESH_PEPPER=${REFRESH_PEPPER}
+      - JWT_ISSUER=auth-service
+      - JWT_ACCESS_TTL=${JWT_ACCESS_TTL}
+      - JWT_REFRESH_TTL=${JWT_REFRESH_TTL}
       - DB_HOST=auth-db
       - DB_USER=${AUTH_DB_USER}
       - DB_PASSWORD=${AUTH_DB_PASSWORD}

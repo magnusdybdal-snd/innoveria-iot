@@ -49,7 +49,7 @@ func Run() error {
 	companyConfigSvc := service.NewCompanyConfigService(chirpstackClient, companyConfigRepo)
 
 	// Setting up mux and http server
-	mux := NewRouter(gatewaySvc, sensorSvc, sensorProfileSvc, companyConfigSvc)
+	mux := NewRouter(gatewaySvc, sensorSvc, sensorProfileSvc, companyConfigSvc, cfg.EnableSwagger)
 	server := &http.Server{
 		Addr:              cfg.Addr,
 		Handler:           mux,

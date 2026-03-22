@@ -112,6 +112,8 @@ services:
       - ./pkg:/pkg
     environment:
       - GO_ENV=development
+      - JWT_SECRET=secret
+      - ENABLE_SWAGGER=true
 
   #
   # Microservices
@@ -127,6 +129,7 @@ services:
       - ./pkg:/pkg
     environment:
       - GO_ENV=development
+      - ENABLE_SWAGGER=true
     depends_on:
       - mosquitto
       - collection-db 
@@ -165,6 +168,7 @@ services:
       - chirpstack-secrets:/secrets
     environment:
       - GO_ENV=development
+      - ENABLE_SWAGGER=true
     depends_on:
       - device-db
 
@@ -190,6 +194,10 @@ services:
       - ./pkg:/pkg
     environment:
       - GO_ENV=development
+      - JWT_SECRET=secret
+      - REFRESH_PEPPER=secret
+      - ENABLE_SWAGGER=true
+      - CORS_ALLOWED_ORIGINS=http://localhost:3000
     depends_on:
       - auth-db
 
@@ -216,6 +224,7 @@ services:
       - ./pkg:/pkg
     environment:
       - GO_ENV=development
+      - ENABLE_SWAGGER=true
     depends_on:
       - auth-service
       - device-service

@@ -25,7 +25,7 @@ import (
 // @Failure 404
 // @Failure 500
 // @Router /factory-areas [post]
-func PostFactoryArea(svc domain.AuthService) http.HandlerFunc {
+func PostFactoryArea(svc domain.FactoryAreaService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
@@ -79,7 +79,7 @@ func PostFactoryArea(svc domain.AuthService) http.HandlerFunc {
 // @Success 200 {object} dto.FactoryAreaListResponse
 // @Failure 500
 // @Router /factory-areas [get]
-func GetAllFactoryAreas(svc domain.AuthService) http.HandlerFunc {
+func GetAllFactoryAreas(svc domain.FactoryAreaService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
@@ -107,7 +107,7 @@ func GetAllFactoryAreas(svc domain.AuthService) http.HandlerFunc {
 // @Failure 404
 // @Failure 500
 // @Router /factory-areas/{id} [get]
-func GetOneFactoryArea(svc domain.AuthService) http.HandlerFunc {
+func GetOneFactoryArea(svc domain.FactoryAreaService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
@@ -150,7 +150,7 @@ func GetOneFactoryArea(svc domain.AuthService) http.HandlerFunc {
 // @Failure 404
 // @Failure 500
 // @Router /factory-areas/{id} [delete]
-func DeleteFactoryArea(svc domain.AuthService) http.HandlerFunc {
+func DeleteFactoryArea(svc domain.FactoryAreaService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
