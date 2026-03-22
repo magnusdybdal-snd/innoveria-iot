@@ -258,6 +258,18 @@ services:
       - POSTGRES_PASSWORD=context
       - POSTGRES_DB=context
 
+  erp-service:
+    build:
+      context: .
+      dockerfile: infra/development/erp-service.Dockerfile
+    ports:
+      - "8087:8080"
+    volumes:
+      - ./services/erp-service:/app
+      - ./pkg:/pkg
+    environment:
+      - GO_ENV=development
+
 #
 # Docker data volumes
 #
