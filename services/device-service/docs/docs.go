@@ -211,15 +211,6 @@ const docTemplate = `{
                     "sensor-profiles"
                 ],
                 "summary": "List all sensor profiles",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Max number of profiles to return",
-                        "name": "limit",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",

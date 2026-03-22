@@ -316,12 +316,6 @@ paths:
   /sensor-profiles:
     get:
       description: Not authenticated — every user can access this list.
-      parameters:
-      - description: Max number of profiles to return
-        in: query
-        name: limit
-        required: true
-        type: integer
       produces:
       - application/json
       responses:
