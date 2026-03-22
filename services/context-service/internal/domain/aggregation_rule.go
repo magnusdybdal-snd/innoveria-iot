@@ -22,6 +22,7 @@ type AggregationRule struct {
 // RuleRepository defines persistence operations for aggregation rules.
 type RuleRepository interface {
 	GetByCompanyID(ctx context.Context, companyID string) ([]AggregationRule, error)
+	GetByID(ctx context.Context, ruleID string) (AggregationRule, error)
 }
 
 // RuleService defines business logic operations for aggregation rules.

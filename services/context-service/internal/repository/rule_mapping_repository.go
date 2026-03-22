@@ -3,6 +3,10 @@ package repository
 
 import (
 	"context"
+	"errors"
+
+	"github.com/jackc/pgx/v5"
+
 	"innoveria-iot/context-service/internal/domain"
 	"innoveria-iot/pkg/dbutil"
 )
@@ -10,8 +14,14 @@ import (
 const (
 	getByCompanyID = `
 	SELECT rule_id, company_id, name, context_type, measurement_type, aggregation_method, time_bucket_minutes, is_active, created_at, updated_at
-	FROM context.aggregation_rule 
+	FROM context.aggregation_rule
 	WHERE company_id = $1
+`
+
+	getByID = `
+	SELECT rule_id, company_id, name, context_type, measurement_type, aggregation_method, time_bucket_minutes, is_active, created_at, updated_at
+	FROM context.aggregation_rule
+	WHERE rule_id = $1
 `
 )
 
@@ -59,4 +69,29 @@ func (r *RuleMappingRepository) GetByCompanyID(ctx context.Context, companyID st
 	}
 
 	return rules, nil
+}
+
+// GetByID retrieves a single aggregation rule by its ID.
+// Returns domain.ErrNotFound if no rule exists with that ID.
+func (r *RuleMappingRepository) GetByID(ctx context.Context, ruleID string) (domain.AggregationRule, error) {
+	var rule domain.AggregationRule
+	err := r.db.Pool.QueryRow(ctx, getByID, ruleID).Scan(
+		&rule.ID,
+		&rule.CompanyID,
+		&rule.Name,
+		&rule.ContextType,
+		&rule.MeasurementType,
+		&rule.AggregationMethod,
+		&rule.TimeBucketMinutes,
+		&rule.IsActive,
+		&rule.CreatedAt,
+		&rule.UpdatedAt,
+	)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return domain.AggregationRule{}, domain.ErrNotFound
+		}
+		return domain.AggregationRule{}, err
+	}
+	return rule, nil
 }
