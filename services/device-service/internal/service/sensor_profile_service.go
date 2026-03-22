@@ -20,7 +20,7 @@ func NewSensorProfileService(cc *chirpstackrest.Client) *SensorProfileServiceImp
 	}
 }
 
-// GetAll retrieves all available sensor profiles from Chirpstack up to the given limit.
+// GetAll retrieves all available EU868 sensor profiles from Chirpstack.
 func (s *SensorProfileServiceImpl) GetAll(ctx context.Context, limit int) ([]domain.SensorProfile, error) {
 	resp, err := s.cc.GetAllSensorProfiles(ctx)
 	if err != nil {
@@ -28,7 +28,9 @@ func (s *SensorProfileServiceImpl) GetAll(ctx context.Context, limit int) ([]dom
 	}
 	var result []domain.SensorProfile
 	for _, sp := range resp {
-		result = append(result, mappers.MapChirpstackDeviceProfilesToDomain(sp))
+		if sp.Region == "EU868" {
+			result = append(result, mappers.MapChirpstackDeviceProfilesToDomain(sp))
+		}
 	}
 
 	return result, nil
