@@ -453,21 +453,32 @@ func (c *Client) DeleteSensor(ctx context.Context, deviceEUI string) error {
 }
 
 // GetAllSensorProfiles retrieves a paginated list of device profiles from Chirpstack up to the given limit.
-func (c *Client) GetAllSensorProfiles(ctx context.Context, limit int) (dto.DeviceProfileListResponse, error) {
-	url := fmt.Sprintf("%s/api/device-profiles?limit=%d", c.baseURL, limit)
-	resp, err := httpclient.DoRequest[dto.DeviceProfileListResponse](
-		c.httpClient,
-		ctx,
-		url,
-		http.MethodGet,
-		nil,
-		map[string]string{
-			"Authorization": c.authHeader(),
-		},
-	)
-	if err != nil {
-		return dto.DeviceProfileListResponse{}, handleChirpstackError(err)
-	}
+func (c *Client) GetAllSensorProfiles(ctx context.Context) ([]dto.DeviceProfile, error) {
 
-	return resp, nil
+	offset := 0
+	var collected []dto.DeviceProfile
+
+	for {
+		url := fmt.Sprintf("%s/api/device-profiles?limit=100&offset=%d&globalOnly=true", c.baseURL, offset)
+
+		resp, err := httpclient.DoRequest[dto.DeviceProfileListResponse](
+			c.httpClient,
+			ctx,
+			url,
+			http.MethodGet,
+			nil,
+			map[string]string{
+				"Authorization": c.authHeader(),
+			},
+		)
+		if err != nil {
+			return nil, handleChirpstackError(err)
+		}
+
+		collected = append(collected, resp.Result...)
+		if len(collected) >= resp.TotalCount {
+			return collected, nil
+		}
+		offset += 100
+	}
 }
