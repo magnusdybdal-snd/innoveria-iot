@@ -21,7 +21,7 @@ func NewSensorProfileService(cc *chirpstackrest.Client) *SensorProfileServiceImp
 }
 
 // GetAll retrieves all available EU868 sensor profiles from Chirpstack.
-func (s *SensorProfileServiceImpl) GetAll(ctx context.Context, limit int) ([]domain.SensorProfile, error) {
+func (s *SensorProfileServiceImpl) GetAll(ctx context.Context) ([]domain.SensorProfile, error) {
 	resp, err := s.cc.GetAllSensorProfiles(ctx)
 	if err != nil {
 		return nil, err

@@ -16,6 +16,6 @@ type SensorProfile struct {
 
 // SensorProfileService defines the business logic operations for sensor profiles.
 type SensorProfileService interface {
-	GetAll(ctx context.Context, limit int) ([]SensorProfile, error)
+	GetAll(ctx context.Context) ([]SensorProfile, error)
 	GetOne(ctx context.Context) (SensorProfile, error)
 }
