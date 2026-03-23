@@ -38,7 +38,8 @@ func GetMeasurementTypes(svc domain.MeasurementTypeService) http.HandlerFunc {
 	}
 }
 
-// GetAllMeasurementTypes returns all measurement types including deprecated. For admin use only.
+// GetAllMeasurementTypes returns all measurement types including deprecated.
+// Admin only — enforcement is handled at the API gateway level.
 //
 // @Summary		List all measurement types including deprecated
 // @Tags		measurement-types
@@ -124,10 +125,6 @@ func PatchDeprecateMeasurementType(svc domain.MeasurementTypeService) http.Handl
 		ctx := r.Context()
 
 		slug := r.PathValue("slug")
-		if slug == "" {
-			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("slug is required"), "bad request")
-			return
-		}
 
 		if err := svc.Deprecate(ctx, slug); err != nil {
 			if errors.Is(err, domain.ErrNotFound) {

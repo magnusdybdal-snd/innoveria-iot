@@ -16,6 +16,7 @@ type MeasurementType struct {
 // MeasurementTypeRepository handles persistence of measurement types.
 type MeasurementTypeRepository interface {
 	Create(ctx context.Context, m MeasurementType) error
+	FindActive(ctx context.Context) ([]MeasurementType, error)
 	FindAll(ctx context.Context) ([]MeasurementType, error)
 	Deprecate(ctx context.Context, slug string) error
 }

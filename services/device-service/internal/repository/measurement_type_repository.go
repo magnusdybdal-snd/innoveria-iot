@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
+
 	"innoveria-iot/device-service/internal/domain"
 	"innoveria-iot/pkg/dbutil"
 
@@ -20,6 +22,13 @@ const (
 	findAllMeasurementTypesQuery = `
 		SELECT slug, display_name, description, default_unit, deprecated
 		FROM device.measurement_type
+		ORDER BY slug ASC
+	`
+
+	findActiveMeasurementTypesQuery = `
+		SELECT slug, display_name, description, default_unit, deprecated
+		FROM device.measurement_type
+		WHERE deprecated = false
 		ORDER BY slug ASC
 	`
 
@@ -47,11 +56,37 @@ func (r *MeasurementTypeRepository) Create(ctx context.Context, m domain.Measure
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == pgerrcode.UniqueViolation {
+			slog.Warn("unique violation on measurement type create", "constraint", pgErr.ConstraintName, "detail", pgErr.Detail)
 			return domain.ErrAlreadyExists
 		}
 		return fmt.Errorf("create measurement type: %w", err)
 	}
 	return nil
+}
+
+// FindActive retrieves all non-deprecated measurement types ordered by slug.
+func (r *MeasurementTypeRepository) FindActive(ctx context.Context) ([]domain.MeasurementType, error) {
+	rows, err := r.db.Pool.Query(ctx, findActiveMeasurementTypesQuery)
+	if err != nil {
+		return nil, fmt.Errorf("find active measurement types: %w", err)
+	}
+	defer rows.Close()
+
+	out := []domain.MeasurementType{}
+
+	for rows.Next() {
+		var m domain.MeasurementType
+		if err := rows.Scan(&m.Slug, &m.DisplayName, &m.Description, &m.DefaultUnit, &m.Deprecated); err != nil {
+			return nil, fmt.Errorf("scan measurement type: %w", err)
+		}
+		out = append(out, m)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("rows error: %w", err)
+	}
+
+	return out, nil
 }
 
 // FindAll retrieves all measurement types ordered by slug.
@@ -82,6 +117,7 @@ func (r *MeasurementTypeRepository) FindAll(ctx context.Context) ([]domain.Measu
 
 // Deprecate marks a measurement type as deprecated by its slug.
 // Returns domain.ErrNotFound if no measurement type with the given slug exists.
+// Deprecating an already-deprecated type is idempotent and returns nil.
 func (r *MeasurementTypeRepository) Deprecate(ctx context.Context, slug string) error {
 	tag, err := r.db.Pool.Exec(ctx, deprecateMeasurementTypeQuery, slug)
 	if err != nil {
