@@ -128,6 +128,37 @@ func mapSensor(from domain.Sensor) SensorResponse {
 	}
 }
 
+// MapMeasurementTypeDomainToDTO maps a slice of domain MeasurementTypes to a MeasurementTypeListResponse.
+func MapMeasurementTypeDomainToDTO(from []domain.MeasurementType) MeasurementTypeListResponse {
+	tot := len(from)
+	types := make([]MeasurementTypeResponse, tot)
+
+	for i, m := range from {
+		types[i] = MeasurementTypeResponse{
+			Slug:        m.Slug,
+			DisplayName: m.DisplayName,
+			Description: m.Description,
+			DefaultUnit: m.DefaultUnit,
+			Deprecated:  m.Deprecated,
+		}
+	}
+
+	return MeasurementTypeListResponse{
+		TotalCount:       tot,
+		MeasurementTypes: types,
+	}
+}
+
+// MapCreateMeasurementTypeDTOToDomain maps a CreateMeasurementTypeRequest to a domain MeasurementType.
+func MapCreateMeasurementTypeDTOToDomain(from CreateMeasurementTypeRequest) domain.MeasurementType {
+	return domain.MeasurementType{
+		Slug:        from.Slug,
+		DisplayName: from.DisplayName,
+		Description: from.Description,
+		DefaultUnit: from.DefaultUnit,
+	}
+}
+
 // MapSensorProfileDomainToDTO maps a slice of domain SensorProfiles to a SensorProfileListResponse.
 func MapSensorProfileDomainToDTO(from []domain.SensorProfile) SensorProfileListResponse {
 	tot := len(from)
