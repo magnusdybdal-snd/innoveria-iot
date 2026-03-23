@@ -116,7 +116,6 @@ func PostMeasurementType(svc domain.MeasurementTypeService) http.HandlerFunc {
 // @Tags		measurement-types
 // @Param		slug	path	string	true	"Measurement type slug"
 // @Success		204
-// @Failure		400
 // @Failure		404
 // @Failure		500
 // @Router		/measurement-types/{slug}/deprecate [patch]
