@@ -14,7 +14,6 @@ import (
 // @Tags		sensor-profiles
 // @Produce		json
 // @Success		200	{object}	dto.SensorProfileListResponse
-// @Failure		400
 // @Failure		500
 // @Router		/sensor-profiles [get]
 func GetAllSensorProfiles(svc domain.SensorProfileService) http.HandlerFunc {
