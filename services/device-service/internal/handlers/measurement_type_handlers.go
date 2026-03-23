@@ -116,6 +116,7 @@ func PostMeasurementType(svc domain.MeasurementTypeService) http.HandlerFunc {
 // @Param		slug	path	string	true	"Measurement type slug"
 // @Success		204
 // @Failure		400
+// @Failure		404
 // @Failure		500
 // @Router		/measurement-types/{slug}/deprecate [patch]
 func PatchDeprecateMeasurementType(svc domain.MeasurementTypeService) http.HandlerFunc {
@@ -129,6 +130,10 @@ func PatchDeprecateMeasurementType(svc domain.MeasurementTypeService) http.Handl
 		}
 
 		if err := svc.Deprecate(ctx, slug); err != nil {
+			if errors.Is(err, domain.ErrNotFound) {
+				json.HandleError(w, http.StatusNotFound, err, "measurement type not found")
+				return
+			}
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
 			return
 		}

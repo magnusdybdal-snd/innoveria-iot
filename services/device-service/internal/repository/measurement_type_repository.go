@@ -81,10 +81,14 @@ func (r *MeasurementTypeRepository) FindAll(ctx context.Context) ([]domain.Measu
 }
 
 // Deprecate marks a measurement type as deprecated by its slug.
+// Returns domain.ErrNotFound if no measurement type with the given slug exists.
 func (r *MeasurementTypeRepository) Deprecate(ctx context.Context, slug string) error {
-	_, err := r.db.Pool.Exec(ctx, deprecateMeasurementTypeQuery, slug)
+	tag, err := r.db.Pool.Exec(ctx, deprecateMeasurementTypeQuery, slug)
 	if err != nil {
 		return fmt.Errorf("deprecate measurement type: %w", err)
+	}
+	if tag.RowsAffected() == 0 {
+		return domain.ErrNotFound
 	}
 	return nil
 }
