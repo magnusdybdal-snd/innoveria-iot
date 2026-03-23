@@ -22,7 +22,7 @@ func Run() error {
 
 	server := &http.Server{
 		Addr:              cfg.Addr,
-		Handler:           corsMiddleware(cfg, authMiddleware(cfg, mux)),
+		Handler:           corsMiddleware(cfg, rateLimiterMiddleware(authMiddleware(cfg, mux))),
 		ReadHeaderTimeout: 5 * time.Second,
 		IdleTimeout:       120 * time.Second,
 		// Intentionally avoid ReadTimeout/WriteTimeout here because of mqtt
