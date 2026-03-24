@@ -14,8 +14,18 @@ type SensorMetric struct {
 
 // SensorMetricRepository handles persistence of sensor metrics in the database.
 type SensorMetricRepository interface {
-	// Upsert inserts a metric or updates measurement_type and unit if the combination
-	// (sensor_id, payload_key) already exists. This handles reconfiguration cleanly.
-	Upsert(ctx context.Context, metric SensorMetric) error
+	// UpsertBatch inserts or updates a batch of sensor metrics in a single query.
+	// Conflicts on (sensor_id, payload_key) update measurement_type and unit.
+	UpsertBatch(ctx context.Context, metrics []SensorMetric) error
 	FindBySensorID(ctx context.Context, sensorID string) ([]SensorMetric, error)
+}
+
+// SensorMetricService defines the business logic for managing sensor metrics.
+type SensorMetricService interface {
+	// UpsertMetrics saves operator-defined metric labels for a configurable sensor.
+	UpsertMetrics(ctx context.Context, metrics []SensorMetric) error
+	// GetEffectiveMetrics resolves the payload key mappings for a sensor.
+	// Checks per-sensor metrics first, falls back to the profile-level payload schema.
+	// Returns an empty slice if the sensor is not yet configured.
+	GetEffectiveMetrics(ctx context.Context, deviceEUI string) ([]SensorMetric, error)
 }
