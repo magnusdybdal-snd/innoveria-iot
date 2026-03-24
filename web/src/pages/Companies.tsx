@@ -47,7 +47,7 @@ const addCompanyDetails: string[] = ["Name", "Address"];
  * Full-page view listing all companies regisered on the site.
  *
  * Fetches data from the database and manages
- * column sort state. Delegates row rendering to CompanyRow/CompanyInfo.
+ * column sort state. Delegates row rendering to CompanyRow/UserInfo.
  * @returns The rendered Companies page
  */
 export default function Companies() {

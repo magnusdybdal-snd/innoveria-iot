@@ -11,4 +11,7 @@ export const API_ROUTES = {
   factories: `/v1/auth/factories`,
   companiesGet: `/v1/auth/companies`,
   companiesPost: `/v1/onboarding/company`,
+  user: `/v1/auth/me`,
+  login: `/v1/auth/login`,
+  refresh: `/v1/auth/refresh`,
 };

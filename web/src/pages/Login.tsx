@@ -130,6 +130,7 @@ export default function Base() {
 
     setFillError(false);
     setEqualError(false);
+
     navigate("/");
   };
 
