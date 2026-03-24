@@ -37,18 +37,24 @@ type rateLimitEntry struct {
 type rateLimitStore struct {
 	// mu protects entries from concurrent reads/writes.
 	mu sync.Mutex
+	// closeOnce ensures cleanup goroutine shutdown is triggered once.
+	closeOnce sync.Once
 	// entries maps a rate-limit key to its limiter state.
 	entries map[string]*rateLimitEntry
 	// ttl is intended to control when inactive entries are evicted.
 	ttl time.Duration
+	// stopCh signals the cleanup goroutine to exit.
+	stopCh chan struct{}
+	// doneCh closes when the cleanup goroutine has stopped.
+	doneCh chan struct{}
 }
-
-var bruteForceRateLimitStore = newRateLimitStore(10 * time.Minute)
 
 func newRateLimitStore(ttl time.Duration) *rateLimitStore {
 	store := &rateLimitStore{
 		entries: make(map[string]*rateLimitEntry),
 		ttl:     ttl,
+		stopCh:  make(chan struct{}),
+		doneCh:  make(chan struct{}),
 	}
 	go store.cleanUpLoop(1 * time.Minute)
 	return store
@@ -56,17 +62,33 @@ func newRateLimitStore(ttl time.Duration) *rateLimitStore {
 
 func (s *rateLimitStore) cleanUpLoop(interval time.Duration) {
 	ticker := time.NewTicker(interval)
-	defer ticker.Stop()
-	for range ticker.C {
-		now := time.Now()
-		s.mu.Lock()
-		for key, entry := range s.entries {
-			if now.Sub(entry.lastSeen) > s.ttl {
-				delete(s.entries, key)
+	defer func() {
+		ticker.Stop()
+		close(s.doneCh)
+	}()
+
+	for {
+		select {
+		case <-ticker.C:
+			now := time.Now()
+			s.mu.Lock()
+			for key, entry := range s.entries {
+				if now.Sub(entry.lastSeen) > s.ttl {
+					delete(s.entries, key)
+				}
 			}
+			s.mu.Unlock()
+		case <-s.stopCh:
+			return
 		}
-		s.mu.Unlock()
 	}
+}
+
+func (s *rateLimitStore) Close() {
+	s.closeOnce.Do(func() {
+		close(s.stopCh)
+		<-s.doneCh
+	})
 }
 
 func (s *rateLimitStore) allow(key string, policy rateLimitPolicy) bool {
@@ -95,16 +117,16 @@ func perMinute(requests int) rate.Limit {
 	return rate.Every(time.Minute / time.Duration(requests))
 }
 
-func bruteForcePolicy(r *http.Request) rateLimitPolicy {
+func bruteForcePolicy(r *http.Request) (rateLimitPolicy, bool) {
 	path := r.URL.Path
 
 	switch {
 	case r.Method == http.MethodPost && path == AUTHENTICATION_ROUTE+"/login":
-		return rateLimitPolicy{Limit: perMinute(5), Burst: 5, Window: time.Minute}
+		return rateLimitPolicy{Limit: perMinute(5), Burst: 5, Window: time.Minute}, true
 	case r.Method == http.MethodPost && path == AUTHENTICATION_ROUTE+"/refresh":
-		return rateLimitPolicy{Limit: perMinute(20), Burst: 10, Window: time.Minute}
+		return rateLimitPolicy{Limit: perMinute(20), Burst: 10, Window: time.Minute}, true
 	default:
-		return rateLimitPolicy{Limit: perMinute(60), Burst: 20, Window: time.Minute}
+		return rateLimitPolicy{}, false
 	}
 }
 
@@ -112,17 +134,21 @@ func bruteForceKey(r *http.Request) string {
 	return r.Method + ":" + r.URL.Path + ":" + clientIP(r)
 }
 
-func rateLimiterMiddleware(next http.Handler) http.Handler {
+func rateLimiterMiddleware(store *rateLimitStore, next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if !isBruteForceProtectedPath(r) {
 			next.ServeHTTP(w, r)
 			return
 		}
 
-		policy := bruteForcePolicy(r)
-		key := bruteForceKey(r)
+		policy, ok := bruteForcePolicy(r)
+		if !ok {
+			next.ServeHTTP(w, r)
+			return
+		}
 
-		if bruteForceRateLimitStore.allow(key, policy) {
+		key := bruteForceKey(r)
+		if store.allow(key, policy) {
 			next.ServeHTTP(w, r)
 			return
 		}
