@@ -25,7 +25,7 @@ import (
 // @Failure 404
 // @Failure 500
 // @Router /factories [post]
-func PostFactory(svc domain.AuthService) http.HandlerFunc {
+func PostFactory(svc domain.FactoryService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
@@ -77,7 +77,7 @@ func PostFactory(svc domain.AuthService) http.HandlerFunc {
 // @Success 200 {object} dto.FactoryListResponse
 // @Failure 500
 // @Router /factories [get]
-func GetAllFactories(svc domain.AuthService) http.HandlerFunc {
+func GetAllFactories(svc domain.FactoryService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
@@ -105,7 +105,7 @@ func GetAllFactories(svc domain.AuthService) http.HandlerFunc {
 // @Failure 404
 // @Failure 500
 // @Router /factories/{id} [get]
-func GetOneFactory(svc domain.AuthService) http.HandlerFunc {
+func GetOneFactory(svc domain.FactoryService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
@@ -149,7 +149,7 @@ func GetOneFactory(svc domain.AuthService) http.HandlerFunc {
 // @Failure 404
 // @Failure 500
 // @Router /factories/{id} [delete]
-func DeleteFactory(svc domain.AuthService) http.HandlerFunc {
+func DeleteFactory(svc domain.FactoryService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		factoryID := r.PathValue("id")

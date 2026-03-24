@@ -41,8 +41,8 @@ const (
 
 	updateSensorQuery = `
 		UPDATE device.sensor
-		SET name = $1, description = $2, app_key = $3, factory_id = $4, factory_area_id = $5, chirpstack_profile_id = $6, updated_at = now()
-		WHERE sensor_id = $7
+		SET name = $1, description = $2, factory_id = $3, factory_area_id = $4, chirpstack_profile_id = $5, updated_at = now()
+		WHERE sensor_id = $6
 	`
 
 	deleteSensorQuery = `
@@ -224,7 +224,6 @@ func (r *SensorRepository) Update(ctx context.Context, sensorID string, payload 
 	tag, err := r.db.Pool.Exec(ctx, updateSensorQuery,
 		payload.Name,
 		payload.Description,
-		payload.AppKey,
 		payload.FactoryID,
 		payload.FactoryAreaID,
 		payload.ChirpstackProfileID,

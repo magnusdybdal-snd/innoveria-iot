@@ -3,30 +3,24 @@ package domain
 
 import (
 	"context"
+	"net/netip"
+	"time"
 )
+
+// LoginResult contains token metadata returned by a successful login.
+type LoginResult struct {
+	AccessToken string
+	TokenType   string
+	ExpiresIn   time.Duration
+}
 
 // AuthService defines authentication and session operations exposed by
 // the auth domain service layer.
+//
+// Login, Refresh, Logout and Me.
 type AuthService interface {
-	// TODO: add these methods
-	// Login
-	// Refresh
-	// Logout
-	// Me
-
-	// Company
-	RegisterCompany(ctx context.Context, payload Company) (Company, error)
-	GetOneCompany(ctx context.Context, companyID string) (Company, error)
-	GetAllCompanies(ctx context.Context) ([]Company, error)
-	DeleteCompany(ctx context.Context, companyID string) error
-	// Factory
-	RegisterFactory(ctx context.Context, payload Factory) (Factory, error)
-	GetOneFactory(ctx context.Context, factoryID string) (Factory, error)
-	GetAllFactories(ctx context.Context) ([]Factory, error)
-	DeleteFactory(ctx context.Context, factoryID string) error
-	// Factory Area
-	RegisterFactoryArea(ctx context.Context, payload FactoryArea) (FactoryArea, error)
-	GetAllFactoryAreas(ctx context.Context) ([]FactoryArea, error)
-	GetOneFactoryArea(ctx context.Context, areaID string) (FactoryArea, error)
-	DeleteFactoryArea(ctx context.Context, areaID string) error
+	// TODO: Add Register
+	Login(ctx context.Context, email, password, deviceInfo string, ip *netip.Addr) (LoginResult, string, error)
+	Refresh(ctx context.Context, rawRefreshToken string) (LoginResult, string, error)
+	Me(ctx context.Context, token string) (User, error)
 }

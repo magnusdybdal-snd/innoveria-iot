@@ -136,44 +136,6 @@ const docTemplate = `{
             }
         },
         "/gateways/{id}": {
-            "put": {
-                "consumes": [
-                    "application/json"
-                ],
-                "tags": [
-                    "gateways"
-                ],
-                "summary": "Update a gateway",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Gateway ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Update payload",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.CreateGatewayRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No Content"
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    },
-                    "500": {
-                        "description": "Internal Server Error"
-                    }
-                }
-            },
             "delete": {
                 "tags": [
                     "gateways"
@@ -199,6 +161,44 @@ const docTemplate = `{
                         "description": "Internal Server Error"
                     }
                 }
+            },
+            "patch": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "gateways"
+                ],
+                "summary": "Update a gateway",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Gateway ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update payload",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateGatewayRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
             }
         },
         "/sensor-profiles": {
@@ -211,24 +211,12 @@ const docTemplate = `{
                     "sensor-profiles"
                 ],
                 "summary": "List all sensor profiles",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Max number of profiles to return",
-                        "name": "limit",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/dto.SensorProfileListResponse"
                         }
-                    },
-                    "400": {
-                        "description": "Bad Request"
                     },
                     "500": {
                         "description": "Internal Server Error"
@@ -293,7 +281,33 @@ const docTemplate = `{
             }
         },
         "/sensors/{id}": {
-            "put": {
+            "delete": {
+                "tags": [
+                    "sensors"
+                ],
+                "summary": "Delete a sensor",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "SensorID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "patch": {
                 "consumes": [
                     "application/json"
                 ],
@@ -317,32 +331,6 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.UpdateSensorRequest"
                         }
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No Content"
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    },
-                    "500": {
-                        "description": "Internal Server Error"
-                    }
-                }
-            },
-            "delete": {
-                "tags": [
-                    "sensors"
-                ],
-                "summary": "Delete a sensor",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "SensorID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -383,11 +371,22 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "company_id",
+                "factory_area_id",
+                "factory_id",
                 "gateway_eui",
                 "name"
             ],
             "properties": {
                 "company_id": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "factory_area_id": {
+                    "type": "string"
+                },
+                "factory_id": {
                     "type": "string"
                 },
                 "gateway_eui": {
@@ -405,6 +404,7 @@ const docTemplate = `{
                 "company_id",
                 "device_eui",
                 "device_profile_id",
+                "factory_area_id",
                 "factory_id",
                 "name"
             ],
@@ -426,7 +426,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "factory_area_id": {
-                    "description": "Optional — UUID, omit if service not yet available",
                     "type": "string"
                 },
                 "factory_id": {
@@ -468,6 +467,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "factory_area_id": {
+                    "type": "string"
+                },
+                "factory_id": {
                     "type": "string"
                 },
                 "gateway_eui": {
@@ -598,13 +600,25 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.UpdateGatewayRequest": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "factory_area_id": {
+                    "type": "string"
+                },
+                "factory_id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.UpdateSensorRequest": {
             "type": "object",
-            "required": [
-                "device_profile_id",
-                "factory_id",
-                "name"
-            ],
             "properties": {
                 "description": {
                     "type": "string"

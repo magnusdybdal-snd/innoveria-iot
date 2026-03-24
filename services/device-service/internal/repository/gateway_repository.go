@@ -9,26 +9,26 @@ import (
 
 const (
 	createGatewayQuery = `
-		INSERT INTO device.gateway (company_id, gateway_eui, name, description, state, factory_area_id)
-		VALUES ($1, $2, $3, $4, $5, $6)
-		RETURNING gateway_id, company_id, gateway_eui, name, description, state, factory_area_id, created_at, updated_at
+		INSERT INTO device.gateway (company_id, gateway_eui, name, description, state, factory_id, factory_area_id)
+		VALUES ($1, $2, $3, $4, $5, $6, $7)
+		RETURNING gateway_id, company_id, gateway_eui, name, description, state, factory_id, factory_area_id, created_at, updated_at
 	`
 
 	findGatewayByIDQuery = `
-		SELECT gateway_id, company_id, gateway_eui, name, description, state, factory_area_id, created_at, updated_at
+		SELECT gateway_id, company_id, gateway_eui, name, description, state, factory_id, factory_area_id, created_at, updated_at
 		FROM device.gateway
 		WHERE gateway_id = $1
 	`
 
 	findAllGatewaysByCompanyIDQuery = `
-		SELECT gateway_id, company_id, gateway_eui, name, description, state, factory_area_id, created_at, updated_at
+		SELECT gateway_id, company_id, gateway_eui, name, description, state, factory_id, factory_area_id, created_at, updated_at
 		FROM device.gateway
 		WHERE company_id = $1
 		ORDER BY created_at ASC
 	`
 
 	findGatewayByEUIQuery = `
-		SELECT gateway_id, company_id, gateway_eui, name, description, state, factory_area_id, created_at, updated_at
+		SELECT gateway_id, company_id, gateway_eui, name, description, state, factory_id, factory_area_id, created_at, updated_at
 		FROM device.gateway
 		WHERE gateway_eui = $1
 	`
@@ -41,8 +41,8 @@ const (
 
 	updateGatewayQuery = `
 		UPDATE device.gateway
-		SET name = $1, description = $2, factory_area_id = $3, updated_at = now()
-		WHERE gateway_id = $4
+		SET name = $1, description = $2, factory_id = $3, factory_area_id = $4, updated_at = now()
+		WHERE gateway_id = $5
 	`
 
 	deleteGatewayQuery = `
@@ -72,6 +72,7 @@ func (r *GatewayRepository) Create(ctx context.Context, gateway domain.Gateway) 
 		gateway.Name,
 		gateway.Description,
 		gateway.State,
+		gateway.FactoryID,
 		gateway.FactoryAreaID,
 	).Scan(
 		&out.Id,
@@ -80,6 +81,7 @@ func (r *GatewayRepository) Create(ctx context.Context, gateway domain.Gateway) 
 		&out.Name,
 		&out.Description,
 		&out.State,
+		&out.FactoryID,
 		&out.FactoryAreaID,
 		&out.CreatedAt,
 		&out.UpdatedAt,
@@ -102,6 +104,7 @@ func (r *GatewayRepository) FindByID(ctx context.Context, gatewayID string) (dom
 		&out.Name,
 		&out.Description,
 		&out.State,
+		&out.FactoryID,
 		&out.FactoryAreaID,
 		&out.CreatedAt,
 		&out.UpdatedAt,
@@ -136,6 +139,7 @@ func (r *GatewayRepository) FindAllByCompanyID(ctx context.Context, companyID st
 			&gateway.Name,
 			&gateway.Description,
 			&gateway.State,
+			&gateway.FactoryID,
 			&gateway.FactoryAreaID,
 			&gateway.CreatedAt,
 			&gateway.UpdatedAt,
@@ -168,6 +172,7 @@ func (r *GatewayRepository) FindByEUI(ctx context.Context, gatewayEUI string) (d
 		&out.Name,
 		&out.Description,
 		&out.State,
+		&out.FactoryID,
 		&out.FactoryAreaID,
 		&out.CreatedAt,
 		&out.UpdatedAt,
@@ -199,7 +204,7 @@ func (r *GatewayRepository) UpdateState(ctx context.Context, gatewayID string, s
 // Returns an error if no gateway with the given ID exists.
 func (r *GatewayRepository) Update(ctx context.Context, gatewayID string, payload domain.Gateway) error {
 
-	tag, err := r.db.Pool.Exec(ctx, updateGatewayQuery, payload.Name, payload.Description, payload.FactoryAreaID, gatewayID)
+	tag, err := r.db.Pool.Exec(ctx, updateGatewayQuery, payload.Name, payload.Description, payload.FactoryID, payload.FactoryAreaID, gatewayID)
 	if err != nil {
 		return fmt.Errorf("update gateway: %w", err)
 	}

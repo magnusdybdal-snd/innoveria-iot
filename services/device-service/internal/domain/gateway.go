@@ -15,7 +15,8 @@ type Gateway struct {
 	Name          string
 	Description   *string
 	State         DeviceState // Administrative state: ACTIVE / INACTIVE
-	FactoryAreaID *string
+	FactoryID     string
+	FactoryAreaID string
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 

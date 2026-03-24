@@ -42,12 +42,17 @@ func Run() error {
 	companyRepo := repository.NewCompanyRepo(database)
 	factoryRepo := repository.NewFactoryRepo(database)
 	factoryAreaRepo := repository.NewFactoryAreaRepo(database)
+	userRepo := repository.NewUserRepo(database)
+	refreshTokenRepo := repository.NewRefreshTokenRepo(database)
 
 	// service init
-	authSvc := services.NewAuthServiceImpl(companyRepo, factoryRepo, factoryAreaRepo)
+	companySvc := services.NewCompanyService(companyRepo)
+	factorySvc := services.NewFactoryService(factoryRepo)
+	factoryAreaSvc := services.NewFactoryAreaService(factoryAreaRepo)
+	authSvc := services.NewAuthServiceImpl(userRepo, refreshTokenRepo, cfg.JWT_SECRET, cfg.JWTIssuer, cfg.JWTAccessTTL, cfg.JWTRefreshTokenTTL, cfg.RefreshPepper)
 
 	// Setting up mux and http server
-	mux := NewRouter(authSvc)
+	mux := NewRouter(companySvc, factorySvc, factoryAreaSvc, authSvc, cfg.JWTRefreshTokenTTL, cfg.EnableSwagger)
 	server := &http.Server{
 		Addr:              cfg.Addr,
 		Handler:           mux,

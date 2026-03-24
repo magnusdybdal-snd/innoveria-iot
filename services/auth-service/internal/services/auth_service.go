@@ -1,163 +1,222 @@
-// Package services contains auth-service business logic and orchestrates
-// authentication workflows between repositories and security components.
+// Package services contains auth-service business logic.
 package services
 
 import (
 	"context"
+	"crypto/hmac"
+	"crypto/rand"
+	"crypto/sha256"
+	"encoding/base64"
+	"errors"
+	"fmt"
 	"log/slog"
+	"net/netip"
+	"time"
 
 	"innoveria-iot/auth-service/internal/domain"
+
+	"github.com/golang-jwt/jwt/v5"
+	"golang.org/x/crypto/bcrypt"
 )
 
 // AuthServiceImpl implements authentication use cases for the auth service.
 type AuthServiceImpl struct {
-	companyRepo     domain.CompanyRepo
-	factoryRepo     domain.FactoryRepo
-	factoryAreaRepo domain.FactoryAreaRepo
+	userRepo         domain.UserRepo
+	refreshTokenRepo domain.RefreshTokenRepo
+	jwtSecret        []byte // converted to byte in initializer
+	refreshPepper    []byte
+	jwtIssuer        string
+	accessTTL        time.Duration
+	refreshTTL       time.Duration
 }
 
 // NewAuthServiceImpl creates a new AuthServiceImpl instance.
 func NewAuthServiceImpl(
-	companyRepo domain.CompanyRepo,
-	factoryRepo domain.FactoryRepo,
-	factoryAreaRepo domain.FactoryAreaRepo,
+	userRepo domain.UserRepo,
+	refreshTokenRepo domain.RefreshTokenRepo,
+	jwtSecret string,
+	jwtIssuer string,
+	accessTTL time.Duration,
+	refreshTokenTTL time.Duration,
+	refreshPepper string,
 ) *AuthServiceImpl {
 	return &AuthServiceImpl{
-		companyRepo:     companyRepo,
-		factoryRepo:     factoryRepo,
-		factoryAreaRepo: factoryAreaRepo,
+		userRepo:         userRepo,
+		refreshTokenRepo: refreshTokenRepo,
+		jwtSecret:        []byte(jwtSecret),
+		jwtIssuer:        jwtIssuer,
+		accessTTL:        accessTTL,
+		refreshTTL:       refreshTokenTTL,
+		refreshPepper:    []byte(refreshPepper),
 	}
 }
 
-// RegisterCompany generates a new company and starts onboarding on device-service
-// Its only possible for platform admin to register a new company
-// So a permission check will happend which is only available for the platform admin
-func (s *AuthServiceImpl) RegisterCompany(ctx context.Context, payload domain.Company) (domain.Company, error) {
-	// 1. insert in database
-	company, err := s.companyRepo.Create(ctx, payload)
+// Login authenticates a user. By creating an accesss token and a refresh token
+func (s *AuthServiceImpl) Login(ctx context.Context, email, password, deviceInfo string, ip *netip.Addr) (domain.LoginResult, string, error) {
+	user, err := s.userRepo.FindByEmail(ctx, email)
 	if err != nil {
-		return domain.Company{}, err
+		if errors.Is(err, domain.ErrUserNotFound) {
+			slog.Warn("login failed: user not found", "email", email)
+			return domain.LoginResult{}, "", domain.ErrUnauthorized
+		}
+
+		slog.Error("login failed: find user by email", "email", email, "error", err)
+		return domain.LoginResult{}, "", err
 	}
 
-	slog.Info("succsessfully registered company", "id", company.ID)
-	return company, nil
-}
+	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password)); err != nil {
+		slog.Warn("login failed: invalid credentials", "email", email, "user_id", user.ID)
+		return domain.LoginResult{}, "", domain.ErrUnauthorized
+	}
 
-// GetOneCompany retrieves a single company by its ID
-func (s *AuthServiceImpl) GetOneCompany(ctx context.Context, companyID string) (domain.Company, error) {
-	company, err := s.companyRepo.FindByID(ctx, companyID)
+	accessToken, expiresIn, err := s.generateAccessToken(user)
 	if err != nil {
-		return domain.Company{}, err
+		slog.Error("login failed: generate access token", "user_id", user.ID, "error", err)
+		return domain.LoginResult{}, "", err
 	}
 
-	slog.Info("successfully found company", "id", company.ID)
-	return company, nil
-}
-
-// GetAllCompanies retrieves all companies.
-func (s *AuthServiceImpl) GetAllCompanies(ctx context.Context) ([]domain.Company, error) {
-	companies, err := s.companyRepo.FindAll(ctx)
+	rawRefreshToken, err := s.generateRefreshToken()
 	if err != nil {
-		return nil, err
+		slog.Error("login failed: generate refresh token", "user_id", user.ID, "error", err)
+		return domain.LoginResult{}, "", fmt.Errorf("generating refresh token: %w", err)
 	}
 
-	slog.Info("successfully found all companies")
-	return companies, nil
-}
-
-// DeleteCompany deletes a company by ID.
-func (s *AuthServiceImpl) DeleteCompany(ctx context.Context, companyID string) error {
-	if err := s.companyRepo.DeleteByID(ctx, companyID); err != nil {
-		return err
+	// Update last login in user db
+	if err := s.userRepo.UpdateLastLoggedIn(ctx, user.ID); err != nil {
+		slog.Error("login failed: update last login", "user_id", user.ID, "error", err)
+		return domain.LoginResult{}, "", err
 	}
 
-	slog.Info("successfully deleted company", "id", companyID)
-	return nil
+	refreshToken := s.hashRefreshTokenHMAC(rawRefreshToken)
+
+	if err := s.refreshTokenRepo.UpsertForLogin(ctx, domain.RefreshToken{
+		UserID:     user.ID,
+		TokenHash:  refreshToken, // storing hmac version in db
+		ExpiresAt:  time.Now().UTC().Add(s.refreshTTL),
+		DeviceInfo: deviceInfo,
+		IPAddress:  ip,
+	}); err != nil {
+		slog.Error("login failed: upsert refresh token", "user_id", user.ID, "error", err)
+		return domain.LoginResult{}, "", err
+	}
+
+	slog.Info("successfully authenticate user", "id", user.ID)
+	return domain.LoginResult{
+		AccessToken: accessToken,
+		TokenType:   "Bearer", // How the token is sendt over http
+		ExpiresIn:   expiresIn,
+	}, rawRefreshToken, nil // returns the rawrefresh token, and the hmac version is in db
 }
 
-// RegisterFactory creates a new factory.
-func (s *AuthServiceImpl) RegisterFactory(ctx context.Context, payload domain.Factory) (domain.Factory, error) {
-	factory, err := s.factoryRepo.Create(ctx, payload)
+// Refresh is used to revoke the refresh token so the user has a fresh access token
+func (s *AuthServiceImpl) Refresh(ctx context.Context, refreshToken string) (domain.LoginResult, string, error) {
+	if refreshToken == "" {
+		slog.Warn("refresh failed: empty refresh token")
+		return domain.LoginResult{}, "", domain.ErrUnauthorized
+	}
+	tokenHash := s.hashRefreshTokenHMAC(refreshToken)
+
+	// check db for active hash
+	stored, err := s.refreshTokenRepo.FindActiveByHash(ctx, tokenHash)
 	if err != nil {
-		return domain.Factory{}, err
+		slog.Warn("refresh failed: refresh token not active", "error", err)
+		return domain.LoginResult{}, "", domain.ErrUnauthorized
 	}
 
-	slog.Info("successfully registered factory", "id", factory.ID)
-	return factory, nil
-}
+	// check to see if expired, else log out
+	if time.Now().UTC().After(stored.ExpiresAt) {
+		slog.Warn("refresh failed: refresh token expired", "refresh_token_id", stored.ID, "user_id", stored.UserID)
+		return domain.LoginResult{}, "", domain.ErrUnauthorized
+	}
 
-// GetOneFactory retrieves a single factory by its ID.
-func (s *AuthServiceImpl) GetOneFactory(ctx context.Context, factoryID string) (domain.Factory, error) {
-	factory, err := s.factoryRepo.FindByID(ctx, factoryID)
+	user, err := s.userRepo.FindByID(ctx, stored.UserID)
 	if err != nil {
-		return domain.Factory{}, err
+		slog.Warn("refresh failed: user not found", "user_id", stored.UserID, "error", err)
+		return domain.LoginResult{}, "", domain.ErrUnauthorized
 	}
 
-	slog.Info("successfully found factory", "id", factory.ID)
-	return factory, nil
-}
-
-// GetAllFactories retrieves all factories.
-func (s *AuthServiceImpl) GetAllFactories(ctx context.Context) ([]domain.Factory, error) {
-	factories, err := s.factoryRepo.FindAll(ctx)
+	// Generate a fresh access token
+	accessToken, expiresIn, err := s.generateAccessToken(user)
 	if err != nil {
-		return nil, err
+		slog.Error("refresh failed: generate access token", "user_id", user.ID, "error", err)
+		return domain.LoginResult{}, "", fmt.Errorf("generate access token: %w", err)
 	}
 
-	slog.Info("successfully found all factories")
-	return factories, nil
-}
-
-// DeleteFactory deletes a factory by ID.
-func (s *AuthServiceImpl) DeleteFactory(ctx context.Context, factoryID string) error {
-	if err := s.factoryRepo.Delete(ctx, factoryID); err != nil {
-		return err
-	}
-
-	slog.Info("successfully deleted factory", "id", factoryID)
-	return nil
-}
-
-// RegisterFactoryArea creates a new factory area
-func (s *AuthServiceImpl) RegisterFactoryArea(ctx context.Context, payload domain.FactoryArea) (domain.FactoryArea, error) {
-	area, err := s.factoryAreaRepo.Create(ctx, payload)
+	// Generate a fresh refresh token
+	newRefreshToken, err := s.generateRefreshToken()
 	if err != nil {
-		return domain.FactoryArea{}, err
+		slog.Error("refresh failed: generate refresh token", "user_id", user.ID, "error", err)
+		return domain.LoginResult{}, "", fmt.Errorf("generate refresh token: %w", err)
 	}
-	slog.Info("successfully registered factory area", "id", area.ID)
-	return area, nil
+
+	// Updates the refresh token in db
+	if err := s.refreshTokenRepo.UpdateRefreshToken(ctx, domain.RefreshToken{
+		ID:        stored.ID,
+		TokenHash: s.hashRefreshTokenHMAC(newRefreshToken), // hmac hash in db
+		ExpiresAt: time.Now().UTC().Add(s.refreshTTL),
+	}); err != nil {
+		slog.Error("refresh failed: rotate refresh token", "refresh_token_id", stored.ID, "user_id", stored.UserID, "error", err)
+		return domain.LoginResult{}, "", err
+	}
+
+	return domain.LoginResult{
+		AccessToken: accessToken,
+		TokenType:   "Bearer",
+		ExpiresIn:   expiresIn,
+	}, newRefreshToken, nil
 }
 
-// GetAllFactoryAreas retrieves all factory areas.
-func (s *AuthServiceImpl) GetAllFactoryAreas(ctx context.Context) ([]domain.FactoryArea, error) {
-	areas, err := s.factoryAreaRepo.FindAll(ctx)
+// Me returns the authenticated user profile.
+// this is a protected route
+func (s *AuthServiceImpl) Me(ctx context.Context, userID string) (domain.User, error) {
+	user, err := s.userRepo.FindByID(ctx, userID)
 	if err != nil {
-		return nil, err
+		return domain.User{}, err
 	}
-
-	slog.Info("successfully found all factory areas")
-
-	return areas, nil
+	return user, nil
 }
 
-// GetOneFactoryArea retrieves a single factory area by its ID.
-func (s *AuthServiceImpl) GetOneFactoryArea(ctx context.Context, areaID string) (domain.FactoryArea, error) {
-	area, err := s.factoryAreaRepo.FindByID(ctx, areaID)
+// generateAccessToken generates a short lived jwt token used by the client
+func (s *AuthServiceImpl) generateAccessToken(user domain.User) (string, time.Duration, error) {
+	now := time.Now().UTC()
+	expiresAt := now.Add(s.accessTTL)
+
+	claims := jwt.MapClaims{
+		"sub":        user.ID,          // subject of the jwt token
+		"company_id": user.CompanyID,   // company the user belongs to
+		"role":       user.Role,        // user role
+		"iss":        s.jwtIssuer,      // issuer of the jwt (auth-service)
+		"exp":        expiresAt.Unix(), // expiration time, when jwt expires
+		"iat":        now.Unix(),       // issued at time. Time at which jwt token was created
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	signed, err := token.SignedString(s.jwtSecret)
 	if err != nil {
-		return domain.FactoryArea{}, err
+		return "", time.Duration(0), fmt.Errorf("sign access token: %w", err)
 	}
 
-	slog.Info("successfully found factory area", "id", area.ID)
+	expiresIn := s.accessTTL
 
-	return area, nil
+	return signed, expiresIn, nil
 }
 
-// DeleteFactoryArea deletes a factory area by ID.
-func (s *AuthServiceImpl) DeleteFactoryArea(ctx context.Context, areaID string) error {
-	if err := s.factoryAreaRepo.Delete(ctx, areaID); err != nil {
-		return err
+// generateRefreshToken generates a long term jwt token stored in the db
+// is applied hashing after this function
+func (s *AuthServiceImpl) generateRefreshToken() (string, error) {
+	b := make([]byte, 32) // 256 bit random gen
+	if _, err := rand.Read(b); err != nil {
+		return "", err
 	}
 
-	slog.Info("successfully deleted factory area", "id", areaID)
-	return nil
+	return base64.RawURLEncoding.EncodeToString(b), nil
+}
+
+// hasRefreshTokenHMAC creates a deterministic lookup value for DB storage.
+// only the server with secret can reproduce/check this
+// important with good pepper incase db leak
+func (s *AuthServiceImpl) hashRefreshTokenHMAC(token string) string {
+	mac := hmac.New(sha256.New, s.refreshPepper)
+	mac.Write([]byte(token))
+	return base64.RawURLEncoding.EncodeToString(mac.Sum(nil))
 }

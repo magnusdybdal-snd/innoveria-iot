@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"innoveria-iot/device-service/internal/domain"
+	"innoveria-iot/pkg/ptrutil"
 )
 
 // MapGatewayDomainToDTO maps a slice of domain Gateways to a GatewayListResponse.
@@ -30,6 +31,7 @@ func mapGateway(from domain.Gateway) GatewayResponse {
 		Description:   from.Description,
 		Status:        int(from.Status),
 		State:         string(from.State),
+		FactoryID:     from.FactoryID,
 		FactoryAreaID: from.FactoryAreaID,
 		LastSeenAt:    from.LastSeenAt,
 		CreatedAt:     from.CreatedAt.Format(time.RFC3339),
@@ -40,25 +42,38 @@ func mapGateway(from domain.Gateway) GatewayResponse {
 // MapGatewayDTOToDomain maps a CreateGatewayRequest to a domain Gateway, setting defaults for State and Status.
 func MapGatewayDTOToDomain(from CreateGatewayRequest) domain.Gateway {
 	return domain.Gateway{
-		Id:         "", // converted later in db
-		CompanyId:  from.CompanyId,
-		GatewayEUI: from.GatewayEUI,
-		Name:       from.Name,
-		State:      domain.DeviceStateActive,
-		Status:     domain.StatusNeverSeen,
-		LastSeenAt: "", // converted later after chirpstack
+		Id:            "", // converted later in db
+		CompanyId:     from.CompanyId,
+		GatewayEUI:    from.GatewayEUI,
+		Name:          from.Name,
+		Description:   from.Description,
+		FactoryID:     from.FactoryID,
+		FactoryAreaID: from.FactoryAreaID,
+		State:         domain.DeviceStateActive,
+		Status:        domain.StatusNeverSeen,
+		LastSeenAt:    "", // converted later after chirpstack
 	}
 }
 
 // MapUpdateSensorDTOToDomain maps an UpdateSensorRequest to a domain Sensor.
 func MapUpdateSensorDTOToDomain(from UpdateSensorRequest) domain.Sensor {
 	return domain.Sensor{
-		Name:                from.Name,
+		Name:                ptrutil.Deref(from.Name),
 		Description:         from.Description,
-		FactoryID:           from.FactoryID,
-		FactoryAreaID:       from.FactoryAreaID,
-		ChirpstackProfileID: from.ChirpstackProfileID,
+		FactoryID:           ptrutil.Deref(from.FactoryID),
+		FactoryAreaID:       ptrutil.Deref(from.FactoryAreaID),
+		ChirpstackProfileID: ptrutil.Deref(from.ChirpstackProfileID),
 		ProductionResource:  from.ProductionResource,
+	}
+}
+
+// MapUpdateGatewayDTOToDomain maps an UpdateGatewayRequest to a domain Gateway.
+func MapUpdateGatewayDTOToDomain(from UpdateGatewayRequest) domain.Gateway {
+	return domain.Gateway{
+		Name:          ptrutil.Deref(from.Name),
+		Description:   from.Description,
+		FactoryID:     ptrutil.Deref(from.FactoryID),
+		FactoryAreaID: ptrutil.Deref(from.FactoryAreaID),
 	}
 }
 

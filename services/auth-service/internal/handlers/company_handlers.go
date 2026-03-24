@@ -24,7 +24,7 @@ import (
 // @Failure 400
 // @Failure 500
 // @Router /companies [post]
-func PostCompany(svc domain.AuthService) http.HandlerFunc {
+func PostCompany(svc domain.CompanyService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
@@ -66,7 +66,7 @@ func PostCompany(svc domain.AuthService) http.HandlerFunc {
 // @Success 200 {object} dto.CompanyListResponse
 // @Failure 500
 // @Router /companies [get]
-func GetAllCompanies(svc domain.AuthService) http.HandlerFunc {
+func GetAllCompanies(svc domain.CompanyService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
@@ -94,7 +94,7 @@ func GetAllCompanies(svc domain.AuthService) http.HandlerFunc {
 // @Failure 404
 // @Failure 500
 // @Router /companies/{id} [get]
-func GetOneCompany(svc domain.AuthService) http.HandlerFunc {
+func GetOneCompany(svc domain.CompanyService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
@@ -138,7 +138,7 @@ func GetOneCompany(svc domain.AuthService) http.HandlerFunc {
 // @Failure 404
 // @Failure 500
 // @Router /companies/{id} [delete]
-func DeleteCompany(svc domain.AuthService) http.HandlerFunc {
+func DeleteCompany(svc domain.CompanyService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		companyID := r.PathValue("id")
