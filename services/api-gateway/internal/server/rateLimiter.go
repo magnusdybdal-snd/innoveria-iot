@@ -163,12 +163,12 @@ func rateLimiterMiddleware(store *rateLimitStore, next http.Handler) http.Handle
 				logFields: []any{
 					"method", r.Method,
 					"path", r.URL.Path,
-					"logFields", r.RemoteAddr,
+					"remote_addr", r.RemoteAddr,
 				},
 			}
 		} else {
 			key := r.Method + ":" + r.URL.Path + ":" + ip
-			if store.allow(key, policy) {
+			if !store.allow(key, policy) {
 				deny = &denyResult{
 					code:       http.StatusTooManyRequests,
 					message:    "too many requests",
@@ -177,7 +177,7 @@ func rateLimiterMiddleware(store *rateLimitStore, next http.Handler) http.Handle
 					logFields: []any{
 						"method", r.Method,
 						"path", r.URL.Path,
-						"logFields", r.RemoteAddr,
+						"client_ip", ip,
 					},
 				}
 			}
@@ -189,13 +189,14 @@ func rateLimiterMiddleware(store *rateLimitStore, next http.Handler) http.Handle
 			slog.Warn(deny.logMsg, deny.logFields...)
 			resp := json.ErrorResponse{
 				Error: json.ErrorDetail{
-					Code:    http.StatusTooManyRequests,
-					Message: "too many requests",
+					Code:    deny.code,
+					Message: deny.message,
 				},
 			}
-			if err := json.Encode(w, http.StatusTooManyRequests, resp); err != nil {
+			if err := json.Encode(w, deny.code, resp); err != nil {
 				slog.Error("failed to write rate limit response", "error", err)
 			}
+			return
 		}
 
 		next.ServeHTTP(w, r)
