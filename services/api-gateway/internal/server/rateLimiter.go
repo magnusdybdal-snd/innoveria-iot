@@ -219,6 +219,7 @@ func clientIP(r *http.Request) (string, bool) {
 		return "", false
 	}
 
+	// checks to see if the proxy ip has a trused header
 	if isTrustedProxyIP(remoteIP) {
 		if xffIP, ok := firstXForwardedFor(r.Header.Get("X-Forwarded-For")); ok {
 			return xffIP.String(), true
@@ -259,6 +260,8 @@ func firstXForwardedFor(raw string) (netip.Addr, bool) {
 	return netip.Addr{}, false
 }
 
+// Todo: This is now trusted by caddy or another reverse proxy
+// but should be handled here for an extra layer of reinforcement
 func isTrustedProxyIP(ip netip.Addr) bool {
 	return ip.IsLoopback() || ip.IsPrivate()
 }
