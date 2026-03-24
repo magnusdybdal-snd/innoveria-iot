@@ -75,6 +75,12 @@ func (r *PayloadSchemaRepository) UpsertDrafts(ctx context.Context, chirpstackPr
 // All rows are updated in a single query — atomic by default, no transaction needed.
 // Returns domain.ErrInvalidMeasurementType if any slug does not exist in the vocabulary.
 func (r *PayloadSchemaRepository) SaveLabels(ctx context.Context, schemas []domain.PayloadSchema) error {
+	for _, s := range schemas {
+		if s.MeasurementType == nil {
+			return fmt.Errorf("save payload schema labels: measurement_type must not be nil for payload_key %q", s.PayloadKey)
+		}
+	}
+
 	profileIDs := make([]string, len(schemas))
 	payloadKeys := make([]string, len(schemas))
 	measurementTypes := make([]string, len(schemas))
