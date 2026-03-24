@@ -84,6 +84,31 @@ func TestCreateRule_EmptyBody_Returns400(t *testing.T) {
 	}
 }
 
+// TestCreateRule_InvalidAggregationMethod_Returns400 verifies that an invalid aggregation_method returns 400 Bad Request.
+func TestCreateRule_InvalidAggregationMethod_Returns400(t *testing.T) {
+	svc := &mockRuleService{}
+
+	body := `{
+		"company_id": "a0000000-0000-0000-0000-000000000001",
+		"name": "Test Rule",
+		"context_type": "energy",
+		"measurement_type": "watt",
+		"aggregation_method": "INVALID",
+		"time_bucket_minutes": 15,
+		"is_active": true
+	}`
+
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/context/rules", strings.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
+	rec := httptest.NewRecorder()
+
+	handlers.CreateRule(svc).ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("expected 400, got %d", rec.Code)
+	}
+}
+
 // TestCreateRule_ServiceError_Returns500 verifies that a service error returns 500 Internal Server Error.
 func TestCreateRule_ServiceError_Returns500(t *testing.T) {
 	svc := &mockRuleService{

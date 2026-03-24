@@ -77,6 +77,11 @@ func CreateRule(svc domain.RuleService) http.HandlerFunc {
 			return
 		}
 
+		if !domain.IsValidAggregationMethod(req.AggregationMethod) {
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("invalid aggregation_method: %s", req.AggregationMethod), "aggregation_method must be one of: AVG, SUM, MAX, MIN")
+			return
+		}
+
 		rule := domain.AggregationRule{
 			CompanyID:         req.CompanyID,
 			Name:              req.Name,

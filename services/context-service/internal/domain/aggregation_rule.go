@@ -2,8 +2,17 @@ package domain
 
 import (
 	"context"
+	"slices"
 	"time"
 )
+
+// ValidAggregationMethods is the single source of truth for allowed aggregation strategies.
+var ValidAggregationMethods = []string{"AVG", "SUM", "MAX", "MIN"}
+
+// IsValidAggregationMethod reports whether the given method is one of the allowed aggregation strategies.
+func IsValidAggregationMethod(method string) bool {
+	return slices.Contains(ValidAggregationMethods, method)
+}
 
 // AggregationRule is the domain model for affregation rules
 type AggregationRule struct {
