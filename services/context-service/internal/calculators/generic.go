@@ -1,6 +1,7 @@
 package calculators
 
 import (
+	"fmt"
 	"math"
 	"time"
 
@@ -17,9 +18,13 @@ func (c *GenericAggregationCalculator) Calculate(input Input) (domain.ContextDat
 	buckets := buildBuckets(input.From, input.To, input.BucketMinutes)
 	lastIdx := len(buckets) - 1
 
+	var err error
 	for i := range buckets {
 		inBucket := readingsInBucket(input.Readings, buckets[i].PeriodStart, buckets[i].PeriodEnd, i == lastIdx)
-		buckets[i].Value = aggregate(inBucket, input.Rule.MeasurementType, input.Rule.AggregationMethod)
+		buckets[i].Value, err = aggregate(inBucket, input.Rule.MeasurementType, input.Rule.AggregationMethod)
+		if err != nil {
+			return domain.ContextData{}, err
+		}
 	}
 
 	total := 0.0
@@ -41,9 +46,9 @@ func (c *GenericAggregationCalculator) Calculate(input Input) (domain.ContextDat
 
 // aggregate applies the given method to the extracted values from readings.
 // Returns 0.0 for empty slices.
-func aggregate(readings []domain.MeasurementReading, key, method string) float64 {
+func aggregate(readings []domain.MeasurementReading, key, method string) (float64, error) {
 	if len(readings) == 0 {
-		return 0.0
+		return 0.0, nil
 	}
 
 	values := make([]float64, len(readings))
@@ -57,13 +62,13 @@ func aggregate(readings []domain.MeasurementReading, key, method string) float64
 		for _, v := range values {
 			sum += v
 		}
-		return sum / float64(len(values))
+		return sum / float64(len(values)), nil
 	case "SUM":
 		sum := 0.0
 		for _, v := range values {
 			sum += v
 		}
-		return sum
+		return sum, nil
 	case "MIN":
 		min := math.MaxFloat64
 		for _, v := range values {
@@ -71,7 +76,7 @@ func aggregate(readings []domain.MeasurementReading, key, method string) float64
 				min = v
 			}
 		}
-		return min
+		return min, nil
 	case "MAX":
 		max := -math.MaxFloat64
 		for _, v := range values {
@@ -79,8 +84,8 @@ func aggregate(readings []domain.MeasurementReading, key, method string) float64
 				max = v
 			}
 		}
-		return max
+		return max, nil
 	default:
-		return 0.0
+		return 0.0, fmt.Errorf("unsupported aggregation method: %s", method)
 	}
 }
