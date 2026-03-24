@@ -1,0 +1,104 @@
+package handlers_test
+
+import (
+	"context"
+	"errors"
+	"net/http"
+	"net/http/httptest"
+	"strings"
+	"testing"
+
+	"innoveria-iot/context-service/internal/domain"
+	"innoveria-iot/context-service/internal/handlers"
+)
+
+type mockRuleService struct {
+	createRuleFunc func(ctx context.Context, rule domain.AggregationRule) (string, error)
+	getRulesFunc   func(ctx context.Context, companyID string) ([]domain.AggregationRule, error)
+}
+
+func (m *mockRuleService) CreateRule(ctx context.Context, rule domain.AggregationRule) (string, error) {
+	return m.createRuleFunc(ctx, rule)
+}
+
+func (m *mockRuleService) GetRules(ctx context.Context, companyID string) ([]domain.AggregationRule, error) {
+	return m.getRulesFunc(ctx, companyID)
+}
+
+const validRuleBody = `{
+	"company_id": "company-1",
+	"name": "Test Rule",
+	"context_type": "energy",
+	"measurement_type": "watt",
+	"aggregation_method": "AVG",
+	"time_bucket_minutes": 15,
+	"is_active": true
+}`
+
+// TestCreateRule_ValidBody_Returns201 verifies that a valid request body returns 201 Created.
+func TestCreateRule_ValidBody_Returns201(t *testing.T) {
+	svc := &mockRuleService{
+		createRuleFunc: func(_ context.Context, _ domain.AggregationRule) (string, error) {
+			return "some-uuid", nil
+		},
+	}
+
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/context/rules", strings.NewReader(validRuleBody))
+	req.Header.Set("Content-Type", "application/json")
+	rec := httptest.NewRecorder()
+
+	handlers.CreateRule(svc).ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusCreated {
+		t.Errorf("expected 201, got %d", rec.Code)
+	}
+}
+
+// TestCreateRule_MalformedJSON_Returns400 verifies that malformed JSON returns 400 Bad Request.
+func TestCreateRule_MalformedJSON_Returns400(t *testing.T) {
+	svc := &mockRuleService{}
+
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/context/rules", strings.NewReader(`{not valid json`))
+	req.Header.Set("Content-Type", "application/json")
+	rec := httptest.NewRecorder()
+
+	handlers.CreateRule(svc).ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("expected 400, got %d", rec.Code)
+	}
+}
+
+// TestCreateRule_EmptyBody_Returns400 verifies that an empty body returns 400 Bad Request.
+func TestCreateRule_EmptyBody_Returns400(t *testing.T) {
+	svc := &mockRuleService{}
+
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/context/rules", strings.NewReader(""))
+	req.Header.Set("Content-Type", "application/json")
+	rec := httptest.NewRecorder()
+
+	handlers.CreateRule(svc).ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("expected 400, got %d", rec.Code)
+	}
+}
+
+// TestCreateRule_ServiceError_Returns500 verifies that a service error returns 500 Internal Server Error.
+func TestCreateRule_ServiceError_Returns500(t *testing.T) {
+	svc := &mockRuleService{
+		createRuleFunc: func(_ context.Context, _ domain.AggregationRule) (string, error) {
+			return "", errors.New("db error")
+		},
+	}
+
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/context/rules", strings.NewReader(validRuleBody))
+	req.Header.Set("Content-Type", "application/json")
+	rec := httptest.NewRecorder()
+
+	handlers.CreateRule(svc).ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusInternalServerError {
+		t.Errorf("expected 500, got %d", rec.Code)
+	}
+}
