@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"innoveria-iot/device-service/internal/domain"
 	"innoveria-iot/device-service/internal/handlers/dto"
@@ -75,6 +76,17 @@ func PutSensorMetrics(svc domain.SensorMetricService, sensorRepo domain.SensorRe
 		if len(payload.Metrics) == 0 {
 			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("metrics must not be empty"), "bad request")
 			return
+		}
+
+		for _, m := range payload.Metrics {
+			if strings.TrimSpace(m.PayloadKey) == "" {
+				json.HandleError(w, http.StatusBadRequest, fmt.Errorf("payload_key must not be empty"), "bad request")
+				return
+			}
+			if strings.TrimSpace(m.MeasurementType) == "" {
+				json.HandleError(w, http.StatusBadRequest, fmt.Errorf("measurement_type must not be empty"), "bad request")
+				return
+			}
 		}
 
 		sensor, err := sensorRepo.FindByEUI(ctx, eui)

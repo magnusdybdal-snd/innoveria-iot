@@ -147,6 +147,17 @@ func PutPayloadSchemaLabels(svc domain.PayloadSchemaService) http.HandlerFunc {
 			return
 		}
 
+		for _, l := range payload.Labels {
+			if strings.TrimSpace(l.PayloadKey) == "" {
+				json.HandleError(w, http.StatusBadRequest, fmt.Errorf("payload_key must not be empty"), "bad request")
+				return
+			}
+			if strings.TrimSpace(l.MeasurementType) == "" {
+				json.HandleError(w, http.StatusBadRequest, fmt.Errorf("measurement_type must not be empty"), "bad request")
+				return
+			}
+		}
+
 		schemas := dto.MapSaveLabelsRequestToDomain(profileID, payload)
 
 		if err := svc.SaveLabels(ctx, schemas); err != nil {
