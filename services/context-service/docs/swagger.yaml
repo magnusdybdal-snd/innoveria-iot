@@ -55,6 +55,30 @@ definitions:
       unit:
         type: string
     type: object
+  dto.CreateAggregationRuleRequest:
+    properties:
+      aggregation_method:
+        type: string
+      company_id:
+        type: string
+      context_type:
+        type: string
+      is_active:
+        type: boolean
+      measurement_type:
+        type: string
+      name:
+        type: string
+      time_bucket_minutes:
+        type: integer
+    required:
+    - aggregation_method
+    - company_id
+    - context_type
+    - measurement_type
+    - name
+    - time_bucket_minutes
+    type: object
 host: localhost:8086
 info:
   contact: {}
@@ -141,6 +165,28 @@ paths:
         "500":
           description: Internal Server Error
       summary: Get Aggregation Rules
+      tags:
+      - context
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Aggregation Rule to create
+        in: body
+        name: rule
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateAggregationRuleRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Create Aggregation Rule
       tags:
       - context
 swagger: "2.0"
