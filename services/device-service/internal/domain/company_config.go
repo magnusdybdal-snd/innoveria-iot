@@ -3,12 +3,8 @@ package domain
 
 import (
 	"context"
-	"errors"
 	"time"
 )
-
-// ErrNotFound is returned when a requested resource does not exist in the database.
-var ErrNotFound = errors.New("not found")
 
 // CompanyConfig holds the Chirpstack tenant and application IDs associated with a company, created during onboarding.
 type CompanyConfig struct {

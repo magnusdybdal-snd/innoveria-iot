@@ -43,13 +43,15 @@ func Run() error {
 	companyConfigRepo := repository.NewCompanyConfigRepository(database)
 	gatewayRepo := repository.NewGatewayRepository(database)
 	sensorRepo := repository.NewSensorRepository(database)
+	measurementTypeRepo := repository.NewMeasurementTypeRepository(database)
 	gatewaySvc := service.NewGatewayService(chirpstackClient, gatewayRepo, companyConfigRepo)
 	sensorProfileSvc := service.NewSensorProfileService(chirpstackClient)
 	sensorSvc := service.NewSensorService(chirpstackClient, sensorRepo, companyConfigRepo, sensorProfileSvc)
 	companyConfigSvc := service.NewCompanyConfigService(chirpstackClient, companyConfigRepo)
+	measurementTypeSvc := service.NewMeasurementTypeService(measurementTypeRepo)
 
 	// Setting up mux and http server
-	mux := NewRouter(gatewaySvc, sensorSvc, sensorProfileSvc, companyConfigSvc, cfg.EnableSwagger)
+	mux := NewRouter(gatewaySvc, sensorSvc, sensorProfileSvc, companyConfigSvc, measurementTypeSvc, cfg.EnableSwagger)
 	server := &http.Server{
 		Addr:              cfg.Addr,
 		Handler:           mux,

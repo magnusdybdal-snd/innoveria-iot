@@ -201,6 +201,112 @@ const docTemplate = `{
                 }
             }
         },
+        "/measurement-types": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "measurement-types"
+                ],
+                "summary": "List active measurement types",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.MeasurementTypeListResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "measurement-types"
+                ],
+                "summary": "Create a measurement type",
+                "parameters": [
+                    {
+                        "description": "Measurement type payload",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateMeasurementTypeRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "409": {
+                        "description": "Conflict"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/measurement-types/all": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "measurement-types"
+                ],
+                "summary": "List all measurement types including deprecated",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.MeasurementTypeListResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/measurement-types/{slug}/deprecate": {
+            "patch": {
+                "tags": [
+                    "measurement-types"
+                ],
+                "summary": "Deprecate a measurement type",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Measurement type slug",
+                        "name": "slug",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/sensor-profiles": {
             "get": {
                 "description": "Not authenticated — every user can access this list.",
@@ -397,6 +503,27 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.CreateMeasurementTypeRequest": {
+            "type": "object",
+            "required": [
+                "display_name",
+                "slug"
+            ],
+            "properties": {
+                "default_unit": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "display_name": {
+                    "type": "string"
+                },
+                "slug": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.CreateSensorRequest": {
             "type": "object",
             "required": [
@@ -491,6 +618,40 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.MeasurementTypeListResponse": {
+            "type": "object",
+            "properties": {
+                "measurement_types": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.MeasurementTypeResponse"
+                    }
+                },
+                "total_count": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.MeasurementTypeResponse": {
+            "type": "object",
+            "properties": {
+                "default_unit": {
+                    "type": "string"
+                },
+                "deprecated": {
+                    "type": "boolean"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "display_name": {
+                    "type": "string"
+                },
+                "slug": {
                     "type": "string"
                 }
             }
