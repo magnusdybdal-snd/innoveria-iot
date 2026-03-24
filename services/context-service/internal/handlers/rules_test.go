@@ -109,6 +109,75 @@ func TestCreateRule_InvalidAggregationMethod_Returns400(t *testing.T) {
 	}
 }
 
+// TestCreateRule_ZeroTimeBucket_Returns400 verifies that a time_bucket_minutes of 0 returns 400 Bad Request.
+func TestCreateRule_ZeroTimeBucket_Returns400(t *testing.T) {
+	svc := &mockRuleService{}
+
+	body := `{
+		"company_id": "a0000000-0000-0000-0000-000000000001",
+		"name": "Test Rule",
+		"context_type": "energy",
+		"measurement_type": "watt",
+		"aggregation_method": "AVG",
+		"time_bucket_minutes": 0,
+		"is_active": true
+	}`
+
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/context/rules", strings.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
+	rec := httptest.NewRecorder()
+
+	handlers.CreateRule(svc).ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("expected 400, got %d", rec.Code)
+	}
+}
+
+// TestCreateRule_NegativeTimeBucket_Returns400 verifies that a negative time_bucket_minutes returns 400 Bad Request.
+func TestCreateRule_NegativeTimeBucket_Returns400(t *testing.T) {
+	svc := &mockRuleService{}
+
+	body := `{
+		"company_id": "a0000000-0000-0000-0000-000000000001",
+		"name": "Test Rule",
+		"context_type": "energy",
+		"measurement_type": "watt",
+		"aggregation_method": "AVG",
+		"time_bucket_minutes": -10,
+		"is_active": true
+	}`
+
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/context/rules", strings.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
+	rec := httptest.NewRecorder()
+
+	handlers.CreateRule(svc).ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("expected 400, got %d", rec.Code)
+	}
+}
+
+// TestCreateRule_DuplicateRule_Returns409 verifies that a duplicate (company_id, context_type) returns 409 Conflict.
+func TestCreateRule_DuplicateRule_Returns409(t *testing.T) {
+	svc := &mockRuleService{
+		createRuleFunc: func(_ context.Context, _ domain.AggregationRule) (string, error) {
+			return "", domain.ErrConflict
+		},
+	}
+
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/context/rules", strings.NewReader(validRuleBody))
+	req.Header.Set("Content-Type", "application/json")
+	rec := httptest.NewRecorder()
+
+	handlers.CreateRule(svc).ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusConflict {
+		t.Errorf("expected 409, got %d", rec.Code)
+	}
+}
+
 // TestCreateRule_ServiceError_Returns500 verifies that a service error returns 500 Internal Server Error.
 func TestCreateRule_ServiceError_Returns500(t *testing.T) {
 	svc := &mockRuleService{

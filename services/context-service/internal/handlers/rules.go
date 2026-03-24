@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -82,6 +83,11 @@ func CreateRule(svc domain.RuleService) http.HandlerFunc {
 			return
 		}
 
+		if req.TimeBucketMinutes <= 0 {
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("invalid time_bucket_minutes: %d", req.TimeBucketMinutes), "time_bucket_minutes must be greater than 0")
+			return
+		}
+
 		rule := domain.AggregationRule{
 			CompanyID:         req.CompanyID,
 			Name:              req.Name,
@@ -94,6 +100,10 @@ func CreateRule(svc domain.RuleService) http.HandlerFunc {
 
 		ruleID, err := svc.CreateRule(ctx, rule)
 		if err != nil {
+			if errors.Is(err, domain.ErrConflict) {
+				json.HandleError(w, http.StatusConflict, err, "a rule with this context_type already exists for the company")
+				return
+			}
 			json.HandleError(w, http.StatusInternalServerError, err, "failed to create rule")
 			return
 		}

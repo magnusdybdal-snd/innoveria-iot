@@ -6,6 +6,7 @@ import (
 	"errors"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 
 	"innoveria-iot/context-service/internal/domain"
 	"innoveria-iot/pkg/dbutil"
@@ -116,6 +117,12 @@ func (r *RuleRepository) Create(ctx context.Context, rule domain.AggregationRule
 		rule.IsActive,
 	).Scan(&ruleID)
 	if err != nil {
+		var pgErr *pgconn.PgError
+		// PostgreSQL error code 23505 is "unique_violation", raised when inserting a duplicate
+		// (company_id, context_type) pair, which violates the unique constraint on the table.
+		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
+			return "", domain.ErrConflict
+		}
 		return "", err
 	}
 	return ruleID, nil
