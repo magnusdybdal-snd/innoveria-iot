@@ -16,9 +16,6 @@ ALTER TABLE "device"."sensor_metric"
     ALTER COLUMN "payload_key" DROP DEFAULT;
 
 ALTER TABLE "device"."sensor_metric"
-    DROP CONSTRAINT "sensor_metric_sensor_id_measurement_type_key";
-
-ALTER TABLE "device"."sensor_metric"
     ADD CONSTRAINT "sensor_metric_sensor_id_payload_key_key"
     UNIQUE ("sensor_id", "payload_key");
 
@@ -36,10 +33,6 @@ ALTER TABLE "device"."sensor_metric"
 
 ALTER TABLE "device"."sensor_metric"
     DROP CONSTRAINT "sensor_metric_sensor_id_payload_key_key";
-
-ALTER TABLE "device"."sensor_metric"
-    ADD CONSTRAINT "sensor_metric_sensor_id_measurement_type_key"
-    UNIQUE ("sensor_id", "measurement_type");
 
 ALTER TABLE "device"."sensor_metric"
     DROP COLUMN "payload_key";
