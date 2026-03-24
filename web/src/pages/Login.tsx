@@ -2,6 +2,7 @@ import { useContext, useState } from "react";
 
 import innLogoDark from "@assets/innoveriaDark.png";
 import innLogoLight from "@assets/innoveriaLight.png";
+import { postLogin } from "@entities/user";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import Box from "@mui/material/Box";
@@ -42,6 +43,7 @@ export default function Base() {
   // Error types
   const [fillError, setFillError] = useState(false);
   const [equalError, setEqualError] = useState(false);
+  const [loginError, setLoginError] = useState(false);
 
   const [firstLogin, setFirstLogin] = useState(false);
   const navigate = useNavigate();
@@ -88,7 +90,8 @@ export default function Base() {
     symbol: !hasSymbol(password),
   });
 
-  const handleLogin = () => {
+  const handleLogin = (loginData: { email: string; password: string }) => {
+    setFirstLogin(false);
     const allFilled = loginFields.every(
       (field) => (loginValues[field] ?? "").trim() !== "",
     );
@@ -130,8 +133,19 @@ export default function Base() {
 
     setFillError(false);
     setEqualError(false);
+    setLoginError(false);
 
-    navigate("/");
+    return postLogin({
+      email: loginData.email,
+      password: loginData.password,
+    })
+      .then(() => {
+        navigate("/");
+      })
+      .catch((err: unknown) => {
+        setLoginError(true);
+        throw err;
+      });
   };
 
   return (
@@ -234,7 +248,12 @@ export default function Base() {
           />
         )}
         <Button
-          onClick={handleLogin}
+          onClick={() =>
+            handleLogin({
+              email: loginValues.email ?? "",
+              password: loginValues.password ?? "",
+            })
+          }
           fullWidth
           sx={{
             backgroundColor: green[500],
@@ -253,6 +272,9 @@ export default function Base() {
             <br />
             as the new password
           </Typography>
+        )}
+        {loginError && (
+          <Typography color="error">Email or password is wrong</Typography>
         )}
         {passErrors.length && (
           <Typography color="error">Must be at least 8 characters</Typography>
