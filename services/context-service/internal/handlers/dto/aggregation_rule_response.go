@@ -16,3 +16,14 @@ type AggregationRuleResponse struct {
 	CreatedAt         time.Time `json:"created_at"`
 	UpdatedAt         time.Time `json:"updated_at"`
 }
+
+// CreateAggregationRuleRequest represents the request structure for creating a new aggregation rule in the context service API.
+type CreateAggregationRuleRequest struct {
+	CompanyID         string `json:"company_id" validate:"required"`
+	Name              string `json:"name" validate:"required"`
+	ContextType       string `json:"context_type" validate:"required"`
+	MeasurementType   string `json:"measurement_type" validate:"required"`
+	AggregationMethod string `json:"aggregation_method" validate:"required"`
+	TimeBucketMinutes int    `json:"time_bucket_minutes" validate:"required,gt=0"`
+	IsActive          bool   `json:"is_active"`
+}

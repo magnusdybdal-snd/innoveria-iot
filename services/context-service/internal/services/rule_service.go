@@ -19,3 +19,8 @@ func NewRuleServiceImpl(repo domain.RuleRepository) *RuleServiceImpl {
 func (s *RuleServiceImpl) GetRules(ctx context.Context, companyID string) ([]domain.AggregationRule, error) {
 	return s.repo.GetByCompanyID(ctx, companyID)
 }
+
+// CreateRule creates a new aggregation rule in the database and returns its ID.
+func (s *RuleServiceImpl) CreateRule(ctx context.Context, rule domain.AggregationRule) (string, error) {
+	return s.repo.Create(ctx, rule)
+}

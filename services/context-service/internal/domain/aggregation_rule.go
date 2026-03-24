@@ -23,9 +23,11 @@ type AggregationRule struct {
 type RuleRepository interface {
 	GetByCompanyID(ctx context.Context, companyID string) ([]AggregationRule, error)
 	GetByID(ctx context.Context, ruleID string) (AggregationRule, error)
+	Create(ctx context.Context, rule AggregationRule) (string, error)
 }
 
 // RuleService defines business logic operations for aggregation rules.
 type RuleService interface {
 	GetRules(ctx context.Context, companyID string) ([]AggregationRule, error)
+	CreateRule(ctx context.Context, rule AggregationRule) (string, error)
 }

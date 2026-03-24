@@ -56,3 +56,45 @@ func GetRules(svc domain.RuleService) http.HandlerFunc {
 		}
 	}
 }
+
+// CreateRule creates a new aggregation rule in the database and returns its ID.
+// @Summary 		Create Aggregation Rule
+// @Tags 			context
+// @Accept 			json
+// @Produce 		json
+// @Param 			rule body dto.CreateAggregationRuleRequest true "Aggregation Rule to create"
+// @Success 		201
+// @Failure 		400
+// @Failure 		500
+// @Router 			/rules [post]
+func CreateRule(svc domain.RuleService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+
+		req, err := json.Decode[dto.CreateAggregationRuleRequest](r)
+		if err != nil {
+			json.HandleError(w, http.StatusBadRequest, err, "invalid request body")
+			return
+		}
+
+		rule := domain.AggregationRule{
+			CompanyID:         req.CompanyID,
+			Name:              req.Name,
+			ContextType:       req.ContextType,
+			MeasurementType:   req.MeasurementType,
+			AggregationMethod: req.AggregationMethod,
+			TimeBucketMinutes: req.TimeBucketMinutes,
+			IsActive:          req.IsActive,
+		}
+
+		ruleID, err := svc.CreateRule(ctx, rule)
+		if err != nil {
+			json.HandleError(w, http.StatusInternalServerError, err, "failed to create rule")
+			return
+		}
+
+		if err := json.Encode(w, http.StatusCreated, ruleID); err != nil {
+			json.HandleError(w, http.StatusInternalServerError, err, "failed to encode response")
+		}
+	}
+}

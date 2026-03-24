@@ -23,6 +23,12 @@ const (
 	FROM context.aggregation_rule
 	WHERE rule_id = $1
 `
+
+	createRule = `
+	INSERT INTO context.aggregation_rule (company_id, name, context_type, measurement_type, aggregation_method, time_bucket_minutes, is_active)
+	VALUES ($1, $2, $3, $4, $5, $6, $7)
+	RETURNING rule_id
+`
 )
 
 // RuleRepository provides methods to interact with the aggregation_rule table in the database.
@@ -94,4 +100,23 @@ func (r *RuleRepository) GetByID(ctx context.Context, ruleID string) (domain.Agg
 		return domain.AggregationRule{}, err
 	}
 	return rule, nil
+}
+
+// Create inserts a new aggregation rule into the database and returns the generated rule ID.
+func (r *RuleRepository) Create(ctx context.Context, rule domain.AggregationRule) (string, error) {
+	var ruleID string
+	// Execute the insert query and scan the returned rule_id into the ruleID variable
+	err := r.db.Pool.QueryRow(ctx, createRule,
+		rule.CompanyID,
+		rule.Name,
+		rule.ContextType,
+		rule.MeasurementType,
+		rule.AggregationMethod,
+		rule.TimeBucketMinutes,
+		rule.IsActive,
+	).Scan(&ruleID)
+	if err != nil {
+		return "", err
+	}
+	return ruleID, nil
 }
