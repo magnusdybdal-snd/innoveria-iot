@@ -7,6 +7,14 @@ import (
 	"innoveria-iot/pkg/ptrutil"
 )
 
+// MapDraftProfilesToDTO maps a slice of draft profile IDs to a DraftProfilesResponse.
+func MapDraftProfilesToDTO(from []string) DraftProfilesResponse {
+	return DraftProfilesResponse{
+		TotalCount: len(from),
+		ProfileIDs: from,
+	}
+}
+
 // MapPayloadSchemaDomainToDTO maps a slice of domain PayloadSchemas to a PayloadSchemaListResponse.
 func MapPayloadSchemaDomainToDTO(from []domain.PayloadSchema) PayloadSchemaListResponse {
 	schemas := make([]PayloadSchemaResponse, len(from))
