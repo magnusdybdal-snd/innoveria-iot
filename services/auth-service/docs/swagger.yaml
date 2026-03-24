@@ -95,6 +95,35 @@ definitions:
       updated_at:
         type: string
     type: object
+  dto.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  dto.LoginResult:
+    properties:
+      access_token:
+        type: string
+      expires_in:
+        type: integer
+      token_type:
+        type: string
+    type: object
+  dto.MeResponse:
+    properties:
+      company_id:
+        type: string
+      email:
+        type: string
+      name:
+        type: string
+      role:
+        type: string
+      user_id:
+        type: string
+    type: object
 host: localhost:8084
 info:
   contact: {}
@@ -349,4 +378,64 @@ paths:
       summary: Get one factory area
       tags:
       - factory-areas
+  /login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Login payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.LoginResult'
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Login with email and password
+      tags:
+      - auth
+  /me:
+    get:
+      description: Returns profile details for the authenticated user.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.MeResponse'
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal Server Error
+      summary: Get current user profile
+      tags:
+      - auth
+  /refresh:
+    post:
+      description: Validates the refresh_token cookie, rotates it, and returns a new
+        access token.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.LoginResult'
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal Server Error
+      summary: Refresh access token
+      tags:
+      - auth
 swagger: "2.0"

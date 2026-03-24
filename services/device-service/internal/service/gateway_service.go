@@ -70,8 +70,24 @@ func (g *GatewayServiceImpl) Update(ctx context.Context, gatewayId string, paylo
 		return fmt.Errorf("update gateway: gateway %s not found in database: %w", gatewayId, err)
 	}
 
+	oldGateway := gateway // save before merge
+
+	// Update values if not nil / empty string
+	if payload.Name != "" {
+		gateway.Name = payload.Name
+	}
+	if payload.Description != nil {
+		gateway.Description = payload.Description
+	}
+	if payload.FactoryID != "" {
+		gateway.FactoryID = payload.FactoryID
+	}
+	if payload.FactoryAreaID != "" {
+		gateway.FactoryAreaID = payload.FactoryAreaID
+	}
+
 	// Only update in Chirpstack (and apply saga) if the name has changed (Chirpstack only allows name updates)
-	if payload.Name != gateway.Name {
+	if gateway.Name != oldGateway.Name {
 
 		// check database for chirpstack tenant ID
 		companycfg, err := g.companycfgRepo.FindByCompanyID(ctx, gateway.CompanyId)
@@ -79,19 +95,16 @@ func (g *GatewayServiceImpl) Update(ctx context.Context, gatewayId string, paylo
 			return fmt.Errorf("update gateway: finding company tenant ID: %w", err)
 		}
 
-		// Ensure the payload EUI field is populated before mapping to Chirpstack
-		payload.GatewayEUI = gateway.GatewayEUI
-
 		// Chirpstack put request, Chirpstack dont need gatewayID, just gatewayEUI
-		newReq := mappers.MapChirpstackGatewayRequest(payload, companycfg.ChirpstackTenantID)
+		newReq := mappers.MapChirpstackGatewayRequest(gateway, companycfg.ChirpstackTenantID)
 		if err := g.cc.RenameGateway(ctx, newReq); err != nil {
 			return fmt.Errorf("update gateway: update in chirpstack: %w", err)
 		}
 
 		// On successful update in Chirpstack, try to update the database.
-		if err := g.gatewayRepo.Update(ctx, gatewayId, payload); err != nil {
+		if err := g.gatewayRepo.Update(ctx, gatewayId, gateway); err != nil {
 			// Compensate: revert Chirpstack to the old name.
-			oldReq := mappers.MapChirpstackGatewayRequest(gateway, companycfg.ChirpstackTenantID)
+			oldReq := mappers.MapChirpstackGatewayRequest(oldGateway, companycfg.ChirpstackTenantID)
 			if compErr := g.cc.RenameGateway(ctx, oldReq); compErr != nil {
 				slog.Error("saga compensation failed: could not revert gateway name in chirpstack after db update failure",
 					"id", gatewayId, "error", compErr)
@@ -100,7 +113,7 @@ func (g *GatewayServiceImpl) Update(ctx context.Context, gatewayId string, paylo
 		}
 	} else {
 		// Name unchanged — Chirpstack stores no other gateway fields, so only update the DB.
-		if err := g.gatewayRepo.Update(ctx, gatewayId, payload); err != nil {
+		if err := g.gatewayRepo.Update(ctx, gatewayId, gateway); err != nil {
 			return fmt.Errorf("update gateway: update in database: %w", err)
 		}
 	}

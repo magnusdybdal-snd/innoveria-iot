@@ -3,10 +3,13 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"innoveria-iot/device-service/internal/domain"
 	"innoveria-iot/device-service/internal/handlers/dto"
 	"innoveria-iot/pkg/json"
+
+	"github.com/google/uuid"
 )
 
 // GetSensors returns all GetSensors
@@ -60,6 +63,19 @@ func PostSensor(svc domain.SensorService) http.HandlerFunc {
 			return
 		}
 
+		payload.CompanyID = strings.TrimSpace(payload.CompanyID)
+		payload.Name = strings.TrimSpace(payload.Name)
+		payload.DeviceEUI = strings.TrimSpace(payload.DeviceEUI)
+		payload.AppKey = strings.TrimSpace(payload.AppKey)
+		payload.ChirpstackProfileID = strings.TrimSpace(payload.ChirpstackProfileID)
+		payload.FactoryID = strings.TrimSpace(payload.FactoryID)
+		payload.FactoryAreaID = strings.TrimSpace(payload.FactoryAreaID)
+
+		if payload.CompanyID == "" || payload.Name == "" || payload.DeviceEUI == "" || payload.AppKey == "" || payload.ChirpstackProfileID == "" || payload.FactoryID == "" || payload.FactoryAreaID == "" {
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("company_id, name, device_eui, app_key, device_profile_id, factory_id and factory_area_id are required"), "bad request")
+			return
+		}
+
 		data := dto.MapCreateSensorDTOToDomain(payload)
 
 		if err := svc.Create(ctx, data); err != nil {
@@ -72,7 +88,7 @@ func PostSensor(svc domain.SensorService) http.HandlerFunc {
 	}
 }
 
-// PutSensor updates a sensor by its internal ID
+// PatchSensor updates a sensor by its internal ID
 //
 // @Summary 	Update a sensor
 // @Tags		sensors
@@ -82,8 +98,8 @@ func PostSensor(svc domain.SensorService) http.HandlerFunc {
 // @Success		204
 // @Failure		400
 // @Failure		500
-// @Router		/sensors/{id} [put]
-func PutSensor(svc domain.SensorService) http.HandlerFunc {
+// @Router		/sensors/{id} [patch]
+func PatchSensor(svc domain.SensorService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
@@ -93,10 +109,29 @@ func PutSensor(svc domain.SensorService) http.HandlerFunc {
 			return
 		}
 
+		if _, err := uuid.Parse(id); err != nil {
+			json.HandleError(w, http.StatusBadRequest, err, "bad request")
+			return
+		}
+
 		payload, err := json.Decode[dto.UpdateSensorRequest](r)
 		if err != nil {
 			json.HandleError(w, http.StatusBadRequest, err, "bad request")
 			return
+		}
+
+		if payload.Name == nil && payload.Description == nil && payload.FactoryID == nil && payload.FactoryAreaID == nil && payload.ChirpstackProfileID == nil && payload.ProductionResource == nil {
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("no fields provided"), "bad request")
+			return
+		}
+
+		for _, field := range []*string{payload.FactoryID, payload.FactoryAreaID, payload.ChirpstackProfileID} {
+			if field != nil {
+				if _, err := uuid.Parse(*field); err != nil {
+					json.HandleError(w, http.StatusBadRequest, err, "bad request")
+					return
+				}
+			}
 		}
 
 		data := dto.MapUpdateSensorDTOToDomain(payload)
@@ -126,6 +161,11 @@ func DeleteSensor(svc domain.SensorService) http.HandlerFunc {
 		id := r.PathValue("id")
 		if id == "" {
 			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("no sensor id found"), "bad request")
+			return
+		}
+
+		if _, err := uuid.Parse(id); err != nil {
+			json.HandleError(w, http.StatusBadRequest, err, "bad request")
 			return
 		}
 

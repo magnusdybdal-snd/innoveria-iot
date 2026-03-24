@@ -136,44 +136,6 @@ const docTemplate = `{
             }
         },
         "/gateways/{id}": {
-            "put": {
-                "consumes": [
-                    "application/json"
-                ],
-                "tags": [
-                    "gateways"
-                ],
-                "summary": "Update a gateway",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Gateway ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Update payload",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.CreateGatewayRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No Content"
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    },
-                    "500": {
-                        "description": "Internal Server Error"
-                    }
-                }
-            },
             "delete": {
                 "tags": [
                     "gateways"
@@ -199,6 +161,150 @@ const docTemplate = `{
                         "description": "Internal Server Error"
                     }
                 }
+            },
+            "patch": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "gateways"
+                ],
+                "summary": "Update a gateway",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Gateway ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update payload",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateGatewayRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/measurement-types": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "measurement-types"
+                ],
+                "summary": "List active measurement types",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.MeasurementTypeListResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "measurement-types"
+                ],
+                "summary": "Create a measurement type",
+                "parameters": [
+                    {
+                        "description": "Measurement type payload",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateMeasurementTypeRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "409": {
+                        "description": "Conflict"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/measurement-types/all": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "measurement-types"
+                ],
+                "summary": "List all measurement types including deprecated",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.MeasurementTypeListResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/measurement-types/{slug}/deprecate": {
+            "patch": {
+                "tags": [
+                    "measurement-types"
+                ],
+                "summary": "Deprecate a measurement type",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Measurement type slug",
+                        "name": "slug",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
             }
         },
         "/sensor-profiles": {
@@ -211,24 +317,12 @@ const docTemplate = `{
                     "sensor-profiles"
                 ],
                 "summary": "List all sensor profiles",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Max number of profiles to return",
-                        "name": "limit",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/dto.SensorProfileListResponse"
                         }
-                    },
-                    "400": {
-                        "description": "Bad Request"
                     },
                     "500": {
                         "description": "Internal Server Error"
@@ -293,7 +387,33 @@ const docTemplate = `{
             }
         },
         "/sensors/{id}": {
-            "put": {
+            "delete": {
+                "tags": [
+                    "sensors"
+                ],
+                "summary": "Delete a sensor",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "SensorID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "patch": {
                 "consumes": [
                     "application/json"
                 ],
@@ -317,32 +437,6 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.UpdateSensorRequest"
                         }
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No Content"
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    },
-                    "500": {
-                        "description": "Internal Server Error"
-                    }
-                }
-            },
-            "delete": {
-                "tags": [
-                    "sensors"
-                ],
-                "summary": "Delete a sensor",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "SensorID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -383,6 +477,8 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "company_id",
+                "factory_area_id",
+                "factory_id",
                 "gateway_eui",
                 "name"
             ],
@@ -390,10 +486,40 @@ const docTemplate = `{
                 "company_id": {
                     "type": "string"
                 },
+                "description": {
+                    "type": "string"
+                },
+                "factory_area_id": {
+                    "type": "string"
+                },
+                "factory_id": {
+                    "type": "string"
+                },
                 "gateway_eui": {
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.CreateMeasurementTypeRequest": {
+            "type": "object",
+            "required": [
+                "display_name",
+                "slug"
+            ],
+            "properties": {
+                "default_unit": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "display_name": {
+                    "type": "string"
+                },
+                "slug": {
                     "type": "string"
                 }
             }
@@ -405,6 +531,7 @@ const docTemplate = `{
                 "company_id",
                 "device_eui",
                 "device_profile_id",
+                "factory_area_id",
                 "factory_id",
                 "name"
             ],
@@ -426,7 +553,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "factory_area_id": {
-                    "description": "Optional — UUID, omit if service not yet available",
                     "type": "string"
                 },
                 "factory_id": {
@@ -470,6 +596,9 @@ const docTemplate = `{
                 "factory_area_id": {
                     "type": "string"
                 },
+                "factory_id": {
+                    "type": "string"
+                },
                 "gateway_eui": {
                     "type": "string"
                 },
@@ -489,6 +618,40 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.MeasurementTypeListResponse": {
+            "type": "object",
+            "properties": {
+                "measurement_types": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.MeasurementTypeResponse"
+                    }
+                },
+                "total_count": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.MeasurementTypeResponse": {
+            "type": "object",
+            "properties": {
+                "default_unit": {
+                    "type": "string"
+                },
+                "deprecated": {
+                    "type": "boolean"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "display_name": {
+                    "type": "string"
+                },
+                "slug": {
                     "type": "string"
                 }
             }
@@ -598,13 +761,25 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.UpdateGatewayRequest": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "factory_area_id": {
+                    "type": "string"
+                },
+                "factory_id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.UpdateSensorRequest": {
             "type": "object",
-            "required": [
-                "device_profile_id",
-                "factory_id",
-                "name"
-            ],
             "properties": {
                 "description": {
                     "type": "string"

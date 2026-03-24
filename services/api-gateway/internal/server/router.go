@@ -25,6 +25,10 @@ func NewRouter(cfg *config.Config) *http.ServeMux {
 	handlers.RegisterProxyService(mux, AUTHENTICATION_ROUTE, "auth-service", cfg.AuthSvcURL, []string{
 		"/companies",
 		"/factories",
+		"/factory-areas",
+		"/login",
+		"/refresh",
+		"/me",
 	})
 
 	// Device service
@@ -52,8 +56,10 @@ func NewRouter(cfg *config.Config) *http.ServeMux {
 	})
 
 	// Swagger — merged spec from all services, served via the gateway
-	mux.HandleFunc("GET /swagger/doc.json", handlers.MergedSwaggerSpec(cfg.DeviceSvcURL, cfg.CollSvcURL, cfg.AuthSvcURL, cfg.OnboardingSvcURL, cfg.ContextSvcURL))
-	mux.HandleFunc("GET /swagger/", httpSwagger.Handler(httpSwagger.URL("/swagger/doc.json")))
+	if cfg.EnableSwagger {
+		mux.HandleFunc("GET /swagger/doc.json", handlers.MergedSwaggerSpec(cfg.DeviceSvcURL, cfg.CollSvcURL, cfg.AuthSvcURL, cfg.ContextSvcURL, cfg.OnboardingSvcURL))
+		mux.HandleFunc("GET /swagger/", httpSwagger.Handler(httpSwagger.URL("/swagger/doc.json")))
+	}
 
 	return mux
 }

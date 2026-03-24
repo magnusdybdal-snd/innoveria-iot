@@ -22,3 +22,11 @@ type FactoryAreaRepo interface {
 	FindByID(ctx context.Context, areaID string) (FactoryArea, error)
 	Delete(ctx context.Context, areaID string) error
 }
+
+// FactoryAreaService defines factory area use-cases exposed by the service layer.
+type FactoryAreaService interface {
+	RegisterFactoryArea(ctx context.Context, payload FactoryArea) (FactoryArea, error)
+	GetAllFactoryAreas(ctx context.Context) ([]FactoryArea, error)
+	GetOneFactoryArea(ctx context.Context, areaID string) (FactoryArea, error)
+	DeleteFactoryArea(ctx context.Context, areaID string) error
+}

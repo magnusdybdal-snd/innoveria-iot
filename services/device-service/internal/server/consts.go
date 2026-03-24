@@ -35,4 +35,11 @@ const (
 	COMPANY_CONFIG_ROUTE = DEVICE_ROUTE + "/company-config"
 	// COMPANY_CONFIG_ROUTE_ID is the route for single company config endpoints, with a {companyID} path parameter.
 	COMPANY_CONFIG_ROUTE_ID = DEVICE_ROUTE + "/company-config/{companyID}"
+
+	// MEASUREMENT_TYPE_ROUTE is the route for measurement type collection endpoints.
+	MEASUREMENT_TYPE_ROUTE = DEVICE_ROUTE + "/measurement-types"
+	// MEASUREMENT_TYPE_ROUTE_ALL is the route for listing all measurement types including deprecated.
+	MEASUREMENT_TYPE_ROUTE_ALL = DEVICE_ROUTE + "/measurement-types/all"
+	// MEASUREMENT_TYPE_ROUTE_DEPRECATE is the route for deprecating a single measurement type.
+	MEASUREMENT_TYPE_ROUTE_DEPRECATE = DEVICE_ROUTE + "/measurement-types/{slug}/deprecate"
 )

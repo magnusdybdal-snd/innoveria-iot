@@ -27,7 +27,7 @@ func Run() error {
 
 	onboardingSvc := service.NewOnboardingService(authClient, deviceClient, collectionClient)
 
-	mux := NewRouter(onboardingSvc)
+	mux := NewRouter(onboardingSvc, cfg.EnableSwagger)
 	server := &http.Server{
 		Addr:              cfg.Addr,
 		Handler:           mux,

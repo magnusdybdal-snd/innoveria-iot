@@ -18,6 +18,8 @@ func NewRouter(
 	sensorSvc domain.SensorService,
 	sensorProfileSvc domain.SensorProfileService,
 	companyConfigSvc domain.CompanyConfigService,
+	measurementTypeSvc domain.MeasurementTypeService,
+	enableSwagger bool,
 ) *http.ServeMux {
 	mux := http.NewServeMux()
 
@@ -26,14 +28,14 @@ func NewRouter(
 	// Gateway Routes:
 	mux.HandleFunc("GET "+GATEWAY_ROUTE, handlers.GetGateways(gatewaySvc))
 	mux.HandleFunc("POST "+GATEWAY_ROUTE, handlers.PostGateway(gatewaySvc))
-	mux.HandleFunc("PUT "+GATEWAY_ROUTE_ID, handlers.PutGateway(gatewaySvc))
+	mux.HandleFunc("PATCH "+GATEWAY_ROUTE_ID, handlers.PatchGateway(gatewaySvc))
 	mux.HandleFunc("DELETE "+GATEWAY_ROUTE_ID, handlers.DeleteGateway(gatewaySvc))
 
 	// Sensor Routes:
 	mux.HandleFunc("GET "+SENSOR_ROUTE, handlers.GetSensors(sensorSvc))
 	mux.HandleFunc("POST "+SENSOR_ROUTE, handlers.PostSensor(sensorSvc))
 	mux.HandleFunc("DELETE "+SENSOR_ROUTE_ID, handlers.DeleteSensor(sensorSvc))
-	mux.HandleFunc("PUT "+SENSOR_ROUTE_ID, handlers.PutSensor(sensorSvc))
+	mux.HandleFunc("PATCH "+SENSOR_ROUTE_ID, handlers.PatchSensor(sensorSvc))
 
 	// Sensor profile routes:
 	mux.HandleFunc("GET "+SENSOR_PROFILE_ROUTE, handlers.GetAllSensorProfiles(sensorProfileSvc))
@@ -42,8 +44,16 @@ func NewRouter(
 	mux.HandleFunc("POST "+COMPANY_CONFIG_ROUTE, handlers.PostCompanyConfig(companyConfigSvc))
 	mux.HandleFunc("DELETE "+COMPANY_CONFIG_ROUTE_ID, handlers.DeleteCompanyConfig(companyConfigSvc))
 
+	// Measurement type routes:
+	mux.HandleFunc("GET "+MEASUREMENT_TYPE_ROUTE, handlers.GetMeasurementTypes(measurementTypeSvc))
+	mux.HandleFunc("GET "+MEASUREMENT_TYPE_ROUTE_ALL, handlers.GetAllMeasurementTypes(measurementTypeSvc))
+	mux.HandleFunc("POST "+MEASUREMENT_TYPE_ROUTE, handlers.PostMeasurementType(measurementTypeSvc))
+	mux.HandleFunc("PATCH "+MEASUREMENT_TYPE_ROUTE_DEPRECATE, handlers.PatchDeprecateMeasurementType(measurementTypeSvc))
+
 	// Swagger docs
-	mux.HandleFunc("GET /swagger/", httpSwagger.WrapHandler)
+	if enableSwagger {
+		mux.HandleFunc("GET /swagger/", httpSwagger.WrapHandler)
+	}
 
 	return mux
 }

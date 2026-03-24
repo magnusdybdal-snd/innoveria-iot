@@ -25,25 +25,25 @@ const (
 `
 )
 
-// RuleMappingRepository provides methods to interact with the aggregation_rule table in the database.
-type RuleMappingRepository struct {
+// RuleRepository provides methods to interact with the aggregation_rule table in the database.
+type RuleRepository struct {
 	db *dbutil.DB
 }
 
-// NewRuleMappingRepository creates a new instance of RuleMappingRepository with the given database connection.
-func NewRuleMappingRepository(db *dbutil.DB) *RuleMappingRepository {
-	return &RuleMappingRepository{db: db}
+// NewRuleRepository creates a new instance of RuleRepository with the given database connection.
+func NewRuleRepository(db *dbutil.DB) *RuleRepository {
+	return &RuleRepository{db: db}
 }
 
 // GetByCompanyID retrieves all aggregation rules for a given company ID.
-func (r *RuleMappingRepository) GetByCompanyID(ctx context.Context, companyID string) ([]domain.AggregationRule, error) {
+func (r *RuleRepository) GetByCompanyID(ctx context.Context, companyID string) ([]domain.AggregationRule, error) {
 	rows, err := r.db.Pool.Query(ctx, getByCompanyID, companyID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	var rules []domain.AggregationRule
+	rules := []domain.AggregationRule{}
 	for rows.Next() {
 		var rule domain.AggregationRule
 		err := rows.Scan(
@@ -73,7 +73,7 @@ func (r *RuleMappingRepository) GetByCompanyID(ctx context.Context, companyID st
 
 // GetByID retrieves a single aggregation rule by its ID.
 // Returns domain.ErrNotFound if no rule exists with that ID.
-func (r *RuleMappingRepository) GetByID(ctx context.Context, ruleID string) (domain.AggregationRule, error) {
+func (r *RuleRepository) GetByID(ctx context.Context, ruleID string) (domain.AggregationRule, error) {
 	var rule domain.AggregationRule
 	err := r.db.Pool.QueryRow(ctx, getByID, ruleID).Scan(
 		&rule.ID,
