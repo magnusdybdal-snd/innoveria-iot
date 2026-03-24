@@ -39,7 +39,7 @@ func Run() error {
 	}
 	client := clients.NewCollectionClient(cfg.CollectionSvcURL)
 	contextSvc := services.NewContextServiceImpl(client)
-	repo := repository.NewRuleMappingRepository(database)
+	repo := repository.NewRuleRepository(database)
 	ruleSvc := services.NewRuleServiceImpl(repo)
 
 	// Setting up mux and http server
