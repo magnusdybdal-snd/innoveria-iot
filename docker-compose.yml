@@ -241,7 +241,6 @@ services:
       - ./pkg:/pkg
     environment:
       - GO_ENV=development
-      - COLLECTION_SERVICE=http://collection-service:8080
     depends_on:
       - collection-service
       - context-db

@@ -8,6 +8,13 @@ import (
 	"os"
 )
 
+// @title			Context Service API
+// @version			1.0
+// @description 	Handles context management for sensor data
+
+// @host 			localhost:8086
+// @BasePath		/api/v1/context
+
 func main() {
 	logger.NewLogger("context-service")
 

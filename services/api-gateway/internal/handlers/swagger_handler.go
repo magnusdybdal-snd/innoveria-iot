@@ -36,7 +36,7 @@ func fetchSpec(ctx context.Context, client *httpclient.Client, url string) (swag
 //
 // The merged spec is served at GET /swagger/doc.json and consumed by the
 // Swagger UI at GET /swagger/.
-func MergedSwaggerSpec(deviceSvcURL, collSvcURL, authSvcURL, onboardingSvcURL string) http.HandlerFunc {
+func MergedSwaggerSpec(deviceSvcURL, collSvcURL, authSvcURL, onboardingSvcURL, contextSvcURL string) http.HandlerFunc {
 	// Client is created once and reused across requests
 	client := httpclient.New()
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -66,6 +66,12 @@ func MergedSwaggerSpec(deviceSvcURL, collSvcURL, authSvcURL, onboardingSvcURL st
 			return
 		}
 
+		contextSpec, err := fetchSpec(r.Context(), client, contextSvcURL)
+		if err != nil {
+			http.Error(w, "failed to fetch context spec", http.StatusInternalServerError)
+			return
+		}
+
 		// Build the merged spec with a unified info block.
 		// Host is taken from the incoming request so it works in any environment.
 		merged := swaggerSpec{
@@ -90,12 +96,16 @@ func MergedSwaggerSpec(deviceSvcURL, collSvcURL, authSvcURL, onboardingSvcURL st
 		for path, val := range onboardingSpec.Paths {
 			merged.Paths[onboardingSpec.BasePath+path] = val
 		}
+		for path, val := range contextSpec.Paths {
+			merged.Paths[contextSpec.BasePath+path] = val
+		}
 
 		// Merge definitions (the request/response DTO schemas)
 		maps.Copy(merged.Definitions, deviceSpec.Definitions)
 		maps.Copy(merged.Definitions, collSpec.Definitions)
 		maps.Copy(merged.Definitions, authSpec.Definitions)
 		maps.Copy(merged.Definitions, onboardingSpec.Definitions)
+		maps.Copy(merged.Definitions, contextSpec.Definitions)
 
 		// Encode and return the merged spec.
 		if err := json.Encode(w, http.StatusOK, merged); err != nil {

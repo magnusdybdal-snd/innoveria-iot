@@ -15,6 +15,7 @@ import (
 	"innoveria-iot/context-service/internal/clients"
 	"innoveria-iot/context-service/internal/config"
 	"innoveria-iot/context-service/internal/db"
+	"innoveria-iot/context-service/internal/repository"
 	"innoveria-iot/context-service/internal/services"
 	"innoveria-iot/pkg/dbutil"
 )
@@ -38,9 +39,11 @@ func Run() error {
 	}
 	client := clients.NewCollectionClient(cfg.CollectionSvcURL)
 	contextSvc := services.NewContextServiceImpl(client)
+	repo := repository.NewRuleRepository(database)
+	ruleSvc := services.NewRuleServiceImpl(repo)
 
 	// Setting up mux and http server
-	mux := NewRouter(contextSvc)
+	mux := NewRouter(contextSvc, ruleSvc)
 	server := &http.Server{
 		Addr:              cfg.Addr,
 		Handler:           mux,
