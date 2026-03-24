@@ -33,7 +33,7 @@ func (r *RuleMappingRepository) GetByCompanyID(ctx context.Context, companyID st
 	}
 	defer rows.Close()
 
-	var rules []domain.AggregationRule
+	rules := []domain.AggregationRule{}
 	for rows.Next() {
 		var rule domain.AggregationRule
 		err := rows.Scan(
