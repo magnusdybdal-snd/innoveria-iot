@@ -5,6 +5,7 @@ import (
 
 	"innoveria-iot/device-service/internal/chirpstackrest/dto"
 	"innoveria-iot/device-service/internal/domain"
+	"innoveria-iot/pkg/ptrutil"
 )
 
 // MergeSensor merges Chirpstack runtime data with database metadata and returns a domain Sensor.
@@ -48,7 +49,7 @@ func MapChirpstackSensorRequest(sensor domain.Sensor, applicationID string) dto.
 		SensorPayload: dto.SensorPayload{
 			DeviceEUI:       sensor.DeviceEUI,
 			Name:            sensor.Name,
-			Description:     derefString(sensor.Description),
+			Description:     ptrutil.Deref(sensor.Description),
 			ApplicationID:   applicationID,
 			DeviceProfileID: sensor.ChirpstackProfileID,
 			JoinEUI:         "0000000000000000", // Not an issue when we host Chirpstack privately.
@@ -64,11 +65,4 @@ func MapChirpstackSensorKeyRequest(sensor domain.Sensor) dto.ChirpstackSensorKey
 			NwkKey: sensor.AppKey,
 		},
 	}
-}
-
-func derefString(s *string) string {
-	if s == nil {
-		return ""
-	}
-	return *s
 }

@@ -1,0 +1,90 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Handles context management for sensor data",
+        "title": "Context Service API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:8086",
+    "basePath": "/api/v1/context",
+    "paths": {
+        "/rules": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "context"
+                ],
+                "summary": "Get Aggregation Rules",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Company ID",
+                        "name": "company_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.AggregationRuleResponse"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "dto.AggregationRuleResponse": {
+            "type": "object",
+            "properties": {
+                "aggregation_method": {
+                    "type": "string"
+                },
+                "company_id": {
+                    "type": "string"
+                },
+                "context_type": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "is_active": {
+                    "type": "boolean"
+                },
+                "measurement_type": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "time_bucket_minutes": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

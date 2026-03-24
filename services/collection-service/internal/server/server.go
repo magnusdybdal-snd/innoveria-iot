@@ -60,7 +60,7 @@ func Run() error {
 		return fmt.Errorf("mqtt subscribe: %w", err)
 	}
 
-	mux := NewRouter(svc, tenantMappingSvc)
+	mux := NewRouter(svc, tenantMappingSvc, cfg.EnableSwagger)
 	server := &http.Server{
 		Addr:              cfg.Addr,
 		Handler:           mux,

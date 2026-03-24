@@ -11,8 +11,9 @@ import (
 // Config TODO(@vinjar): add proper documentation.
 type Config struct {
 	// Server Configs
-	Addr   string
-	DB_url string
+	Addr          string
+	DB_url        string
+	EnableSwagger bool
 
 	// MQTT Configs
 	MQTTBrokerURL   string
@@ -53,6 +54,7 @@ func Load() *Config {
 			dbName,
 			sslmode,
 		),
+		EnableSwagger: env.GetBool("ENABLE_SWAGGER", false),
 
 		MQTTBrokerURL:   env.Get("MQTT_BROKER_URL", "tcp://mosquitto:1883"), // Mqtt broker
 		MQTTClientId:    clientID,

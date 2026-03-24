@@ -7,7 +7,8 @@ import (
 
 // Config holds all runtime configuration values for the onboarding service.
 type Config struct {
-	Addr string
+	Addr          string
+	EnableSwagger bool
 
 	AuthSvcURL       string
 	DeviceSvcURL     string
@@ -18,6 +19,7 @@ type Config struct {
 func Load() *Config {
 	return &Config{
 		Addr:             ":" + env.Get("PORT", "8080"),
+		EnableSwagger:    env.GetBool("ENABLE_SWAGGER", false),
 		AuthSvcURL:       env.Get("AUTH_SERVICE", "http://auth-service:8080"),
 		DeviceSvcURL:     env.Get("DEVICE_SERVICE", "http://device-service:8080"),
 		CollectionSvcURL: env.Get("COLLECTION_SERVICE", "http://collection-service:8080"),

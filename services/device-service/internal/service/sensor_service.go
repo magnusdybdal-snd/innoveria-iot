@@ -3,10 +3,12 @@ package service
 import (
 	"context"
 	"fmt"
+	"log/slog"
+
 	"innoveria-iot/device-service/internal/chirpstackrest"
 	"innoveria-iot/device-service/internal/domain"
 	"innoveria-iot/device-service/internal/service/mappers"
-	"log/slog"
+	"innoveria-iot/pkg/ptrutil"
 )
 
 // SensorServiceImpl implements domain.SensorService, coordinating between the database and Chirpstack.
@@ -101,25 +103,59 @@ func (s *SensorServiceImpl) Update(ctx context.Context, sensorID string, payload
 	// Retain old values before merging payload, needed for potential compensation.
 	oldSensor := sensor
 
-	sensor.Name = payload.Name
-	sensor.Description = payload.Description
-	sensor.ChirpstackProfileID = payload.ChirpstackProfileID
-
-	// Chirpstack Put request.
-	newReq := mappers.MapChirpstackSensorRequest(sensor, companycfg.ChirpstackApplicationID)
-	if err := s.cc.UpdateSensor(ctx, newReq); err != nil {
-		return fmt.Errorf("update sensor: update in chirpstack: %w", err)
+	// Update values if not nil / empty string.
+	if payload.Name != "" {
+		sensor.Name = payload.Name
+	}
+	if payload.Description != nil {
+		sensor.Description = payload.Description
+	}
+	if payload.ChirpstackProfileID != "" {
+		sensor.ChirpstackProfileID = payload.ChirpstackProfileID
+	}
+	if payload.FactoryID != "" {
+		sensor.FactoryID = payload.FactoryID
+	}
+	if payload.FactoryAreaID != "" {
+		sensor.FactoryAreaID = payload.FactoryAreaID
+	}
+	if payload.ProductionResource != nil {
+		sensor.ProductionResource = payload.ProductionResource
 	}
 
-	// If successfully updated in Chirpstack, try to update in database.
-	if err := s.sensorRepo.Update(ctx, sensorID, payload); err != nil {
-		// Compensate: revert Chirpstack to old values.
-		oldReq := mappers.MapChirpstackSensorRequest(oldSensor, companycfg.ChirpstackApplicationID)
-		if compErr := s.cc.UpdateSensor(ctx, oldReq); compErr != nil {
-			slog.Error("saga compensation failed: could not revert sensor in chirpstack after db update failure",
-				"id", sensorID, "error", compErr)
+	// Only call Chirpstack if a Chirpstack-stored field changed (name, description, profile).
+	// DB-only fields (factory_id, factory_area_id, production_resource) skip Chirpstack entirely.
+	chirpstackChanged := sensor.Name != oldSensor.Name ||
+		ptrutil.Deref(sensor.Description) != ptrutil.Deref(oldSensor.Description) ||
+		sensor.ChirpstackProfileID != oldSensor.ChirpstackProfileID
+
+	if chirpstackChanged {
+		// Get company's Chirpstack application ID for the API call.
+		companycfg, err := s.companycfgRepo.FindByCompanyID(ctx, sensor.CompanyID)
+		if err != nil {
+			return fmt.Errorf("update sensor: finding company tenant ID: %w", err)
 		}
-		return fmt.Errorf("update sensor: update in database: %w", err)
+
+		newReq := mappers.MapChirpstackSensorRequest(sensor, companycfg.ChirpstackApplicationID)
+		if err := s.cc.UpdateSensor(ctx, newReq); err != nil {
+			return fmt.Errorf("update sensor: update in chirpstack: %w", err)
+		}
+
+		// If successfully updated in Chirpstack, try to update in database.
+		if err := s.sensorRepo.Update(ctx, sensorID, sensor); err != nil {
+			// Compensate: revert Chirpstack to old values.
+			oldReq := mappers.MapChirpstackSensorRequest(oldSensor, companycfg.ChirpstackApplicationID)
+			if compErr := s.cc.UpdateSensor(ctx, oldReq); compErr != nil {
+				slog.Error("saga compensation failed: could not revert sensor in chirpstack after db update failure",
+					"id", sensorID, "error", compErr)
+			}
+			return fmt.Errorf("update sensor: update in database: %w", err)
+		}
+	} else {
+		// No Chirpstack fields changed — update DB only.
+		if err := s.sensorRepo.Update(ctx, sensorID, sensor); err != nil {
+			return fmt.Errorf("update sensor: update in database: %w", err)
+		}
 	}
 
 	slog.Info("successfully updated sensor", "id", sensorID)
