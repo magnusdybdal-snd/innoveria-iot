@@ -1,7 +1,7 @@
 package server
 
 import (
-	"fmt"
+	"log/slog"
 	"net"
 	"net/http"
 	"net/netip"
@@ -154,7 +154,16 @@ func rateLimiterMiddleware(store *rateLimitStore, next http.Handler) http.Handle
 		}
 
 		w.Header().Set("Retry-After", strconv.FormatInt(int64(policy.Window/time.Second), 10))
-		json.HandleError(w, http.StatusTooManyRequests, fmt.Errorf("rate limit exceeded"), "too many requests")
+		slog.Warn("rate limit exceeded", "path", r.URL.Path, "method", r.Method, "client_ip", clientIP(r))
+		resp := json.ErrorResponse{
+			Error: json.ErrorDetail{
+				Code:    http.StatusTooManyRequests,
+				Message: "too many requests",
+			},
+		}
+		if err := json.Encode(w, http.StatusTooManyRequests, resp); err != nil {
+			slog.Error("failed to write rate limit response", "error", err)
+		}
 	})
 }
 
