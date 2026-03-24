@@ -130,40 +130,75 @@ func bruteForcePolicy(r *http.Request) (rateLimitPolicy, bool) {
 	}
 }
 
-func bruteForceKey(r *http.Request) string {
-	return r.Method + ":" + r.URL.Path + ":" + clientIP(r)
-}
-
 func rateLimiterMiddleware(store *rateLimitStore, next http.Handler) http.Handler {
+	// denyResult holds the structure for how the rateLimiterMiddleware handles errors
+	type denyResult struct {
+		code       int
+		message    string
+		retryAfter int64
+		logMsg     string
+		logFields  []any
+	}
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if !isBruteForceProtectedPath(r) {
 			next.ServeHTTP(w, r)
 			return
 		}
 
+		// Only hadle policy for /refresh and /login
 		policy, ok := bruteForcePolicy(r)
 		if !ok {
 			next.ServeHTTP(w, r)
 			return
 		}
 
-		key := bruteForceKey(r)
-		if store.allow(key, policy) {
-			next.ServeHTTP(w, r)
-			return
+		var deny *denyResult
+
+		ip, ok := clientIP(r)
+		if !ok {
+			deny = &denyResult{
+				code:    http.StatusBadRequest,
+				message: "invalid client address",
+				logMsg:  "rejecting request with invalid client address",
+				logFields: []any{
+					"method", r.Method,
+					"path", r.URL.Path,
+					"logFields", r.RemoteAddr,
+				},
+			}
+		} else {
+			key := r.Method + ":" + r.URL.Path + ":" + ip
+			if store.allow(key, policy) {
+				deny = &denyResult{
+					code:       http.StatusTooManyRequests,
+					message:    "too many requests",
+					retryAfter: int64(policy.Window / time.Second),
+					logMsg:     "rate limit exceeded",
+					logFields: []any{
+						"method", r.Method,
+						"path", r.URL.Path,
+						"logFields", r.RemoteAddr,
+					},
+				}
+			}
+		}
+		if deny != nil {
+			if deny.retryAfter > 0 {
+				w.Header().Set("Retry-After", strconv.FormatInt(deny.retryAfter, 10))
+			}
+			slog.Warn(deny.logMsg, deny.logFields...)
+			resp := json.ErrorResponse{
+				Error: json.ErrorDetail{
+					Code:    http.StatusTooManyRequests,
+					Message: "too many requests",
+				},
+			}
+			if err := json.Encode(w, http.StatusTooManyRequests, resp); err != nil {
+				slog.Error("failed to write rate limit response", "error", err)
+			}
 		}
 
-		w.Header().Set("Retry-After", strconv.FormatInt(int64(policy.Window/time.Second), 10))
-		slog.Warn("rate limit exceeded", "path", r.URL.Path, "method", r.Method, "client_ip", clientIP(r))
-		resp := json.ErrorResponse{
-			Error: json.ErrorDetail{
-				Code:    http.StatusTooManyRequests,
-				Message: "too many requests",
-			},
-		}
-		if err := json.Encode(w, http.StatusTooManyRequests, resp); err != nil {
-			slog.Error("failed to write rate limit response", "error", err)
-		}
+		next.ServeHTTP(w, r)
 	})
 }
 
@@ -177,19 +212,19 @@ func isBruteForceProtectedPath(r *http.Request) bool {
 	return path == AUTHENTICATION_ROUTE+"/login" || path == AUTHENTICATION_ROUTE+"/refresh"
 }
 
-func clientIP(r *http.Request) string {
+func clientIP(r *http.Request) (string, bool) {
 	remoteIP, ok := parseRemoteIP(r.RemoteAddr)
 	if !ok {
-		return "unknown"
+		return "", false
 	}
 
 	if isTrustedProxyIP(remoteIP) {
 		if xffIP, ok := firstXForwardedFor(r.Header.Get("X-Forwarded-For")); ok {
-			return xffIP.String()
+			return xffIP.String(), true
 		}
 	}
 
-	return remoteIP.String()
+	return remoteIP.String(), true
 }
 
 func parseRemoteIP(remoteAddr string) (netip.Addr, bool) {
