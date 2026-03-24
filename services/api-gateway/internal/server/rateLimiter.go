@@ -130,6 +130,8 @@ func bruteForcePolicy(r *http.Request) (rateLimitPolicy, bool) {
 	}
 }
 
+// rateLimiterMiddleware is the middleware function used to secure login and refresh
+// to defend brutefource attack
 func rateLimiterMiddleware(store *rateLimitStore, next http.Handler) http.Handler {
 	// denyResult holds the structure for how the rateLimiterMiddleware handles errors
 	type denyResult struct {
