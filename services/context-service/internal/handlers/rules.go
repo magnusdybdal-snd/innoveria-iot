@@ -78,6 +78,11 @@ func CreateRule(svc domain.RuleService) http.HandlerFunc {
 			return
 		}
 
+		if req.CompanyID == "" || req.Name == "" || req.ContextType == "" || req.MeasurementType == "" {
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("missing required fields"), "company_id, name, context_type and measurement_type are required")
+			return
+		}
+
 		if !domain.IsValidAggregationMethod(req.AggregationMethod) {
 			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("invalid aggregation_method: %s", req.AggregationMethod), "aggregation_method must be one of: AVG, SUM, MAX, MIN")
 			return

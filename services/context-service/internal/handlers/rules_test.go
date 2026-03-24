@@ -84,6 +84,35 @@ func TestCreateRule_EmptyBody_Returns400(t *testing.T) {
 	}
 }
 
+// TestCreateRule_MissingRequiredFields_Returns400 verifies that missing required string fields returns 400 Bad Request.
+func TestCreateRule_MissingRequiredFields_Returns400(t *testing.T) {
+	svc := &mockRuleService{}
+
+	cases := []struct {
+		name string
+		body string
+	}{
+		{"missing company_id", `{"name":"Test","context_type":"energy","measurement_type":"watt","aggregation_method":"AVG","time_bucket_minutes":15}`},
+		{"missing name", `{"company_id":"a0000000-0000-0000-0000-000000000001","context_type":"energy","measurement_type":"watt","aggregation_method":"AVG","time_bucket_minutes":15}`},
+		{"missing context_type", `{"company_id":"a0000000-0000-0000-0000-000000000001","name":"Test","measurement_type":"watt","aggregation_method":"AVG","time_bucket_minutes":15}`},
+		{"missing measurement_type", `{"company_id":"a0000000-0000-0000-0000-000000000001","name":"Test","context_type":"energy","aggregation_method":"AVG","time_bucket_minutes":15}`},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			req := httptest.NewRequest(http.MethodPost, "/api/v1/context/rules", strings.NewReader(tc.body))
+			req.Header.Set("Content-Type", "application/json")
+			rec := httptest.NewRecorder()
+
+			handlers.CreateRule(svc).ServeHTTP(rec, req)
+
+			if rec.Code != http.StatusBadRequest {
+				t.Errorf("expected 400, got %d", rec.Code)
+			}
+		})
+	}
+}
+
 // TestCreateRule_InvalidAggregationMethod_Returns400 verifies that an invalid aggregation_method returns 400 Bad Request.
 func TestCreateRule_InvalidAggregationMethod_Returns400(t *testing.T) {
 	svc := &mockRuleService{}
