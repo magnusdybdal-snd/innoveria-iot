@@ -147,12 +147,15 @@ func PutPayloadSchemaLabels(svc domain.PayloadSchemaService) http.HandlerFunc {
 			return
 		}
 
-		for _, l := range payload.Labels {
-			if strings.TrimSpace(l.PayloadKey) == "" {
+		for i, label := range payload.Labels {
+			payload.Labels[i].PayloadKey = strings.TrimSpace(label.PayloadKey)
+			if payload.Labels[i].PayloadKey == "" {
 				json.HandleError(w, http.StatusBadRequest, fmt.Errorf("payload_key must not be empty"), "bad request")
 				return
 			}
-			if strings.TrimSpace(l.MeasurementType) == "" {
+
+			payload.Labels[i].MeasurementType = strings.TrimSpace(label.MeasurementType)
+			if payload.Labels[i].MeasurementType == "" {
 				json.HandleError(w, http.StatusBadRequest, fmt.Errorf("measurement_type must not be empty"), "bad request")
 				return
 			}

@@ -78,12 +78,14 @@ func PutSensorMetrics(svc domain.SensorMetricService, sensorRepo domain.SensorRe
 			return
 		}
 
-		for _, m := range payload.Metrics {
-			if strings.TrimSpace(m.PayloadKey) == "" {
+		for i, m := range payload.Metrics {
+			payload.Metrics[i].PayloadKey = strings.TrimSpace(m.PayloadKey)
+			if payload.Metrics[i].PayloadKey == "" {
 				json.HandleError(w, http.StatusBadRequest, fmt.Errorf("payload_key must not be empty"), "bad request")
 				return
 			}
-			if strings.TrimSpace(m.MeasurementType) == "" {
+			payload.Metrics[i].MeasurementType = strings.TrimSpace(m.MeasurementType)
+			if payload.Metrics[i].MeasurementType == "" {
 				json.HandleError(w, http.StatusBadRequest, fmt.Errorf("measurement_type must not be empty"), "bad request")
 				return
 			}
