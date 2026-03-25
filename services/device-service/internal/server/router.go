@@ -21,7 +21,6 @@ func NewRouter(
 	measurementTypeSvc domain.MeasurementTypeService,
 	payloadSchemaSvc domain.PayloadSchemaService,
 	sensorMetricSvc domain.SensorMetricService,
-	sensorRepo domain.SensorRepository,
 	enableSwagger bool,
 ) *http.ServeMux {
 	mux := http.NewServeMux()
@@ -61,7 +60,7 @@ func NewRouter(
 
 	// Sensor metric routes:
 	mux.HandleFunc("GET "+SENSOR_METRICS_ROUTE, handlers.GetSensorMetrics(sensorMetricSvc))
-	mux.HandleFunc("PUT "+SENSOR_METRICS_ROUTE, handlers.PutSensorMetrics(sensorMetricSvc, sensorRepo))
+	mux.HandleFunc("PUT "+SENSOR_METRICS_ROUTE, handlers.PutSensorMetrics(sensorMetricSvc))
 
 	// Swagger docs
 	if enableSwagger {

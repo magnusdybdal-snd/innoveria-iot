@@ -65,11 +65,10 @@ func MapSensorMetricDomainToDTO(from []domain.SensorMetric) SensorMetricListResp
 }
 
 // MapUpsertMetricsRequestToDomain maps an UpsertSensorMetricsRequest to a slice of domain SensorMetrics.
-func MapUpsertMetricsRequestToDomain(sensorID string, from UpsertSensorMetricsRequest) []domain.SensorMetric {
+func MapUpsertMetricsRequestToDomain(from UpsertSensorMetricsRequest) []domain.SensorMetric {
 	metrics := make([]domain.SensorMetric, len(from.Metrics))
 	for i, m := range from.Metrics {
 		metrics[i] = domain.SensorMetric{
-			SensorID:        sensorID,
 			PayloadKey:      m.PayloadKey,
 			MeasurementType: m.MeasurementType,
 			Unit:            m.Unit,

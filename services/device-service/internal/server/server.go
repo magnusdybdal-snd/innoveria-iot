@@ -55,7 +55,7 @@ func Run() error {
 	sensorMetricSvc := service.NewSensorMetricService(sensorRepo, sensorMetricRepo, payloadSchemaRepo)
 
 	// Setting up mux and http server
-	mux := NewRouter(gatewaySvc, sensorSvc, sensorProfileSvc, companyConfigSvc, measurementTypeSvc, payloadSchemaSvc, sensorMetricSvc, sensorRepo, cfg.EnableSwagger)
+	mux := NewRouter(gatewaySvc, sensorSvc, sensorProfileSvc, companyConfigSvc, measurementTypeSvc, payloadSchemaSvc, sensorMetricSvc, cfg.EnableSwagger)
 	server := &http.Server{
 		Addr:              cfg.Addr,
 		Handler:           mux,

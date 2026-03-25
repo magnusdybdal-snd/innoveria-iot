@@ -61,7 +61,7 @@ func GetSensorMetrics(svc domain.SensorMetricService) http.HandlerFunc {
 // @Failure		422
 // @Failure		500
 // @Router		/sensors/{eui}/metrics [put]
-func PutSensorMetrics(svc domain.SensorMetricService, sensorRepo domain.SensorRepository) http.HandlerFunc {
+func PutSensorMetrics(svc domain.SensorMetricService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
@@ -91,19 +91,13 @@ func PutSensorMetrics(svc domain.SensorMetricService, sensorRepo domain.SensorRe
 			}
 		}
 
-		sensor, err := sensorRepo.FindByEUI(ctx, eui)
-		if err != nil {
+		metrics := dto.MapUpsertMetricsRequestToDomain(payload)
+
+		if err := svc.UpsertMetrics(ctx, eui, metrics); err != nil {
 			if errors.Is(err, domain.ErrNotFound) {
 				json.HandleError(w, http.StatusNotFound, err, "sensor not found")
 				return
 			}
-			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
-			return
-		}
-
-		metrics := dto.MapUpsertMetricsRequestToDomain(sensor.Id, payload)
-
-		if err := svc.UpsertMetrics(ctx, metrics); err != nil {
 			if errors.Is(err, domain.ErrInvalidMeasurementType) {
 				json.HandleError(w, http.StatusUnprocessableEntity, err, "one or more measurement types do not exist in the vocabulary")
 				return
