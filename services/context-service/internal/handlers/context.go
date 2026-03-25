@@ -15,7 +15,6 @@ import (
 // GetContextData computes context data for one or more sensors over a time window.
 // @Summary		Get Context Data
 // @Tags		context
-// @Accept		json
 // @Produce		json
 // @Param		company_id		query	string		true	"Company ID"
 // @Param		device_eui		query	[]string	true	"Device EUI(s)"	collectionFormat(multi)
