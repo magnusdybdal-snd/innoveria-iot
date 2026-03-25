@@ -2,14 +2,13 @@ import { useState } from "react";
 
 import {
   BUCKET_UNIT_OPTIONS,
-  getContextData,
+  ContextParamsDisplay,
   toMinutes,
   type BucketUnit,
 } from "@entities/context";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { CustomButton } from "@shared/ui/Button";
 import { DropDownSelect } from "@shared/ui/DropDownSelect";
 import { PageContent } from "@shared/ui/PageContent";
 import { PageDivider } from "@shared/ui/PageDivider";
@@ -72,8 +71,6 @@ export default function Context() {
   const [to, setTo] = useState(toOptions[0].id);
   const [bucketValue, setBucketValue] = useState("1");
   const [bucketUnit, setBucketUnit] = useState<BucketUnit>("hours");
-  const [result, setResult] = useState<string>("");
-  const [isLoading, setIsLoading] = useState(false);
 
   const parsedBucketValue = parseInt(bucketValue, 10);
   const bucketMinutes =
@@ -81,14 +78,13 @@ export default function Context() {
       ? toMinutes(parsedBucketValue, bucketUnit)
       : undefined;
 
-  const handleFetch = () => {
-    setIsLoading(true);
-    getContextData(companyId, [deviceEui], ruleId, from, to, bucketMinutes)
-      .then((data) => setResult(JSON.stringify(data, null, 2)))
-      .catch((err: unknown) =>
-        setResult(`Error: ${err instanceof Error ? err.message : String(err)}`),
-      )
-      .finally(() => setIsLoading(false));
+  const params = {
+    companyId,
+    deviceEui,
+    ruleId,
+    from,
+    to,
+    bucketMinutes,
   };
 
   return (
@@ -158,7 +154,7 @@ export default function Context() {
 
           <Box>
             <Typography variant="body2" sx={{ mb: 0.5 }}>
-              Bucket size
+              Time interval
             </Typography>
             <Box sx={{ display: "flex", gap: 1 }}>
               <TextField
@@ -180,26 +176,7 @@ export default function Context() {
 
           <PageDivider />
 
-          <CustomButton onClick={handleFetch}>
-            {isLoading ? "Fetching..." : "Fetch context data"}
-          </CustomButton>
-
-          {result && (
-            <TextField
-              multiline
-              fullWidth
-              minRows={6}
-              value={result}
-              slotProps={{ input: { readOnly: true } }}
-              sx={{
-                ...textFieldSx,
-                "& .MuiInputBase-input": {
-                  fontFamily: "monospace",
-                  fontSize: "0.75rem",
-                },
-              }}
-            />
-          )}
+          <ContextParamsDisplay params={params} />
         </Box>
       </PageContent>
     </div>

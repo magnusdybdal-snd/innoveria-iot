@@ -1,5 +1,18 @@
 export type BucketUnit = "minutes" | "hours" | "days" | "weeks" | "months";
 
+export interface AggregationRule {
+  id: string;
+  companyId: string;
+  name: string;
+  contextType: string;
+  measurementType: string;
+  aggregationMethod: string;
+  timeBucketMinutes: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface ContextQueryParams {
   companyId: string;
   deviceEui: string;
