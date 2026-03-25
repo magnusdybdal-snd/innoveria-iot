@@ -4,6 +4,7 @@ package services
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"time"
 
 	"innoveria-iot/context-service/internal/calculators"
@@ -57,6 +58,7 @@ func (s *ContextServiceImpl) GetContextData(
 	// Pick calculator: fall back to generic aggregation when no specific one is registered
 	calc, ok := s.calculators[rule.ContextType]
 	if !ok {
+		slog.Warn("no calculator registered for context type, falling back to generic aggregation", "context_type", rule.ContextType, "rule_id", ruleID)
 		calc = &calculators.GenericAggregationCalculator{}
 	}
 
