@@ -26,7 +26,7 @@ func (m *mockRuleService) GetRules(ctx context.Context, companyID string) ([]dom
 }
 
 const validRuleBody = `{
-	"company_id": "company-1",
+	"company_id": "a0000000-0000-0000-0000-000000000001",
 	"name": "Test Rule",
 	"context_type": "energy",
 	"measurement_type": "watt",
