@@ -2,8 +2,8 @@ package dto
 
 // CreateMeasurementTypeRequest is the request body for creating a new measurement type.
 type CreateMeasurementTypeRequest struct {
-	Slug        string  `json:"slug"         binding:"required"`
-	DisplayName string  `json:"display_name" binding:"required"`
+	Slug        string  `json:"slug"         validate:"required"`
+	DisplayName string  `json:"display_name" validate:"required"`
 	Description *string `json:"description"`
 	DefaultUnit *string `json:"default_unit"`
 }

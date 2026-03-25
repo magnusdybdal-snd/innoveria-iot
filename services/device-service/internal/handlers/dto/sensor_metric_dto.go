@@ -2,8 +2,8 @@ package dto
 
 // SensorMetricRequest represents a single sensor metric submitted by the tenant operator.
 type SensorMetricRequest struct {
-	PayloadKey      string  `json:"payload_key"`
-	MeasurementType string  `json:"measurement_type"`
+	PayloadKey      string  `json:"payload_key"      binding:"required"`
+	MeasurementType string  `json:"measurement_type" binding:"required"`
 	Unit            *string `json:"unit"`
 }
 

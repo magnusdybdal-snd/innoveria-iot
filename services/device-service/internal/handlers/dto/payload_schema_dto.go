@@ -7,8 +7,8 @@ type DiscoverPayloadKeysRequest struct {
 
 // PayloadSchemaLabelRequest represents a single payload key label submitted by the admin.
 type PayloadSchemaLabelRequest struct {
-	PayloadKey      string  `json:"payload_key"`
-	MeasurementType string  `json:"measurement_type"`
+	PayloadKey      string  `json:"payload_key"      binding:"required"`
+	MeasurementType string  `json:"measurement_type" binding:"required"`
 	Unit            *string `json:"unit"`
 }
 
