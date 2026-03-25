@@ -1,6 +1,7 @@
 package calculators
 
 import (
+	"log/slog"
 	"time"
 
 	"innoveria-iot/context-service/internal/domain"
@@ -51,6 +52,7 @@ func (c *WattHourCalculator) Calculate(input Input) (domain.ContextData, error) 
 // Returns 0 when fewer than two readings are available (no interval to integrate over).
 func trapezoidalWh(readings []domain.MeasurementReading, measurementType string) (float64, error) {
 	if len(readings) < 2 {
+		slog.Warn("insufficient readings for trapezoidal integration, bucket yields 0 Wh", "count", len(readings), "measurement_type", measurementType)
 		return 0.0, nil
 	}
 
