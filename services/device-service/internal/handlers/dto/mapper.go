@@ -9,9 +9,11 @@ import (
 
 // MapDraftProfilesToDTO maps a slice of draft profile IDs to a DraftProfilesResponse.
 func MapDraftProfilesToDTO(from []string) DraftProfilesResponse {
+	profileIDs := make([]string, len(from))
+	copy(profileIDs, from)
 	return DraftProfilesResponse{
-		TotalCount: len(from),
-		ProfileIDs: from,
+		TotalCount: len(profileIDs),
+		ProfileIDs: profileIDs,
 	}
 }
 

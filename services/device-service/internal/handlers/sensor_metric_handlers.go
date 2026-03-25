@@ -13,7 +13,8 @@ import (
 
 // GetSensorMetrics returns the effective payload key mappings for a sensor.
 // Checks per-sensor metrics first, falls back to profile-level payload schema.
-// Returns an empty list if the sensor is not yet configured.
+// Returns an empty list if the sensor exists but is not yet configured.
+// Returns 404 if the sensor EUI does not exist.
 //
 // @Summary		Get effective metrics for a sensor
 // @Tags		sensor-metrics
