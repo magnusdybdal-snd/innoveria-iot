@@ -1,0 +1,1 @@
+export { getContextData } from "./getContextData";
