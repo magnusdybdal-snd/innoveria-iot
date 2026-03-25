@@ -93,30 +93,7 @@ func GetContextData(svc domain.ContextService) http.HandlerFunc {
 			return
 		}
 
-		response := make([]dto.ContextDataResponse, len(results))
-		for i, result := range results {
-			buckets := make([]dto.BucketResponse, len(result.Buckets))
-			for j, b := range result.Buckets {
-				buckets[j] = dto.BucketResponse{
-					PeriodStart: b.PeriodStart,
-					PeriodEnd:   b.PeriodEnd,
-					Value:       b.Value,
-				}
-			}
-			response[i] = dto.ContextDataResponse{
-				DeviceEUI:    result.DeviceEUI,
-				CompanyID:    result.CompanyID,
-				ContextType:  result.ContextType,
-				Unit:         result.Unit,
-				PeriodStart:  result.PeriodStart,
-				PeriodEnd:    result.PeriodEnd,
-				TotalValue:   result.Value,
-				Buckets:      buckets,
-				CalculatedAt: result.CalculatedAt,
-			}
-		}
-
-		if err := json.Encode(w, http.StatusOK, response); err != nil {
+		if err := json.Encode(w, http.StatusOK, dto.MapContextDataDomainToDTO(results)); err != nil {
 			json.HandleError(w, http.StatusInternalServerError, err, "failed to encode response")
 		}
 	}
