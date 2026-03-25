@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 
+	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 
@@ -118,9 +119,7 @@ func (r *RuleRepository) Create(ctx context.Context, rule domain.AggregationRule
 	).Scan(&ruleID)
 	if err != nil {
 		var pgErr *pgconn.PgError
-		// PostgreSQL error code 23505 is "unique_violation", raised when inserting a duplicate
-		// (company_id, context_type) pair, which violates the unique constraint on the table.
-		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
+		if errors.As(err, &pgErr) && pgErr.Code == pgerrcode.ForeignKeyViolation {
 			return "", domain.ErrConflict
 		}
 		return "", err
