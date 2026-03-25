@@ -81,6 +81,7 @@ func (r *PayloadSchemaRepository) SaveLabels(ctx context.Context, schemas []doma
 		}
 	}
 
+	// Prepeare arrays for one atmoic insert
 	profileIDs := make([]string, len(schemas))
 	payloadKeys := make([]string, len(schemas))
 	measurementTypes := make([]string, len(schemas))
@@ -93,7 +94,7 @@ func (r *PayloadSchemaRepository) SaveLabels(ctx context.Context, schemas []doma
 		units[i] = s.Unit
 	}
 
-	_, err := r.db.Pool.Exec(ctx, savePayloadSchemaLabelsQuery, profileIDs, payloadKeys, measurementTypes, units)
+	tag, err := r.db.Pool.Exec(ctx, savePayloadSchemaLabelsQuery, profileIDs, payloadKeys, measurementTypes, units)
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == pgerrcode.ForeignKeyViolation {
@@ -101,6 +102,10 @@ func (r *PayloadSchemaRepository) SaveLabels(ctx context.Context, schemas []doma
 			return domain.ErrInvalidMeasurementType
 		}
 		return fmt.Errorf("save payload schema labels: %w", err)
+	}
+
+	if tag.RowsAffected() != int64(len(schemas)) {
+		return fmt.Errorf("save payload schema labels: some payload keys were not found")
 	}
 
 	return nil
