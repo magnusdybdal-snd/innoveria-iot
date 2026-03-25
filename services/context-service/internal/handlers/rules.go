@@ -66,6 +66,7 @@ func GetRules(svc domain.RuleService) http.HandlerFunc {
 // @Param 			rule body dto.CreateAggregationRuleRequest true "Aggregation Rule to create"
 // @Success 		201
 // @Failure 		400
+// @Failure 		409
 // @Failure 		500
 // @Router 			/rules [post]
 func CreateRule(svc domain.RuleService) http.HandlerFunc {
