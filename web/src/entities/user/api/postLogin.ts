@@ -36,7 +36,11 @@ export const postLogin = async (
       tokenType: data.token_type,
     };
   } catch (error) {
-    console.error("Failed to refresh:", error);
-    return;
+    if (error instanceof Error) {
+      console.error("Login failed:", error.message);
+    } else {
+      console.error("Login failed:", error);
+    }
+    throw error;
   }
 };

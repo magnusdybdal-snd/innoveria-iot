@@ -112,16 +112,16 @@ export default function Base() {
     }
 
     if (!firstLogin) {
-      setFirstLogin(true);
-      return;
+      //setFirstLogin(true);
+      //return;
     }
 
     if (!newCreated) {
-      setFillError(true);
-      return;
+      //setFillError(true);
+      //return;
     }
 
-    const password = newValues.newPassword ?? "";
+    /*const password = newValues.newPassword ?? "";
 
     const errors = validatePassword(password);
 
@@ -129,7 +129,7 @@ export default function Base() {
 
     if (Object.values(errors).some(Boolean)) {
       return;
-    }
+    }*/
 
     setFillError(false);
     setEqualError(false);
