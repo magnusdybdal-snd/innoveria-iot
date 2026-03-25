@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
 
@@ -22,7 +23,7 @@ func NewMeasurementTypeService(repo domain.MeasurementTypeRepository) *Measureme
 // Returns domain.ErrAlreadyExists if a type with the same slug already exists.
 func (s *MeasurementTypeServiceImpl) Create(ctx context.Context, m domain.MeasurementType) error {
 	if err := s.repo.Create(ctx, m); err != nil {
-		if err == domain.ErrAlreadyExists {
+		if errors.Is(err, domain.ErrAlreadyExists) {
 			slog.Warn("measurement type already exists", "slug", m.Slug)
 		}
 		return err
