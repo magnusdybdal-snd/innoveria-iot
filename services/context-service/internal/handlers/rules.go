@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/google/uuid"
 	"innoveria-iot/context-service/internal/domain"
 	"innoveria-iot/context-service/internal/handlers/dto"
 	"innoveria-iot/pkg/json"
@@ -79,8 +80,13 @@ func CreateRule(svc domain.RuleService) http.HandlerFunc {
 			return
 		}
 
-		if req.CompanyID == "" || req.Name == "" || req.ContextType == "" || req.MeasurementType == "" {
-			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("missing required fields"), "company_id, name, context_type and measurement_type are required")
+		if _, err := uuid.Parse(req.CompanyID); err != nil {
+			json.HandleError(w, http.StatusBadRequest, err, "invalid company_id (uuid)")
+			return
+		}
+
+		if req.Name == "" || req.ContextType == "" || req.MeasurementType == "" {
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("missing required fields"), "name, context_type and measurement_type are required")
 			return
 		}
 
