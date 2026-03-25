@@ -31,10 +31,15 @@ func NewSensorMetricService(
 // UpsertMetrics saves operator-defined metric labels for a configurable sensor.
 // Returns domain.ErrInvalidMeasurementType if any slug does not exist in the vocabulary.
 func (s *SensorMetricServiceImpl) UpsertMetrics(ctx context.Context, metrics []domain.SensorMetric) error {
-	if err := s.sensorMetricRepo.UpsertBatch(ctx, metrics); err != nil {
-		return err
+	if len(metrics) > 0 {
+		if err := s.sensorMetricRepo.UpsertBatch(ctx, metrics); err != nil {
+			return err
+		}
+
+		slog.Info("upserted sensor metrics", "sensor_id", metrics[0].SensorID, "count", len(metrics))
+		return nil
 	}
-	slog.Info("upserted sensor metrics", "sensor_id", metrics[0].SensorID, "count", len(metrics))
+	// Nothing so save
 	return nil
 }
 
