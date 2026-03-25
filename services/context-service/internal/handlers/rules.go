@@ -45,7 +45,7 @@ func GetRules(svc domain.RuleService) http.HandlerFunc {
 				Name:              rule.Name,
 				ContextType:       rule.ContextType,
 				MeasurementType:   rule.MeasurementType,
-				AggregationMethod: rule.AggregationMethod,
+				AggregationMethod: string(rule.AggregationMethod),
 				TimeBucketMinutes: rule.TimeBucketMinutes,
 				IsActive:          rule.IsActive,
 				CreatedAt:         rule.CreatedAt,
@@ -90,7 +90,7 @@ func CreateRule(svc domain.RuleService) http.HandlerFunc {
 			return
 		}
 
-		if !domain.IsValidAggregationMethod(req.AggregationMethod) {
+		if !domain.AggMethod(req.AggregationMethod).IsValid() {
 			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("invalid aggregation_method: %s", req.AggregationMethod), "aggregation_method must be one of: AVG, SUM, MAX, MIN")
 			return
 		}
@@ -105,7 +105,7 @@ func CreateRule(svc domain.RuleService) http.HandlerFunc {
 			Name:              req.Name,
 			ContextType:       req.ContextType,
 			MeasurementType:   req.MeasurementType,
-			AggregationMethod: req.AggregationMethod,
+			AggregationMethod: domain.AggMethod(req.AggregationMethod),
 			TimeBucketMinutes: req.TimeBucketMinutes,
 			IsActive:          req.IsActive,
 		}

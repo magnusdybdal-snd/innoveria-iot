@@ -2,17 +2,8 @@ package domain
 
 import (
 	"context"
-	"slices"
 	"time"
 )
-
-// ValidAggregationMethods is the single source of truth for allowed aggregation strategies.
-var ValidAggregationMethods = []string{"AVG", "SUM", "MAX", "MIN"}
-
-// IsValidAggregationMethod reports whether the given method is one of the allowed aggregation strategies.
-func IsValidAggregationMethod(method string) bool {
-	return slices.Contains(ValidAggregationMethods, method)
-}
 
 // AggregationRule is the domain model for affregation rules
 type AggregationRule struct {
@@ -21,11 +12,30 @@ type AggregationRule struct {
 	Name              string
 	ContextType       string
 	MeasurementType   string
-	AggregationMethod string
+	AggregationMethod AggMethod
 	TimeBucketMinutes int
 	IsActive          bool
 	CreatedAt         time.Time
 	UpdatedAt         time.Time
+}
+
+// AggMethod represents the type of aggregation to perform on measurements for a given context rule.
+type AggMethod string
+
+const (
+	// Avg aggregates by average.
+	Avg AggMethod = "AVG"
+	// Sum aggregates by sum.
+	Sum AggMethod = "SUM"
+	// Max aggregates by maximum.
+	Max AggMethod = "MAX"
+	// Min aggregates by minimum.
+	Min AggMethod = "MIN"
+)
+
+// IsValid checks if the AggMethod value is one of the allowed aggregation methods.
+func (a AggMethod) IsValid() bool {
+	return a == Avg || a == Sum || a == Max || a == Min
 }
 
 // RuleRepository defines persistence operations for aggregation rules.
