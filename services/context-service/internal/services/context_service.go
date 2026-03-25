@@ -62,6 +62,7 @@ func (s *ContextServiceImpl) GetContextData(
 
 	results := make([]domain.ContextData, 0, len(deviceEUIs))
 	for _, eui := range deviceEUIs {
+		// TODO: ensure that tenant scoping is applied in the collection (when ready)
 		readings, err := s.collectionClient.GetMeasurements(ctx, eui, from, to)
 		if err != nil {
 			return nil, fmt.Errorf("fetching measurements for device %s: %w", eui, err)

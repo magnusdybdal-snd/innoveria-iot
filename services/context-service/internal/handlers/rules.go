@@ -96,7 +96,7 @@ func CreateRule(svc domain.RuleService) http.HandlerFunc {
 		}
 
 		if req.TimeBucketMinutes <= 0 {
-			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("invalid time_bucket_minutes: %d", req.TimeBucketMinutes), "time_bucket_minutes must be greater than 0")
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("invalid time_bucket_minutes: %d", req.TimeBucketMinutes), "time interval must be greater than 0")
 			return
 		}
 
