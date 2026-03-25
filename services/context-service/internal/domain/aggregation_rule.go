@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-// AggregationRule is the domain model for affregation rules
+// AggregationRule is the domain model for aggregation rules
 type AggregationRule struct {
 	ID                string
 	CompanyID         string
