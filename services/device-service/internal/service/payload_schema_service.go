@@ -34,12 +34,12 @@ func (s *PayloadSchemaServiceImpl) DiscoverKeys(ctx context.Context, chirpstackP
 func (s *PayloadSchemaServiceImpl) SaveLabels(ctx context.Context, schemas []domain.PayloadSchema) error {
 	for _, schema := range schemas {
 		if schema.MeasurementType == nil {
-			return fmt.Errorf("payload_key %q: %w", schema.PayloadKey, domain.ErrMissingMeasurementType)
+			return fmt.Errorf("save labels: nil measurement_type for payload_key %q (programming erorr)", schema.PayloadKey)
 		}
 	}
 
 	if err := s.repo.SaveLabels(ctx, schemas); err != nil {
-		return err
+		return fmt.Errorf("save labels: %w", err)
 	}
 
 	slog.Info("saved payload schema labels", "count", len(schemas))
