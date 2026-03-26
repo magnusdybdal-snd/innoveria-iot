@@ -10,6 +10,7 @@ export {
   BucketIntervalField,
   ContextParamsDisplay,
   ContextResultDisplay,
+  DateTimeField,
   LabeledSelect,
 } from "./ui";
 export { toMinutes, BUCKET_UNIT_OPTIONS } from "./lib";

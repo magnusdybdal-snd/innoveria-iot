@@ -4,6 +4,7 @@ import {
   BucketIntervalField,
   ContextParamsDisplay,
   ContextResultDisplay,
+  DateTimeField,
   getContextData,
   getRules,
   LabeledSelect,
@@ -23,27 +24,10 @@ import { PageContent } from "@shared/ui/PageContent";
 import { PageDivider } from "@shared/ui/PageDivider";
 import { SubPageHeader } from "@shared/ui/SubPageHeader";
 
-const now = new Date();
-const minus1h = new Date(now.getTime() - 60 * 60 * 1000);
-const minus6h = new Date(now.getTime() - 6 * 60 * 60 * 1000);
-const minus24h = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-const minus7d = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-const minus30d = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-
 // TODO: Hardcoded until auth context provides the active company
 const companyOptions = [
   { id: "a0000000-0000-0000-0000-000000000001", name: "Innoveria" },
 ];
-
-const fromOptions = [
-  { id: minus1h.toISOString(), name: "1 hour ago" },
-  { id: minus6h.toISOString(), name: "6 hours ago" },
-  { id: minus24h.toISOString(), name: "24 hours ago" },
-  { id: minus7d.toISOString(), name: "7 days ago" },
-  { id: minus30d.toISOString(), name: "30 days ago" },
-];
-
-const toOptions = [{ id: now.toISOString(), name: "Now" }];
 
 /**
  * Context page component for displaying and managing context parameters.
@@ -79,8 +63,11 @@ export default function Context() {
     });
   }, [companyId]);
 
-  const [from, setFrom] = useState(fromOptions[0].id);
-  const [to, setTo] = useState(toOptions[0].id);
+  const [from, setFrom] = useState(() =>
+    new Date(Date.now() - 60 * 60 * 1000).toISOString(),
+  );
+  const [toNow, setToNow] = useState(true);
+  const [to, setTo] = useState(() => new Date().toISOString());
   const [bucketValue, setBucketValue] = useState("1");
   const [bucketUnit, setBucketUnit] = useState<BucketUnit>("hours");
   const [result, setResult] = useState<ContextDataResponse[] | null>(null);
@@ -100,7 +87,15 @@ export default function Context() {
       ? toMinutes(parsedBucketValue, bucketUnit)
       : undefined;
 
-  const params = { companyId, deviceEui, ruleId, from, to, bucketMinutes };
+  const resolvedTo = toNow ? new Date().toISOString() : to;
+  const params = {
+    companyId,
+    deviceEui,
+    ruleId,
+    from,
+    to: resolvedTo,
+    bucketMinutes,
+  };
 
   const handleFetch = () => {
     const errors: { deviceEui?: string; ruleId?: string } = {};
@@ -115,7 +110,14 @@ export default function Context() {
     setIsLoading(true);
     setFetchError(null);
     setFiltersOpen(false);
-    getContextData(companyId, [deviceEui], ruleId, from, to, bucketMinutes)
+    getContextData(
+      companyId,
+      [deviceEui],
+      ruleId,
+      from,
+      resolvedTo,
+      bucketMinutes,
+    )
       .then((data) => setResult(data))
       .catch((err: unknown) => {
         setResult(null);
@@ -143,7 +145,14 @@ export default function Context() {
             onChange={(_, expanded) => setFiltersOpen(expanded)}
             disableGutters
             elevation={0}
-            sx={{ background: "transparent", "&:before": { display: "none" } }}
+            sx={{
+              background: "transparent",
+              "&:before": { display: "none" },
+              border: "2px dashed",
+              borderColor: "primary.main",
+              borderRadius: 1,
+              px: 2,
+            }}
           >
             <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ px: 0 }}>
               <Typography variant="body2">Filters</Typography>
@@ -178,19 +187,13 @@ export default function Context() {
                 error={fieldErrors.ruleId}
               />
               <Box sx={{ display: "flex", gap: 2 }}>
-                <LabeledSelect
-                  label="From"
-                  options={fromOptions}
-                  value={from}
-                  onChange={setFrom}
-                  flex={1}
-                />
-                <LabeledSelect
+                <DateTimeField label="From" value={from} onChange={setFrom} />
+                <DateTimeField
                   label="To"
-                  options={toOptions}
                   value={to}
                   onChange={setTo}
-                  flex={1}
+                  useNow={toNow}
+                  onUseNowChange={setToNow}
                 />
               </Box>
               <BucketIntervalField
