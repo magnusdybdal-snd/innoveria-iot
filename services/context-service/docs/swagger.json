@@ -128,6 +128,40 @@
                         "description": "Internal Server Error"
                     }
                 }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "context"
+                ],
+                "summary": "Create Aggregation Rule",
+                "parameters": [
+                    {
+                        "description": "Aggregation Rule to create",
+                        "name": "rule",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateAggregationRuleRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
             }
         }
     },
@@ -213,6 +247,40 @@
                 },
                 "unit": {
                     "type": "string"
+                }
+            }
+        },
+        "dto.CreateAggregationRuleRequest": {
+            "type": "object",
+            "required": [
+                "aggregation_method",
+                "company_id",
+                "context_type",
+                "measurement_type",
+                "name",
+                "time_bucket_minutes"
+            ],
+            "properties": {
+                "aggregation_method": {
+                    "type": "string"
+                },
+                "company_id": {
+                    "type": "string"
+                },
+                "context_type": {
+                    "type": "string"
+                },
+                "is_active": {
+                    "type": "boolean"
+                },
+                "measurement_type": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "time_bucket_minutes": {
+                    "type": "integer"
                 }
             }
         }

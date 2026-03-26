@@ -21,7 +21,7 @@ func (c *GenericAggregationCalculator) Calculate(input Input) (domain.ContextDat
 	var err error
 	for i := range buckets {
 		inBucket := readingsInBucket(input.Readings, buckets[i].PeriodStart, buckets[i].PeriodEnd, i == lastIdx)
-		buckets[i].Value, err = aggregate(inBucket, input.Rule.MeasurementType, input.Rule.AggregationMethod)
+		buckets[i].Value, err = aggregate(inBucket, input.Rule.MeasurementType, string(input.Rule.AggregationMethod))
 		if err != nil {
 			return domain.ContextData{}, err
 		}

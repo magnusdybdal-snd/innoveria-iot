@@ -6,7 +6,9 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 
 	"innoveria-iot/context-service/internal/domain"
 	"innoveria-iot/pkg/dbutil"
@@ -23,6 +25,12 @@ const (
 	SELECT rule_id, company_id, name, context_type, measurement_type, aggregation_method, time_bucket_minutes, is_active, created_at, updated_at
 	FROM context.aggregation_rule
 	WHERE rule_id = $1
+`
+
+	createRule = `
+	INSERT INTO context.aggregation_rule (company_id, name, context_type, measurement_type, aggregation_method, time_bucket_minutes, is_active)
+	VALUES ($1, $2, $3, $4, $5, $6, $7)
+	RETURNING rule_id
 `
 )
 
@@ -95,4 +103,27 @@ func (r *RuleRepository) GetByID(ctx context.Context, ruleID string) (domain.Agg
 		return domain.AggregationRule{}, fmt.Errorf("rule repo GetByID: %w: %w", domain.ErrDatabase, err)
 	}
 	return rule, nil
+}
+
+// Create inserts a new aggregation rule into the database and returns the generated rule ID.
+func (r *RuleRepository) Create(ctx context.Context, rule domain.AggregationRule) (string, error) {
+	var ruleID string
+	// Execute the insert query and scan the returned rule_id into the ruleID variable
+	err := r.db.Pool.QueryRow(ctx, createRule,
+		rule.CompanyID,
+		rule.Name,
+		rule.ContextType,
+		rule.MeasurementType,
+		rule.AggregationMethod,
+		rule.TimeBucketMinutes,
+		rule.IsActive,
+	).Scan(&ruleID)
+	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == pgerrcode.ForeignKeyViolation {
+			return "", domain.ErrConflict
+		}
+		return "", err
+	}
+	return ruleID, nil
 }
