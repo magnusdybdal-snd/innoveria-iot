@@ -38,7 +38,7 @@ func (s *SensorMetricServiceImpl) UpsertMetrics(ctx context.Context, deviceEUI s
 
 	sensor, err := s.sensorRepo.FindByEUI(ctx, deviceEUI)
 	if err != nil {
-		return err
+		return fmt.Errorf("upsert metrics: get sensor: %w", err)
 	}
 
 	for i := range metrics {
@@ -46,7 +46,7 @@ func (s *SensorMetricServiceImpl) UpsertMetrics(ctx context.Context, deviceEUI s
 	}
 
 	if err := s.sensorMetricRepo.UpsertBatch(ctx, metrics); err != nil {
-		return err
+		return fmt.Errorf("upsert metrics: upsert batch: %w", err)
 	}
 	slog.Info("upserted sensor metrics", "sensor_id", sensor.Id, "count", len(metrics))
 	return nil
