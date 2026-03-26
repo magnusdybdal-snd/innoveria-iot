@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -12,7 +13,6 @@ import (
 // GetRules retrieves all aggregation rules for a given company ID.
 // @Summary 		Get Aggregation Rules
 // @Tags 			context
-// @Accept 			json
 // @Produce 		json
 // @Param 			company_id query string true "Company ID"
 // @Success 		200 {array} dto.AggregationRuleResponse
@@ -31,7 +31,11 @@ func GetRules(svc domain.RuleService) http.HandlerFunc {
 
 		rules, err := svc.GetRules(ctx, companyID)
 		if err != nil {
-			json.HandleError(w, http.StatusInternalServerError, err, "failed to retrieve rules")
+			if errors.Is(err, domain.ErrDatabase) {
+				json.HandleError(w, http.StatusInternalServerError, err, "database error")
+			} else {
+				json.HandleError(w, http.StatusInternalServerError, err, "failed to retrieve rules")
+			}
 			return
 		}
 
