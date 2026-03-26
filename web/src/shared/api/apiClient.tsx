@@ -1,4 +1,4 @@
-import { postRefresh } from "@entities/user";
+import { postRefresh, type TokenApiResponse } from "@entities/user";
 import axios, { type AxiosInstance, type AxiosResponse } from "axios";
 
 // Client for all microservice requests — routed through the api-gateway
@@ -9,12 +9,16 @@ export const serviceClient = axios.create({
   },
 });
 
+let isRefreshing = false;
+let refreshPromise: Promise<TokenApiResponse> | null = null;
+
 serviceClient.interceptors.request.use((config) => {
   const token = localStorage.getItem("access_token");
 
   const isLoginRequest = config.url?.includes("/login");
+  const isRefreshRequest = config.url?.includes("/refresh");
 
-  if (token && config.headers && !isLoginRequest) {
+  if (token && config.headers && !isLoginRequest && !isRefreshRequest) {
     config.headers.Authorization = `Bearer ${token}`;
   }
 
@@ -24,10 +28,60 @@ serviceClient.interceptors.request.use((config) => {
 serviceClient.interceptors.response.use(
   (response) => response,
   async (error) => {
-    if (error.response?.status === 401) {
-      const data = await postRefresh();
+    const originalRequest = error.config;
 
-      localStorage.setItem("access_token", data.accessToken);
+    const isRefreshRequest = originalRequest.url?.includes("/refresh");
+    const isLoginRequest = originalRequest.url?.includes("/login");
+
+    // ❌ If refresh itself fails → logout
+    if (error.response?.status === 401 && isRefreshRequest) {
+      localStorage.clear();
+      window.location.href = "/login";
+      return Promise.reject(error);
+    }
+
+    // ✅ Only refresh for normal API calls (not login/refresh)
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !isRefreshRequest &&
+      !isLoginRequest
+    ) {
+      originalRequest.headers = originalRequest.headers || {};
+      originalRequest._retry = true;
+
+      try {
+        // 🔒 Prevent multiple refresh calls
+        if (!isRefreshing) {
+          isRefreshing = true;
+          refreshPromise = postRefresh();
+        }
+
+        if (!refreshPromise) {
+          throw new Error("Refresh promise was not initialized");
+        }
+
+        const data = await refreshPromise;
+
+        isRefreshing = false;
+        refreshPromise = null;
+
+        localStorage.setItem("access_token", data.accessToken);
+
+        // 🔁 Retry original request with new token
+        originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
+
+        return serviceClient(originalRequest);
+      } catch (refreshError) {
+        isRefreshing = false;
+        refreshPromise = null;
+
+        // ❌ If refresh fails → logout
+        localStorage.clear();
+        window.location.href = "/login";
+
+        return Promise.reject(refreshError);
+      }
     }
 
     return Promise.reject(error);

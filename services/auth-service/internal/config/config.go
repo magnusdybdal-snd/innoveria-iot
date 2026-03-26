@@ -31,13 +31,13 @@ func Load() *Config {
 	dbName := env.Get("DB_NAME", "auth")
 	sslmode := env.Get("DB_SSLMODE", "disable")
 
-	jwtAccessTTL, err := time.ParseDuration(env.Get("JWT_ACCESS_TTL", "15m"))
+	jwtAccessTTL, err := time.ParseDuration(env.Get("JWT_ACCESS_TTL", "1m"))
 	if err != nil {
 		slog.Error("invalid JWT_ACCESS_TTL", "error", err)
 		os.Exit(1)
 	}
 
-	jwtRefreshTTL, err := time.ParseDuration(env.Get("JWT_REFRESH_TTL", "720h")) // 30 days
+	jwtRefreshTTL, err := time.ParseDuration(env.Get("JWT_REFRESH_TTL", "2m")) // 30 days
 	if err != nil {
 		slog.Error("invalid JWT_REFRESH_TTL", "error", err)
 		os.Exit(1)
