@@ -301,6 +301,143 @@
                 }
             }
         },
+        "/payload-schema/drafts": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "payload-schema"
+                ],
+                "summary": "List profiles with unlabeled payload schema rows",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.DraftProfilesResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/payload-schema/{chirpstack_profile_id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "payload-schema"
+                ],
+                "summary": "Get payload schema for a profile",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ChirpStack profile ID",
+                        "name": "chirpstack_profile_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.PayloadSchemaListResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "payload-schema"
+                ],
+                "summary": "Save payload schema labels for a profile",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ChirpStack profile ID",
+                        "name": "chirpstack_profile_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Labels to save",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.SavePayloadSchemaLabelsRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/payload-schema/{chirpstack_profile_id}/discover": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "payload-schema"
+                ],
+                "summary": "Discover payload keys for a profile",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ChirpStack profile ID",
+                        "name": "chirpstack_profile_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Discovered payload keys",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.DiscoverPayloadKeysRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/sensor-profiles": {
             "get": {
                 "description": "Not authenticated — every user can access this list.",
@@ -373,6 +510,84 @@
                     },
                     "400": {
                         "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/sensors/{eui}/metrics": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "sensor-metrics"
+                ],
+                "summary": "Get effective metrics for a sensor",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Device EUI",
+                        "name": "eui",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SensorMetricListResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "sensor-metrics"
+                ],
+                "summary": "Save metric labels for a sensor",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Device EUI",
+                        "name": "eui",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Metrics to save",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpsertSensorMetricsRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity"
                     },
                     "500": {
                         "description": "Internal Server Error"
@@ -561,6 +776,34 @@
                 }
             }
         },
+        "dto.DiscoverPayloadKeysRequest": {
+            "type": "object",
+            "required": [
+                "payload_keys"
+            ],
+            "properties": {
+                "payload_keys": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "dto.DraftProfilesResponse": {
+            "type": "object",
+            "properties": {
+                "profile_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "total_count": {
+                    "type": "integer"
+                }
+            }
+        },
         "dto.GatewayListResponse": {
             "type": "object",
             "properties": {
@@ -650,6 +893,72 @@
                 }
             }
         },
+        "dto.PayloadSchemaLabelRequest": {
+            "type": "object",
+            "required": [
+                "measurement_type",
+                "payload_key"
+            ],
+            "properties": {
+                "measurement_type": {
+                    "type": "string"
+                },
+                "payload_key": {
+                    "type": "string"
+                },
+                "unit": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.PayloadSchemaListResponse": {
+            "type": "object",
+            "properties": {
+                "schemas": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.PayloadSchemaResponse"
+                    }
+                },
+                "total_count": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.PayloadSchemaResponse": {
+            "type": "object",
+            "properties": {
+                "chirpstack_profile_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "measurement_type": {
+                    "type": "string"
+                },
+                "payload_key": {
+                    "type": "string"
+                },
+                "unit": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.SavePayloadSchemaLabelsRequest": {
+            "type": "object",
+            "required": [
+                "labels"
+            ],
+            "properties": {
+                "labels": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.PayloadSchemaLabelRequest"
+                    }
+                }
+            }
+        },
         "dto.SensorListResponse": {
             "type": "object",
             "properties": {
@@ -661,6 +970,52 @@
                 },
                 "total_count": {
                     "type": "integer"
+                }
+            }
+        },
+        "dto.SensorMetricListResponse": {
+            "type": "object",
+            "properties": {
+                "metrics": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.SensorMetricResponse"
+                    }
+                },
+                "total_count": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.SensorMetricRequest": {
+            "type": "object",
+            "required": [
+                "measurement_type",
+                "payload_key"
+            ],
+            "properties": {
+                "measurement_type": {
+                    "type": "string"
+                },
+                "payload_key": {
+                    "type": "string"
+                },
+                "unit": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.SensorMetricResponse": {
+            "type": "object",
+            "properties": {
+                "measurement_type": {
+                    "type": "string"
+                },
+                "payload_key": {
+                    "type": "string"
+                },
+                "unit": {
+                    "type": "string"
                 }
             }
         },
@@ -794,6 +1149,20 @@
                 "production_resource": {
                     "description": "Optional — UUID, omit if service not yet available",
                     "type": "string"
+                }
+            }
+        },
+        "dto.UpsertSensorMetricsRequest": {
+            "type": "object",
+            "required": [
+                "metrics"
+            ],
+            "properties": {
+                "metrics": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.SensorMetricRequest"
+                    }
                 }
             }
         }

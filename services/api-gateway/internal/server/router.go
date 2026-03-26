@@ -36,7 +36,9 @@ func NewRouter(cfg *config.Config) *http.ServeMux {
 		"/gateways",
 		"/sensors",
 		"/sensor-profiles",
-		"/sensor-group",
+		"/sensor-groups",
+		"/measurement-types",
+		"/payload-schema",
 	})
 
 	// Collection service
