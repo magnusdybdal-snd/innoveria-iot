@@ -6,5 +6,10 @@ export type {
   AggregationRule,
 } from "./model/contextSchema";
 export { getContextData, getRules } from "./api";
-export { ContextParamsDisplay } from "./ui";
+export {
+  BucketIntervalField,
+  ContextParamsDisplay,
+  ContextResultDisplay,
+  LabeledSelect,
+} from "./ui";
 export { toMinutes, BUCKET_UNIT_OPTIONS } from "./lib";

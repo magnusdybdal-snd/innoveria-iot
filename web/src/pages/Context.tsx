@@ -1,20 +1,20 @@
 import { useEffect, useState } from "react";
 
 import {
-  BUCKET_UNIT_OPTIONS,
+  BucketIntervalField,
   ContextParamsDisplay,
+  ContextResultDisplay,
   getContextData,
   getRules,
+  LabeledSelect,
   toMinutes,
   type BucketUnit,
   type ContextDataResponse,
 } from "@entities/context";
 import { getSensors } from "@entities/sensor";
 import Box from "@mui/material/Box";
-import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { CustomButton } from "@shared/ui/Button";
-import { DropDownSelect } from "@shared/ui/DropDownSelect";
 import { PageContent } from "@shared/ui/PageContent";
 import { PageDivider } from "@shared/ui/PageDivider";
 import { SubPageHeader } from "@shared/ui/SubPageHeader";
@@ -40,17 +40,6 @@ const fromOptions = [
 ];
 
 const toOptions = [{ id: now.toISOString(), name: "Now" }];
-
-const textFieldSx = {
-  "& .MuiOutlinedInput-root": {
-    color: "primary.main",
-    "& .MuiOutlinedInput-notchedOutline": { borderColor: "primary.main" },
-    "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "primary.main" },
-    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-      borderColor: "primary.main",
-    },
-  },
-};
 
 /**
  * Context page component for displaying and managing context parameters.
@@ -85,6 +74,7 @@ export default function Context() {
       if (options.length > 0) setRuleId(options[0].id);
     });
   }, [companyId]);
+
   const [from, setFrom] = useState(fromOptions[0].id);
   const [to, setTo] = useState(toOptions[0].id);
   const [bucketValue, setBucketValue] = useState("1");
@@ -101,14 +91,7 @@ export default function Context() {
       ? toMinutes(parsedBucketValue, bucketUnit)
       : undefined;
 
-  const params = {
-    companyId,
-    deviceEui,
-    ruleId,
-    from,
-    to,
-    bucketMinutes,
-  };
+  const params = { companyId, deviceEui, ruleId, from, to, bucketMinutes };
 
   const handleFetch = () => {
     setIsLoading(true);
@@ -121,18 +104,6 @@ export default function Context() {
       })
       .finally(() => setIsLoading(false));
   };
-
-  const fieldOptions: { id: keyof ContextDataResponse; name: string }[] = [
-    { id: "deviceEui", name: "Device EUI" },
-    { id: "companyId", name: "Company ID" },
-    { id: "contextType", name: "Context type" },
-    { id: "unit", name: "Unit" },
-    { id: "periodStart", name: "Period start" },
-    { id: "periodEnd", name: "Period end" },
-    { id: "totalValue", name: "Total value" },
-    { id: "buckets", name: "Buckets (JSON)" },
-    { id: "calculatedAt", name: "Calculated at" },
-  ];
 
   return (
     <div className="flex h-screen">
@@ -148,75 +119,46 @@ export default function Context() {
             mt: 2,
           }}
         >
-          <Box>
-            <Typography variant="body2" sx={{ mb: 0.5 }}>
-              Company
-            </Typography>
-            <DropDownSelect
-              options={companyOptions}
-              value={companyId}
-              onChange={setCompanyId}
-            />
-          </Box>
-          <Box>
-            <Typography variant="body2" sx={{ mb: 0.5 }}>
-              Device EUI
-            </Typography>
-            <DropDownSelect
-              options={deviceEuiOptions}
-              value={deviceEui}
-              onChange={setDeviceEui}
-            />
-          </Box>
-          <Box>
-            <Typography variant="body2" sx={{ mb: 0.5 }}>
-              Aggregation Rule
-            </Typography>
-            <DropDownSelect
-              options={ruleOptions}
-              value={ruleId}
-              onChange={setRuleId}
-            />
-          </Box>
+          <LabeledSelect
+            label="Company"
+            options={companyOptions}
+            value={companyId}
+            onChange={setCompanyId}
+          />
+          <LabeledSelect
+            label="Device EUI"
+            options={deviceEuiOptions}
+            value={deviceEui}
+            onChange={setDeviceEui}
+          />
+          <LabeledSelect
+            label="Aggregation Rule"
+            options={ruleOptions}
+            value={ruleId}
+            onChange={setRuleId}
+          />
           <Box sx={{ display: "flex", gap: 2 }}>
-            <Box sx={{ flex: 1 }}>
-              <Typography variant="body2" sx={{ mb: 0.5 }}>
-                From
-              </Typography>
-              <DropDownSelect
-                options={fromOptions}
-                value={from}
-                onChange={setFrom}
-              />
-            </Box>
-            <Box sx={{ flex: 1 }}>
-              <Typography variant="body2" sx={{ mb: 0.5 }}>
-                To
-              </Typography>
-              <DropDownSelect options={toOptions} value={to} onChange={setTo} />
-            </Box>
+            <LabeledSelect
+              label="From"
+              options={fromOptions}
+              value={from}
+              onChange={setFrom}
+              flex={1}
+            />
+            <LabeledSelect
+              label="To"
+              options={toOptions}
+              value={to}
+              onChange={setTo}
+              flex={1}
+            />
           </Box>
-          <Box>
-            <Typography variant="body2" sx={{ mb: 0.5 }}>
-              Time interval
-            </Typography>
-            <Box sx={{ display: "flex", gap: 1 }}>
-              <TextField
-                type="number"
-                value={bucketValue}
-                onChange={(e) => setBucketValue(e.target.value)}
-                slotProps={{ htmlInput: { min: 1 } }}
-                sx={{ ...textFieldSx, width: 100 }}
-              />
-              <Box sx={{ flex: 1 }}>
-                <DropDownSelect
-                  options={BUCKET_UNIT_OPTIONS}
-                  value={bucketUnit}
-                  onChange={(v) => setBucketUnit(v as BucketUnit)}
-                />
-              </Box>
-            </Box>
-          </Box>
+          <BucketIntervalField
+            value={bucketValue}
+            onValueChange={setBucketValue}
+            unit={bucketUnit}
+            onUnitChange={setBucketUnit}
+          />
           <PageDivider />
           {/* TODO: Replace with actual context data display once API integration is done */}
           <ContextParamsDisplay params={params} />
@@ -232,44 +174,11 @@ export default function Context() {
             <Typography variant="body2">No data returned.</Typography>
           )}
           {result !== null && result.length > 0 && (
-            <>
-              <Box>
-                <Typography variant="body2" sx={{ mb: 0.5 }}>
-                  Field to display
-                </Typography>
-                <DropDownSelect
-                  options={fieldOptions.map((f) => ({
-                    id: f.id,
-                    name: f.name,
-                  }))}
-                  value={selectedField}
-                  onChange={(v) =>
-                    setSelectedField(v as keyof ContextDataResponse)
-                  }
-                />
-              </Box>
-              <TextField
-                multiline
-                fullWidth
-                minRows={6}
-                value={result
-                  .map((item) => {
-                    const val = item[selectedField];
-                    return typeof val === "object"
-                      ? JSON.stringify(val, null, 2)
-                      : String(val);
-                  })
-                  .join("\n---\n")}
-                slotProps={{ input: { readOnly: true } }}
-                sx={{
-                  ...textFieldSx,
-                  "& .MuiInputBase-input": {
-                    fontFamily: "monospace",
-                    fontSize: "0.75rem",
-                  },
-                }}
-              />
-            </>
+            <ContextResultDisplay
+              result={result}
+              selectedField={selectedField}
+              onFieldChange={setSelectedField}
+            />
           )}
         </Box>
       </PageContent>
