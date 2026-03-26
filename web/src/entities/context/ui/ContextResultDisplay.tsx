@@ -2,6 +2,8 @@ import type { ContextDataResponse } from "@entities/context/model/contextSchema"
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 
+import { BucketBarChart } from "./BucketBarChart";
+import { BucketLineChart } from "./BucketLineChart";
 import { LabeledSelect } from "./LabeledSelect";
 
 const textFieldSx = {
@@ -55,8 +57,17 @@ export function ContextResultDisplay({
     })
     .join("\n---\n");
 
+  const buckets = result[0]?.buckets ?? [];
+  const unit = result[0]?.unit;
+
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+      {buckets.length > 0 && (
+        <>
+          <BucketBarChart buckets={buckets} unit={unit} />
+          <BucketLineChart buckets={buckets} unit={unit} />
+        </>
+      )}
       <LabeledSelect
         label="Field to display"
         options={fieldOptions.map((f) => ({ id: f.id, name: f.name }))}
