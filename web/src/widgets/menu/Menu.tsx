@@ -143,6 +143,14 @@ export default function Menu(menuProps: MenuProps) {
                   <>
                     <Typography variant="h6">{user.email}</Typography>
                     <Typography variant="h6">{roles.get(user.role)}</Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        wordBreak: "break-all",
+                      }}
+                    >
+                      {localStorage.getItem("access_token")?.split(".").pop()}
+                    </Typography>
                   </>
                 ) : (
                   <Typography variant="h6">Loading...</Typography>

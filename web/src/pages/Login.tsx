@@ -141,7 +141,6 @@ export default function Base() {
     try {
       const data = await postLogin(loginData);
 
-      // 🔑 Store token
       localStorage.setItem("access_token", data.accessToken);
 
       navigate("/");

@@ -1,3 +1,4 @@
+import { postRefresh } from "@entities/user";
 import axios, { type AxiosInstance, type AxiosResponse } from "axios";
 
 // Client for all microservice requests — routed through the api-gateway
@@ -19,6 +20,19 @@ serviceClient.interceptors.request.use((config) => {
 
   return config;
 });
+
+serviceClient.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    if (error.response?.status === 401) {
+      const data = await postRefresh();
+
+      localStorage.setItem("access_token", data.accessToken);
+    }
+
+    return Promise.reject(error);
+  },
+);
 
 /**
  * Generic API request helper

@@ -5,7 +5,7 @@ import type {
 import { apiRequest, serviceClient } from "@shared/api";
 import { API_ROUTES } from "@shared/api/routes";
 
-type RawRefreshApiResponse = {
+type RawTokenApiResponse = {
   access_token: string;
   expires_in: number;
   token_type: string;
@@ -20,7 +20,7 @@ export const postLogin = async (
   loginData: LoginRequest,
 ): Promise<TokenApiResponse> => {
   try {
-    const data = await apiRequest<RawRefreshApiResponse>(
+    const data = await apiRequest<RawTokenApiResponse>(
       serviceClient,
       API_ROUTES.login,
       "POST",
