@@ -1,14 +1,19 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   BUCKET_UNIT_OPTIONS,
   ContextParamsDisplay,
+  getContextData,
+  getRules,
   toMinutes,
   type BucketUnit,
+  type ContextDataResponse,
 } from "@entities/context";
+import { getSensors } from "@entities/sensor";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
+import { CustomButton } from "@shared/ui/Button";
 import { DropDownSelect } from "@shared/ui/DropDownSelect";
 import { PageContent } from "@shared/ui/PageContent";
 import { PageDivider } from "@shared/ui/PageDivider";
@@ -21,21 +26,9 @@ const minus24h = new Date(now.getTime() - 24 * 60 * 60 * 1000);
 const minus7d = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 const minus30d = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
-// Hardcoded until auth context provides the active company
+// TODO: Hardcoded until auth context provides the active company
 const companyOptions = [
   { id: "a0000000-0000-0000-0000-000000000001", name: "Innoveria" },
-];
-
-// TODO: fetch device EUIs from the device/sensor API (same pattern as Sensors page)
-const deviceEuiOptions = [
-  { id: "0000000000000001", name: "0000000000000001" },
-  { id: "0000000000000002", name: "0000000000000002" },
-];
-
-// TODO: fetch aggregation rules from the context-service rules API
-const ruleOptions = [
-  { id: "rule-uuid-1", name: "Temperature average" },
-  { id: "rule-uuid-2", name: "Humidity average" },
 ];
 
 const fromOptions = [
@@ -65,12 +58,42 @@ const textFieldSx = {
  */
 export default function Context() {
   const [companyId, setCompanyId] = useState(companyOptions[0].id);
-  const [deviceEui, setDeviceEui] = useState(deviceEuiOptions[0].id);
-  const [ruleId, setRuleId] = useState(ruleOptions[0].id);
+  const [deviceEuiOptions, setDeviceEuiOptions] = useState<
+    { id: string; name: string }[]
+  >([]);
+  const [ruleOptions, setRuleOptions] = useState<
+    { id: string; name: string }[]
+  >([]);
+  const [deviceEui, setDeviceEui] = useState("");
+  const [ruleId, setRuleId] = useState("");
+
+  useEffect(() => {
+    getSensors().then((sensors) => {
+      const options = sensors.map((s) => ({
+        id: s.deviceEui,
+        name: s.deviceEui,
+      }));
+      setDeviceEuiOptions(options);
+      if (options.length > 0) setDeviceEui(options[0].id);
+    });
+  }, []);
+
+  useEffect(() => {
+    getRules(companyId).then((rules) => {
+      const options = rules.map((r) => ({ id: r.id, name: r.name }));
+      setRuleOptions(options);
+      if (options.length > 0) setRuleId(options[0].id);
+    });
+  }, [companyId]);
   const [from, setFrom] = useState(fromOptions[0].id);
   const [to, setTo] = useState(toOptions[0].id);
   const [bucketValue, setBucketValue] = useState("1");
   const [bucketUnit, setBucketUnit] = useState<BucketUnit>("hours");
+  const [result, setResult] = useState<ContextDataResponse[] | null>(null);
+  const [fetchError, setFetchError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedField, setSelectedField] =
+    useState<keyof ContextDataResponse>("totalValue");
 
   const parsedBucketValue = parseInt(bucketValue, 10);
   const bucketMinutes =
@@ -86,6 +109,30 @@ export default function Context() {
     to,
     bucketMinutes,
   };
+
+  const handleFetch = () => {
+    setIsLoading(true);
+    setFetchError(null);
+    getContextData(companyId, [deviceEui], ruleId, from, to, bucketMinutes)
+      .then((data) => setResult(data))
+      .catch((err: unknown) => {
+        setResult(null);
+        setFetchError(err instanceof Error ? err.message : String(err));
+      })
+      .finally(() => setIsLoading(false));
+  };
+
+  const fieldOptions: { id: keyof ContextDataResponse; name: string }[] = [
+    { id: "deviceEui", name: "Device EUI" },
+    { id: "companyId", name: "Company ID" },
+    { id: "contextType", name: "Context type" },
+    { id: "unit", name: "Unit" },
+    { id: "periodStart", name: "Period start" },
+    { id: "periodEnd", name: "Period end" },
+    { id: "totalValue", name: "Total value" },
+    { id: "buckets", name: "Buckets (JSON)" },
+    { id: "calculatedAt", name: "Calculated at" },
+  ];
 
   return (
     <div className="flex h-screen">
@@ -111,7 +158,6 @@ export default function Context() {
               onChange={setCompanyId}
             />
           </Box>
-
           <Box>
             <Typography variant="body2" sx={{ mb: 0.5 }}>
               Device EUI
@@ -122,7 +168,6 @@ export default function Context() {
               onChange={setDeviceEui}
             />
           </Box>
-
           <Box>
             <Typography variant="body2" sx={{ mb: 0.5 }}>
               Aggregation Rule
@@ -133,25 +178,24 @@ export default function Context() {
               onChange={setRuleId}
             />
           </Box>
-
-          <Box>
-            <Typography variant="body2" sx={{ mb: 0.5 }}>
-              From
-            </Typography>
-            <DropDownSelect
-              options={fromOptions}
-              value={from}
-              onChange={setFrom}
-            />
+          <Box sx={{ display: "flex", gap: 2 }}>
+            <Box sx={{ flex: 1 }}>
+              <Typography variant="body2" sx={{ mb: 0.5 }}>
+                From
+              </Typography>
+              <DropDownSelect
+                options={fromOptions}
+                value={from}
+                onChange={setFrom}
+              />
+            </Box>
+            <Box sx={{ flex: 1 }}>
+              <Typography variant="body2" sx={{ mb: 0.5 }}>
+                To
+              </Typography>
+              <DropDownSelect options={toOptions} value={to} onChange={setTo} />
+            </Box>
           </Box>
-
-          <Box>
-            <Typography variant="body2" sx={{ mb: 0.5 }}>
-              To
-            </Typography>
-            <DropDownSelect options={toOptions} value={to} onChange={setTo} />
-          </Box>
-
           <Box>
             <Typography variant="body2" sx={{ mb: 0.5 }}>
               Time interval
@@ -173,10 +217,60 @@ export default function Context() {
               </Box>
             </Box>
           </Box>
-
           <PageDivider />
-
+          {/* TODO: Replace with actual context data display once API integration is done */}
           <ContextParamsDisplay params={params} />
+          <CustomButton onClick={handleFetch}>
+            {isLoading ? "Fetching..." : "Fetch context data"}
+          </CustomButton>
+          {fetchError && (
+            <Typography variant="body2" color="error">
+              {fetchError}
+            </Typography>
+          )}
+          {result !== null && result.length === 0 && (
+            <Typography variant="body2">No data returned.</Typography>
+          )}
+          {result !== null && result.length > 0 && (
+            <>
+              <Box>
+                <Typography variant="body2" sx={{ mb: 0.5 }}>
+                  Field to display
+                </Typography>
+                <DropDownSelect
+                  options={fieldOptions.map((f) => ({
+                    id: f.id,
+                    name: f.name,
+                  }))}
+                  value={selectedField}
+                  onChange={(v) =>
+                    setSelectedField(v as keyof ContextDataResponse)
+                  }
+                />
+              </Box>
+              <TextField
+                multiline
+                fullWidth
+                minRows={6}
+                value={result
+                  .map((item) => {
+                    const val = item[selectedField];
+                    return typeof val === "object"
+                      ? JSON.stringify(val, null, 2)
+                      : String(val);
+                  })
+                  .join("\n---\n")}
+                slotProps={{ input: { readOnly: true } }}
+                sx={{
+                  ...textFieldSx,
+                  "& .MuiInputBase-input": {
+                    fontFamily: "monospace",
+                    fontSize: "0.75rem",
+                  },
+                }}
+              />
+            </>
+          )}
         </Box>
       </PageContent>
     </div>
