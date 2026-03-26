@@ -59,11 +59,12 @@ export default function Context() {
     });
   }, [companyId]);
 
-  const [from, setFrom] = useState(() =>
-    new Date(Date.now() - 60 * 60 * 1000).toISOString(),
-  );
+  const [from, setFrom] = useState(() => {
+    const d = new Date(Date.now() - 60 * 60 * 1000);
+    return d.toISOString().slice(0, 16);
+  });
   const [toNow, setToNow] = useState(true);
-  const [to, setTo] = useState(() => new Date().toISOString());
+  const [to, setTo] = useState(() => new Date().toISOString().slice(0, 16));
   const [bucketValue, setBucketValue] = useState("1");
   const [bucketUnit, setBucketUnit] = useState<BucketUnit>("hours");
   const [result, setResult] = useState<ContextDataResponse[] | null>(null);
@@ -83,12 +84,15 @@ export default function Context() {
       ? toMinutes(parsedBucketValue, bucketUnit)
       : undefined;
 
-  const resolvedTo = toNow ? new Date().toISOString() : to;
+  const fromIso = new Date(from).toISOString();
+  const resolvedTo = toNow
+    ? new Date().toISOString()
+    : new Date(to).toISOString();
   const params = {
     companyId,
     deviceEui,
     ruleId,
-    from,
+    from: fromIso,
     to: resolvedTo,
     bucketMinutes,
   };
@@ -96,7 +100,7 @@ export default function Context() {
   const runFetch = (minutes: number | undefined) => {
     setIsLoading(true);
     setFetchError(null);
-    getContextData(companyId, [deviceEui], ruleId, from, resolvedTo, minutes)
+    getContextData(companyId, [deviceEui], ruleId, fromIso, resolvedTo, minutes)
       .then((data) => setResult(data))
       .catch((err: unknown) => {
         setResult(null);
@@ -132,7 +136,7 @@ export default function Context() {
       companyId,
       [deviceEui],
       ruleId,
-      from,
+      fromIso,
       resolvedTo,
       bucketMinutes,
     )

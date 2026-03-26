@@ -19,7 +19,7 @@ const textFieldSx = {
 interface DateTimeFieldProps {
   label: string;
   value: string;
-  onChange: (iso: string) => void;
+  onChange: (localDatetime: string) => void;
   useNow?: boolean;
   onUseNowChange?: (useNow: boolean) => void;
 }
@@ -41,13 +41,6 @@ export function DateTimeField({
   useNow,
   onUseNowChange,
 }: DateTimeFieldProps) {
-  const localValue = value ? value.slice(0, 16) : "";
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const iso = e.target.value ? new Date(e.target.value).toISOString() : "";
-    onChange(iso);
-  };
-
   return (
     <Box sx={{ flex: 1 }}>
       <Typography variant="body2" sx={{ mb: 0.5 }}>
@@ -57,8 +50,8 @@ export function DateTimeField({
         type="datetime-local"
         fullWidth
         disabled={useNow}
-        value={useNow ? "" : localValue}
-        onChange={handleChange}
+        value={useNow ? "" : value}
+        onChange={(e) => onChange(e.target.value)}
         sx={textFieldSx}
       />
       {onUseNowChange !== undefined && (
