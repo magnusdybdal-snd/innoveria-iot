@@ -58,6 +58,12 @@ const pageSymbol: Map<string, ComponentType<SvgIconProps>> = new Map([
   ["Users", PeopleIcon],
 ]);
 
+const roles: Map<string, string> = new Map([
+  ["FACTORY_WORKER", "Factory worker"],
+  ["FACTORY_SUPERUSER", "Factory superuser"],
+  ["PLATFORM_ADMIN", "Platform admin"],
+]);
+
 /**
  * Persistent sidebar navigation with logo, user info, page links, theme toggle, and logout.
  * @param menuProps props of menu
@@ -136,7 +142,7 @@ export default function Menu(menuProps: MenuProps) {
                 {user ? (
                   <>
                     <Typography variant="h6">{user.email}</Typography>
-                    <Typography variant="h6">{user.role}</Typography>
+                    <Typography variant="h6">{roles.get(user.role)}</Typography>
                   </>
                 ) : (
                   <Typography variant="h6">Loading...</Typography>
