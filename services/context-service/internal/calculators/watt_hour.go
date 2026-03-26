@@ -1,6 +1,7 @@
 package calculators
 
 import (
+	"log/slog"
 	"time"
 
 	"innoveria-iot/context-service/internal/domain"
@@ -23,7 +24,11 @@ func (c *WattHourCalculator) Calculate(input Input) (domain.ContextData, error) 
 
 	for i := range buckets {
 		inBucket := readingsInBucket(input.Readings, buckets[i].PeriodStart, buckets[i].PeriodEnd, i == lastIdx)
-		buckets[i].Value = trapezoidalWh(inBucket, input.Rule.MeasurementType)
+		wh, err := trapezoidalWh(inBucket, input.Rule.MeasurementType)
+		if err != nil {
+			return domain.ContextData{}, err
+		}
+		buckets[i].Value = wh
 	}
 
 	total := 0.0
@@ -45,17 +50,26 @@ func (c *WattHourCalculator) Calculate(input Input) (domain.ContextData, error) 
 
 // trapezoidalWh integrates instantaneous watt readings over time using the trapezoid rule.
 // Returns 0 when fewer than two readings are available (no interval to integrate over).
-func trapezoidalWh(readings []domain.MeasurementReading, measurementType string) float64 {
+func trapezoidalWh(readings []domain.MeasurementReading, measurementType string) (float64, error) {
 	if len(readings) < 2 {
-		return 0.0
+		slog.Warn("insufficient readings for trapezoidal integration, bucket yields 0 Wh", "count", len(readings), "measurement_type", measurementType)
+		return 0.0, nil
 	}
 
 	energy := 0.0
 	for i := 1; i < len(readings); i++ {
-		w0 := extractFloat(readings[i-1], measurementType) * voltageV
-		w1 := extractFloat(readings[i], measurementType) * voltageV
+		raw0, err := extractFloat(readings[i-1], measurementType)
+		if err != nil {
+			return 0.0, err
+		}
+		raw1, err := extractFloat(readings[i], measurementType)
+		if err != nil {
+			return 0.0, err
+		}
+		w0 := raw0 * voltageV
+		w1 := raw1 * voltageV
 		dt := readings[i].Timestamp.Sub(readings[i-1].Timestamp).Hours()
 		energy += (w0 + w1) / 2 * dt
 	}
-	return energy
+	return energy, nil
 }

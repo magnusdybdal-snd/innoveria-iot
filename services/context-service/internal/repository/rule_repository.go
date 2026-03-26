@@ -4,6 +4,7 @@ package repository
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5"
@@ -47,7 +48,7 @@ func NewRuleRepository(db *dbutil.DB) *RuleRepository {
 func (r *RuleRepository) GetByCompanyID(ctx context.Context, companyID string) ([]domain.AggregationRule, error) {
 	rows, err := r.db.Pool.Query(ctx, getByCompanyID, companyID)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("rule repo GetByCompanyID: %w: %w", domain.ErrDatabase, err)
 	}
 	defer rows.Close()
 
@@ -67,13 +68,13 @@ func (r *RuleRepository) GetByCompanyID(ctx context.Context, companyID string) (
 			&rule.UpdatedAt,
 		)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("rule repo GetByCompanyID scan: %w: %w", domain.ErrDatabase, err)
 		}
 		rules = append(rules, rule)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("rule repo GetByCompanyID: %w: %w", domain.ErrDatabase, err)
 	}
 
 	return rules, nil
@@ -99,7 +100,7 @@ func (r *RuleRepository) GetByID(ctx context.Context, ruleID string) (domain.Agg
 		if errors.Is(err, pgx.ErrNoRows) {
 			return domain.AggregationRule{}, domain.ErrNotFound
 		}
-		return domain.AggregationRule{}, err
+		return domain.AggregationRule{}, fmt.Errorf("rule repo GetByID: %w: %w", domain.ErrDatabase, err)
 	}
 	return rule, nil
 }

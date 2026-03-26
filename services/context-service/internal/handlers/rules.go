@@ -14,7 +14,6 @@ import (
 // GetRules retrieves all aggregation rules for a given company ID.
 // @Summary 		Get Aggregation Rules
 // @Tags 			context
-// @Accept 			json
 // @Produce 		json
 // @Param 			company_id query string true "Company ID"
 // @Success 		200 {array} dto.AggregationRuleResponse

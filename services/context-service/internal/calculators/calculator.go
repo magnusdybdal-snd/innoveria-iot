@@ -2,7 +2,7 @@
 package calculators
 
 import (
-	"log/slog"
+	"fmt"
 	"time"
 
 	"innoveria-iot/context-service/internal/domain"
@@ -70,22 +70,20 @@ func readingsInBucket(readings []domain.MeasurementReading, start, end time.Time
 }
 
 // extractFloat retrieves a numeric value from a measurement payload by key.
-// Returns 0.0 and logs a warning if the key is missing or has an unexpected type.
-func extractFloat(r domain.MeasurementReading, key string) float64 {
+// Returns an error if the key is missing or the value is not a numeric type.
+func extractFloat(r domain.MeasurementReading, key string) (float64, error) {
 	raw, ok := r.Payload[key]
 	if !ok {
-		slog.Warn("payload key not found", "device_eui", r.DeviceEUI, "key", key)
-		return 0.0
+		return 0.0, fmt.Errorf("payload key %q not found for device %s", key, r.DeviceEUI)
 	}
 	switch v := raw.(type) {
 	case float64:
-		return v
+		return v, nil
 	case int:
-		return float64(v)
+		return float64(v), nil
 	case int64:
-		return float64(v)
+		return float64(v), nil
 	default:
-		slog.Warn("unexpected payload value type", "device_eui", r.DeviceEUI, "key", key, "type", v)
-		return 0.0
+		return 0.0, fmt.Errorf("unexpected type for payload key %q on device %s: %T", key, r.DeviceEUI, v)
 	}
 }
