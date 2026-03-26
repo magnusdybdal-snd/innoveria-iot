@@ -8,6 +8,7 @@ interface LabeledSelectProps {
   value: string;
   onChange: (value: string) => void;
   flex?: number;
+  error?: string;
 }
 
 /**
@@ -18,6 +19,7 @@ interface LabeledSelectProps {
  * @param props.value - Currently selected option id
  * @param props.onChange - Called with the newly selected option id
  * @param props.flex - CSS flex grow value applied to the wrapping Box
+ * @param props.error
  * @returns Labeled dropdown select element
  */
 export function LabeledSelect({
@@ -26,6 +28,7 @@ export function LabeledSelect({
   value,
   onChange,
   flex,
+  error,
 }: LabeledSelectProps) {
   return (
     <Box sx={{ flex }}>
@@ -33,6 +36,15 @@ export function LabeledSelect({
         {label}
       </Typography>
       <DropDownSelect options={options} value={value} onChange={onChange} />
+      {error && (
+        <Typography
+          variant="caption"
+          color="error"
+          sx={{ mt: 0.5, display: "block" }}
+        >
+          {error}
+        </Typography>
+      )}
     </Box>
   );
 }

@@ -12,6 +12,10 @@ import {
   type ContextDataResponse,
 } from "@entities/context";
 import { getSensors } from "@entities/sensor";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import Accordion from "@mui/material/Accordion";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import AccordionSummary from "@mui/material/AccordionSummary";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { CustomButton } from "@shared/ui/Button";
@@ -82,6 +86,11 @@ export default function Context() {
   const [result, setResult] = useState<ContextDataResponse[] | null>(null);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(true);
+  const [fieldErrors, setFieldErrors] = useState<{
+    deviceEui?: string;
+    ruleId?: string;
+  }>({});
   const [selectedField, setSelectedField] =
     useState<keyof ContextDataResponse>("totalValue");
 
@@ -94,8 +103,18 @@ export default function Context() {
   const params = { companyId, deviceEui, ruleId, from, to, bucketMinutes };
 
   const handleFetch = () => {
+    const errors: { deviceEui?: string; ruleId?: string } = {};
+    if (!deviceEui) errors.deviceEui = "Device EUI is required";
+    if (!ruleId) errors.ruleId = "Aggregation Rule is required";
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      setFiltersOpen(true);
+      return;
+    }
+    setFieldErrors({});
     setIsLoading(true);
     setFetchError(null);
+    setFiltersOpen(false);
     getContextData(companyId, [deviceEui], ruleId, from, to, bucketMinutes)
       .then((data) => setResult(data))
       .catch((err: unknown) => {
@@ -119,49 +138,72 @@ export default function Context() {
             mt: 2,
           }}
         >
-          <LabeledSelect
-            label="Company"
-            options={companyOptions}
-            value={companyId}
-            onChange={setCompanyId}
-          />
-          <LabeledSelect
-            label="Device EUI"
-            options={deviceEuiOptions}
-            value={deviceEui}
-            onChange={setDeviceEui}
-          />
-          <LabeledSelect
-            label="Aggregation Rule"
-            options={ruleOptions}
-            value={ruleId}
-            onChange={setRuleId}
-          />
-          <Box sx={{ display: "flex", gap: 2 }}>
-            <LabeledSelect
-              label="From"
-              options={fromOptions}
-              value={from}
-              onChange={setFrom}
-              flex={1}
-            />
-            <LabeledSelect
-              label="To"
-              options={toOptions}
-              value={to}
-              onChange={setTo}
-              flex={1}
-            />
-          </Box>
-          <BucketIntervalField
-            value={bucketValue}
-            onValueChange={setBucketValue}
-            unit={bucketUnit}
-            onUnitChange={setBucketUnit}
-          />
-          <PageDivider />
-          {/* TODO: Replace with actual context data display once API integration is done */}
-          <ContextParamsDisplay params={params} />
+          <Accordion
+            expanded={filtersOpen}
+            onChange={(_, expanded) => setFiltersOpen(expanded)}
+            disableGutters
+            elevation={0}
+            sx={{ background: "transparent", "&:before": { display: "none" } }}
+          >
+            <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ px: 0 }}>
+              <Typography variant="body2">Filters</Typography>
+            </AccordionSummary>
+            <AccordionDetails
+              sx={{ px: 0, display: "flex", flexDirection: "column", gap: 2 }}
+            >
+              <LabeledSelect
+                label="Company"
+                options={companyOptions}
+                value={companyId}
+                onChange={setCompanyId}
+              />
+              <LabeledSelect
+                label="Device EUI"
+                options={deviceEuiOptions}
+                value={deviceEui}
+                onChange={(v) => {
+                  setDeviceEui(v);
+                  setFieldErrors((e) => ({ ...e, deviceEui: undefined }));
+                }}
+                error={fieldErrors.deviceEui}
+              />
+              <LabeledSelect
+                label="Aggregation Rule"
+                options={ruleOptions}
+                value={ruleId}
+                onChange={(v) => {
+                  setRuleId(v);
+                  setFieldErrors((e) => ({ ...e, ruleId: undefined }));
+                }}
+                error={fieldErrors.ruleId}
+              />
+              <Box sx={{ display: "flex", gap: 2 }}>
+                <LabeledSelect
+                  label="From"
+                  options={fromOptions}
+                  value={from}
+                  onChange={setFrom}
+                  flex={1}
+                />
+                <LabeledSelect
+                  label="To"
+                  options={toOptions}
+                  value={to}
+                  onChange={setTo}
+                  flex={1}
+                />
+              </Box>
+              <BucketIntervalField
+                value={bucketValue}
+                onValueChange={setBucketValue}
+                unit={bucketUnit}
+                onUnitChange={setBucketUnit}
+              />
+              <PageDivider />
+              {/* TODO: Replace with actual context data display once API integration is done */}
+              <ContextParamsDisplay params={params} />
+            </AccordionDetails>
+          </Accordion>
           <CustomButton onClick={handleFetch}>
             {isLoading ? "Fetching..." : "Fetch context data"}
           </CustomButton>
