@@ -1,7 +1,7 @@
 export type {
   UserApiResponse,
   LoginRequest,
-  RefreshRequest,
+  TokenApiResponse,
 } from "./model/userSchema.ts";
 export { getUser, postLogin, postRefresh } from "./api";
 export { UserInfo } from "./ui";

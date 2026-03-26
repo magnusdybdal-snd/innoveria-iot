@@ -15,8 +15,8 @@ export interface LoginRequest {
   password: string;
 }
 
-export interface RefreshRequest {
+export interface TokenApiResponse {
   accessToken: string;
-  expiresIn: string;
+  expiresIn: number;
   tokenType: string;
 }

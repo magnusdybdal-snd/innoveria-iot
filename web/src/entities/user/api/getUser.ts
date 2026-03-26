@@ -14,7 +14,7 @@ type RawUserApiResponse = {
  * Fetches user from the authentication-service via the API user.
  * @returns Array of UserApiResponse objects, or nothing if the request fails
  */
-export const getUser = async (): Promise<UserApiResponse | undefined> => {
+export const getUser = async (): Promise<UserApiResponse> => {
   try {
     const data = await apiRequest<RawUserApiResponse>(
       serviceClient,
@@ -30,7 +30,12 @@ export const getUser = async (): Promise<UserApiResponse | undefined> => {
       userId: data.user_id,
     };
   } catch (error) {
-    console.error("Failed to fetch user:", error);
-    return;
+    if (error instanceof Error) {
+      console.error("Failed to fetch user:", error.message);
+    } else {
+      console.error("Failed to fetch user:", error);
+    }
+
+    throw error;
   }
 };

@@ -1,13 +1,13 @@
 import type {
   LoginRequest,
-  RefreshRequest,
+  TokenApiResponse,
 } from "@entities/user/model/userSchema.ts";
 import { apiRequest, serviceClient } from "@shared/api";
 import { API_ROUTES } from "@shared/api/routes";
 
 type RawRefreshApiResponse = {
   access_token: string;
-  expires_in: string;
+  expires_in: number;
   token_type: string;
 };
 
@@ -18,7 +18,7 @@ type RawRefreshApiResponse = {
  */
 export const postLogin = async (
   loginData: LoginRequest,
-): Promise<RefreshRequest | undefined> => {
+): Promise<TokenApiResponse> => {
   try {
     const data = await apiRequest<RawRefreshApiResponse>(
       serviceClient,

@@ -90,7 +90,10 @@ export default function Base() {
     symbol: !hasSymbol(password),
   });
 
-  const handleLogin = (loginData: { email: string; password: string }) => {
+  const handleLogin = async (loginData: {
+    email: string;
+    password: string;
+  }) => {
     setFirstLogin(false);
     const allFilled = loginFields.every(
       (field) => (loginValues[field] ?? "").trim() !== "",
@@ -135,17 +138,17 @@ export default function Base() {
     setEqualError(false);
     setLoginError(false);
 
-    return postLogin({
-      email: loginData.email,
-      password: loginData.password,
-    })
-      .then(() => {
-        navigate("/");
-      })
-      .catch((err: unknown) => {
-        setLoginError(true);
-        throw err;
-      });
+    try {
+      const data = await postLogin(loginData);
+
+      // 🔑 Store token
+      localStorage.setItem("access_token", data.accessToken);
+
+      navigate("/");
+    } catch (err) {
+      setLoginError(true);
+      console.error(err);
+    }
   };
 
   return (

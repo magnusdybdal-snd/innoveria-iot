@@ -8,6 +8,18 @@ export const serviceClient = axios.create({
   },
 });
 
+serviceClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem("access_token");
+
+  const isLoginRequest = config.url?.includes("/login");
+
+  if (token && config.headers && !isLoginRequest) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return config;
+});
+
 /**
  * Generic API request helper
  * @param client - The Axios instance to use
