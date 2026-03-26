@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import {
   BucketIntervalField,
@@ -69,6 +69,7 @@ export default function Context() {
   const [result, setResult] = useState<ContextDataResponse[] | null>(null);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const hasFetchedOnce = useRef(false);
   const [fieldErrors, setFieldErrors] = useState<{
     deviceEui?: string;
     ruleId?: string;
@@ -92,6 +93,18 @@ export default function Context() {
     bucketMinutes,
   };
 
+  const runFetch = (minutes: number | undefined) => {
+    setIsLoading(true);
+    setFetchError(null);
+    getContextData(companyId, [deviceEui], ruleId, from, resolvedTo, minutes)
+      .then((data) => setResult(data))
+      .catch((err: unknown) => {
+        setResult(null);
+        setFetchError(err instanceof Error ? err.message : String(err));
+      })
+      .finally(() => setIsLoading(false));
+  };
+
   const handleFetch = () => {
     const errors: { deviceEui?: string; ruleId?: string } = {};
     if (!deviceEui) errors.deviceEui = "Device EUI is required";
@@ -101,7 +114,19 @@ export default function Context() {
       return;
     }
     setFieldErrors({});
+    hasFetchedOnce.current = true;
+    runFetch(bucketMinutes);
+  };
+
+  // Re-fetch when bucket interval changes after the first manual fetch.
+  // setState calls here are intentional — syncing UI state with an async API response
+  // is a valid useEffect use case. Filter deps are intentionally excluded: this effect
+  // should only re-run on bucket changes, not every filter change.
+  useEffect(() => {
+    if (!hasFetchedOnce.current) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsLoading(true);
+
     setFetchError(null);
     getContextData(
       companyId,
@@ -117,7 +142,7 @@ export default function Context() {
         setFetchError(err instanceof Error ? err.message : String(err));
       })
       .finally(() => setIsLoading(false));
-  };
+  }, [bucketMinutes]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="flex h-screen">
@@ -178,12 +203,6 @@ export default function Context() {
                 onUseNowChange={setToNow}
               />
             </Box>
-            <BucketIntervalField
-              value={bucketValue}
-              onValueChange={setBucketValue}
-              unit={bucketUnit}
-              onUnitChange={setBucketUnit}
-            />
             <PageDivider />
             <ContextParamsDisplay params={params} />
             <CustomButton onClick={handleFetch}>
@@ -195,6 +214,12 @@ export default function Context() {
           <Box
             sx={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}
           >
+            <BucketIntervalField
+              value={bucketValue}
+              onValueChange={setBucketValue}
+              unit={bucketUnit}
+              onUnitChange={setBucketUnit}
+            />
             {fetchError && (
               <Typography variant="body2" color="error">
                 {fetchError}
