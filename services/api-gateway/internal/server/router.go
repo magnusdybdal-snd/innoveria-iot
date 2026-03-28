@@ -55,11 +55,12 @@ func NewRouter(cfg *config.Config) *http.ServeMux {
 	// Context service
 	handlers.RegisterProxyService(mux, CONTEXT_ROUTE, "context-service", cfg.ContextSvcURL, []string{
 		"/rules",
+		"/data",
 	})
 
 	// Swagger — merged spec from all services, served via the gateway
 	if cfg.EnableSwagger {
-		mux.HandleFunc("GET /swagger/doc.json", handlers.MergedSwaggerSpec(cfg.DeviceSvcURL, cfg.CollSvcURL, cfg.AuthSvcURL, cfg.ContextSvcURL, cfg.OnboardingSvcURL))
+		mux.HandleFunc("GET /swagger/doc.json", handlers.MergedSwaggerSpec(cfg.DeviceSvcURL, cfg.CollSvcURL, cfg.AuthSvcURL, cfg.OnboardingSvcURL, cfg.ContextSvcURL))
 		mux.HandleFunc("GET /swagger/", httpSwagger.Handler(httpSwagger.URL("/swagger/doc.json")))
 	}
 

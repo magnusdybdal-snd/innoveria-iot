@@ -108,6 +108,7 @@ services:
       - COLLECTION_SERVICE=${COLLECTION_SERVICE}
       - DEVICE_SERVICE=${DEVICE_SERVICE}
       - ONBOARDING_SERVICE=${ONBOARDING_SERVICE}
+      - CONTEXT_SERVICE=${CONTEXT_SERVICE}
       - GO_ENV=${GO_ENV}
       - JWT_SECRET=${JWT_SECRET}
       - JWT_ISSUER=auth-service
@@ -212,12 +213,40 @@ services:
       - collection-service
     restart: unless-stopped
 
+  context-service:
+    build:
+      context: .
+      dockerfile: infra/production/context-service.Dockerfile
+    environment:
+      - GO_ENV=${GO_ENV}
+      - DB_HOST=context-db
+      - DB_USER=${CONTEXT_DB_USER}
+      - DB_PASSWORD=${CONTEXT_DB_PASSWORD}
+      - DB_NAME=${CONTEXT_DB_NAME}
+      - DB_SSLMODE=${CONTEXT_DB_SSLMODE}
+      - COLLECTION_SERVICE=${COLLECTION_SERVICE}
+    depends_on:
+      - collection-service
+      - context-db
+    restart: unless-stopped
+
+  context-db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    volumes:
+      - context-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=${CONTEXT_DB_USER}
+      - POSTGRES_PASSWORD=${CONTEXT_DB_PASSWORD}
+      - POSTGRES_DB=${CONTEXT_DB_NAME}
+
 volumes:
   chirpstack-secrets:
   chirpstack-data:
   collection-data:
   device-data:
   auth-data:
+  context-data:
   redis-data:
   caddy_data:
   caddy_config:

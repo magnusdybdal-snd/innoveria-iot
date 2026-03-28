@@ -10,10 +10,13 @@ tool (
 )
 
 require (
+	github.com/jackc/pgerrcode v0.0.0-20250907135507-afb5586c32a6
 	github.com/jackc/pgx/v5 v5.8.0
 	github.com/swaggo/http-swagger v1.3.4
 	innoveria-iot/pkg v0.0.0-00010101000000-000000000000
 )
+
+require github.com/google/uuid v1.6.0
 
 require (
 	4d63.com/gocheckcompilerdirectives v1.3.0 // indirect

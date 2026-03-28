@@ -16,7 +16,11 @@ func NewRouter(contextSvc domain.ContextService, ruleSvc domain.RuleService) *ht
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /", handlers.Root)
+	// Rules endpoints
 	mux.HandleFunc("GET "+RULES_ROUTE, handlers.GetRules(ruleSvc))
+	mux.HandleFunc("POST "+RULES_ROUTE, handlers.CreateRule(ruleSvc))
+	// Context data endpoint
+	mux.HandleFunc("GET "+CONTEXT_DATA_ROUTE, handlers.GetContextData(contextSvc))
 
 	// Swagger docs
 	mux.HandleFunc("GET /swagger/", httpSwagger.WrapHandler)
