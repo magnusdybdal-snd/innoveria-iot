@@ -8,7 +8,7 @@ import (
 func NewRouter() *http.ServeMux {
 	mux := http.NewServeMux()
 
-	//mux.HandleFunc("GET /", handlers.Root)
+	// mux.HandleFunc("GET /", handlers.Root)
 
 	// Swagger docs
 	// mux.HandleFunc("GET /swagger/", httpSwagger.WrapHandler)
