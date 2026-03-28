@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
+import { getFactories, type FactoryApiResponse } from "@entities/factory";
 import {
   deleteGateway,
   GatewayInfo,
@@ -11,13 +12,15 @@ import {
   type SortDirection,
 } from "@entities/gateway";
 import { AddDevice } from "@features/addDevice";
+import Box from "@mui/material/Box";
+import Tab from "@mui/material/Tab";
+import Tabs from "@mui/material/Tabs";
 import { formatTimestamp } from "@shared/lib";
 import { CustomButton } from "@shared/ui/Button";
 import { CategoryHeader } from "@shared/ui/CategoryHeader";
 import { DeviceRow } from "@shared/ui/DeviceRow";
 import { NotFoundCard } from "@shared/ui/NotFoundCard";
 import { PageContent } from "@shared/ui/PageContent";
-import { PageDivider } from "@shared/ui/PageDivider";
 import {
   AppSnackbar,
   SNACKBAR_SEVERITY,
@@ -44,6 +47,17 @@ export default function Gateways() {
   // State for controlling success snackbar
   const { show, hide, snackbar } = useSnackbar();
 
+  // Factory tabs
+  const [tabValue, setTabValue] = useState<number | string>(0);
+  const [factory, setFactory] = useState<FactoryApiResponse[]>([]); // factory location sensor
+
+  const handleTabChange = (
+    _event: React.SyntheticEvent,
+    newValue: number | string,
+  ) => {
+    setTabValue(newValue);
+  };
+
   const fetchGateways = () => {
     getGateways().then((data) => {
       setGateways(data);
@@ -65,6 +79,11 @@ export default function Gateways() {
   useEffect(() => {
     fetchGateways();
   }, []);
+
+  useEffect(() => {
+    getFactories().then(setFactory);
+  }, []);
+
   const [openAdd, setOpenAdd] = useState(false);
   const [sortConfig, setSortConfig] = useState<{
     key: GatewaySortKey | null;
@@ -130,7 +149,27 @@ export default function Gateways() {
     <div className="flex h-screen">
       <PageContent>
         <SubPageHeader title="Gateways" action={addButton} />
-        <PageDivider />
+        <Box
+          sx={{
+            borderBottom: 1,
+            borderColor: "divider",
+            marginTop: 2,
+            marginBottom: 5,
+          }}
+        >
+          <Tabs
+            value={tabValue}
+            onChange={handleTabChange}
+            variant="scrollable"
+            scrollButtons="auto"
+            aria-label="scrollable auto tabs example"
+          >
+            <Tab label="All" value={0} />
+            {factory.map((factory) => (
+              <Tab label={factory.name} value={factory.id} />
+            ))}
+          </Tabs>
+        </Box>
         <CategoryHeader
           categories={gatewayDetails}
           columns={gatewayDetails.length + 1}
@@ -152,7 +191,9 @@ export default function Gateways() {
             </DeviceRow>
           ))}
         </CategoryHeader>
-        {!isLoading && sorted.length === 0 && <NotFoundCard page="gateways" />}
+        {!isLoading && sorted.length === 0 && (
+          <NotFoundCard page="gateways" isEmpty={true} />
+        )}
       </PageContent>
       <AddDevice
         open={openAdd}

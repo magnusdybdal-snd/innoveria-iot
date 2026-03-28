@@ -5,16 +5,17 @@ import { yellow } from "@mui/material/colors";
 
 type NotFoundProps = {
   page: string;
+  isEmpty: boolean;
 };
 
 /**
  * NotFoundCard
  * @param NotFoundProps - Component props
- * @param NotFoundProps.children - Name of page not found in
- * @param NotFoundProps.page
- * @returns card with message that no object has been found
+ * @param NotFoundProps.page - Name of page not found in
+ * @param NotFoundProps.isEmpty - Whether there are no objects at all
+ * @returns card with message that no object has been found. Distinguishes between error or none registered
  */
-export function NotFoundCard({ page }: NotFoundProps) {
+export function NotFoundCard({ page, isEmpty }: NotFoundProps) {
   return (
     <>
       <Card
@@ -33,8 +34,8 @@ export function NotFoundCard({ page }: NotFoundProps) {
             padding: 2,
           }}
         >
-          <ErrorIcon sx={{ margin: 1, color: yellow[500] }} />
-          <p>No {page} found</p>
+          {isEmpty && <ErrorIcon sx={{ margin: 1, color: yellow[500] }} />}
+          <p>{isEmpty ? `No ${page} found` : `No ${page} registered`}</p>
         </Box>
       </Card>
     </>

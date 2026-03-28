@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   getSensorProfiles,
@@ -15,13 +15,15 @@ import {
 } from "@entities/sensor";
 import { deleteSensor } from "@entities/sensor/api/deleteSensor";
 import { AddDevice } from "@features/addDevice";
+import Box from "@mui/material/Box";
+import Tab from "@mui/material/Tab";
+import Tabs from "@mui/material/Tabs";
 import { formatTimestamp } from "@shared/lib";
 import { CustomButton } from "@shared/ui/Button";
 import { CategoryHeader } from "@shared/ui/CategoryHeader";
 import { DeviceRow } from "@shared/ui/DeviceRow";
 import { NotFoundCard } from "@shared/ui/NotFoundCard";
 import { PageContent } from "@shared/ui/PageContent";
-import { PageDivider } from "@shared/ui/PageDivider";
 import {
   AppSnackbar,
   SNACKBAR_SEVERITY,
@@ -63,6 +65,14 @@ export default function Sensors() {
   const [factory, setFactory] = useState<FactoryApiResponse[]>([]); // factory location sensor
 
   const { show, hide, snackbar } = useSnackbar();
+  const [tabValue, setTabValue] = useState<number | string>(0);
+
+  const handleTabChange = (
+    _event: React.SyntheticEvent,
+    newValue: number | string,
+  ) => {
+    setTabValue(newValue);
+  };
 
   useEffect(() => {
     getSensorProfiles().then(setSensorProfiles);
@@ -71,6 +81,7 @@ export default function Sensors() {
   useEffect(() => {
     getFactories().then(setFactory);
   }, []);
+
   // Handler for deleting a sensor; refreshes list on success
   const handleDeleteSensor = (id: string) => {
     deleteSensor(id)
@@ -82,6 +93,7 @@ export default function Sensors() {
         show("Failed to delete sensor.", SNACKBAR_SEVERITY.ERROR);
       });
   };
+
   // Handler for opening and closing add sensor pop-up
   const handleClickOpenAdd = () => {
     setOpenAdd(true);
@@ -150,15 +162,21 @@ export default function Sensors() {
 
   const sorted = sortSensors(sensors, sortConfig.key, sortConfig.direction);
 
+  // Filter sensors to only show those from chosen factory
+  const filteredSensors = sorted.filter((sensor) => {
+    if (tabValue === 0) return true;
+    return sensor.factory === tabValue;
+  });
+
   const sensorInfos = new Map<string, number>();
-  sensorInfos.set("Total sensors", sorted.length);
+  sensorInfos.set("Total sensors", filteredSensors.length);
   sensorInfos.set(
     "Online sensors",
-    sorted.filter((sensor) => sensor.status === 0).length,
+    filteredSensors.filter((sensor) => sensor.status === 0).length,
   );
   sensorInfos.set(
     "Offline sensors",
-    sorted.filter((sensor) => sensor.status === 2).length,
+    filteredSensors.filter((sensor) => sensor.status === 2).length,
   );
   sensorInfos.set("Last seen 24hr", 0);
   sensorInfos.set("Error last 24hr", 0);
@@ -167,12 +185,39 @@ export default function Sensors() {
     <div className="flex h-screen">
       <PageContent>
         <SubPageHeader title="Sensor devices" action={addButton} />
-        <div className="flex justify-between flex-wrap">
+        <Box
+          sx={{
+            borderBottom: 1,
+            borderColor: "divider",
+            marginTop: 2,
+            marginBottom: 2,
+          }}
+        >
+          <Tabs
+            value={tabValue}
+            onChange={handleTabChange}
+            variant="scrollable"
+            scrollButtons="auto"
+            aria-label="scrollable auto tabs example"
+          >
+            <Tab label="All" value={0} />
+            {factory.map((factory) => (
+              <Tab label={factory.name} value={factory.id} />
+            ))}
+          </Tabs>
+        </Box>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+            marginBottom: 5,
+          }}
+        >
           {Array.from(sensorInfos.entries()).map(([key, value]) => (
             <SensorsGenInfo key={key} title={key} count={value} />
           ))}
-        </div>
-        <PageDivider />
+        </Box>
         <CategoryHeader
           categories={sensorMainDetails}
           columns={sensorMainDetails.length + 2}
@@ -180,7 +225,7 @@ export default function Sensors() {
           sortConfig={sortConfig}
           onSort={handleSort}
         >
-          {sorted.map((sensor) => (
+          {filteredSensors.map((sensor) => (
             <DeviceRow key={sensor.id}>
               <SensorMainInfo
                 name={sensor.name}
@@ -199,7 +244,9 @@ export default function Sensors() {
             sensor={selectedSensor}
           />
         )}
-        {!isLoading && sorted.length === 0 && <NotFoundCard page="sensors" />}
+        {!isLoading && filteredSensors.length === 0 && (
+          <NotFoundCard page="Sensors" isEmpty={sorted.length === 0} />
+        )}
       </PageContent>
 
       <AddDevice
