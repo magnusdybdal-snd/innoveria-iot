@@ -33,14 +33,14 @@ serviceClient.interceptors.response.use(
     const isRefreshRequest = originalRequest.url?.includes("/refresh");
     const isLoginRequest = originalRequest.url?.includes("/login");
 
-    // ❌ If refresh itself fails → logout
+    // If refresh fails → logout
     if (error.response?.status === 401 && isRefreshRequest) {
       localStorage.clear();
       window.location.href = "/login";
       return Promise.reject(error);
     }
 
-    // ✅ Only refresh for normal API calls (not login/refresh)
+    // Only refresh for normal API calls (not login/refresh)
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
@@ -51,7 +51,7 @@ serviceClient.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        // 🔒 Prevent multiple refresh calls
+        // Prevent multiple refresh calls
         if (!isRefreshing) {
           isRefreshing = true;
           refreshPromise = postRefresh();
@@ -68,7 +68,7 @@ serviceClient.interceptors.response.use(
 
         localStorage.setItem("access_token", data.accessToken);
 
-        // 🔁 Retry original request with new token
+        // Retry original request with new token
         originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
 
         return serviceClient(originalRequest);
@@ -76,7 +76,7 @@ serviceClient.interceptors.response.use(
         isRefreshing = false;
         refreshPromise = null;
 
-        // ❌ If refresh fails → logout
+        // Refresh fails → logout
         localStorage.clear();
         window.location.href = "/login";
 

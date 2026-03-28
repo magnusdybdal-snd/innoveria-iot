@@ -77,13 +77,16 @@ export default function Menu(menuProps: MenuProps) {
   const [expanded, setExpanded] = useState<string[]>([]);
   const [user, setUser] = useState<UserApiResponse>();
 
-  const fetchUser = () => {
-    getUser().then((data) => {
-      setUser(data);
-    });
-  };
-
   useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const data = await getUser();
+        setUser(data);
+      } catch (error) {
+        console.error("Failed to fetch user:", error);
+      }
+    };
+
     fetchUser();
   }, []);
 
@@ -143,14 +146,6 @@ export default function Menu(menuProps: MenuProps) {
                   <>
                     <Typography variant="h6">{user.email}</Typography>
                     <Typography variant="h6">{roles.get(user.role)}</Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        wordBreak: "break-all",
-                      }}
-                    >
-                      {localStorage.getItem("access_token")?.split(".").pop()}
-                    </Typography>
                   </>
                 ) : (
                   <Typography variant="h6">Loading...</Typography>

@@ -37,7 +37,7 @@ func Load() *Config {
 		os.Exit(1)
 	}
 
-	jwtRefreshTTL, err := time.ParseDuration(env.Get("JWT_REFRESH_TTL", "30d")) // 30 days
+	jwtRefreshTTL, err := time.ParseDuration(env.Get("JWT_REFRESH_TTL", "720h")) // 30 days
 	if err != nil {
 		slog.Error("invalid JWT_REFRESH_TTL", "error", err)
 		os.Exit(1)
