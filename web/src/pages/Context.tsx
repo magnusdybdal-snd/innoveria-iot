@@ -39,24 +39,39 @@ export default function Context() {
   >([]);
   const [deviceEui, setDeviceEui] = useState("");
   const [ruleId, setRuleId] = useState("");
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
-    getSensors().then((sensors) => {
-      const options = sensors.map((s) => ({
-        id: s.deviceEui,
-        name: s.deviceEui,
-      }));
-      setDeviceEuiOptions(options);
-      if (options.length > 0) setDeviceEui(options[0].id);
-    });
+    getSensors()
+      .then((sensors) => {
+        const options = sensors.map((s) => ({
+          id: s.deviceEui,
+          name: s.deviceEui,
+        }));
+        setDeviceEuiOptions(options);
+        if (options.length > 0) setDeviceEui(options[0].id);
+      })
+      .catch((err: unknown) => {
+        setLoadError(
+          err instanceof Error ? err.message : "Failed to load sensors.",
+        );
+      });
   }, []);
 
   useEffect(() => {
-    getRules(companyId).then((rules) => {
-      const options = rules.map((r) => ({ id: r.id, name: r.name }));
-      setRuleOptions(options);
-      if (options.length > 0) setRuleId(options[0].id);
-    });
+    getRules(companyId)
+      .then((rules) => {
+        const options = rules.map((r) => ({ id: r.id, name: r.name }));
+        setRuleOptions(options);
+        if (options.length > 0) setRuleId(options[0].id);
+      })
+      .catch((err: unknown) => {
+        setLoadError(
+          err instanceof Error
+            ? err.message
+            : "Failed to load aggregation rules.",
+        );
+      });
   }, [companyId]);
 
   const [from, setFrom] = useState(() => {
@@ -171,12 +186,18 @@ export default function Context() {
             <Typography variant="body2" sx={{ fontWeight: 600 }}>
               Filters
             </Typography>
+            {/*TODO: remove company option, companies should not have the option to select a company. This is there for testing purposes only */}
             <LabeledSelect
               label="Company"
               options={companyOptions}
               value={companyId}
               onChange={setCompanyId}
             />
+            {loadError && (
+              <Typography variant="body2" color="error">
+                {loadError}
+              </Typography>
+            )}
             <LabeledSelect
               label="Device EUI"
               options={deviceEuiOptions}
