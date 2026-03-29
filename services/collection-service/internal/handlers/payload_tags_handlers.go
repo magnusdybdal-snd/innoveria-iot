@@ -31,7 +31,7 @@ func HandlePayloadTags(svc domain.MeasurementService) http.HandlerFunc {
 		// Get the payload tags for the device
 		tags, err := svc.GetPayloadKeys(r.Context(), deviceEUI)
 		if err != nil {
-			json.HandleError(w, http.StatusInternalServerError, err, "failed to fetch payload tags for device %s", deviceEUI)
+			json.HandleError(w, http.StatusInternalServerError, err, "failed to fetch payload tags")
 			return
 		}
 
