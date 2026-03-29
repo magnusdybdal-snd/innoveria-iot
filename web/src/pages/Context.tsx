@@ -177,7 +177,7 @@ export default function Context() {
             <Typography variant="body2" sx={{ fontWeight: 600 }}>
               Filters
             </Typography>
-            {/*TODO: remove company option, companies should not have the option to select a company. This is there for testing purposes only */}
+            {/*TODO: remove company option, companies should not have the option to select a company. This will be handled through auth in the headers when implemented in backend. */}
             <LabeledSelect
               label="Company"
               options={companyOptions}
