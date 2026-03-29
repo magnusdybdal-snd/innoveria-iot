@@ -8,7 +8,6 @@ export type {
 export { getContextData, getRules } from "./api";
 export {
   BucketIntervalField,
-  ContextParamsDisplay,
   ContextResultDisplay,
   DateTimeField,
   LabeledSelect,
