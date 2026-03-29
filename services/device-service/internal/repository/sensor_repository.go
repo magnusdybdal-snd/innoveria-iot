@@ -2,9 +2,12 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"innoveria-iot/device-service/internal/domain"
 	"innoveria-iot/pkg/dbutil"
+
+	"github.com/jackc/pgx/v5"
 )
 
 const (
@@ -194,6 +197,9 @@ func (r *SensorRepository) FindByEUI(ctx context.Context, deviceEUI string) (dom
 		&out.UpdatedAt,
 	)
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return domain.Sensor{}, domain.ErrNotFound
+		}
 		return domain.Sensor{}, fmt.Errorf("find sensor by eui: %w", err)
 	}
 

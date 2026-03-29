@@ -2,15 +2,8 @@ package domain
 
 import (
 	"context"
-	"errors"
 	"time"
 )
-
-// ErrNotFound is returned when a requested resource does not exist.
-var ErrNotFound = errors.New("not found")
-
-// ErrConflict is returned when a resource already exists and cannot be duplicated.
-var ErrConflict = errors.New("conflict")
 
 // ContextBucket represents a single time bucket in a context data result.
 type ContextBucket struct {

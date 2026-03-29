@@ -78,6 +78,24 @@ definitions:
     - factory_id
     - name
     type: object
+  dto.DiscoverPayloadKeysRequest:
+    properties:
+      payload_keys:
+        items:
+          type: string
+        type: array
+    required:
+    - payload_keys
+    type: object
+  dto.DraftProfilesResponse:
+    properties:
+      profile_ids:
+        items:
+          type: string
+        type: array
+      total_count:
+        type: integer
+    type: object
   dto.GatewayListResponse:
     properties:
       gateways:
@@ -136,6 +154,49 @@ definitions:
       slug:
         type: string
     type: object
+  dto.PayloadSchemaLabelRequest:
+    properties:
+      measurement_type:
+        type: string
+      payload_key:
+        type: string
+      unit:
+        type: string
+    required:
+    - measurement_type
+    - payload_key
+    type: object
+  dto.PayloadSchemaListResponse:
+    properties:
+      schemas:
+        items:
+          $ref: '#/definitions/dto.PayloadSchemaResponse'
+        type: array
+      total_count:
+        type: integer
+    type: object
+  dto.PayloadSchemaResponse:
+    properties:
+      chirpstack_profile_id:
+        type: string
+      id:
+        type: string
+      measurement_type:
+        type: string
+      payload_key:
+        type: string
+      unit:
+        type: string
+    type: object
+  dto.SavePayloadSchemaLabelsRequest:
+    properties:
+      labels:
+        items:
+          $ref: '#/definitions/dto.PayloadSchemaLabelRequest'
+        type: array
+    required:
+    - labels
+    type: object
   dto.SensorListResponse:
     properties:
       sensors:
@@ -144,6 +205,36 @@ definitions:
         type: array
       total_count:
         type: integer
+    type: object
+  dto.SensorMetricListResponse:
+    properties:
+      metrics:
+        items:
+          $ref: '#/definitions/dto.SensorMetricResponse'
+        type: array
+      total_count:
+        type: integer
+    type: object
+  dto.SensorMetricRequest:
+    properties:
+      measurement_type:
+        type: string
+      payload_key:
+        type: string
+      unit:
+        type: string
+    required:
+    - measurement_type
+    - payload_key
+    type: object
+  dto.SensorMetricResponse:
+    properties:
+      measurement_type:
+        type: string
+      payload_key:
+        type: string
+      unit:
+        type: string
     type: object
   dto.SensorProfileListResponse:
     properties:
@@ -233,6 +324,15 @@ definitions:
       production_resource:
         description: Optional — UUID, omit if service not yet available
         type: string
+    type: object
+  dto.UpsertSensorMetricsRequest:
+    properties:
+      metrics:
+        items:
+          $ref: '#/definitions/dto.SensorMetricRequest'
+        type: array
+    required:
+    - metrics
     type: object
 host: localhost:8083
 info:
@@ -429,6 +529,95 @@ paths:
       summary: List all measurement types including deprecated
       tags:
       - measurement-types
+  /payload-schema/{chirpstack_profile_id}:
+    get:
+      parameters:
+      - description: ChirpStack profile ID
+        in: path
+        name: chirpstack_profile_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.PayloadSchemaListResponse'
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Get payload schema for a profile
+      tags:
+      - payload-schema
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ChirpStack profile ID
+        in: path
+        name: chirpstack_profile_id
+        required: true
+        type: string
+      - description: Labels to save
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.SavePayloadSchemaLabelsRequest'
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+        "422":
+          description: Unprocessable Entity
+        "500":
+          description: Internal Server Error
+      summary: Save payload schema labels for a profile
+      tags:
+      - payload-schema
+  /payload-schema/{chirpstack_profile_id}/discover:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: ChirpStack profile ID
+        in: path
+        name: chirpstack_profile_id
+        required: true
+        type: string
+      - description: Discovered payload keys
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.DiscoverPayloadKeysRequest'
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Discover payload keys for a profile
+      tags:
+      - payload-schema
+  /payload-schema/drafts:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.DraftProfilesResponse'
+        "500":
+          description: Internal Server Error
+      summary: List profiles with unlabeled payload schema rows
+      tags:
+      - payload-schema
   /sensor-profiles:
     get:
       description: Not authenticated — every user can access this list.
@@ -480,6 +669,57 @@ paths:
       summary: Create a sensor
       tags:
       - sensors
+  /sensors/{eui}/metrics:
+    get:
+      parameters:
+      - description: Device EUI
+        in: path
+        name: eui
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.SensorMetricListResponse'
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get effective metrics for a sensor
+      tags:
+      - sensor-metrics
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Device EUI
+        in: path
+        name: eui
+        required: true
+        type: string
+      - description: Metrics to save
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpsertSensorMetricsRequest'
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "422":
+          description: Unprocessable Entity
+        "500":
+          description: Internal Server Error
+      summary: Save metric labels for a sensor
+      tags:
+      - sensor-metrics
   /sensors/{id}:
     delete:
       parameters:

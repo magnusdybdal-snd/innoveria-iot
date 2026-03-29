@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
 
@@ -22,8 +23,10 @@ func NewMeasurementTypeService(repo domain.MeasurementTypeRepository) *Measureme
 // Returns domain.ErrAlreadyExists if a type with the same slug already exists.
 func (s *MeasurementTypeServiceImpl) Create(ctx context.Context, m domain.MeasurementType) error {
 	if err := s.repo.Create(ctx, m); err != nil {
-		if err == domain.ErrAlreadyExists {
+		if errors.Is(err, domain.ErrAlreadyExists) {
 			slog.Warn("measurement type already exists", "slug", m.Slug)
+		} else {
+			slog.Error("failed to create measurement type", "slug", m.Slug, "error", err)
 		}
 		return err
 	}
@@ -54,7 +57,7 @@ func (s *MeasurementTypeServiceImpl) ListAll(ctx context.Context) ([]domain.Meas
 // Returns domain.ErrNotFound if no measurement type with the given slug exists.
 func (s *MeasurementTypeServiceImpl) Deprecate(ctx context.Context, slug string) error {
 	if err := s.repo.Deprecate(ctx, slug); err != nil {
-		slog.Error("failed to deprecate measurement type", "slug", slug, "error", err)
+		slog.Warn("failed to deprecate measurement type", "slug", slug, "error", err)
 		return fmt.Errorf("deprecate measurement type: %w", err)
 	}
 	slog.Info("deprecated measurement type", "slug", slug)

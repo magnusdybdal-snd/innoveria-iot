@@ -53,7 +53,11 @@ func aggregate(readings []domain.MeasurementReading, key, method string) (float6
 
 	values := make([]float64, len(readings))
 	for i, r := range readings {
-		values[i] = extractFloat(r, key)
+		v, err := extractFloat(r, key)
+		if err != nil {
+			return 0.0, err
+		}
+		values[i] = v
 	}
 
 	switch method {

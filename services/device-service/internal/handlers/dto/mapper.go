@@ -7,6 +7,78 @@ import (
 	"innoveria-iot/pkg/ptrutil"
 )
 
+// MapDraftProfilesToDTO maps a slice of draft profile IDs to a DraftProfilesResponse.
+func MapDraftProfilesToDTO(from []string) DraftProfilesResponse {
+	profileIDs := make([]string, len(from))
+	copy(profileIDs, from)
+	return DraftProfilesResponse{
+		TotalCount: len(profileIDs),
+		ProfileIDs: profileIDs,
+	}
+}
+
+// MapPayloadSchemaDomainToDTO maps a slice of domain PayloadSchemas to a PayloadSchemaListResponse.
+func MapPayloadSchemaDomainToDTO(from []domain.PayloadSchema) PayloadSchemaListResponse {
+	schemas := make([]PayloadSchemaResponse, len(from))
+	for i, s := range from {
+		schemas[i] = PayloadSchemaResponse{
+			ID:                  s.ID,
+			ChirpstackProfileID: s.ChirpstackProfileID,
+			PayloadKey:          s.PayloadKey,
+			MeasurementType:     s.MeasurementType,
+			Unit:                s.Unit,
+		}
+	}
+	return PayloadSchemaListResponse{
+		TotalCount: len(schemas),
+		Schemas:    schemas,
+	}
+}
+
+// MapSaveLabelsRequestToDomain maps a SavePayloadSchemaLabelsRequest to a slice of domain PayloadSchemas.
+func MapSaveLabelsRequestToDomain(chirpstackProfileID string, from SavePayloadSchemaLabelsRequest) []domain.PayloadSchema {
+	schemas := make([]domain.PayloadSchema, len(from.Labels))
+	for i, l := range from.Labels {
+		mt := l.MeasurementType
+		schemas[i] = domain.PayloadSchema{
+			ChirpstackProfileID: chirpstackProfileID,
+			PayloadKey:          l.PayloadKey,
+			MeasurementType:     &mt,
+			Unit:                l.Unit,
+		}
+	}
+	return schemas
+}
+
+// MapSensorMetricDomainToDTO maps a slice of domain SensorMetrics to a SensorMetricListResponse.
+func MapSensorMetricDomainToDTO(from []domain.SensorMetric) SensorMetricListResponse {
+	metrics := make([]SensorMetricResponse, len(from))
+	for i, m := range from {
+		metrics[i] = SensorMetricResponse{
+			PayloadKey:      m.PayloadKey,
+			MeasurementType: m.MeasurementType,
+			Unit:            m.Unit,
+		}
+	}
+	return SensorMetricListResponse{
+		TotalCount: len(metrics),
+		Metrics:    metrics,
+	}
+}
+
+// MapUpsertMetricsRequestToDomain maps an UpsertSensorMetricsRequest to a slice of domain SensorMetrics.
+func MapUpsertMetricsRequestToDomain(from UpsertSensorMetricsRequest) []domain.SensorMetric {
+	metrics := make([]domain.SensorMetric, len(from.Metrics))
+	for i, m := range from.Metrics {
+		metrics[i] = domain.SensorMetric{
+			PayloadKey:      m.PayloadKey,
+			MeasurementType: m.MeasurementType,
+			Unit:            m.Unit,
+		}
+	}
+	return metrics
+}
+
 // MapGatewayDomainToDTO maps a slice of domain Gateways to a GatewayListResponse.
 func MapGatewayDomainToDTO(from []domain.Gateway) GatewayListResponse {
 	tot := len(from)

@@ -1,5 +1,6 @@
 import {
   useContext,
+  useEffect,
   useState,
   type ComponentType,
   type ReactNode,
@@ -7,6 +8,7 @@ import {
 
 import innLogoDark from "@assets/innoveriaDark.png";
 import innLogoLight from "@assets/innoveriaLight.png";
+import { getUser, type UserApiResponse } from "@entities/user";
 import BusinessIcon from "@mui/icons-material/Business";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -22,7 +24,6 @@ import SummarizeIcon from "@mui/icons-material/Summarize";
 import Accordion from "@mui/material/Accordion";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import AccordionSummary from "@mui/material/AccordionSummary";
-import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Divider from "@mui/material/Divider";
@@ -41,8 +42,6 @@ import SubPages from "@shared/config/navigation/subPageList";
 import { ThemeContext } from "@shared/config/theme/themeContext";
 import { Link as RouterLink, useLocation } from "react-router";
 
-import viteLogo from "/vite.svg";
-
 interface MenuProps {
   children: ReactNode;
 }
@@ -59,6 +58,12 @@ const pageSymbol: Map<string, ComponentType<SvgIconProps>> = new Map([
   ["Users", PeopleIcon],
 ]);
 
+const roles: Map<string, string> = new Map([
+  ["FACTORY_WORKER", "Factory worker"],
+  ["FACTORY_SUPERUSER", "Factory superuser"],
+  ["PLATFORM_ADMIN", "Platform admin"],
+]);
+
 /**
  * Persistent sidebar navigation with logo, user info, page links, theme toggle, and logout.
  * @param menuProps props of menu
@@ -70,6 +75,20 @@ export default function Menu(menuProps: MenuProps) {
   const { mode, toggle } = useContext(ThemeContext);
   const location = useLocation();
   const [expanded, setExpanded] = useState<string[]>([]);
+  const [user, setUser] = useState<UserApiResponse>();
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const data = await getUser();
+        setUser(data);
+      } catch (error) {
+        console.error("Failed to fetch user:", error);
+      }
+    };
+
+    fetchUser();
+  }, []);
 
   const handleAccordionChange =
     (category: string) =>
@@ -122,17 +141,15 @@ export default function Menu(menuProps: MenuProps) {
           {/* User info */}
           <ListItem>
             <div className="flex items-center gap-3 p-4">
-              <Avatar
-                alt="User"
-                src={viteLogo}
-                style={{
-                  width: "60px",
-                  height: "auto",
-                }}
-              />
               <div>
-                <Typography variant="h4">Username</Typography>
-                <Typography variant="h6">email@email.com</Typography>
+                {user ? (
+                  <>
+                    <Typography variant="h6">{user.email}</Typography>
+                    <Typography variant="h6">{roles.get(user.role)}</Typography>
+                  </>
+                ) : (
+                  <Typography variant="h6">Loading...</Typography>
+                )}
               </div>
               <Divider
                 sx={{

@@ -36,7 +36,9 @@ func NewRouter(cfg *config.Config) *http.ServeMux {
 		"/gateways",
 		"/sensors",
 		"/sensor-profiles",
-		"/sensor-group",
+		"/sensor-groups",
+		"/measurement-types",
+		"/payload-schema",
 	})
 
 	// Collection service
@@ -58,7 +60,7 @@ func NewRouter(cfg *config.Config) *http.ServeMux {
 
 	// Swagger — merged spec from all services, served via the gateway
 	if cfg.EnableSwagger {
-		mux.HandleFunc("GET /swagger/doc.json", handlers.MergedSwaggerSpec(cfg.DeviceSvcURL, cfg.CollSvcURL, cfg.AuthSvcURL, cfg.ContextSvcURL, cfg.OnboardingSvcURL))
+		mux.HandleFunc("GET /swagger/doc.json", handlers.MergedSwaggerSpec(cfg.DeviceSvcURL, cfg.CollSvcURL, cfg.AuthSvcURL, cfg.OnboardingSvcURL, cfg.ContextSvcURL))
 		mux.HandleFunc("GET /swagger/", httpSwagger.Handler(httpSwagger.URL("/swagger/doc.json")))
 	}
 

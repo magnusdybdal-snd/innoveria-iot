@@ -20,9 +20,13 @@ func Run() error {
 	cfg := config.Load()
 	mux := NewRouter(cfg)
 
+	// Starting a new limit store for rate limiting
+	rateLimitStore := newRateLimitStore(10 * time.Minute)
+	defer rateLimitStore.Close()
+
 	server := &http.Server{
 		Addr:              cfg.Addr,
-		Handler:           corsMiddleware(cfg, authMiddleware(cfg, mux)),
+		Handler:           corsMiddleware(cfg, rateLimiterMiddleware(rateLimitStore, authMiddleware(cfg, mux))),
 		ReadHeaderTimeout: 5 * time.Second,
 		IdleTimeout:       120 * time.Second,
 		// Intentionally avoid ReadTimeout/WriteTimeout here because of mqtt
