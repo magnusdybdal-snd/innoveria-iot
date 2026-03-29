@@ -29,7 +29,7 @@ func Run() error {
 	// main startup function
 	serverErrors := make(chan error, 1)
 	go func() {
-		slog.Info("erp-agent-service listning")
+		slog.Info("erp-agent-service listening")
 		err := server.ListenAndServe()
 		serverErrors <- err
 	}()
