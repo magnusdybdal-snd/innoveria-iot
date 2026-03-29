@@ -5,16 +5,17 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"innoveria-iot/erp-agent-service/internal/config"
 	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"innoveria-iot/erp-agent-service/internal/config"
 )
 
-// Run starts the erp service HTTP server and handles graceful shutdown.
+// Run starts the erp agent service HTTP server and handles graceful shutdown.
 func Run() error {
 	cfg := config.Load()
 
@@ -29,10 +30,11 @@ func Run() error {
 	// main startup function
 	serverErrors := make(chan error, 1)
 	go func() {
-		slog.Info("erp-agent-service listning")
 		err := server.ListenAndServe()
 		serverErrors <- err
 	}()
+
+	slog.Info("erp-agent-service listening")
 
 	shutdown := make(chan os.Signal, 1)
 	signal.Notify(shutdown, os.Interrupt, syscall.SIGTERM)
@@ -54,7 +56,10 @@ func Run() error {
 
 		if err := server.Shutdown(ctx); err != nil {
 			slog.Error("erp-agent-service shutdown error", "err", err)
-			err := server.Close()
+
+			if closeErr := server.Close(); closeErr != nil {
+				return fmt.Errorf("shutdown: %w; close: %v", err, closeErr)
+			}
 			return fmt.Errorf("shutdown: %w", err)
 		}
 	}

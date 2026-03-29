@@ -11,7 +11,7 @@ import (
 
 // @title       ERP Agent Service API
 // @version     1.0
-// @description
+// @description An edge service that fetches data from Monitor ERP for external use.
 
 // @host        localhost:8088
 // @BasePath    /api/v1/erp-agent
