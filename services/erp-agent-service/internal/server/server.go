@@ -56,7 +56,10 @@ func Run() error {
 
 		if err := server.Shutdown(ctx); err != nil {
 			slog.Error("erp-agent-service shutdown error", "err", err)
-			err := server.Close()
+
+			if closeErr := server.Close(); closeErr != nil {
+				return fmt.Errorf("shutdown: %w; close: %v", err, closeErr)
+			}
 			return fmt.Errorf("shutdown: %w", err)
 		}
 	}
