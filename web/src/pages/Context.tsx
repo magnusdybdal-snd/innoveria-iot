@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 
 import {
   BucketIntervalField,
-  ContextParamsDisplay,
   ContextResultDisplay,
   DateTimeField,
   getContextData,
@@ -103,14 +102,6 @@ export default function Context() {
   const resolvedTo = toNow
     ? new Date().toISOString()
     : new Date(to).toISOString();
-  const params = {
-    companyId,
-    deviceEui,
-    ruleId,
-    from: fromIso,
-    to: resolvedTo,
-    bucketMinutes,
-  };
 
   const runFetch = (minutes: number | undefined) => {
     setIsLoading(true);
@@ -228,8 +219,6 @@ export default function Context() {
                 onUseNowChange={setToNow}
               />
             </Box>
-            <PageDivider />
-            <ContextParamsDisplay params={params} />
             <CustomButton onClick={handleFetch}>
               {isLoading ? "Fetching..." : "Fetch context data"}
             </CustomButton>
