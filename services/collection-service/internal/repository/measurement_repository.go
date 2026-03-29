@@ -1,4 +1,4 @@
-// Package repository TODO(@Magnus Dybdal): add proper documentation.
+// Package repository implements the persistence layer for the collection service.
 package repository
 
 import (
@@ -10,17 +10,31 @@ import (
 	"time"
 )
 
-// MeasurementRepository TODO(@Magnus Dybdal): add proper documentation.
+const (
+	FindPayloadKeysQuery = `
+		SELECT DISTINCT jsonb_object_keys(payload)
+		FROM (
+			SELECT payload
+			FROM collection.sensor_measurement
+			WHERE device_eui = $1
+			ORDER BY timestamp DESC
+			LIMIT 10
+		) recent
+		ORDER BY 1 ASC
+	`
+)
+
+// MeasurementRepository handles persistence of sensor measurements against a TimescaleDB hypertable.
 type MeasurementRepository struct {
 	db *db.DB
 }
 
-// NewMeasurementRepository TODO(@Magnus Dybdal): add proper documentation.
+// NewMeasurementRepository creates a new MeasurementRepository backed by the given database connection.
 func NewMeasurementRepository(db *db.DB) *MeasurementRepository {
 	return &MeasurementRepository{db: db}
 }
 
-// Insert TODO(@Magnus Dybdal): add proper documentation.
+// Insert stores a measurement, resolving company_id from the tenant mapping using the Chirpstack tenantID.
 func (s *MeasurementRepository) Insert(ctx context.Context, measurement domain.SensorMeasurement, tenantID string) error {
 	// Marshal the payload into JSONB (json bytes) for storage in database
 	// The payload shape will vary depending on the sensor and codec in Chirpstack
@@ -55,7 +69,7 @@ func (s *MeasurementRepository) Insert(ctx context.Context, measurement domain.S
 	return nil
 }
 
-// FindLatest TODO(@Magnus Dybdal): add proper documentation.
+// FindLatest returns the most recent measurement for the given device.
 func (s *MeasurementRepository) FindLatest(ctx context.Context, deviceEUI string) (domain.SensorMeasurement, error) {
 
 	// Fetch the single most recent measurement for the given device.
@@ -97,7 +111,7 @@ func (s *MeasurementRepository) FindLatest(ctx context.Context, deviceEUI string
 
 }
 
-// FindByTimeRange TODO(@Magnus Dybdal): add proper documentation.
+// FindByTimeRange returns all measurements for a device within the given time window, ordered oldest first.
 func (s *MeasurementRepository) FindByTimeRange(ctx context.Context, deviceEUI string, from, to time.Time) ([]domain.SensorMeasurement, error) {
 
 	// Query to fetch all the measurements from one device within a time range
@@ -148,4 +162,30 @@ func (s *MeasurementRepository) FindByTimeRange(ctx context.Context, deviceEUI s
 	}
 
 	return measurements, nil
+}
+
+// FindPayloadKeys retrieves unique payload keys from the last 10 readings for a device based on deviceEUI
+func (r *MeasurementRepository) FindPayloadKeys (ctx context.Context, deviceEUI string) ([]payloadKeys string, error) {
+	rows, err := r.db.Pool.Query(ctx, FindPayloadKeysQuery)
+	if err != nil {
+		return nil, fmt.Errorf("find payload keys: %w", err)
+	}
+	defer rows.Close()
+
+	out := []string{}
+
+	for rows.Next() {
+		var key string
+		err := rows.Scan(&key)
+		if err != nil {
+			return nil, fmt.Errorf("scan payload key: %w", err)
+		}
+		out = append(out, key)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("rows error: %w", err)
+	}
+
+	return out, nil
 }
