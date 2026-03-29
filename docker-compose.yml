@@ -269,6 +269,18 @@ services:
     environment:
       - GO_ENV=development
 
+  erp-agent-service:
+    build:
+      context: .
+      dockerfile: infra/development/erp-agent-service.Dockerfile
+    ports:
+      - "8088:8080"
+    volumes:
+      - ./services/erp-agent-service:/app
+      - ./pkg:/pkg
+    environment:
+      - GO_ENV=development   
+
 #
 # Docker data volumes
 #

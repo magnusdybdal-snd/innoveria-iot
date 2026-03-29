@@ -36,6 +36,11 @@ dc_resource(
 )
 
 dc_resource(
+    'erp-agent-service',
+    labels=['microservice']
+)
+
+dc_resource(
     'collection-simulator',
     labels=['test']
 )
