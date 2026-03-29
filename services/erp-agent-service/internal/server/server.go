@@ -5,16 +5,17 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"innoveria-iot/erp-agent-service/internal/config"
 	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"innoveria-iot/erp-agent-service/internal/config"
 )
 
-// Run starts the erp service HTTP server and handles graceful shutdown.
+// Run starts the erp agent service HTTP server and handles graceful shutdown.
 func Run() error {
 	cfg := config.Load()
 
