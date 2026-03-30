@@ -19,6 +19,13 @@ definitions:
       tenant_id:
         type: string
     type: object
+  dto.PayloadTagsResponse:
+    properties:
+      keys:
+        items:
+          type: string
+        type: array
+    type: object
 host: localhost:8082
 info:
   contact: {}
@@ -26,6 +33,28 @@ info:
   title: Collection Service API
   version: "1.0"
 paths:
+  /collection/payload-tags:
+    get:
+      parameters:
+      - description: DeviceEUI
+        in: query
+        name: device_eui
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.PayloadTagsResponse'
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Get payload tags
+      tags:
+      - payload tags
   /company-config:
     post:
       consumes:
