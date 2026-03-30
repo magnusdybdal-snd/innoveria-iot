@@ -148,7 +148,7 @@ func (s *MeasurementRepository) FindByTimeRange(ctx context.Context, deviceEUI s
 func (r *MeasurementRepository) FindPayloadKeys(ctx context.Context, deviceEUI string) ([]string, error) {
 	rows, err := r.db.Pool.Query(ctx, findPayloadKeysQuery, deviceEUI)
 	if err != nil {
-		return nil, fmt.Errorf("find payload keys: %w", err)
+		return nil, fmt.Errorf("find payload keys for %s: %w", deviceEUI, err)
 	}
 	defer rows.Close()
 
@@ -157,13 +157,13 @@ func (r *MeasurementRepository) FindPayloadKeys(ctx context.Context, deviceEUI s
 	for rows.Next() {
 		var key string
 		if err := rows.Scan(&key); err != nil {
-			return nil, fmt.Errorf("scan payload key: %w", err)
+			return nil, fmt.Errorf("find payload keys for %s: scan payload key: %w", deviceEUI, err)
 		}
 		out = append(out, key)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("rows error: %w", err)
+		return nil, fmt.Errorf("find payload keys for %s: rows error: %w", deviceEUI, err)
 	}
 
 	return out, nil
