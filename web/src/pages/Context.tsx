@@ -45,7 +45,7 @@ export default function Context() {
       .then((sensors) => {
         const options = sensors.map((s) => ({
           id: s.deviceEui,
-          name: s.deviceEui,
+          name: s.name,
         }));
         setDeviceEuiOptions(options);
         if (options.length > 0) setDeviceEui(options[0].id);
@@ -190,7 +190,7 @@ export default function Context() {
               </Typography>
             )}
             <LabeledSelect
-              label="Device EUI"
+              label="Device name"
               options={deviceEuiOptions}
               value={deviceEui}
               onChange={(v) => {
