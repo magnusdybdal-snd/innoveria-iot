@@ -18,18 +18,18 @@ func (c *GenericAggregationCalculator) Calculate(input Input) (domain.ContextDat
 	buckets := buildBuckets(input.From, input.To, input.BucketMinutes)
 	lastIdx := len(buckets) - 1
 
-	var err error
 	for i := range buckets {
 		inBucket := readingsInBucket(input.Readings, buckets[i].PeriodStart, buckets[i].PeriodEnd, i == lastIdx)
+		var err error
 		buckets[i].Value, err = aggregate(inBucket, input.Rule.MeasurementType, string(input.Rule.AggregationMethod))
 		if err != nil {
 			return domain.ContextData{}, err
 		}
 	}
 
-	total := 0.0
-	for _, b := range buckets {
-		total += b.Value
+	total, err := aggregate(input.Readings, input.Rule.MeasurementType, string(input.Rule.AggregationMethod))
+	if err != nil {
+		return domain.ContextData{}, err
 	}
 
 	return domain.ContextData{
