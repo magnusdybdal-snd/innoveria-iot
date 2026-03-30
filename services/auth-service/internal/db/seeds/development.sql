@@ -9,6 +9,13 @@ VALUES
 ('f1000000-0000-0000-0000-000000000001', 'a0000000-0000-0000-0000-000000000001', 'NTNU Gjøvik', 'Gjøvik')
 ON CONFLICT DO NOTHING;
 
+-- Factory areas for the demo factory.
+INSERT INTO "auth"."factory_area" ("area_id", "factory_id", "name")
+VALUES
+('a1000000-0000-0000-0000-000000000001', 'f1000000-0000-0000-0000-000000000001', 'K-bygget'),
+('a1000000-0000-0000-0000-000000000002', 'f1000000-0000-0000-0000-000000000001', 'A-bygget')
+ON CONFLICT DO NOTHING;
+
 INSERT INTO "auth"."user" ("user_id", "company_id", "name", "email", "password_hash", "role")
 VALUES
 ('b0000000-0000-0000-0000-000000000001',
