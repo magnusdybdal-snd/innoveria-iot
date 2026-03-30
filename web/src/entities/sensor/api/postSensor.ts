@@ -12,6 +12,7 @@ export const postSensor = async (
   await apiRequest(serviceClient, API_ROUTES.sensors, "POST", {
     company_id: sensorData.companyId,
     factory_id: sensorData.factoryId,
+    factory_area_id: sensorData.factoryAreaId,
     device_eui: sensorData.deviceEui,
     device_profile_id: sensorData.sensorProfileId,
     app_key: sensorData.appKey,

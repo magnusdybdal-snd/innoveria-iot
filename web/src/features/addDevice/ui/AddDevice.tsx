@@ -14,10 +14,12 @@ export interface AddDeviceProps {
   addOptions: string[];
   profileOptions?: { id: string; name: string }[];
   factoryOptions?: { id: string; name: string }[];
+  factoryAreaOptions?: { id: string; name: string }[];
   onAdd: (sensor: {
     name: string;
     deviceEui: string;
     factory: string;
+    factoryArea: string;
     machine: string;
     appKey: string;
     senProf: string;
@@ -55,6 +57,7 @@ export function AddDevice(props: AddDeviceProps) {
     addOptions,
     profileOptions = [],
     factoryOptions = [],
+    factoryAreaOptions = [],
     submitError,
   } = props;
   const [values, setValues] = useState<Record<string, string>>({});
@@ -93,6 +96,7 @@ export function AddDevice(props: AddDeviceProps) {
         name: values["Name"],
         deviceEui: values["DeviceEUI"],
         factory: values["Factory"],
+        factoryArea: values["Factory area"],
         machine: values["Machine"],
         appKey: values["Application key"],
         senProf: values["Sensor profile"],
@@ -129,6 +133,7 @@ export function AddDevice(props: AddDeviceProps) {
           values={values}
           profileOptions={profileOptions}
           factoryOptions={factoryOptions}
+          factoryAreaOptions={factoryAreaOptions}
           lengthErrors={lengthErrors}
           lengthErrorMessages={inputLengthError}
           inputHints={inputHints}

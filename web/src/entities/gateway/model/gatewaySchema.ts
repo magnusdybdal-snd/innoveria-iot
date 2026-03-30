@@ -20,4 +20,6 @@ export interface CreateGatewayRequest {
   companyId: string;
   gatewayEui: string;
   name: string;
+  factoryId: string;
+  factoryAreaId: string;
 }

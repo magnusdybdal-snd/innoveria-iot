@@ -2,6 +2,10 @@ import React, { useEffect, useState } from "react";
 
 import { getFactories, type FactoryApiResponse } from "@entities/factory";
 import {
+  getFactoryAreas,
+  type FactoryAreaApiResponse,
+} from "@entities/factoryArea";
+import {
   deleteGateway,
   GatewayInfo,
   getGateways,
@@ -30,7 +34,12 @@ import { SubPageHeader } from "@shared/ui/SubPageHeader";
 
 const gatewayDetails: string[] = ["Status", "Name", "EUI", "Last seen"];
 const sortableColumns: GatewaySortKey[] = ["Status", "Name", "Last seen"];
-const addGatewayDetails: string[] = ["Name", "DeviceEUI"];
+const addGatewayDetails: string[] = [
+  "Name",
+  "DeviceEUI",
+  "Factory",
+  "Factory area",
+];
 
 /**
  * Full-page view listing all LoRaWAN gateways registered in database.
@@ -50,6 +59,9 @@ export default function Gateways() {
   // Factory tabs
   const [tabValue, setTabValue] = useState<number | string>(0);
   const [factory, setFactory] = useState<FactoryApiResponse[]>([]); // factory location sensor
+  const [factoryAreas, setFactoryAreas] = useState<FactoryAreaApiResponse[]>(
+    [],
+  );
 
   const handleTabChange = (
     _event: React.SyntheticEvent,
@@ -84,6 +96,10 @@ export default function Gateways() {
     getFactories().then(setFactory);
   }, []);
 
+  useEffect(() => {
+    getFactoryAreas().then(setFactoryAreas);
+  }, []);
+
   const [openAdd, setOpenAdd] = useState(false);
   const [sortConfig, setSortConfig] = useState<{
     key: GatewaySortKey | null;
@@ -105,12 +121,16 @@ export default function Gateways() {
   const handleAddGateway = (gatewayData: {
     name: string;
     deviceEui: string;
+    factory: string;
+    factoryArea: string;
   }) => {
     setAddError(null);
     return postGateway({
       companyId: "a0000000-0000-0000-0000-000000000001", // TODO: replace with real company ID from auth
       gatewayEui: gatewayData.deviceEui,
       name: gatewayData.name,
+      factoryId: gatewayData.factory,
+      factoryAreaId: gatewayData.factoryArea,
     })
       .then(() => {
         fetchGateways();
@@ -201,6 +221,8 @@ export default function Gateways() {
         addOptions={addGatewayDetails}
         onAdd={handleAddGateway}
         submitError={addError}
+        factoryOptions={factory}
+        factoryAreaOptions={factoryAreas}
       />
       <AppSnackbar
         open={snackbar?.open ?? false}
