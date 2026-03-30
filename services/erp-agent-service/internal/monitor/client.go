@@ -1,15 +1,24 @@
 package monitor
 
 import (
+	"context"
 	"fmt"
+	"sync"
+	"time"
+
+	"innoveria-iot/erp-agent-service/internal/monitor/dto"
 	"innoveria-iot/pkg/httpclient"
 )
 
 type Client struct {
 	host, lang, company string
+	forceRelogin        bool
 	username, password  string
 	httpClient          *httpclient.Client
 	sessionID           string
+
+	mu            sync.Mutex
+	sessiontSetAt time.Time
 }
 
 // base returns the base url for accessing monitor erp
@@ -28,6 +37,19 @@ func (c *Client) apiUrl(path string) string {
 	return c.base() + "/api/v1/" + path
 }
 
-func (c *Client) ensureSession() error {
+func (c *Client) ensureSession(ctx context.Context, path string) error {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	if c.sessionID != "" {
+		return nil
+	}
+
+	_ = dto.AuthBody{
+		Username:     c.username,
+		Password:     c.password,
+		ForceRelogin: c.forceRelogin,
+	}
+
 	return nil
 }
