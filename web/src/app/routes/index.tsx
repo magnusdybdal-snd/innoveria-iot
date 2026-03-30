@@ -6,6 +6,7 @@ import Login from "@pages/Login.tsx";
 import Sensors from "@pages/Sensors.tsx";
 import { Route, Routes } from "react-router";
 
+import Context from "@/pages/Context";
 import Factories from "@/pages/Factories";
 import StatusPage from "@/pages/StatusPage";
 
@@ -22,6 +23,7 @@ export default function AppRoutes() {
       <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
         <Route path="/Dashboard" element={<Dashboard />} />
+        <Route path="/Dashboard/Context" element={<Context />} />
         <Route path="/Devices/Sensors" element={<Sensors />} />
         <Route path="/Devices/Gateways" element={<Gateways />} />
         <Route path="/Reports" element={<Home />} />
