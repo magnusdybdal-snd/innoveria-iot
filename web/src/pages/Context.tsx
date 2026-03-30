@@ -7,6 +7,7 @@ import {
   getContextData,
   getRules,
   LabeledSelect,
+  suggestBucketInterval,
   toMinutes,
   type BucketUnit,
   type ContextDataResponse,
@@ -80,7 +81,32 @@ export default function Context() {
   const [toNow, setToNow] = useState(true);
   const [to, setTo] = useState(() => new Date().toISOString().slice(0, 16));
   const [bucketValue, setBucketValue] = useState("1");
-  const [bucketUnit, setBucketUnit] = useState<BucketUnit>("hours");
+  const [bucketUnit, setBucketUnit] = useState<BucketUnit>("minutes");
+
+  const applyBucketSuggestion = (newFrom: string, newTo: string) => {
+    const suggestion = suggestBucketInterval(
+      new Date(newFrom).toISOString(),
+      new Date(newTo).toISOString(),
+    );
+    setBucketValue(String(suggestion.value));
+    setBucketUnit(suggestion.unit);
+  };
+
+  const handleFromChange = (value: string) => {
+    setFrom(value);
+    applyBucketSuggestion(value, toNow ? new Date().toISOString() : to);
+  };
+
+  const handleToChange = (value: string) => {
+    setTo(value);
+    applyBucketSuggestion(from, value);
+  };
+
+  const handleToNowChange = (value: boolean) => {
+    setToNow(value);
+    applyBucketSuggestion(from, value ? new Date().toISOString() : to);
+  };
+
   const [result, setResult] = useState<ContextDataResponse[] | null>(null);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -210,13 +236,17 @@ export default function Context() {
               error={fieldErrors.ruleId}
             />
             <Box sx={{ display: "flex", gap: 2 }}>
-              <DateTimeField label="From" value={from} onChange={setFrom} />
+              <DateTimeField
+                label="From"
+                value={from}
+                onChange={handleFromChange}
+              />
               <DateTimeField
                 label="To"
                 value={to}
-                onChange={setTo}
+                onChange={handleToChange}
                 useNow={toNow}
-                onUseNowChange={setToNow}
+                onUseNowChange={handleToNowChange}
               />
             </Box>
             <CustomButton onClick={handleFetch}>

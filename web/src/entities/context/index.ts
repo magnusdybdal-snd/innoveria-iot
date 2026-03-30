@@ -12,4 +12,4 @@ export {
   DateTimeField,
   LabeledSelect,
 } from "./ui";
-export { toMinutes, BUCKET_UNIT_OPTIONS } from "./lib";
+export { toMinutes, BUCKET_UNIT_OPTIONS, suggestBucketInterval } from "./lib";
