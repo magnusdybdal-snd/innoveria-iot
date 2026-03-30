@@ -66,7 +66,8 @@ func (c *Client) ensureSession(ctx context.Context) error {
 		http.MethodPost,
 		body,
 		map[string]string{
-			"Accept": "application/json",
+			"Accept":        "application/json",
+			"Cache-Control": "no-cache",
 		},
 	)
 	if err != nil {
