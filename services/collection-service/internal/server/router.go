@@ -24,7 +24,7 @@ func NewRouter(svc domain.MeasurementService, tenantMappingSvc domain.TenantMapp
 
 	// Payload tags
 	mux.HandleFunc("GET "+PAYLOAD_TAGS, handlers.HandlePayloadTags(svc))
-	
+
 	// Company config routes:
 	mux.HandleFunc("POST "+COMPANY_CONFIG_ROUTE, handlers.PostTenantMapping(tenantMappingSvc))
 
