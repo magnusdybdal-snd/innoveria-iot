@@ -22,8 +22,8 @@ type Client struct {
 	httpClient          *httpclient.Client
 	sessionID           string
 
-	mu            sync.Mutex
-	sessiontSetAt time.Time
+	mu           sync.Mutex
+	sessionSetAt time.Time
 }
 
 // base returns the base url for accessing monitor erp
@@ -46,11 +46,11 @@ func (c *Client) apiUrl(path string) string {
 // it will extract a session id which is used in all api calls
 func (c *Client) ensureSession(ctx context.Context) error {
 	c.mu.Lock()
+	defer c.mu.Unlock()
+
 	if c.sessionID != "" {
-		c.mu.Unlock()
 		return nil
 	}
-	c.mu.Unlock()
 
 	// auth request body for monitor erp
 	body := dto.AuthBody{
@@ -70,27 +70,26 @@ func (c *Client) ensureSession(ctx context.Context) error {
 		},
 	)
 	if err != nil {
-		return err
+		return fmt.Errorf("monitor login failed: %w", err)
 	}
+	defer resp.Body.Close() //nolint:errcheck // best-effort close
 
 	// Extracting session id
 	sid := resp.Header.Get("X-Monitor-SessionId")
 	if sid == "" {
-		return fmt.Errorf("login succeeded but missing session id")
+		return fmt.Errorf("monitor login succeeded but missing session id")
 	}
 
-	if err := resp.Body.Close(); err != nil {
-		return err
-	}
-
-	c.mu.Lock()
 	c.sessionID = sid
-	c.sessiontSetAt = time.Now()
-	c.mu.Unlock()
+	c.sessionSetAt = time.Now()
 
 	return nil
 }
 
+// queryOnce performs a single authenticated GET request to Monitor.
+//
+// It does not handle session refresh/retry logic; callers are expected to
+// decide if and when a failed request should be retried.
 func (c *Client) queryOnce(ctx context.Context, u string, out any) error {
 	// Extract the session id
 	c.mu.Lock()
@@ -111,10 +110,12 @@ func (c *Client) queryOnce(ctx context.Context, u string, out any) error {
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
+	defer resp.Body.Close() //nolint:errcheck
 
 	if out == nil {
-		io.Copy(io.Discard, resp.Body)
+		if _, err := io.Copy(io.Discard, resp.Body); err != nil {
+			return fmt.Errorf("discard monitor response body: %w", err)
+		}
 		return nil
 	}
 
@@ -127,6 +128,12 @@ func (c *Client) queryOnce(ctx context.Context, u string, out any) error {
 	return nil
 }
 
+// Query executes a Monitor query against /api/v1/{path}.
+//
+// Flow:
+//  1. Ensures a session exists.
+//  2. Executes one request.
+//  3. On 401/403, clears the cached session, re-authenticates and retries once.
 func (c *Client) Query(ctx context.Context, path string, opts url.Values, out any) error {
 	if err := c.ensureSession(ctx); err != nil {
 		return err
@@ -143,10 +150,24 @@ func (c *Client) Query(ctx context.Context, path string, opts url.Values, out an
 		return nil
 	}
 
+	var httpErr *httpclient.HTTPError
+	if !errors.As(err, &httpErr) {
+		return err
+	}
+
+	if httpErr.StatusCode != http.StatusUnauthorized && httpErr.StatusCode != http.StatusForbidden {
+		return err
+	}
+
 	// if the session is stale, empty the session id
+	// and try new query
 	c.mu.Lock()
 	c.sessionID = ""
 	c.mu.Unlock()
 
-	return nil
+	if err := c.ensureSession(ctx); err != nil {
+		return fmt.Errorf("monitor relogin failed: %w", err)
+	}
+
+	return c.queryOnce(ctx, u, out)
 }
