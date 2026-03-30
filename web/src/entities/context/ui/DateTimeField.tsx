@@ -1,6 +1,7 @@
 import Box from "@mui/material/Box";
 import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
+import { type Theme } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 
@@ -13,7 +14,10 @@ const textFieldSx = {
       borderColor: "primary.main",
     },
   },
-  "& input::-webkit-calendar-picker-indicator": { filter: "invert(1)" },
+  "& input::-webkit-calendar-picker-indicator": {
+    filter: (theme: Theme) =>
+      theme.palette.mode === "dark" ? "none" : "invert(1)",
+  },
 };
 
 interface DateTimeFieldProps {
