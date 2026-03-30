@@ -61,7 +61,7 @@ func NewMeasurementRepository(db *db.DB) *MeasurementRepository {
 }
 
 // Insert stores a measurement, resolving company_id from the tenant mapping using the Chirpstack tenantID.
-func (s *MeasurementRepository) Insert(ctx context.Context, measurement domain.SensorMeasurement, tenantID string) error {
+func (r *MeasurementRepository) Insert(ctx context.Context, measurement domain.SensorMeasurement, tenantID string) error {
 	// Marshal the payload into JSONB (json bytes) for storage in database
 	// The payload shape will vary depending on the sensor and codec in Chirpstack
 	payloadJSON, err := json.Marshal(measurement.Payload)
@@ -70,7 +70,7 @@ func (s *MeasurementRepository) Insert(ctx context.Context, measurement domain.S
 	}
 
 	// Checks the response from postgres
-	tag, err := s.db.Pool.Exec(ctx, insertMeasurementQuery, measurement.DeviceEUI, measurement.Timestamp, payloadJSON, tenantID)
+	tag, err := r.db.Pool.Exec(ctx, insertMeasurementQuery, measurement.DeviceEUI, measurement.Timestamp, payloadJSON, tenantID)
 	if err != nil {
 		return fmt.Errorf("insert measurement %w", err)
 	}
@@ -85,13 +85,13 @@ func (s *MeasurementRepository) Insert(ctx context.Context, measurement domain.S
 }
 
 // FindLatest returns the most recent measurement for the given device.
-func (s *MeasurementRepository) FindLatest(ctx context.Context, deviceEUI string) (domain.SensorMeasurement, error) {
+func (r *MeasurementRepository) FindLatest(ctx context.Context, deviceEUI string) (domain.SensorMeasurement, error) {
 
 	var measurement domain.SensorMeasurement
 	// pgx cannot scan JSONB directly into our map structure, so it needs to be unmarshaled first.
 	var payloadBytes []byte
 
-	err := s.db.Pool.QueryRow(ctx, findLatestQuery, deviceEUI).Scan(
+	err := r.db.Pool.QueryRow(ctx, findLatestQuery, deviceEUI).Scan(
 		&measurement.DeviceEUI,
 		&measurement.Timestamp,
 		&payloadBytes,
@@ -111,9 +111,9 @@ func (s *MeasurementRepository) FindLatest(ctx context.Context, deviceEUI string
 }
 
 // FindByTimeRange returns all measurements for a device within the given time window, ordered oldest first.
-func (s *MeasurementRepository) FindByTimeRange(ctx context.Context, deviceEUI string, from, to time.Time) ([]domain.SensorMeasurement, error) {
+func (r *MeasurementRepository) FindByTimeRange(ctx context.Context, deviceEUI string, from, to time.Time) ([]domain.SensorMeasurement, error) {
 
-	rows, err := s.db.Pool.Query(ctx, findByTimeRangeQuery, deviceEUI, from, to)
+	rows, err := r.db.Pool.Query(ctx, findByTimeRangeQuery, deviceEUI, from, to)
 	if err != nil {
 		return nil, fmt.Errorf("find by time range: %w", err)
 	}
