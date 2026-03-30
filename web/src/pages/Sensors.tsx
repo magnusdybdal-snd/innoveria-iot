@@ -32,12 +32,17 @@ import {
 import { SubPageHeader } from "@shared/ui/SubPageHeader";
 
 import { getFactories, type FactoryApiResponse } from "@/entities/factory";
+import {
+  getFactoryAreas,
+  type FactoryAreaApiResponse,
+} from "@/entities/factoryArea";
 
 const sensorMainDetails: string[] = ["Status", "Name", "Last reading"];
 const addSensorDetails: string[] = [
   "Name",
   "DeviceEUI",
   "Factory",
+  "Factory area",
   "Machine",
   "Application key",
   "Sensor profile",
@@ -63,6 +68,9 @@ export default function Sensors() {
     SensorProfileApiResponse[]
   >([]);
   const [factory, setFactory] = useState<FactoryApiResponse[]>([]); // factory location sensor
+  const [factoryAreas, setFactoryAreas] = useState<FactoryAreaApiResponse[]>(
+    [],
+  );
 
   const { show, hide, snackbar } = useSnackbar();
   const [tabValue, setTabValue] = useState<number | string>(0);
@@ -80,6 +88,10 @@ export default function Sensors() {
 
   useEffect(() => {
     getFactories().then(setFactory);
+  }, []);
+
+  useEffect(() => {
+    getFactoryAreas().then(setFactoryAreas);
   }, []);
 
   // Handler for deleting a sensor; refreshes list on success
@@ -108,6 +120,7 @@ export default function Sensors() {
     name: string;
     deviceEui: string;
     factory: string;
+    factoryArea: string;
     machine: string;
     appKey: string;
     senProf: string;
@@ -116,6 +129,7 @@ export default function Sensors() {
     return postSensor({
       companyId: "a0000000-0000-0000-0000-000000000001", // TODO: replace with real company ID from auth
       factoryId: sensorData.factory,
+      factoryAreaId: sensorData.factoryArea,
       deviceEui: sensorData.deviceEui,
       sensorProfileId: sensorData.senProf,
       appKey: sensorData.appKey,
@@ -257,6 +271,7 @@ export default function Sensors() {
         onAdd={handleAddSensor}
         submitError={addError}
         factoryOptions={factory}
+        factoryAreaOptions={factoryAreas}
       />
       <AppSnackbar
         open={snackbar?.open ?? false}

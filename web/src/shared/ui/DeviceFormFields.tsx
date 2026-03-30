@@ -8,6 +8,7 @@ interface DeviceFormFieldsProps {
   values: Record<string, string>;
   profileOptions: { id: string; name: string }[];
   factoryOptions: { id: string; name: string }[];
+  factoryAreaOptions: { id: string; name: string }[];
   lengthErrors: Record<string, boolean>;
   lengthErrorMessages: Record<string, string>;
   inputHints: Record<string, string>;
@@ -17,6 +18,7 @@ interface DeviceFormFieldsProps {
 const dropdownOptions: Record<string, string> = {
   "Sensor profile": "profileOptions",
   Factory: "factoryOptions",
+  "Factory area": "factoryAreaOptions",
 };
 
 const fieldSx = {
@@ -35,6 +37,7 @@ const fieldSx = {
  * @param props.values - Current field values
  * @param props.profileOptions - Sensor profile choices for the dropdown
  * @param props.factoryOptions - Factory choices for the dropdown
+ * @param props.factoryAreaOptions - Factory area choices for the dropdown
  * @param props.lengthErrors - Map of field name to whether it has a length error
  * @param props.lengthErrorMessages - Map of field name to its error message
  * @param props.inputHints - Map of field name to its placeholder hint
@@ -46,6 +49,7 @@ export function DeviceFormFields({
   values,
   profileOptions,
   factoryOptions,
+  factoryAreaOptions,
   lengthErrors,
   lengthErrorMessages,
   inputHints,
@@ -54,6 +58,7 @@ export function DeviceFormFields({
   const dropdownData: Record<string, { id: string; name: string }[]> = {
     profileOptions,
     factoryOptions,
+    factoryAreaOptions,
   };
 
   const maxLengths: Record<string, number> = {
