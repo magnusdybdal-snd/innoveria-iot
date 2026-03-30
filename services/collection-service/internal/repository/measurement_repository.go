@@ -41,6 +41,8 @@ const (
 			SELECT payload
 			FROM collection.sensor_measurement
 			WHERE device_eui = $1
+			AND payload IS NOT NULL
+			AND jsonb_typeof(payload) = 'object'
 			ORDER BY timestamp DESC
 			LIMIT 10
 		) recent
