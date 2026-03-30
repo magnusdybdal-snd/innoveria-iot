@@ -190,7 +190,7 @@ export default function Context() {
               </Typography>
             )}
             <LabeledSelect
-              label="Device/Sensor"
+              label="Device name"
               options={deviceEuiOptions}
               value={deviceEui}
               onChange={(v) => {
