@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 
 	"innoveria-iot/collection-service/internal/domain"
@@ -23,7 +24,7 @@ func HandleLatestMeasurement(svc domain.MeasurementService) http.HandlerFunc {
 		// Extract the device eui query and check that it is not empty
 		deviceEUI := r.URL.Query().Get("device_eui")
 		if deviceEUI == "" {
-			json.HandleError(w, http.StatusBadRequest, nil, "device_eui query parameter is required")
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("missing device_eui"), "device_eui query parameter is required")
 			return
 		}
 
