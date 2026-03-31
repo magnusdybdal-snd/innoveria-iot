@@ -25,17 +25,33 @@ func GetSensors(svc domain.SensorService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
-		// 1. get the domain sensor data
-		data, err := svc.GetAll(ctx)
+		var (
+			data []domain.Sensor
+			err error
+		)
+
+		productionResourceID := r.URL.Query().Get("production_resource_id")
+		
+		if productionResourceID != "" {
+			if _, parseErr := uuid.Parse(productionResourceID); parseErr != nil {
+				json.HandleError(w, http.StatusBadRequest, parseErr, "bad request")
+				return
+			}
+			data, err = svc.GetByProductionResourceID(ctx, productionResourceID)
+		} else {
+			data, err = svc.GetAll(ctx)
+		}
+
+		// error check for both paths above in if/else
 		if err != nil {
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
 			return
 		}
 
-		// 2. transform to sensor dto for response format
+		// Transform to sensor dto for response format
 		resp := dto.MapSensorDomainToDTO(data)
 
-		// 3. json encode
+		// Json encode
 		if err := json.Encode(w, http.StatusOK, resp); err != nil {
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
 			return
