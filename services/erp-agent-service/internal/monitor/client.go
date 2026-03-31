@@ -44,6 +44,7 @@ func (c *Client) apiUrl(path string) string {
 
 // ensureSession will start a new session with monitor erp
 // it will extract a session id which is used in all api calls
+// this is a synchronized access to sessionID
 func (c *Client) ensureSession(ctx context.Context) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -111,7 +112,12 @@ func (c *Client) queryOnce(ctx context.Context, u string, out any) error {
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close() //nolint:errcheck
+	// catching response body error
+	defer func() {
+		if cerr := resp.Body.Close(); cerr != nil && err == nil {
+			err = fmt.Errorf("close monitor response body: %w", cerr)
+		}
+	}()
 
 	if out == nil {
 		if _, err := io.Copy(io.Discard, resp.Body); err != nil {
