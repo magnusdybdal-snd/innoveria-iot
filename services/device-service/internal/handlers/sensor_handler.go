@@ -12,11 +12,12 @@ import (
 	"github.com/google/uuid"
 )
 
-// GetSensors returns all GetSensors
+// GetSensors returns all sensors, optionally filtered by production resource.
 //
 // @Summary 	Lists all sensors.
 // @Tags 		sensors
 // @Produce 	json
+// @Param       production_resource_id    query    string    false    "Production resource"
 // @Success 	200 {object} dto.SensorListResponse
 // @Failure 	400
 // @Failure 	500
