@@ -23,11 +23,6 @@ type Config struct {
 
 // Load reads configuration from environment variables.
 func Load() (*Config, error) {
-	port, err := env.Required("PORT")
-	if err != nil {
-		return nil, err
-	}
-
 	host, err := env.Required("MONITOR_ERP_HOST")
 	if err != nil {
 		return nil, err
@@ -54,7 +49,7 @@ func Load() (*Config, error) {
 	}
 
 	return &Config{
-		Addr:                    ":" + port,
+		Addr:                    ":" + env.Get("PORT", "8080"),
 		MonitorERPHost:          host,
 		MonitorERPCompanyNumber: companyNumber,
 		MonitorERPUsername:      username,
