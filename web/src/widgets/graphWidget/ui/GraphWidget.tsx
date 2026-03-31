@@ -15,10 +15,13 @@ import IconButton from "@mui/material/IconButton";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import Typography from "@mui/material/Typography";
-
-import type { ChartType, GraphWidgetConfig } from "../model/types";
-import { GraphWidgetChart } from "./GraphWidgetChart";
-import { GraphWidgetSettings } from "./GraphWidgetSettings";
+import {
+  CHART_TYPE,
+  type ChartType,
+  type GraphWidgetConfig,
+} from "@widgets/graphWidget/model/types";
+import { GraphWidgetChart } from "@widgets/graphWidget/ui/GraphWidgetChart";
+import { GraphWidgetSettings } from "@widgets/graphWidget/ui/GraphWidgetSettings";
 
 // TODO: Replace with auth context when backend auth is wired
 const COMPANY_ID = "a0000000-0000-0000-0000-000000000001";
@@ -49,7 +52,7 @@ export function GraphWidget({ defaultConfig }: GraphWidgetProps) {
     ...INITIAL_CONFIG,
     ...defaultConfig,
   });
-  const [chartType, setChartType] = useState<ChartType>("bar");
+  const [chartType, setChartType] = useState<ChartType>(CHART_TYPE.bar);
   const [draft, setDraft] = useState<GraphWidgetConfig>(config);
   const [settingsOpen, setSettingsOpen] = useState(false);
 
@@ -150,8 +153,8 @@ export function GraphWidget({ defaultConfig }: GraphWidgetProps) {
             onChange={(e) => setChartType(e.target.value as ChartType)}
             sx={{ fontSize: "0.75rem" }}
           >
-            <MenuItem value="bar">Bar</MenuItem>
-            <MenuItem value="line">Line</MenuItem>
+            <MenuItem value={CHART_TYPE.bar}>Bar</MenuItem>
+            <MenuItem value={CHART_TYPE.line}>Line</MenuItem>
           </Select>
           <IconButton size="small" onClick={handleSettingsOpen}>
             <SettingsIcon fontSize="small" />

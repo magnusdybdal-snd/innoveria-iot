@@ -10,8 +10,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-
-import type { GraphWidgetConfig } from "../model/types";
+import type { GraphWidgetConfig } from "@widgets/graphWidget/model/types";
 
 interface GraphWidgetSettingsProps {
   open: boolean;

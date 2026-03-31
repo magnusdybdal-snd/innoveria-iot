@@ -1,6 +1,11 @@
 import type { BucketUnit } from "@entities/context";
 
-export type ChartType = "bar" | "line";
+export const CHART_TYPE = {
+  bar: "bar",
+  line: "line",
+} as const;
+
+export type ChartType = (typeof CHART_TYPE)[keyof typeof CHART_TYPE];
 
 export interface GraphWidgetConfig {
   title: string;

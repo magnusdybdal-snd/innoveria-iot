@@ -1,2 +1,6 @@
-export { GraphWidget } from "./ui/GraphWidget";
-export type { ChartType, GraphWidgetConfig } from "./model/types";
+export { GraphWidget } from "@widgets/graphWidget/ui/GraphWidget";
+export { CHART_TYPE } from "@widgets/graphWidget/model/types";
+export type {
+  ChartType,
+  GraphWidgetConfig,
+} from "@widgets/graphWidget/model/types";

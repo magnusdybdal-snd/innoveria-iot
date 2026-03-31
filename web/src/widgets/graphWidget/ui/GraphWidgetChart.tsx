@@ -7,8 +7,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import Typography from "@mui/material/Typography";
-
-import type { ChartType } from "../model/types";
+import { CHART_TYPE, type ChartType } from "@widgets/graphWidget/model/types";
 
 interface GraphWidgetChartProps {
   data: ContextDataResponse[] | null;
@@ -95,9 +94,9 @@ export function GraphWidgetChart({
   const unit = data[0].unit;
 
   switch (chartType) {
-    case "bar":
+    case CHART_TYPE.bar:
       return <BucketBarChart buckets={buckets} unit={unit} />;
-    case "line":
+    case CHART_TYPE.line:
       return <BucketLineChart buckets={buckets} unit={unit} />;
   }
 }
