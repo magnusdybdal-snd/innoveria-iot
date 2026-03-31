@@ -2,6 +2,7 @@
 package config
 
 import (
+	"fmt"
 	"innoveria-iot/pkg/env"
 	"strconv"
 )
@@ -21,19 +22,43 @@ type Config struct {
 }
 
 // Load reads configuration from environment variables.
-func Load() *Config {
-
-	companyNumber, err := strconv.Atoi(env.Get("MONITOR_ERP_COMPANY_NUMBER", "1"))
+func Load() (*Config, error) {
+	port, err := env.Required("PORT")
 	if err != nil {
-		companyNumber = 1 // defaults to 1
+		return nil, err
+	}
+
+	host, err := env.Required("MONITOR_ERP_HOST")
+	if err != nil {
+		return nil, err
+	}
+
+	companyRaw, err := env.Required("MONITOR_ERP_COMPANY_NUMBER")
+	if err != nil {
+		return nil, err
+	}
+
+	companyNumber, err := strconv.Atoi(companyRaw)
+	if err != nil {
+		return nil, fmt.Errorf("invalid MONITOR_ERP_COMPANY_NUMBER: %w", err)
+	}
+
+	username, err := env.Required("MONITOR_ERP_USERNAME")
+	if err != nil {
+		return nil, err
+	}
+
+	password, err := env.Required("MONITOR_ERP_PASSWORD")
+	if err != nil {
+		return nil, err
 	}
 
 	return &Config{
-		Addr:                    ":" + env.Get("PORT", "8080"),
-		MonitorERPHost:          env.Get("MONITOR_ERP_HOST", ""),
+		Addr:                    ":" + port,
+		MonitorERPHost:          host,
 		MonitorERPCompanyNumber: companyNumber,
-		MonitorERPUsername:      env.Get("MONITOR_ERP_USERNAME", ""),
-		MonitorERPPassword:      env.Get("MONITOR_ERP_PASSWORD", ""),
+		MonitorERPUsername:      username,
+		MonitorERPPassword:      password,
 		MonitorERPForceRelogin:  env.GetBool("MONITOR_ERP_FORCE_RELOGIN", false),
-	}
+	}, nil
 }

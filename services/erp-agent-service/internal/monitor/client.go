@@ -74,7 +74,13 @@ func (c *Client) ensureSession(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("monitor login failed: %w", err)
 	}
-	defer resp.Body.Close() //nolint:errcheck // best-effort close
+
+	// catching response body error
+	defer func() {
+		if cerr := resp.Body.Close(); cerr != nil && err == nil {
+			err = fmt.Errorf("close monitor response body: %w", cerr)
+		}
+	}()
 
 	// Extracting session id
 	sid := resp.Header.Get("X-Monitor-SessionId")
