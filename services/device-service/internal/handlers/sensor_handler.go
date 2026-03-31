@@ -26,13 +26,11 @@ func GetSensors(svc domain.SensorService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
-		var (
-			data []domain.Sensor
-			err error
-		)
+		var data []domain.Sensor
+		var err error
 
 		productionResourceID := r.URL.Query().Get("production_resource_id")
-		
+
 		if productionResourceID != "" {
 			if _, parseErr := uuid.Parse(productionResourceID); parseErr != nil {
 				json.HandleError(w, http.StatusBadRequest, parseErr, "bad request")
