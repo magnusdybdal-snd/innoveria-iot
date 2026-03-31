@@ -7,7 +7,7 @@ import Typography from "@mui/material/Typography";
 import { PageContent } from "@shared/ui/PageContent";
 import { PageDivider } from "@shared/ui/PageDivider";
 import { SubPageHeader } from "@shared/ui/SubPageHeader";
-import { GraphWidget } from "@widgets/graphWidget";
+import { GraphWidget, GraphWidgetPlaceholder } from "@widgets/graphWidget";
 
 /**
  * Context page for visualizing sensor data through configurable graph widgets.
@@ -24,7 +24,7 @@ export default function Context() {
         <PageDivider />
         <Box sx={{ mt: 4, ml: 4, mr: 4, mb: 2 }}>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
-            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+            <Typography variant="h5" sx={{ fontWeight: 600 }}>
               Graph Widgets
             </Typography>
             <IconButton
@@ -43,14 +43,22 @@ export default function Context() {
               gap: 2,
             }}
           >
-            {widgetIds.map((id) => (
-              <GraphWidget
-                key={id}
-                onDelete={() =>
-                  setWidgetIds((ids) => ids.filter((w) => w !== id))
-                }
+            {widgetIds.length === 0 ? (
+              <GraphWidgetPlaceholder
+                onAdd={() => {
+                  setWidgetIds((ids) => [...ids, nextWidgetId.current++]);
+                }}
               />
-            ))}
+            ) : (
+              widgetIds.map((id) => (
+                <GraphWidget
+                  key={id}
+                  onDelete={() =>
+                    setWidgetIds((ids) => ids.filter((w) => w !== id))
+                  }
+                />
+              ))
+            )}
           </Box>
         </Box>
       </PageContent>
