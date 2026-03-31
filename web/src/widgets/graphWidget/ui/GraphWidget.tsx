@@ -8,6 +8,7 @@ import {
   type ContextDataResponse,
 } from "@entities/context";
 import { getSensors } from "@entities/sensor";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import SettingsIcon from "@mui/icons-material/Settings";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
@@ -38,6 +39,7 @@ const INITIAL_CONFIG: GraphWidgetConfig = {
 
 interface GraphWidgetProps {
   defaultConfig?: Partial<GraphWidgetConfig>;
+  onDelete?: () => void;
 }
 
 /**
@@ -45,9 +47,10 @@ interface GraphWidgetProps {
  * and chart type selection. Multiple instances can be rendered independently.
  * @param props - Component props
  * @param props.defaultConfig - Optional partial config to pre-seed the widget
+ * @param props.onDelete - Optional callback invoked when the user removes the widget
  * @returns The rendered widget card
  */
-export function GraphWidget({ defaultConfig }: GraphWidgetProps) {
+export function GraphWidget({ defaultConfig, onDelete }: GraphWidgetProps) {
   const [config, setConfig] = useState<GraphWidgetConfig>({
     ...INITIAL_CONFIG,
     ...defaultConfig,
@@ -159,6 +162,11 @@ export function GraphWidget({ defaultConfig }: GraphWidgetProps) {
           <IconButton size="small" onClick={handleSettingsOpen}>
             <SettingsIcon fontSize="small" />
           </IconButton>
+          {onDelete && (
+            <IconButton size="small" onClick={onDelete}>
+              <DeleteOutlineIcon fontSize="small" />
+            </IconButton>
+          )}
         </Box>
       </Box>
 

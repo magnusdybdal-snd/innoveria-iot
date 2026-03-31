@@ -12,7 +12,9 @@ import {
   type ContextDataResponse,
 } from "@entities/context";
 import { getSensors } from "@entities/sensor";
+import AddIcon from "@mui/icons-material/Add";
 import Box from "@mui/material/Box";
+import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import { CustomButton } from "@shared/ui/Button";
 import { PageContent } from "@shared/ui/PageContent";
@@ -92,6 +94,8 @@ export default function Context() {
   }>({});
   const [selectedField, setSelectedField] =
     useState<keyof ContextDataResponse>("totalValue");
+  const [widgetIds, setWidgetIds] = useState<number[]>([0]);
+  const nextWidgetId = useRef(1);
 
   const parsedBucketValue = parseInt(bucketValue, 10);
   const bucketMinutes =
@@ -263,10 +267,42 @@ export default function Context() {
         </Box>
         <PageDivider />
         <Box sx={{ mt: 4, ml: 4, mr: 4, mb: 2 }}>
-          <Typography variant="body2" sx={{ fontWeight: 600, mb: 2 }}>
-            Graph Widgets
-          </Typography>
-          <GraphWidget />
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
+              mb: 2,
+            }}
+          >
+            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+              Graph Widgets
+            </Typography>
+            <IconButton
+              size="small"
+              onClick={() => {
+                setWidgetIds((ids) => [...ids, nextWidgetId.current++]);
+              }}
+            >
+              <AddIcon fontSize="small" />
+            </IconButton>
+          </Box>
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: "repeat(2, 1fr)",
+              gap: 2,
+            }}
+          >
+            {widgetIds.map((id) => (
+              <GraphWidget
+                key={id}
+                onDelete={() =>
+                  setWidgetIds((ids) => ids.filter((w) => w !== id))
+                }
+              />
+            ))}
+          </Box>
         </Box>
       </PageContent>
     </div>
