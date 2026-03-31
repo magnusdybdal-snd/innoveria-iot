@@ -184,7 +184,7 @@ func (r *SensorRepository) FindAllByCompanyID(ctx context.Context, companyID str
 
 }
 
-func (r *SensorRepository) FindByProductionResource(ctx context.Context, productionResourceID string) ([]domain.Sensor, error) {
+func (r *SensorRepository) FindByProductionResourceID(ctx context.Context, productionResourceID string) ([]domain.Sensor, error) {
 
 	rows, err := r.db.Pool.Query(ctx, findByProductionResourceIDQuery, productionResourceID)
 	if err != nil {
