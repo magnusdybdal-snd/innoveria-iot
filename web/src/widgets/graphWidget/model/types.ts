@@ -1,0 +1,13 @@
+import type { BucketUnit } from "@entities/context";
+
+export type ChartType = "bar" | "line";
+
+export interface GraphWidgetConfig {
+  title: string;
+  deviceEui: string;
+  ruleId: string;
+  from: string; // datetime-local string e.g. "2026-03-30T10:00"
+  to: string;
+  bucketValue: string; // controlled string from number TextField
+  bucketUnit: BucketUnit;
+}
