@@ -18,6 +18,7 @@ import { CustomButton } from "@shared/ui/Button";
 import { PageContent } from "@shared/ui/PageContent";
 import { PageDivider } from "@shared/ui/PageDivider";
 import { SubPageHeader } from "@shared/ui/SubPageHeader";
+import { GraphWidget } from "@widgets/graphWidget";
 
 // TODO: Hardcoded until auth context provides the active company
 const companyOptions = [
@@ -159,7 +160,16 @@ export default function Context() {
       <PageContent>
         <SubPageHeader title="Context" />
         <PageDivider />
-        <Box sx={{ display: "flex", gap: 4, mt: 2, alignItems: "flex-start" }}>
+        <Box
+          sx={{
+            display: "flex",
+            gap: 4,
+            mt: 2,
+            ml: 4,
+            mr: 4,
+            alignItems: "flex-start",
+          }}
+        >
           {/* Left: filters */}
           <Box
             sx={{
@@ -250,6 +260,13 @@ export default function Context() {
               />
             )}
           </Box>
+        </Box>
+        <PageDivider />
+        <Box sx={{ mt: 4, ml: 4, mr: 4, mb: 2 }}>
+          <Typography variant="body2" sx={{ fontWeight: 600, mb: 2 }}>
+            Graph Widgets
+          </Typography>
+          <GraphWidget />
         </Box>
       </PageContent>
     </div>

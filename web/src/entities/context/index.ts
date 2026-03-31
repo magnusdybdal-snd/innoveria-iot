@@ -7,7 +7,9 @@ export type {
 } from "./model/contextSchema";
 export { getContextData, getRules } from "./api";
 export {
+  BucketBarChart,
   BucketIntervalField,
+  BucketLineChart,
   ContextResultDisplay,
   DateTimeField,
   LabeledSelect,
