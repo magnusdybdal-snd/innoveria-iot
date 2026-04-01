@@ -45,7 +45,7 @@ func (c *Client) apiUrl(path string) string {
 // ensureSession will start a new session with monitor erp
 // it will extract a session id which is used in all api calls
 // this is a synchronized access to sessionID
-func (c *Client) ensureSession(ctx context.Context) error {
+func (c *Client) ensureSession(ctx context.Context) (err error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
@@ -98,7 +98,7 @@ func (c *Client) ensureSession(ctx context.Context) error {
 //
 // It does not handle session refresh/retry logic; callers are expected to
 // decide if and when a failed request should be retried.
-func (c *Client) queryOnce(ctx context.Context, u string, out any) error {
+func (c *Client) queryOnce(ctx context.Context, u string, out any) (err error) {
 	// Extract the session id
 	c.mu.Lock()
 	sid := c.sessionID
