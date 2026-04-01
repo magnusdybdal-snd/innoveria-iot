@@ -14,25 +14,25 @@ type WorkCenter struct {
 	OperationDescription string `json:"OperationDescription"` // Description used in operations
 	Type                 int    `json:"Type"`                 // Type of work center (machine, labor, etc.)
 
-	DepartmentID int64 `json:"DepartmentId"`
-	WarehouseID  int64 `json:"WarehouseId"`
+	// DepartmentID int64 `json:"DepartmentId"`
+	// WarehouseID  int64 `json:"WarehouseId"`
 
 	// Capacity & planning
-	BasicTime             string  `json:"BasicTime"`             // Capacity per day (TimeSpan)
-	NumberOfPlanningUnits float64 `json:"NumberOfPlanningUnits"` // Machines or people
-	NumberOfFlows         float64 `json:"NumberOfFlows"`         // Parallel capacity per order
+	// BasicTime             string  `json:"BasicTime"`             // Capacity per day (TimeSpan)
+	// NumberOfPlanningUnits float64 `json:"NumberOfPlanningUnits"` // Machines or people
+	// NumberOfFlows         float64 `json:"NumberOfFlows"`         // Parallel capacity per order
 
 	// Efficiency & simulation
-	AvailabilityFactor float64 `json:"AvailabilityFactor"` // % uptime
-	SimulationFactor   float64 `json:"SimulationFactor"`   // % used in simulations
+	// AvailabilityFactor float64 `json:"AvailabilityFactor"` // % uptime
+	// SimulationFactor   float64 `json:"SimulationFactor"`   // % used in simulations
 
 	// Staffing
-	UnitStaffFactor  float64 `json:"UnitStaffFactor"`  // Staffing for runtime
-	SetupStaffFactor float64 `json:"SetupStaffFactor"` // Staffing for setup
+	// UnitStaffFactor  float64 `json:"UnitStaffFactor"`  // Staffing for runtime
+	// SetupStaffFactor float64 `json:"SetupStaffFactor"` // Staffing for setup
 
 	// Time precision (e.g. minutes, hours)
-	TimePrecision int `json:"TimePrecision"`
+	// TimePrecision int `json:"TimePrecision"`
 
 	// Optional / expandable fields
-	CommentID *int64 `json:"CommentId,omitempty"`
+	// CommentID *int64 `json:"CommentId,omitempty"`
 }

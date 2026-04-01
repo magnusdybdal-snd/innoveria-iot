@@ -17,35 +17,35 @@ import "time"
 type ManufacturingOrderOperation struct {
 	ID int64 `json:"Id"`
 
-	Priority *int `json:"Priority,omitempty"`
+	// Priority *int `json:"Priority,omitempty"`
 
 	// Primary join key to map operation -> physical machine/sensor source.
 	WorkCenterId int64 `json:"WorkCenterId"`
-	PartId       int64 `json:"PartId"`
+	// PartId       int64 `json:"PartId"`
 
-	PlannedQuantity  float64 `json:"PlannedQuantity"`
+	// PlannedQuantity  float64 `json:"PlannedQuantity"`
 	ReportedQuantity float64 `json:"ReportedQuantity"`
 	RestQuantity     float64 `json:"RestQuantity"`
 
 	// TimeSpan values come as "HH:MM:SS" from Monitor.
-	ReportedSetupTime string `json:"ReportedSetupTime"`
-	ReportedUnitTime  string `json:"ReportedUnitTime"`
+	// ReportedSetupTime string `json:"ReportedSetupTime"`
+	// ReportedUnitTime  string `json:"ReportedUnitTime"`
 
-	RejectedQuantity float64 `json:"RejectedQuantity"`
-	WipLocation      *string `json:"WipLocation,omitempty"`
+	// RejectedQuantity float64 `json:"RejectedQuantity"`
+	// WipLocation      *string `json:"WipLocation,omitempty"`
 
-	ReportNumber int64 `json:"ReportNumber"`
+	// ReportNumber int64 `json:"ReportNumber"`
 
-	InstructionCommentId *int64 `json:"InstructionCommentId,omitempty"`
+	// InstructionCommentId *int64 `json:"InstructionCommentId,omitempty"`
 
 	// Stable operation identity used to group related events.
-	ManufacturingOrderId     int64 `json:"ManufacturingOrderId"`
-	ManufacturingOrderNodeId int64 `json:"ManufacturingOrderNodeId"`
+	ManufacturingOrderId int64 `json:"ManufacturingOrderId"`
+	// ManufacturingOrderNodeId int64 `json:"ManufacturingOrderNodeId"`
 
 	OperationNumber int `json:"OperationNumber"`
 
-	PlannedSetupTime string `json:"PlannedSetupTime"`
-	PlannedUnitTime  string `json:"PlannedUnitTime"`
+	// PlannedSetupTime string `json:"PlannedSetupTime"`
+	// PlannedUnitTime  string `json:"PlannedUnitTime"`
 
 	// Planned interval used as coarse expected time window.
 	PlannedStartDate  time.Time `json:"PlannedStartDate"`
@@ -55,20 +55,20 @@ type ManufacturingOrderOperation struct {
 	ActualStartDate  *time.Time `json:"ActualStartDate,omitempty"`
 	ActualFinishDate *time.Time `json:"ActualFinishDate,omitempty"`
 
-	OperationRowId *int64 `json:"OperationRowId,omitempty"`
+	// OperationRowId *int64 `json:"OperationRowId,omitempty"`
 
 	// Keep both status fields; they often indicate different lifecycle states.
 	Status                  int `json:"Status"`
 	WorkshopOperationStatus int `json:"WorkshopOperationStatus"`
 
-	BundleId    *int64  `json:"BundleId,omitempty"`
+	// BundleId    *int64  `json:"BundleId,omitempty"`
 	Description *string `json:"Description,omitempty"`
 
-	ClearedStatus  bool    `json:"ClearedStatus"`
-	OnPriorityPlan bool    `json:"OnPriorityPlan"`
-	FixedLeadTime  *string `json:"FixedLeadTime,omitempty"`
+	// ClearedStatus  bool    `json:"ClearedStatus"`
+	// OnPriorityPlan bool    `json:"OnPriorityPlan"`
+	// FixedLeadTime  *string `json:"FixedLeadTime,omitempty"`
 
 	// Optional for sensor-context use; mostly planning/cost semantics.
-	UnitStaffingFactor  *float64 `json:"UnitStaffingFactor,omitempty"`
-	SetupStaffingFactor *float64 `json:"SetupStaffingFactor,omitempty"`
+	// UnitStaffingFactor  *float64 `json:"UnitStaffingFactor,omitempty"`
+	// SetupStaffingFactor *float64 `json:"SetupStaffingFactor,omitempty"`
 }
