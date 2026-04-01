@@ -3,8 +3,9 @@ package config
 
 import (
 	"fmt"
-	"innoveria-iot/pkg/env"
 	"strconv"
+
+	"innoveria-iot/pkg/env"
 )
 
 // Config holds erp-agent-service runtime configuration.
@@ -12,6 +13,7 @@ type Config struct {
 	Addr string
 
 	MonitorERPHost          string // Monitor ERP host address
+	MonitorERPPORT          string // Monitor ERP port
 	MonitorERPCompanyNumber int    // Monitor ERP company number, (this is 1 by default)
 
 	MonitorERPUsername string // Monitor ERP username
@@ -24,6 +26,10 @@ type Config struct {
 // Load reads configuration from environment variables.
 func Load() (*Config, error) {
 	host, err := env.Required("MONITOR_ERP_HOST")
+	if err != nil {
+		return nil, err
+	}
+	monitorPort, err := env.Required("MONITOR_ERP_PORT")
 	if err != nil {
 		return nil, err
 	}
@@ -51,6 +57,7 @@ func Load() (*Config, error) {
 	return &Config{
 		Addr:                    ":" + env.Get("PORT", "8080"),
 		MonitorERPHost:          host,
+		MonitorERPPORT:          monitorPort,
 		MonitorERPCompanyNumber: companyNumber,
 		MonitorERPUsername:      username,
 		MonitorERPPassword:      password,

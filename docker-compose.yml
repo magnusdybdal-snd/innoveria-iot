@@ -281,6 +281,7 @@ services:
     environment:
       - GO_ENV=development   
       - MONITOR_ERP_HOST=localhost
+      - MONITOR_ERP_PORT=8081
       - MONITOR_ERP_COMPANY_NUMBER=1
       - MONITOR_ERP_USERNAME=test
       - MONITOR_ERP_PASSWORD=1234

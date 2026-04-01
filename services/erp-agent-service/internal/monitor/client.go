@@ -16,11 +16,11 @@ import (
 )
 
 type Client struct {
-	host, lang, company string
-	forceRelogin        bool
-	username, password  string
-	httpClient          *httpclient.Client
-	sessionID           string
+	host, port, lang, company string
+	forceRelogin              bool
+	username, password        string
+	httpClient                *httpclient.Client
+	sessionID                 string
 
 	mu           sync.Mutex
 	sessionSetAt time.Time
@@ -28,7 +28,7 @@ type Client struct {
 
 // base returns the base url for accessing monitor erp
 func (c *Client) base() string {
-	return fmt.Sprintf("https://%s:8001/%s/%s", c.host, c.lang, c.company)
+	return fmt.Sprintf("https://%s:%s/%s/%s", c.host, c.port, c.lang, c.company)
 }
 
 // loginUrl returns the url for authenticating with monitor erp

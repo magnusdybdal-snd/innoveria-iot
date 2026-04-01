@@ -1,6 +1,6 @@
 # Monitor ERP
 
-### Manufacturing orders
+### Manufacturing order operation reportings
 what is happening right now
 - https://api.monitor.se/api/Monitor.API.Manufacturing.ManufacturingOrderOperationReporting.html
 
@@ -11,6 +11,10 @@ The most useful monitor erp data fields:
 - When? `ReportingTimestamp`
 - What happened? `Type` + `NodeStatus`
 
+### Manufacturing order operation
+represent a single step in a manufacturing order process.
+Defines how a product is made
+- https://api.monitor.se/api/Monitor.API.Manufacturing.ManufacturingOrderOperation.html
 
 ### Machines
 - https://api.monitor.se/api/Monitor.API.Manufacturing.WorkCenter.html
