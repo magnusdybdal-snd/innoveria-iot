@@ -58,6 +58,7 @@ type ManufacturingOrderOperation struct {
 	// OperationRowId *int64 `json:"OperationRowId,omitempty"`
 
 	// Keep both status fields; they often indicate different lifecycle states.
+	// Enum mapping handled in erp-service
 	Status                  int `json:"Status"`
 	WorkshopOperationStatus int `json:"WorkshopOperationStatus"`
 

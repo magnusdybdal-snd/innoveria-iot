@@ -12,7 +12,9 @@ type WorkCenter struct {
 	Number               string `json:"Number"`               // Unique identifier / code
 	Description          string `json:"Description"`          // Name of the work center
 	OperationDescription string `json:"OperationDescription"` // Description used in operations
-	Type                 int    `json:"Type"`                 // Type of work center (machine, labor, etc.)
+
+	// See documentation for enum mapping, (handled in erp service)
+	Type int `json:"Type"` // Type of work center (machine, labor, etc.)
 
 	// DepartmentID int64 `json:"DepartmentId"`
 	// WarehouseID  int64 `json:"WarehouseId"`

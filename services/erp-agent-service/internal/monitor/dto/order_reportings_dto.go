@@ -61,6 +61,7 @@ type ManufacturingOrderOperationReporting struct {
 
 	// IsSubcontractor bool `json:"IsSubcontractor"`
 	// Type is critical to interpret event semantics (start/finish/adjust/etc.).
+	// Enum mapping is handled in erp-service
 	Type int `json:"Type"`
 	// SubcontractorRequestedDeliveryDate *time.Time `json:"SubcontractorRequestedDeliveryDate,omitempty"`
 	// SubcontractorActualDeliveryDate    *time.Time `json:"SubcontractorActualDeliveryDate,omitempty"`
@@ -84,6 +85,7 @@ type ManufacturingOrderOperationReporting struct {
 
 	// AutomaticMaterialReporting bool `json:"AutomaticMaterialReporting"`
 	// PreviousNodeStatus helps explain the state before this event.
+	// Enum mapping is handled in erp-service
 	PreviousNodeStatus int `json:"PreviousNodeStatus"`
 	// OriginalApprovedQuantityFromDeliveryRow *float64 `json:"OriginalApprovedQuantityFromDeliveryRow,omitempty"`
 	// ReportingId                             *int64   `json:"ReportingId,omitempty"`
