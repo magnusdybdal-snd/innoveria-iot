@@ -1,3 +1,4 @@
+// Package monitor provides a minimal client for Monitor ERP authentication and queries.
 package monitor
 
 import (
@@ -15,6 +16,7 @@ import (
 	"innoveria-iot/pkg/httpclient"
 )
 
+// Client manages Monitor ERP session lifecycle and authenticated API calls.
 type Client struct {
 	host, port, lang, company string
 	forceRelogin              bool
