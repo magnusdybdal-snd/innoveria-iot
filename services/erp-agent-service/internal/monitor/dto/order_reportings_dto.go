@@ -1,90 +1,93 @@
 package dto
 
+import "encoding/json"
 import "time"
 
 // ManufacturingOrderOperationReporting represents a reporting event
-// for a manufacturing operation in Monitor ERP.
+// from Monitor ERP's ManufacturingOrderOperationReportings endpoint.
 //
-// This is the MOST important entity for:
-// - timestamps
-// - machine state
-// - order tracking
-// - production analytics
+// For sensor correlation, this DTO is event-centric and often the best source of
+// "what changed when" at a machine/work center.
 //
-// Each record = one "event" or "report" from a work center.
+// Usually required for contextualizing sensor streams:
+// - OperationId, WorkCenterId
+// - ReportingTimestamp (event time)
+// - Type, PreviousNodeStatus (state transition meaning)
+// - Quantity / RestQuantity (production progress)
+//
+// Usually optional at first:
+// - Cost/currency fields, comments, reason codes, subcontractor details.
 type ManufacturingOrderOperationReporting struct {
 	ID int64 `json:"Id"`
 
-	// --- ORDER / OPERATION ---
-	ManufacturingOrderId     int64  `json:"ManufacturingOrderId"`
-	ManufacturingOrderNumber string `json:"ManufacturingOrderNumber"`
-	OperationNumber          int    `json:"OperationNumber"`
-	ReportingId              *int64 `json:"ReportingId,omitempty"`
+	// OperationId links reporting events back to operation-level context.
+	OperationId int64   `json:"OperationId"`
+	Quantity    float64 `json:"Quantity"`
 
-	// --- WORK CENTER ---
+	SetupTime *string `json:"SetupTime,omitempty"`
+	UnitTime  *string `json:"UnitTime,omitempty"`
+
+	// Primary join key for mapping event -> machine/sensor source.
 	WorkCenterId int64 `json:"WorkCenterId"`
 
-	// --- TIME / TIMESTAMPS ---
-	ReportingTimestamp time.Time  `json:"ReportingTimestamp"`
-	ActualReportedDate *time.Time `json:"ActualReportedDate,omitempty"`
-
-	// --- QUANTITIES ---
-	ReportedQuantity         float64  `json:"ReportedQuantity"`
-	RestQuantity             float64  `json:"RestQuantity"`
-	PreviousRestQuantity     float64  `json:"PreviousRestQuantity"`
-	OverReceiveQuantity      float64  `json:"OverReceiveQuantity"`
-	OriginalApprovedQuantity *float64 `json:"OriginalApprovedQuantityFromDeliveryRow,omitempty"`
-
-	// --- STATE / TYPE ---
-	Type int `json:"Type"` // enum (VERY important)
-
-	// --- STATUS ---
-	PreviousNodeStatus int `json:"PreviousNodeStatus"` // enum
-
-	// --- EMPLOYEES ---
 	EmployeeId          *int64 `json:"EmployeeId,omitempty"`
 	ReportingEmployeeId *int64 `json:"ReportingEmployeeId,omitempty"`
 
-	// --- WAREHOUSE / LOCATION ---
-	WarehouseId         int64  `json:"WarehouseId"`
-	WipLocation         string `json:"WipLocation"`
-	PreviousWipLocation string `json:"PreviousWipLocation"`
+	WarehouseId int64 `json:"WarehouseId"`
 
-	// --- TIME DETAILS ---
-	OfWhichTime *string `json:"OfWichTime,omitempty"` // duration (TimeSpan)
+	// ReportingTimestamp is generally the canonical event timestamp for joins.
+	ActualReportedDate time.Time `json:"ActualReportedDate"`
 
-	// --- COSTS ---
-	SetupCost           *float64 `json:"SetupCost,omitempty"`
-	SetupCostCurrencyId *int64   `json:"SetupCostCurrencyId,omitempty"`
-	SetupCostFactor1    float64  `json:"SetupCostFactor1"`
-	SetupCostFactor2    float64  `json:"SetupCostFactor2"`
-	SetupCostFactor3    float64  `json:"SetupCostFactor3"`
+	PreviousRestQuantity float64 `json:"PreviousRestQuantity"`
+	RestQuantity         float64 `json:"RestQuantity"`
+	OverReceiveQuantity  float64 `json:"OverReceiveQuantity"`
 
-	UnitCost           *float64 `json:"UnitCost,omitempty"`
-	UnitCostCurrencyId *int64   `json:"UnitCostCurrencyId,omitempty"`
-	UnitCostFactor1    float64  `json:"UnitCostFactor1"`
-	UnitCostFactor2    float64  `json:"UnitCostFactor2"`
-	UnitCostFactor3    float64  `json:"UnitCostFactor3"`
+	SetupCost                    *float64 `json:"SetupCost,omitempty"`
+	SetupCostCurrencyId          *int64   `json:"SetupCostCurrencyId,omitempty"`
+	SetupCostFactor1             float64  `json:"SetupCostFactor1"`
+	SetupCostFactor2             float64  `json:"SetupCostFactor2"`
+	SetupCostFactor3             float64  `json:"SetupCostFactor3"`
+	SetupCostInForeignCurrency   *float64 `json:"SetupCostInForeignCurrency,omitempty"`
+	SetupCostInForeignCurrencyId *int64   `json:"SetupCostInForeignCurrencyCurrencyId,omitempty"`
 
-	// --- SUBCONTRACTING ---
-	IsSubcontractor                    bool       `json:"IsSubcontractor"`
+	UnitCost                    *float64 `json:"UnitCost,omitempty"`
+	UnitCostCurrencyId          *int64   `json:"UnitCostCurrencyId,omitempty"`
+	UnitCostFactor1             float64  `json:"UnitCostFactor1"`
+	UnitCostFactor2             float64  `json:"UnitCostFactor2"`
+	UnitCostFactor3             float64  `json:"UnitCostFactor3"`
+	UnitCostInForeignCurrency   *float64 `json:"UnitCostInForeignCurrency,omitempty"`
+	UnitCostInForeignCurrencyId *int64   `json:"UnitCostInForeignCurrencyCurrencyId,omitempty"`
+
+	IsSubcontractor bool `json:"IsSubcontractor"`
+	// Type is critical to interpret event semantics (start/finish/adjust/etc.).
+	Type                               int        `json:"Type"`
 	SubcontractorRequestedDeliveryDate *time.Time `json:"SubcontractorRequestedDeliveryDate,omitempty"`
 	SubcontractorActualDeliveryDate    *time.Time `json:"SubcontractorActualDeliveryDate,omitempty"`
 
-	// --- FLAGS ---
 	ReportRestQuantitiesOnSubsequentOperations bool `json:"ReportRestQuantitiesOnSubsequentOperations"`
 	IsExportedToManagementAccounting           bool `json:"IsExportedToManagementAccounting"`
-	AutomaticMaterialReporting                 bool `json:"AutomaticMaterialReporting"`
 
-	// --- COMMENTS / REASON ---
-	CommentId *int64  `json:"CommentId,omitempty"`
-	Comment   *string `json:"Comment,omitempty"`
+	WipLocation         *string `json:"WipLocation,omitempty"`
+	PreviousWipLocation *string `json:"PreviousWipLocation,omitempty"`
 
-	ReasonCodeTimeConsumptionId *int64 `json:"ReasonCodeTimeConsumptionId,omitempty"`
+	// Monitor uses "OfWichTime" in JSON (typo in upstream API name).
+	OfWhichTime *string `json:"OfWichTime,omitempty"` // TimeSpan "HH:MM:SS"
 
-	// --- PURCHASING ---
+	CommentId *int64           `json:"CommentId,omitempty"`
+	Comment   *json.RawMessage `json:"Comment,omitempty"`
+
+	ReasonCodeTimeConsumptionId *int64           `json:"ReasonCodeTimeConsumptionId,omitempty"`
+	ReasonCodeTimeConsumption   *json.RawMessage `json:"ReasonCodeTimeConsumption,omitempty"`
+
 	PurchaseOrderDeliveryRowId *int64 `json:"PurchaseOrderDeliveryRowId,omitempty"`
 
-	// --- META ---
+	AutomaticMaterialReporting bool `json:"AutomaticMaterialReporting"`
+	// PreviousNodeStatus helps explain the state before this event.
+	PreviousNodeStatus                      int      `json:"PreviousNodeStatus"`
+	OriginalApprovedQuantityFromDeliveryRow *float64 `json:"OriginalApprovedQuantityFromDeliveryRow,omitempty"`
+	ReportingId                             *int64   `json:"ReportingId,omitempty"`
+	// Event time typically used when aligning ERP events to sensor timeseries.
+	ReportingTimestamp time.Time `json:"ReportingTimestamp"`
+
 	RowNumber int `json:"RowNumber"`
 }
