@@ -3,6 +3,7 @@ package worker
 
 import (
 	"context"
+	"innoveria-iot/erp-agent-service/internal/domain"
 	"log/slog"
 	"time"
 )
@@ -11,28 +12,59 @@ type Worker struct {
 	Interval     time.Duration
 	CycleTimeout time.Duration
 	MaxBackoff   time.Duration
+
+	Runner domain.Runner
 }
 
-func (w *Worker) PollingLoop(ctx context.Context) {
+func NewWorker(interval, cycleTimeout, maxBackoff time.Duration, runner domain.Runner) *Worker {
+	return &Worker{
+		Interval:     interval,
+		CycleTimeout: cycleTimeout,
+		MaxBackoff:   maxBackoff,
+		Runner:       runner,
+	}
+}
+
+func (w *Worker) Start(ctx context.Context) {
 	ticker := time.NewTicker(w.Interval)
 	defer ticker.Stop()
+
+	backoff := time.Second
 	running := false
 
 	for {
 		select {
 		case <-ctx.Done():
-			slog.Info("polling loop stopped")
+			slog.Info("worker loop stopped")
 			return
 		case <-ticker.C:
 			if running {
-				slog.Warn("previous sync cycle still running")
+				slog.Warn("previous worker loop still running")
 				continue
 			}
 			running = true
 			func() {
 				defer func() { running = false }()
 
-				//cycleCtx, cancel := context.WithTimeout(ctx, w.CycleTimeout)
+				cycleCtx, cancel := context.WithTimeout(ctx, w.CycleTimeout)
+				defer cancel()
+
+				err := w.Runner.RunCycle(cycleCtx)
+				if err != nil {
+					slog.Error("worker loop failed", "err", err, "backoff", backoff)
+					select {
+					case <-ctx.Done():
+						return
+					case <-time.After(backoff):
+					}
+					backoff *= 2
+					if backoff > w.MaxBackoff {
+						backoff = w.MaxBackoff
+					}
+					return
+				}
+				backoff = time.Second
+				slog.Info("woker loop succeeded")
 			}()
 		}
 	}
