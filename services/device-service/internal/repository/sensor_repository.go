@@ -30,6 +30,7 @@ const (
 		ORDER BY created_at ASC
 	`
 
+	// TODO: Add AND company_id = $2 when auth is wired
 	findByProductionResourceIDQuery = `
 		SELECT sensor_id, company_id, device_eui, app_key, name, description, state, factory_id, factory_area_id, production_resource_id, chirpstack_profile_id, created_at, updated_at
 		FROM device.sensor
@@ -193,7 +194,7 @@ func (r *SensorRepository) FindByProductionResourceID(ctx context.Context, produ
 	}
 	defer rows.Close()
 
-	var out []domain.Sensor
+	out := []domain.Sensor{}
 
 	for rows.Next() {
 		var sensor domain.Sensor
