@@ -476,6 +476,14 @@ const docTemplate = `{
                     "sensors"
                 ],
                 "summary": "Lists all sensors.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Production resource",
+                        "name": "production_resource_id",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
