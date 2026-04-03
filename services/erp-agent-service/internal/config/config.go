@@ -4,6 +4,7 @@ package config
 import (
 	"fmt"
 	"strconv"
+	"time"
 
 	"innoveria-iot/pkg/env"
 )
@@ -20,7 +21,8 @@ type Config struct {
 	MonitorERPPassword string // Monitor ERP password
 
 	MonitorERPForceRelogin bool // Should be false; true logs out all active Monitor ERP sessions
-	// EnableSwagger bool
+
+	PollingInterval time.Duration
 }
 
 // Load reads configuration from environment variables.
@@ -54,6 +56,11 @@ func Load() (*Config, error) {
 		return nil, err
 	}
 
+	pollingInterval, err := time.ParseDuration(env.Get("POLLING_INTERVAL", "10m"))
+	if err != nil {
+		return nil, fmt.Errorf("invalid POLLING_INTERVAL: %w", err)
+	}
+
 	return &Config{
 		Addr:                    ":" + env.Get("PORT", "8080"),
 		MonitorERPHost:          host,
@@ -62,5 +69,6 @@ func Load() (*Config, error) {
 		MonitorERPUsername:      username,
 		MonitorERPPassword:      password,
 		MonitorERPForceRelogin:  env.GetBool("MONITOR_ERP_FORCE_RELOGIN", false),
+		PollingInterval:         pollingInterval,
 	}, nil
 }
