@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"sync"
@@ -105,6 +106,11 @@ func (c *Client) ensureSession(ctx context.Context) (err error) {
 	sid := resp.Header.Get("X-Monitor-SessionId")
 	_, _ = io.Copy(io.Discard, resp.Body) // Drain body so conn can be reused
 	if sid == "" {
+		slog.Warn(
+			"monitor login response missing session id; endpoint may be misconfigured",
+			"url", c.loginUrl(),
+			"status", resp.StatusCode,
+		)
 		return fmt.Errorf("monitor login succeeded but missing session id")
 	}
 
@@ -184,6 +190,15 @@ func (c *Client) Query(ctx context.Context, path string, opts url.Values, out an
 
 	var httpErr *httpclient.HTTPError
 	if !errors.As(err, &httpErr) {
+		return err
+	}
+
+	if httpErr.StatusCode == http.StatusNotFound {
+		slog.Warn(
+			"monitor query returned 404; route may be misconfigured",
+			"path", path,
+			"url", u,
+		)
 		return err
 	}
 
