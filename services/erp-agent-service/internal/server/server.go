@@ -17,7 +17,10 @@ import (
 
 // Run starts the erp agent service HTTP server and handles graceful shutdown.
 func Run() error {
-	cfg := config.Load()
+	cfg, err := config.Load()
+	if err != nil {
+		return fmt.Errorf("load config: %w", err)
+	}
 
 	// Setting up mux and http server
 	mux := NewRouter()
