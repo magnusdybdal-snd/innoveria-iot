@@ -7,11 +7,13 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"sync"
 	"time"
 
+	"innoveria-iot/erp-agent-service/internal/config"
 	"innoveria-iot/erp-agent-service/internal/monitor/dto"
 	"innoveria-iot/pkg/httpclient"
 )
@@ -24,8 +26,24 @@ type Client struct {
 	httpClient                *httpclient.Client
 	sessionID                 string
 
+	// Used at runtime
 	mu           sync.Mutex
 	sessionSetAt time.Time
+}
+
+// NewClient is the constructor for the monitor erp client
+func NewClient(cfg config.Config) *Client {
+	return &Client{
+		host:         cfg.MonitorERPHost,
+		port:         cfg.MonitorERPPort,
+		lang:         "en",
+		company:      string(cfg.MonitorERPCompanyNumber),
+		forceRelogin: cfg.MonitorERPForceRelogin,
+		username:     cfg.MonitorERPUsername,
+		password:     cfg.MonitorERPPassword,
+		httpClient:   httpclient.New(),
+		sessionID:    "",
+	}
 }
 
 // base returns the base url for accessing monitor erp
@@ -39,7 +57,7 @@ func (c *Client) loginUrl() string {
 	return c.base() + "/login"
 }
 
-// apiUrl returns the endpoint for
+// apiUrl returns the target endpoint for monitor erp
 func (c *Client) apiUrl(path string) string {
 	return c.base() + "/api/v1/" + path
 }
@@ -86,7 +104,13 @@ func (c *Client) ensureSession(ctx context.Context) (err error) {
 
 	// Extracting session id
 	sid := resp.Header.Get("X-Monitor-SessionId")
+	_, _ = io.Copy(io.Discard, resp.Body) // Drain body so conn can be reused
 	if sid == "" {
+		slog.Warn(
+			"monitor login response missing session id; endpoint may be misconfigured",
+			"url", c.loginUrl(),
+			"status", resp.StatusCode,
+		)
 		return fmt.Errorf("monitor login succeeded but missing session id")
 	}
 
@@ -100,12 +124,7 @@ func (c *Client) ensureSession(ctx context.Context) (err error) {
 //
 // It does not handle session refresh/retry logic; callers are expected to
 // decide if and when a failed request should be retried.
-func (c *Client) queryOnce(ctx context.Context, u string, out any) (err error) {
-	// Extract the session id
-	c.mu.Lock()
-	sid := c.sessionID
-	c.mu.Unlock()
-
+func (c *Client) queryOnce(ctx context.Context, u, sid string, out any) (err error) {
 	resp, err := httpclient.DoRaw(
 		c.httpClient,
 		ctx,
@@ -160,13 +179,26 @@ func (c *Client) Query(ctx context.Context, path string, opts url.Values, out an
 		u += "?" + opts.Encode()
 	}
 
-	err := c.queryOnce(ctx, u, out)
+	c.mu.Lock()
+	sid := c.sessionID
+	c.mu.Unlock()
+
+	err := c.queryOnce(ctx, u, sid, out)
 	if err == nil {
 		return nil
 	}
 
 	var httpErr *httpclient.HTTPError
 	if !errors.As(err, &httpErr) {
+		return err
+	}
+
+	if httpErr.StatusCode == http.StatusNotFound {
+		slog.Warn(
+			"monitor query returned 404; route may be misconfigured",
+			"path", path,
+			"url", u,
+		)
 		return err
 	}
 
@@ -177,12 +209,18 @@ func (c *Client) Query(ctx context.Context, path string, opts url.Values, out an
 	// if the session is stale, empty the session id
 	// and try new query
 	c.mu.Lock()
-	c.sessionID = ""
+	if c.sessionID == sid {
+		c.sessionID = ""
+	}
 	c.mu.Unlock()
 
 	if err := c.ensureSession(ctx); err != nil {
 		return fmt.Errorf("monitor relogin failed: %w", err)
 	}
 
-	return c.queryOnce(ctx, u, out)
+	c.mu.Lock()
+	sid = c.sessionID
+	c.mu.Unlock()
+
+	return c.queryOnce(ctx, u, sid, out)
 }

@@ -52,8 +52,8 @@ type ManufacturingOrderOperation struct {
 	PlannedFinishDate time.Time `json:"PlannedFinishDate"`
 
 	// Actual interval is better than planned when available.
-	ActualStartDate  *time.Time `json:"ActualStartDate,omitempty"`
-	ActualFinishDate *time.Time `json:"ActualFinishDate,omitempty"`
+	ActualStartDate  *time.Time `json:"ActualStartDate"`
+	ActualFinishDate *time.Time `json:"ActualFinishDate"`
 
 	// OperationRowId *int64 `json:"OperationRowId,omitempty"`
 
@@ -63,7 +63,7 @@ type ManufacturingOrderOperation struct {
 	WorkshopOperationStatus int `json:"WorkshopOperationStatus"`
 
 	// BundleId    *int64  `json:"BundleId,omitempty"`
-	Description *string `json:"Description,omitempty"`
+	Description *string `json:"Description"`
 
 	// ClearedStatus  bool    `json:"ClearedStatus"`
 	// OnPriorityPlan bool    `json:"OnPriorityPlan"`
