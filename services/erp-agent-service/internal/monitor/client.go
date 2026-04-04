@@ -12,6 +12,7 @@ import (
 	"sync"
 	"time"
 
+	"innoveria-iot/erp-agent-service/internal/config"
 	"innoveria-iot/erp-agent-service/internal/monitor/dto"
 	"innoveria-iot/pkg/httpclient"
 )
@@ -24,8 +25,24 @@ type Client struct {
 	httpClient                *httpclient.Client
 	sessionID                 string
 
+	// Used at runtime
 	mu           sync.Mutex
 	sessionSetAt time.Time
+}
+
+// NewClient is the constructor for the monitor erp client
+func NewClient(cfg config.Config) *Client {
+	return &Client{
+		host:         cfg.MonitorERPHost,
+		port:         cfg.MonitorERPPORT,
+		lang:         "en",
+		company:      string(cfg.MonitorERPCompanyNumber),
+		forceRelogin: cfg.MonitorERPForceRelogin,
+		username:     cfg.MonitorERPUsername,
+		password:     cfg.MonitorERPPassword,
+		httpClient:   httpclient.New(),
+		sessionID:    "",
+	}
 }
 
 // base returns the base url for accessing monitor erp
@@ -39,7 +56,7 @@ func (c *Client) loginUrl() string {
 	return c.base() + "/login"
 }
 
-// apiUrl returns the endpoint for
+// apiUrl returns the target endpoint for monitor erp
 func (c *Client) apiUrl(path string) string {
 	return c.base() + "/api/v1/" + path
 }
