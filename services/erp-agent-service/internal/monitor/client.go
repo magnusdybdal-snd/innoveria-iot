@@ -34,7 +34,7 @@ type Client struct {
 func NewClient(cfg config.Config) *Client {
 	return &Client{
 		host:         cfg.MonitorERPHost,
-		port:         cfg.MonitorERPPORT,
+		port:         cfg.MonitorERPPort,
 		lang:         "en",
 		company:      string(cfg.MonitorERPCompanyNumber),
 		forceRelogin: cfg.MonitorERPForceRelogin,
@@ -103,6 +103,7 @@ func (c *Client) ensureSession(ctx context.Context) (err error) {
 
 	// Extracting session id
 	sid := resp.Header.Get("X-Monitor-SessionId")
+	_, _ = io.Copy(io.Discard, resp.Body) // Drain body so conn can be reused
 	if sid == "" {
 		return fmt.Errorf("monitor login succeeded but missing session id")
 	}
@@ -117,12 +118,7 @@ func (c *Client) ensureSession(ctx context.Context) (err error) {
 //
 // It does not handle session refresh/retry logic; callers are expected to
 // decide if and when a failed request should be retried.
-func (c *Client) queryOnce(ctx context.Context, u string, out any) (err error) {
-	// Extract the session id
-	c.mu.Lock()
-	sid := c.sessionID
-	c.mu.Unlock()
-
+func (c *Client) queryOnce(ctx context.Context, u, sid string, out any) (err error) {
 	resp, err := httpclient.DoRaw(
 		c.httpClient,
 		ctx,
@@ -177,7 +173,11 @@ func (c *Client) Query(ctx context.Context, path string, opts url.Values, out an
 		u += "?" + opts.Encode()
 	}
 
-	err := c.queryOnce(ctx, u, out)
+	c.mu.Lock()
+	sid := c.sessionID
+	c.mu.Unlock()
+
+	err := c.queryOnce(ctx, u, sid, out)
 	if err == nil {
 		return nil
 	}
@@ -194,12 +194,18 @@ func (c *Client) Query(ctx context.Context, path string, opts url.Values, out an
 	// if the session is stale, empty the session id
 	// and try new query
 	c.mu.Lock()
-	c.sessionID = ""
+	if c.sessionID == sid {
+		c.sessionID = ""
+	}
 	c.mu.Unlock()
 
 	if err := c.ensureSession(ctx); err != nil {
 		return fmt.Errorf("monitor relogin failed: %w", err)
 	}
 
-	return c.queryOnce(ctx, u, out)
+	c.mu.Lock()
+	sid = c.sessionID
+	c.mu.Unlock()
+
+	return c.queryOnce(ctx, u, sid, out)
 }

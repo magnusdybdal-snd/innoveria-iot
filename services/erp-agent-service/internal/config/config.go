@@ -13,7 +13,7 @@ type Config struct {
 	Addr string
 
 	MonitorERPHost          string // Monitor ERP host address
-	MonitorERPPORT          string // Monitor ERP port
+	MonitorERPPort          string // Monitor ERP port
 	MonitorERPCompanyNumber int    // Monitor ERP company number, (this is 1 by default)
 
 	MonitorERPUsername string // Monitor ERP username
@@ -57,7 +57,7 @@ func Load() (*Config, error) {
 	return &Config{
 		Addr:                    ":" + env.Get("PORT", "8080"),
 		MonitorERPHost:          host,
-		MonitorERPPORT:          monitorPort,
+		MonitorERPPort:          monitorPort,
 		MonitorERPCompanyNumber: companyNumber,
 		MonitorERPUsername:      username,
 		MonitorERPPassword:      password,
