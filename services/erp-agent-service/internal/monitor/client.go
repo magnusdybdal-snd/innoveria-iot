@@ -10,6 +10,7 @@ import (
 	"log/slog"
 	"net/http"
 	"net/url"
+	"strconv"
 	"sync"
 	"time"
 
@@ -37,7 +38,7 @@ func NewClient(cfg config.Config) *Client {
 		host:         cfg.MonitorERPHost,
 		port:         cfg.MonitorERPPort,
 		lang:         "en",
-		company:      string(cfg.MonitorERPCompanyNumber),
+		company:      strconv.Itoa(cfg.MonitorERPCompanyNumber),
 		forceRelogin: cfg.MonitorERPForceRelogin,
 		username:     cfg.MonitorERPUsername,
 		password:     cfg.MonitorERPPassword,
