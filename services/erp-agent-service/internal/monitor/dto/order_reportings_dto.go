@@ -36,7 +36,6 @@ type ManufacturingOrderOperationReporting struct {
 
 	// WarehouseId int64 `json:"WarehouseId"`
 
-	// ReportingTimestamp is generally the canonical event timestamp for joins.
 	ActualReportedDate *time.Time `json:"ActualReportedDate"`
 
 	// PreviousRestQuantity float64 `json:"PreviousRestQuantity"`
