@@ -2,6 +2,7 @@ package dto
 
 import (
 	"time"
+	"strings"
 
 	"innoveria-iot/device-service/internal/domain"
 	"innoveria-iot/pkg/ptrutil"
@@ -116,7 +117,7 @@ func MapGatewayDTOToDomain(from CreateGatewayRequest) domain.Gateway {
 	return domain.Gateway{
 		Id:            "", // converted later in db
 		CompanyId:     from.CompanyId,
-		GatewayEUI:    from.GatewayEUI,
+		GatewayEUI:    strings.ToLower(from.GatewayEUI),
 		Name:          from.Name,
 		Description:   from.Description,
 		FactoryID:     from.FactoryID,
@@ -155,7 +156,7 @@ func MapCreateSensorDTOToDomain(from CreateSensorRequest) domain.Sensor {
 		CompanyID:           from.CompanyID,
 		Name:                from.Name,
 		Description:         from.Description,
-		DeviceEUI:           from.DeviceEUI,
+		DeviceEUI:           strings.ToLower(from.DeviceEUI),
 		AppKey:              from.AppKey,
 		ChirpstackProfileID: from.ChirpstackProfileID,
 		FactoryID:           from.FactoryID,
