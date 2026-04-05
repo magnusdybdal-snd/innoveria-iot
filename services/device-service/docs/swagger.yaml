@@ -635,6 +635,11 @@ paths:
       - sensor-profiles
   /sensors:
     get:
+      parameters:
+      - description: Production resource
+        in: query
+        name: production_resource_id
+        type: string
       produces:
       - application/json
       responses:

@@ -2,6 +2,9 @@
 package config
 
 import (
+	"fmt"
+	"strconv"
+
 	"innoveria-iot/pkg/env"
 )
 
@@ -10,7 +13,8 @@ type Config struct {
 	Addr string
 
 	MonitorERPHost          string // Monitor ERP host address
-	MonitorERPCompanyNumber string // Monitor ERP company number
+	MonitorERPPort          string // Monitor ERP port
+	MonitorERPCompanyNumber int    // Monitor ERP company number, (this is 1 by default)
 
 	MonitorERPUsername string // Monitor ERP username
 	MonitorERPPassword string // Monitor ERP password
@@ -20,14 +24,43 @@ type Config struct {
 }
 
 // Load reads configuration from environment variables.
-func Load() *Config {
-	return &Config{
-		Addr: ":" + env.Get("PORT", "8080"),
-
-		MonitorERPHost:          env.Get("MONITOR_ERP_HOST", ""),
-		MonitorERPCompanyNumber: env.Get("MONITOR_ERP_COMPANY_NUMBER", ""),
-		MonitorERPUsername:      env.Get("MONITOR_ERP_USERNAME", ""),
-		MonitorERPPassword:      env.Get("MONITOR_ERP_PASSWORD", ""),
-		MonitorERPForceRelogin:  env.GetBool("MONITOR_ERP_FORCE_RELOGIN", false),
+func Load() (*Config, error) {
+	host, err := env.Required("MONITOR_ERP_HOST")
+	if err != nil {
+		return nil, err
 	}
+	monitorPort, err := env.Required("MONITOR_ERP_PORT")
+	if err != nil {
+		return nil, err
+	}
+
+	companyRaw, err := env.Required("MONITOR_ERP_COMPANY_NUMBER")
+	if err != nil {
+		return nil, err
+	}
+
+	companyNumber, err := strconv.Atoi(companyRaw)
+	if err != nil {
+		return nil, fmt.Errorf("invalid MONITOR_ERP_COMPANY_NUMBER: %w", err)
+	}
+
+	username, err := env.Required("MONITOR_ERP_USERNAME")
+	if err != nil {
+		return nil, err
+	}
+
+	password, err := env.Required("MONITOR_ERP_PASSWORD")
+	if err != nil {
+		return nil, err
+	}
+
+	return &Config{
+		Addr:                    ":" + env.Get("PORT", "8080"),
+		MonitorERPHost:          host,
+		MonitorERPPort:          monitorPort,
+		MonitorERPCompanyNumber: companyNumber,
+		MonitorERPUsername:      username,
+		MonitorERPPassword:      password,
+		MonitorERPForceRelogin:  env.GetBool("MONITOR_ERP_FORCE_RELOGIN", false),
+	}, nil
 }

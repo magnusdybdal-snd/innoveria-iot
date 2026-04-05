@@ -1,4 +1,4 @@
-// Package service TODO(@Magnus Dybdal): add proper documentation.
+// Package service implements the business logic layer for the collection service.
 package service
 
 import (
@@ -7,12 +7,12 @@ import (
 	"time"
 )
 
-// MeasurementService TODO(@Magnus Dybdal): add proper documentation.
+// MeasurementService implements domain.MeasurementService.
 type MeasurementService struct {
 	Repo domain.MeasurementRepository
 }
 
-// NewMeasurementService TODO(@Magnus Dybdal): add proper documentation.
+// NewMeasurementService creates a new MeasurementService backed by the given repository.
 func NewMeasurementService(repo domain.MeasurementRepository) *MeasurementService {
 	return &MeasurementService{
 		Repo: repo,
@@ -24,12 +24,17 @@ func (s *MeasurementService) Create(ctx context.Context, measurement domain.Sens
 	return s.Repo.Insert(ctx, measurement, tenantID)
 }
 
-// GetLatest TODO(@Magnus Dybdal): add proper documentation.
+// GetLatest returns the most recent measurement for the given device.
 func (s *MeasurementService) GetLatest(ctx context.Context, deviceEUI string) (domain.SensorMeasurement, error) {
 	return s.Repo.FindLatest(ctx, deviceEUI)
 }
 
-// GetByTimeRange TODO(@Magnus Dybdal): add proper documentation.
+// GetByTimeRange returns all measurements for a device within the given time window.
 func (s *MeasurementService) GetByTimeRange(ctx context.Context, deviceEUI string, from, to time.Time) ([]domain.SensorMeasurement, error) {
 	return s.Repo.FindByTimeRange(ctx, deviceEUI, from, to)
+}
+
+// GetPayloadKeys returns the distinct payload keys seen in recent measurements for the given device.
+func (s *MeasurementService) GetPayloadKeys(ctx context.Context, deviceEUI string) ([]string, error) {
+	return s.Repo.FindPayloadKeys(ctx, deviceEUI)
 }

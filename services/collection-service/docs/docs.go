@@ -15,6 +15,40 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/collection/payload-tags": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "payload tags"
+                ],
+                "summary": "Get payload tags",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "DeviceEUI",
+                        "name": "device_eui",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.PayloadTagsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/company-config": {
             "post": {
                 "consumes": [
@@ -161,6 +195,17 @@ const docTemplate = `{
                 },
                 "tenant_id": {
                     "type": "string"
+                }
+            }
+        },
+        "dto.PayloadTagsResponse": {
+            "type": "object",
+            "properties": {
+                "keys": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         }
