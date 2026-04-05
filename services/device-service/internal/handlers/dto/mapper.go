@@ -1,8 +1,8 @@
 package dto
 
 import (
-	"time"
 	"strings"
+	"time"
 
 	"innoveria-iot/device-service/internal/domain"
 	"innoveria-iot/pkg/ptrutil"
