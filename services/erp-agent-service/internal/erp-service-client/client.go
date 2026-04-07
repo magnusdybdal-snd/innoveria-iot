@@ -32,14 +32,14 @@ func New(baseURL string) *Client {
 	}
 }
 
-func (c *Client) Ingest(ctx context.Context, path Endpoint) error {
+func (c *Client) Post(ctx context.Context, path Endpoint, body any) error {
 	url := c.baseURL + string(path)
 	resp, err := httpclient.DoRaw(
 		c.httpClient,
 		ctx,
 		url,
 		http.MethodPost,
-		nil,
+		body,
 		nil, // TODO: jwt token
 	)
 	if err != nil {

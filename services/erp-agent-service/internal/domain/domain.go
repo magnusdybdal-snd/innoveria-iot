@@ -15,5 +15,5 @@ type MonitorHandler interface {
 }
 
 type ERPIngestClient interface {
-	Ingest(ctx context.Context, path erpserviceclient.Endpoint) error
+	Post(ctx context.Context, path erpserviceclient.Endpoint, body any) error
 }
