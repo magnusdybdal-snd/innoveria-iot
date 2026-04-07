@@ -23,6 +23,9 @@ type Config struct {
 	MonitorERPForceRelogin bool // Should be false; true logs out all active Monitor ERP sessions
 
 	PollingInterval time.Duration
+	CycleTimeout    time.Duration
+	MaxBackoffTime  time.Duration
+	ErpSvcURL       string
 }
 
 // Load reads configuration from environment variables.
@@ -61,6 +64,16 @@ func Load() (*Config, error) {
 		return nil, fmt.Errorf("invalid POLLING_INTERVAL: %w", err)
 	}
 
+	cycleTimeout, err := time.ParseDuration(env.Get("CYCLE_TIMEOUT", "2m"))
+	if err != nil {
+		return nil, fmt.Errorf("invalid CYCLE_TIMEOUT: %w", err)
+	}
+
+	maxBackoffTime, err := time.ParseDuration(env.Get("MAX_BACKOFF_TIME", "5m"))
+	if err != nil {
+		return nil, fmt.Errorf("invalid MAX_BACKOFF_TIME: %w", err)
+	}
+
 	return &Config{
 		Addr:                    ":" + env.Get("PORT", "8080"),
 		MonitorERPHost:          host,
@@ -70,5 +83,8 @@ func Load() (*Config, error) {
 		MonitorERPPassword:      password,
 		MonitorERPForceRelogin:  env.GetBool("MONITOR_ERP_FORCE_RELOGIN", false),
 		PollingInterval:         pollingInterval,
+		CycleTimeout:            cycleTimeout,
+		MaxBackoffTime:          maxBackoffTime,
+		ErpSvcURL:               env.Get("ERP_SERVICE", "http://erp-service:8080"),
 	}, nil
 }

@@ -30,14 +30,14 @@ func (w *Worker) Start(ctx context.Context) {
 	defer ticker.Stop()
 
 	backoff := time.Second
-	running := false
+	running := false // handles duplicated cycles
 
 	for {
 		select {
-		case <-ctx.Done():
+		case <-ctx.Done(): // Handles shutdown
 			slog.Info("worker loop stopped")
 			return
-		case <-ticker.C:
+		case <-ticker.C: // Handle one cycle
 			if running {
 				slog.Warn("previous worker loop still running")
 				continue

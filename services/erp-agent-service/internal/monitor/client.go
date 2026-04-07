@@ -32,8 +32,8 @@ type Client struct {
 	sessionSetAt time.Time
 }
 
-// NewClient is the constructor for the monitor erp client
-func NewClient(cfg config.Config) *Client {
+// New is the constructor for the monitor erp client
+func New(cfg config.Config) *Client {
 	return &Client{
 		host:         cfg.MonitorERPHost,
 		port:         cfg.MonitorERPPort,

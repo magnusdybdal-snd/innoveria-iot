@@ -2,7 +2,8 @@ package domain
 
 import (
 	"context"
-	"time"
+	erpserviceclient "innoveria-iot/erp-agent-service/internal/erp-service-client"
+	"net/url"
 )
 
 type Runner interface {
@@ -10,9 +11,9 @@ type Runner interface {
 }
 
 type MonitorHandler interface {
-	Fetch(ctx context.Context, since time.Time) error
+	Query(ctx context.Context, path string, opts url.Values, out any) error
 }
 
 type ERPIngestClient interface {
-	Post(ctx context.Context, payload any) error
+	Ingest(ctx context.Context, path erpserviceclient.Endpoint) error
 }

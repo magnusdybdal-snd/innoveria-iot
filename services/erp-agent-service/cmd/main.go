@@ -5,7 +5,10 @@ import (
 	"log/slog"
 	"os"
 
-	"innoveria-iot/erp-agent-service/internal/server"
+	"innoveria-iot/erp-agent-service/internal/config"
+	erpserviceclient "innoveria-iot/erp-agent-service/internal/erp-service-client"
+	"innoveria-iot/erp-agent-service/internal/monitor"
+	"innoveria-iot/erp-agent-service/internal/service"
 	"innoveria-iot/pkg/logger"
 )
 
@@ -14,12 +17,14 @@ import (
 // @description An edge service that fetches data from Monitor ERP for external use.
 
 // @host        localhost:8088
-// @BasePath    /api/v1/erp-agent
 func main() {
 	logger.NewLogger("erp-agent-service")
-
-	if err := server.Run(); err != nil {
-		slog.Error("erp-agent-service exited with error", "error", err)
+	cfg, err := config.Load()
+	if err != nil {
+		slog.Error("failed to load enviroment variables", "err", err)
 		os.Exit(1)
 	}
+	erpClient := erpserviceclient.New(cfg.ErpSvcURL)
+	monitorClient := monitor.New(*cfg)
+
 }
