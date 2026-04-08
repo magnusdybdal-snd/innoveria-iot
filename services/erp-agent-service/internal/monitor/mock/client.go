@@ -1,3 +1,4 @@
+// Package mock contains lightweight Monitor client test doubles.
 package mock
 
 import (
