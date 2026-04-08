@@ -1,4 +1,4 @@
-// package worker provides the polling loop to fetch data from monitor erp
+// Package worker runs the polling loop for sync cycles.
 package worker
 
 import (
@@ -8,6 +8,7 @@ import (
 	"time"
 )
 
+// Worker schedules and executes runner cycles with retry backoff.
 type Worker struct {
 	Interval     time.Duration
 	CycleTimeout time.Duration
@@ -16,6 +17,7 @@ type Worker struct {
 	Runner domain.Runner
 }
 
+// New constructs a worker with interval, timeout, and backoff settings.
 func New(interval, cycleTimeout, maxBackoff time.Duration, runner domain.Runner) *Worker {
 	return &Worker{
 		Interval:     interval,
@@ -25,6 +27,7 @@ func New(interval, cycleTimeout, maxBackoff time.Duration, runner domain.Runner)
 	}
 }
 
+// Start starts the polling loop until the context is cancelled.
 func (w *Worker) Start(ctx context.Context) {
 	ticker := time.NewTicker(w.Interval)
 	defer ticker.Stop()

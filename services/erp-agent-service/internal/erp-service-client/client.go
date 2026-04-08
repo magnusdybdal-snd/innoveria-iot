@@ -1,3 +1,4 @@
+// Package erpserviceclient provides a minimal ERP ingest client.
 package erpserviceclient
 
 import (
@@ -7,24 +8,33 @@ import (
 	"innoveria-iot/pkg/httpclient"
 )
 
+// Client posts payloads to ERP service ingest endpoints.
 type Client struct {
 	baseURL    string
 	httpClient *httpclient.Client
 	// apiKey string // TODO: add this when ready
 }
 
-// API endpoints for the erp-svc
+// Endpoint is an ERP service API path.
 type Endpoint string
 
+// ERP service ingest endpoints.
 const (
-	Index           Endpoint = "/api/v1"
-	Svc             Endpoint = Index + "/erp"  // TODO: change this?
-	Ingest          Endpoint = Svc + "/ingest" // Endpoint for agent service
-	Orders          Endpoint = Ingest + "/orders"
+	// Index is the API root prefix.
+	Index Endpoint = "/api/v1"
+	// Svc is the ERP service base route.
+	Svc Endpoint = Index + "/erp" // TODO: change this?
+	// Ingest is the ingest route used by agent services.
+	Ingest Endpoint = Svc + "/ingest"
+	// Orders is the ingest endpoint for manufacturing orders.
+	Orders Endpoint = Ingest + "/orders"
+	// OrderReportings is the ingest endpoint for operation reportings.
 	OrderReportings Endpoint = Ingest + "/order-reportings"
-	Workcenters     Endpoint = Ingest + "/workcenter"
+	// Workcenters is the ingest endpoint for work center master data.
+	Workcenters Endpoint = Ingest + "/workcenter"
 )
 
+// New builds an ERP ingest client for the given base URL.
 func New(baseURL string) *Client {
 	return &Client{
 		baseURL:    baseURL,
@@ -32,6 +42,7 @@ func New(baseURL string) *Client {
 	}
 }
 
+// Post sends a JSON payload to the selected ERP endpoint.
 func (c *Client) Post(ctx context.Context, path Endpoint, body any) error {
 	url := c.baseURL + string(path)
 	resp, err := httpclient.DoRaw(

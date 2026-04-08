@@ -1,4 +1,4 @@
-// Package service
+// Package service orchestrates per-cycle Monitor to ERP sync.
 package service
 
 import (
@@ -12,11 +12,13 @@ import (
 	"innoveria-iot/erp-agent-service/internal/monitor/dto"
 )
 
+// RunnerServiceImpl coordinates endpoint fetches and ERP ingest posts.
 type RunnerServiceImpl struct {
 	monitorClient domain.MonitorHandler
 	erpSvcClient  domain.ERPIngestClient
 }
 
+// New creates a runner service with monitor and ERP clients.
 func New(monitor domain.MonitorHandler, erpSvc domain.ERPIngestClient) *RunnerServiceImpl {
 	return &RunnerServiceImpl{
 		monitorClient: monitor,
@@ -24,6 +26,7 @@ func New(monitor domain.MonitorHandler, erpSvc domain.ERPIngestClient) *RunnerSe
 	}
 }
 
+// RunCycle executes one sync cycle across configured endpoints.
 func (r *RunnerServiceImpl) RunCycle(ctx context.Context) error {
 	if err := getRows[dto.ManufacturingOrderOperation](
 		ctx, r.monitorClient, r.erpSvcClient, monitor.OrderReportings, nil, erpserviceclient.OrderReportings,

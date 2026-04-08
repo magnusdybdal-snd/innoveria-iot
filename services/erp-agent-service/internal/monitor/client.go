@@ -19,13 +19,19 @@ import (
 	"innoveria-iot/pkg/httpclient"
 )
 
+// MonitorERPEndpoint is a relative Monitor ERP API endpoint path.
 type MonitorERPEndpoint string
 
+// Monitor ERP manufacturing endpoints.
 const (
-	Base            MonitorERPEndpoint = "Manufacturing/"
-	Orders          MonitorERPEndpoint = Base + "ManufacturingOrders"
+	// Base is the endpoint prefix for manufacturing resources.
+	Base MonitorERPEndpoint = "Manufacturing/"
+	// Orders fetches manufacturing orders.
+	Orders MonitorERPEndpoint = Base + "ManufacturingOrders"
+	// OrderReportings fetches manufacturing order operation reportings.
 	OrderReportings MonitorERPEndpoint = Base + "ManufacturingOrderOperationReportings"
-	Workcenters     MonitorERPEndpoint = Base + "WorkCenters"
+	// Workcenters fetches available work centers.
+	Workcenters MonitorERPEndpoint = Base + "WorkCenters"
 )
 
 // Client manages Monitor ERP session lifecycle and authenticated API calls.

@@ -1,4 +1,4 @@
-// package main is the main package and entrypoint for the server
+// Package main starts the ERP agent worker process.
 package main
 
 import (
