@@ -28,7 +28,7 @@ func New(monitor domain.MonitorHandler, erpSvc domain.ERPIngestClient) *RunnerSe
 
 // RunCycle executes one sync cycle across configured endpoints.
 func (r *RunnerServiceImpl) RunCycle(ctx context.Context) error {
-	if err := getRows[dto.ManufacturingOrderOperation](
+	if err := getRows[dto.ManufacturingOrderOperationReporting](
 		ctx, r.monitorClient, r.erpSvcClient, monitor.OrderReportings, nil, erpserviceclient.OrderReportings,
 	); err != nil {
 		return err
