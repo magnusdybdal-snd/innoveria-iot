@@ -15,6 +15,7 @@ import (
 type Client struct {
 	mu      sync.Mutex
 	counter int64
+	cycle   int64
 }
 
 // New returns an in-memory Monitor client used only for development/testing.
@@ -36,8 +37,11 @@ func New() *Client {
 // filtering/paging behavior to validate the integration contract.
 func (c *Client) Query(_ context.Context, path monitor.MonitorERPEndpoint, _ url.Values, out any) error {
 	c.mu.Lock()
-	c.counter++
-	tick := c.counter
+	if path == monitor.OrderReportings || c.cycle == 0 {
+		c.counter++
+		c.cycle = c.counter
+	}
+	tick := c.cycle
 	c.mu.Unlock()
 
 	now := time.Now().UTC()
