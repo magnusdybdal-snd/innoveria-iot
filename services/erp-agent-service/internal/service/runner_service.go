@@ -35,7 +35,7 @@ func (r *RunnerServiceImpl) RunCycle(ctx context.Context) error {
 	}
 
 	if err := syncRows[dto.ManufacturingOrderOperation](
-		ctx, r.monitorClient, r.erpSvcClient, monitor.Orders, nil, erpserviceclient.Orders,
+		ctx, r.monitorClient, r.erpSvcClient, monitor.OrderOperations, nil, erpserviceclient.OrderOperations,
 	); err != nil {
 		return err
 	}

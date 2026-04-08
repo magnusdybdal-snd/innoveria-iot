@@ -26,8 +26,8 @@ type MonitorERPEndpoint string
 const (
 	// Base is the endpoint prefix for manufacturing resources.
 	Base MonitorERPEndpoint = "Manufacturing/"
-	// Orders fetches manufacturing orders.
-	Orders MonitorERPEndpoint = Base + "ManufacturingOrders"
+	// Orders fetches manufacturing orders operations.
+	OrderOperations MonitorERPEndpoint = Base + "ManufacturingOrders"
 	// OrderReportings fetches manufacturing order operation reportings.
 	OrderReportings MonitorERPEndpoint = Base + "ManufacturingOrderOperationReportings"
 	// Workcenters fetches available work centers.
