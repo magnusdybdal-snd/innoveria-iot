@@ -9,8 +9,10 @@ import (
 	"syscall"
 
 	"innoveria-iot/erp-agent-service/internal/config"
+	"innoveria-iot/erp-agent-service/internal/domain"
 	erpserviceclient "innoveria-iot/erp-agent-service/internal/erp-service-client"
 	"innoveria-iot/erp-agent-service/internal/monitor"
+	"innoveria-iot/erp-agent-service/internal/monitor/mock"
 	"innoveria-iot/erp-agent-service/internal/service"
 	"innoveria-iot/erp-agent-service/internal/worker"
 	"innoveria-iot/pkg/logger"
@@ -33,7 +35,16 @@ func main() {
 
 	// setting up the clients
 	erpClient := erpserviceclient.New(cfg.ErpSvcURL)
-	monitorClient := monitor.New(*cfg)
+
+	// Check enviroment to decide mock or real monitor erp
+	var monitorClient domain.MonitorHandler
+	if cfg.UseMockMonitor {
+		monitorClient = mock.New()
+		slog.Info("using mock monitor client", "GO_ENV", cfg.GOEnv)
+	} else {
+		monitorClient = monitor.New(*cfg)
+		slog.Info("using monitor ERP client", "GO_ENV", cfg.GOEnv)
+	}
 
 	// starting the runner, runs per cycle
 	runner := service.New(monitorClient, erpClient)

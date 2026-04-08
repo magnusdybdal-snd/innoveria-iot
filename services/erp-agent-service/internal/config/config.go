@@ -11,7 +11,10 @@ import (
 
 // Config holds erp-agent-service runtime configuration.
 type Config struct {
-	Addr string
+	Addr  string
+	GOEnv string
+
+	UseMockMonitor bool
 
 	MonitorERPHost          string // Monitor ERP host address
 	MonitorERPPort          string // Monitor ERP port
@@ -30,33 +33,46 @@ type Config struct {
 
 // Load reads configuration from environment variables.
 func Load() (*Config, error) {
-	host, err := env.Required("MONITOR_ERP_HOST")
-	if err != nil {
-		return nil, err
-	}
-	monitorPort, err := env.Required("MONITOR_ERP_PORT")
-	if err != nil {
-		return nil, err
-	}
+	goEnv := env.Get("GO_ENV", "development")
+	useMockMonitor := env.GetBool("MOCK_MONITOR", goEnv == "development")
 
-	companyRaw, err := env.Required("MONITOR_ERP_COMPANY_NUMBER")
-	if err != nil {
-		return nil, err
+	host := env.Get("MONITOR_ERP_HOST", "")
+	monitorPort := env.Get("MONITOR_ERP_PORT", "")
+	companyRaw := env.Get("MONITOR_ERP_COMPANY_NUMBER", "1")
+	username := env.Get("MONITOR_ERP_USERNAME", "")
+	password := env.Get("MONITOR_ERP_PASSWORD", "")
+
+	if !useMockMonitor {
+		var err error
+		host, err = env.Required("MONITOR_ERP_HOST")
+		if err != nil {
+			return nil, err
+		}
+
+		monitorPort, err = env.Required("MONITOR_ERP_PORT")
+		if err != nil {
+			return nil, err
+		}
+
+		companyRaw, err = env.Required("MONITOR_ERP_COMPANY_NUMBER")
+		if err != nil {
+			return nil, err
+		}
+
+		username, err = env.Required("MONITOR_ERP_USERNAME")
+		if err != nil {
+			return nil, err
+		}
+
+		password, err = env.Required("MONITOR_ERP_PASSWORD")
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	companyNumber, err := strconv.Atoi(companyRaw)
 	if err != nil {
 		return nil, fmt.Errorf("invalid MONITOR_ERP_COMPANY_NUMBER: %w", err)
-	}
-
-	username, err := env.Required("MONITOR_ERP_USERNAME")
-	if err != nil {
-		return nil, err
-	}
-
-	password, err := env.Required("MONITOR_ERP_PASSWORD")
-	if err != nil {
-		return nil, err
 	}
 
 	pollingInterval, err := time.ParseDuration(env.Get("POLLING_INTERVAL", "10m"))
@@ -76,6 +92,8 @@ func Load() (*Config, error) {
 
 	return &Config{
 		Addr:                    ":" + env.Get("PORT", "8080"),
+		GOEnv:                   goEnv,
+		UseMockMonitor:          useMockMonitor,
 		MonitorERPHost:          host,
 		MonitorERPPort:          monitorPort,
 		MonitorERPCompanyNumber: companyNumber,
