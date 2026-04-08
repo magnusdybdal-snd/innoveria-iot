@@ -43,5 +43,10 @@ func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
+	slog.Info("starting up worker",
+		"polling interval", cfg.PollingInterval,
+		"Cycle timeout", cfg.CycleTimeout,
+		"Max backoff time", cfg.MaxBackoffTime,
+	)
 	worker.Start(ctx)
 }

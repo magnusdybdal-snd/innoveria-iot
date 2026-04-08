@@ -19,6 +19,15 @@ import (
 	"innoveria-iot/pkg/httpclient"
 )
 
+type MonitorERPEndpoint string
+
+const (
+	Base            MonitorERPEndpoint = "Manufacturing/"
+	Orders          MonitorERPEndpoint = Base + "ManufacturingOrders"
+	OrderReportings MonitorERPEndpoint = Base + "ManufacturingOrderOperationReportings"
+	Workcenters     MonitorERPEndpoint = Base + "WorkCenters"
+)
+
 // Client manages Monitor ERP session lifecycle and authenticated API calls.
 type Client struct {
 	host, port, lang, company string
@@ -59,8 +68,8 @@ func (c *Client) loginUrl() string {
 }
 
 // apiUrl returns the target endpoint for monitor erp
-func (c *Client) apiUrl(path string) string {
-	return c.base() + "/api/v1/" + path
+func (c *Client) apiUrl(path MonitorERPEndpoint) string {
+	return c.base() + "/api/v1/" + string(path)
 }
 
 // ensureSession will start a new session with monitor erp
@@ -169,7 +178,7 @@ func (c *Client) queryOnce(ctx context.Context, u, sid string, out any) (err err
 //  1. Ensures a session exists.
 //  2. Executes one request.
 //  3. On 401/403, clears the cached session, re-authenticates and retries once.
-func (c *Client) Query(ctx context.Context, path string, opts url.Values, out any) error {
+func (c *Client) Query(ctx context.Context, path MonitorERPEndpoint, opts url.Values, out any) error {
 	if err := c.ensureSession(ctx); err != nil {
 		return err
 	}

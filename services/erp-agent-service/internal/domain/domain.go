@@ -2,8 +2,10 @@ package domain
 
 import (
 	"context"
-	erpserviceclient "innoveria-iot/erp-agent-service/internal/erp-service-client"
 	"net/url"
+
+	erpserviceclient "innoveria-iot/erp-agent-service/internal/erp-service-client"
+	"innoveria-iot/erp-agent-service/internal/monitor"
 )
 
 type Runner interface {
@@ -11,7 +13,7 @@ type Runner interface {
 }
 
 type MonitorHandler interface {
-	Query(ctx context.Context, path string, opts url.Values, out any) error
+	Query(ctx context.Context, path monitor.MonitorERPEndpoint, opts url.Values, out any) error
 }
 
 type ERPIngestClient interface {
