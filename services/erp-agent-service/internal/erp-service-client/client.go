@@ -26,7 +26,7 @@ const (
 	Svc Endpoint = Index + "/erp" // TODO: change this?
 	// Ingest is the ingest route used by agent services.
 	Ingest Endpoint = Svc + "/ingest"
-	// Orders is the ingest endpoint for manufacturing order operations.
+	// OrderOperations is the ingest endpoint for manufacturing order operations.
 	OrderOperations Endpoint = Ingest + "/orders-operations"
 	// OrderReportings is the ingest endpoint for operation reportings.
 	OrderReportings Endpoint = Ingest + "/order-reportings"
