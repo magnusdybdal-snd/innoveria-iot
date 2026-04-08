@@ -64,7 +64,7 @@ func Load() (*Config, error) {
 		return nil, fmt.Errorf("invalid POLLING_INTERVAL: %w", err)
 	}
 
-	cycleTimeout, err := time.ParseDuration(env.Get("CYCLE_TIMEOUT", "1m"))
+	cycleTimeout, err := time.ParseDuration(env.Get("CYCLE_TIMEOUT", "2m"))
 	if err != nil {
 		return nil, fmt.Errorf("invalid CYCLE_TIMEOUT: %w", err)
 	}
