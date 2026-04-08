@@ -2,6 +2,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -28,19 +29,19 @@ func HandleMeasurementsByTimeRange(svc domain.MeasurementService) http.HandlerFu
 		// Check for all query parameters
 		deviceStr := q.Get("device_eui")
 		if deviceStr == "" {
-			json.HandleError(w, http.StatusBadRequest, nil, "device_eui query parameter is required")
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("missing device_eui"), "device_eui query parameter is required")
 			return
 		}
 
 		fromStr := q.Get("from")
 		if fromStr == "" {
-			json.HandleError(w, http.StatusBadRequest, nil, "from query parameter is required")
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("missing from"), "from query parameter is required")
 			return
 		}
 
 		toStr := q.Get("to")
 		if toStr == "" {
-			json.HandleError(w, http.StatusBadRequest, nil, "to query parameter is required")
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("missing to"), "to query parameter is required")
 			return
 		}
 
@@ -59,7 +60,7 @@ func HandleMeasurementsByTimeRange(svc domain.MeasurementService) http.HandlerFu
 
 		// Sanity check: timestamp from must come before timestamp to
 		if !from.Before(to) {
-			json.HandleError(w, http.StatusBadRequest, nil, "timestamp error: from must be before to")
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("from is not before to"), "from must be before to")
 			return
 		}
 

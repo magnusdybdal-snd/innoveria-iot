@@ -190,6 +190,32 @@ func (s *SensorServiceImpl) GetAll(ctx context.Context) ([]domain.Sensor, error)
 	return result, nil
 }
 
+// GetByProductionResourceID  retrieves all sensors attatched to one production resource ID from the database and merges the
+// response with the status from Chirpstack (status and last seen).
+func (s *SensorServiceImpl) GetByProductionResourceID(ctx context.Context, productionResourceID string) ([]domain.Sensor, error) {
+
+	sensors, err := s.sensorRepo.FindByProductionResourceID(ctx, productionResourceID)
+	if err != nil {
+		return nil, fmt.Errorf("get sensors by production resource: %w", err)
+	}
+
+	var result []domain.Sensor
+
+	// Loop over sensors and get their chirpstack status, merge and append response
+	for _, sensor := range sensors {
+		status, err := s.cc.GetOneSensor(ctx, sensor.DeviceEUI)
+		if err != nil {
+			// If no status from Chirpstack, append sensor without status / last seen
+			slog.Warn("failed to fetch sensor from chirpstack", "eui", sensor.DeviceEUI, "error", err)
+			result = append(result, sensor)
+			continue
+		}
+		result = append(result, mappers.MergeSensor(status, sensor))
+	}
+
+	return result, nil
+}
+
 // Delete removes a sensor from Chirpstack and then from the database.
 // If the database delete fails, the sensor is re-created in Chirpstack as a compensating
 // transaction to keep both systems in sync.

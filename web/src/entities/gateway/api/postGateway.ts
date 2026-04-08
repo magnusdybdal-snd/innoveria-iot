@@ -13,5 +13,7 @@ export const postGateway = async (
     company_id: gatewayData.companyId,
     gateway_eui: gatewayData.gatewayEui,
     name: gatewayData.name,
+    factory_id: gatewayData.factoryId,
+    factory_area_id: gatewayData.factoryAreaId,
   });
 };

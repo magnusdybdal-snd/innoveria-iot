@@ -30,6 +30,14 @@ const (
 		ORDER BY created_at ASC
 	`
 
+	// TODO: Add AND company_id = $2 when auth is wired
+	findByProductionResourceIDQuery = `
+		SELECT sensor_id, company_id, device_eui, app_key, name, description, state, factory_id, factory_area_id, production_resource_id, chirpstack_profile_id, created_at, updated_at
+		FROM device.sensor
+		WHERE production_resource_id = $1
+		ORDER BY created_at ASC
+	`
+
 	findSensorByEUIQuery = `
 		SELECT sensor_id, company_id, device_eui, app_key, name, description, state, factory_id, factory_area_id, production_resource_id, chirpstack_profile_id, created_at, updated_at
 		FROM device.sensor
@@ -169,6 +177,50 @@ func (r *SensorRepository) FindAllByCompanyID(ctx context.Context, companyID str
 	}
 
 	// Sanity check if the loop ended due to an error
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("rows error: %w", err)
+	}
+
+	return out, nil
+
+}
+
+// FindByProductionResourceID retrieves sensor by their production resource id. returns an empty slice if no sensors found on that resource.
+func (r *SensorRepository) FindByProductionResourceID(ctx context.Context, productionResourceID string) ([]domain.Sensor, error) {
+
+	rows, err := r.db.Pool.Query(ctx, findByProductionResourceIDQuery, productionResourceID)
+	if err != nil {
+		return nil, fmt.Errorf("find sensors by production resource id: %w", err)
+	}
+	defer rows.Close()
+
+	out := []domain.Sensor{}
+
+	for rows.Next() {
+		var sensor domain.Sensor
+
+		err := rows.Scan(
+			&sensor.Id,
+			&sensor.CompanyID,
+			&sensor.DeviceEUI,
+			&sensor.AppKey,
+			&sensor.Name,
+			&sensor.Description,
+			&sensor.State,
+			&sensor.FactoryID,
+			&sensor.FactoryAreaID,
+			&sensor.ProductionResource,
+			&sensor.ChirpstackProfileID,
+			&sensor.CreatedAt,
+			&sensor.UpdatedAt,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("scan sensor: %w", err)
+		}
+
+		out = append(out, sensor)
+	}
+
 	if err := rows.Err(); err != nil {
 		return nil, fmt.Errorf("rows error: %w", err)
 	}
