@@ -29,46 +29,40 @@ func New(interval, cycleTimeout, maxBackoff time.Duration, runner domain.Runner)
 
 // Start starts the polling loop until the context is cancelled.
 func (w *Worker) Start(ctx context.Context) {
-	ticker := time.NewTicker(w.Interval)
-	defer ticker.Stop()
-
 	backoff := time.Second
-	running := false // handles duplicated cycles
+	nextDelay := time.Duration(0) // run immediately on startup
 
 	for {
+		timer := time.NewTimer(nextDelay)
 		select {
 		case <-ctx.Done(): // Handles shutdown
+			if !timer.Stop() {
+				select {
+				case <-timer.C:
+				default:
+				}
+			}
 			slog.Info("worker loop stopped")
 			return
-		case <-ticker.C: // Handle one cycle
-			if running {
-				slog.Warn("previous worker loop still running")
-				continue
-			}
-			running = true
-			func() {
-				defer func() { running = false }()
-
-				cycleCtx, cancel := context.WithTimeout(ctx, w.CycleTimeout)
-				defer cancel()
-
-				err := w.Runner.RunCycle(cycleCtx)
-				if err != nil {
-					slog.Error("worker loop failed", "err", err, "backoff", backoff)
-					select {
-					case <-ctx.Done():
-						return
-					case <-time.After(backoff):
-					}
-					backoff *= 2
-					if backoff > w.MaxBackoff {
-						backoff = w.MaxBackoff
-					}
-					return
-				}
-				backoff = time.Second
-				slog.Info("woker loop succeeded")
-			}()
+		case <-timer.C: // Handle one cycle
 		}
+
+		cycleCtx, cancel := context.WithTimeout(ctx, w.CycleTimeout)
+		err := w.Runner.RunCycle(cycleCtx)
+		cancel()
+
+		if err != nil {
+			slog.Error("worker loop failed", "err", err, "backoff", backoff)
+			nextDelay = backoff
+			backoff *= 2
+			if backoff > w.MaxBackoff {
+				backoff = w.MaxBackoff
+			}
+			continue
+		}
+
+		slog.Info("woker loop succeeded")
+		backoff = time.Second
+		nextDelay = w.Interval
 	}
 }
