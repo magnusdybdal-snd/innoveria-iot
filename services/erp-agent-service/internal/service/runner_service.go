@@ -28,19 +28,19 @@ func New(monitor domain.MonitorHandler, erpSvc domain.ERPIngestClient) *RunnerSe
 
 // RunCycle executes one sync cycle across configured endpoints.
 func (r *RunnerServiceImpl) RunCycle(ctx context.Context) error {
-	if err := getRows[dto.ManufacturingOrderOperationReporting](
+	if err := syncRows[dto.ManufacturingOrderOperationReporting](
 		ctx, r.monitorClient, r.erpSvcClient, monitor.OrderReportings, nil, erpserviceclient.OrderReportings,
 	); err != nil {
 		return err
 	}
 
-	if err := getRows[dto.ManufacturingOrderOperation](
+	if err := syncRows[dto.ManufacturingOrderOperation](
 		ctx, r.monitorClient, r.erpSvcClient, monitor.Orders, nil, erpserviceclient.Orders,
 	); err != nil {
 		return err
 	}
 
-	if err := getRows[dto.WorkCenter](
+	if err := syncRows[dto.WorkCenter](
 		ctx, r.monitorClient, r.erpSvcClient, monitor.Workcenters, nil, erpserviceclient.Workcenters,
 	); err != nil {
 		return err
@@ -49,7 +49,7 @@ func (r *RunnerServiceImpl) RunCycle(ctx context.Context) error {
 	return nil
 }
 
-func getRows[T any](
+func syncRows[T any](
 	ctx context.Context,
 	monitor domain.MonitorHandler,
 	erpSvc domain.ERPIngestClient,
