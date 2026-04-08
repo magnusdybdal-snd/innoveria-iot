@@ -16,7 +16,7 @@ type Worker struct {
 	Runner domain.Runner
 }
 
-func NewWorker(interval, cycleTimeout, maxBackoff time.Duration, runner domain.Runner) *Worker {
+func New(interval, cycleTimeout, maxBackoff time.Duration, runner domain.Runner) *Worker {
 	return &Worker{
 		Interval:     interval,
 		CycleTimeout: cycleTimeout,

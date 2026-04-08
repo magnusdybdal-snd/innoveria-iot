@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"innoveria-iot/erp-agent-service/internal/domain"
+	erpserviceclient "innoveria-iot/erp-agent-service/internal/erp-service-client"
 	"innoveria-iot/erp-agent-service/internal/monitor/dto"
 )
 
@@ -31,7 +32,7 @@ func (r *RunnerServiceImpl) RunCycle(ctx context.Context) error {
 		return nil
 	}
 
-	if err := r.erpSvcClient.Ingest(ctx, rows); err != nil {
+	if err := r.erpSvcClient.Post(ctx, erpserviceclient.OrderReportings, rows); err != nil {
 		return fmt.Errorf("post to erp-service failed: %w", err)
 	}
 	return nil
