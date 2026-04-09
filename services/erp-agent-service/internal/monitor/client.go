@@ -15,12 +15,13 @@ import (
 	"time"
 
 	"innoveria-iot/erp-agent-service/internal/config"
+	"innoveria-iot/erp-agent-service/internal/domain"
 	"innoveria-iot/erp-agent-service/internal/monitor/dto"
 	"innoveria-iot/pkg/httpclient"
 )
 
 // MonitorERPEndpoint is a relative Monitor ERP API endpoint path.
-type MonitorERPEndpoint string
+type MonitorERPEndpoint = domain.MonitorERPEndpoint
 
 // Monitor ERP manufacturing endpoints.
 const (

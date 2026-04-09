@@ -18,7 +18,7 @@ import (
 	"innoveria-iot/pkg/logger"
 )
 
-// @title       ERP Agent Service API
+// @title       ERP Agent Service
 // @version     1.0
 // @description An edge service that fetches data from Monitor ERP for external use.
 

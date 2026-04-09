@@ -3,8 +3,10 @@ package erpserviceclient
 
 import (
 	"context"
+	"io"
 	"net/http"
 
+	"innoveria-iot/erp-agent-service/internal/domain"
 	"innoveria-iot/pkg/httpclient"
 )
 
@@ -16,7 +18,7 @@ type Client struct {
 }
 
 // Endpoint is an ERP service API path.
-type Endpoint string
+type Endpoint = domain.ERPEndpoint
 
 // ERP service ingest endpoints.
 const (
@@ -57,8 +59,18 @@ func (c *Client) Post(ctx context.Context, path Endpoint, body any) error {
 		return err
 	}
 
-	if err := resp.Body.Close(); err != nil {
-		return err
+	// Drain tcp connection
+	_, copyErr := io.Copy(io.Discard, resp.Body)
+	// Close response body
+	closeErr := resp.Body.Close()
+
+	// handle drain error
+	if copyErr != nil {
+		return copyErr
+	}
+	// handle close response body error
+	if closeErr != nil {
+		return closeErr
 	}
 	return nil
 }
