@@ -16,6 +16,7 @@ import IconButton from "@mui/material/IconButton";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import Typography from "@mui/material/Typography";
+import { toLocalDateTimeString } from "@shared/lib";
 import {
   CHART_TYPE,
   type ChartType,
@@ -31,8 +32,8 @@ const INITIAL_CONFIG: GraphWidgetConfig = {
   title: "",
   deviceEui: "",
   ruleId: "",
-  from: new Date(Date.now() - 60 * 60 * 1000).toISOString().slice(0, 16),
-  to: new Date().toISOString().slice(0, 16),
+  from: toLocalDateTimeString(new Date(Date.now() - 60 * 60 * 1000)),
+  to: toLocalDateTimeString(new Date()),
   bucketValue: "1",
   bucketUnit: "hours",
 };
