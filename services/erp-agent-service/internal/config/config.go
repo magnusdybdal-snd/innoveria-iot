@@ -37,6 +37,10 @@ func Load() (*Config, error) {
 	goEnv := env.Get("GO_ENV", "development")
 	useMockMonitor := env.GetBool("MOCK_MONITOR", goEnv == "development")
 
+	if useMockMonitor && goEnv != "development" {
+		return nil, fmt.Errorf("mock monitor is only allowed in development")
+	}
+
 	host := env.Get("MONITOR_ERP_HOST", "")
 	monitorPort := env.Get("MONITOR_ERP_PORT", "")
 	companyRaw := env.Get("MONITOR_ERP_COMPANY_NUMBER", "1")

@@ -35,10 +35,6 @@ func main() {
 
 	// setting up the clients
 	erpClient := erpserviceclient.New(cfg.ErpSvcURL)
-	if cfg.UseMockMonitor && cfg.GOEnv != "development" {
-		slog.Error("mock monitor is only allowed in development", "GO_ENV", cfg.GOEnv)
-		os.Exit(1)
-	}
 
 	// Check enviroment to decide mock or real monitor erp
 	var monitorClient domain.MonitorHandler
