@@ -46,7 +46,7 @@ func Load() (*Config, error) {
 
 	host := env.Get("MONITOR_ERP_HOST", "")
 	monitorPort := env.Get("MONITOR_ERP_PORT", "")
-	companyRaw := env.Get("MONITOR_ERP_COMPANY_NUMBER", "1")
+	companyRaw := env.Get("MONITOR_ERP_COMPANY_NUMBER", "0")
 	username := env.Get("MONITOR_ERP_USERNAME", "")
 	password := env.Get("MONITOR_ERP_PASSWORD", "")
 
