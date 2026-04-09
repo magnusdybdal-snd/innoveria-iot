@@ -67,7 +67,7 @@ func syncRows[T any](
 	}
 
 	if err := erpSvc.Post(ctx, erpPath, rows); err != nil {
-		return fmt.Errorf("post to erp-service failed (%s): %w", erpPath, err)
+		return fmt.Errorf("request to erp-service failed (%s): %w", erpPath, err)
 	}
 	return nil
 }
