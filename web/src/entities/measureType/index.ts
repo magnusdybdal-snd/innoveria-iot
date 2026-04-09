@@ -1,17 +1,18 @@
 export type {
-  SensorApiResponse,
-  SensorListApiResponse,
-  SensorReadingApiResponse,
-  CreateSensorRequest,
-  SensorProfileApiResponse,
+  MeasureTypeApiResponse,
+  MeasureTypeListApiResponse,
+  CreateMeasureTypeRequest,
 } from "./model/measureTypeSchema.ts";
 export {
   getMeasureTypes,
-  getSensorProfiles,
-  fetchSensorReading,
+  getMeasureTypesAll,
   postMeasureType,
+  deprecateMeasureType,
 } from "./api";
-export { MeasureTypeMainInfo, SensorAllInfoPopUp, SensorsGenInfo } from "./ui";
+export { MeasureTypeInfo } from "./ui";
 export { sortMeasureTypes } from "./lib/sortMeasureTypes.ts";
-export type { SensorSortKey, SortDirection } from "./lib/sortMeasureTypes.ts";
+export type {
+  MeasureTypeSortKey,
+  SortDirection,
+} from "./lib/sortMeasureTypes.ts";
 export { useMeasureTypes } from "./model/useMeasureTypes.ts";

@@ -5,7 +5,6 @@ export type MeasureTypeSortKey =
   | "Default unit"
   | "Description"
   | "Display name"
-  | "Last reading"
   | "Slug";
 
 // Sorting measureTypes based on Key (MeasureTypeSortKey)

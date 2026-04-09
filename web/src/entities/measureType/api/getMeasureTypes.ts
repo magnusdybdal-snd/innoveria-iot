@@ -12,7 +12,7 @@ type RawMeasureType = {
 
 type RawMeasureTypeListApiResponse = {
   total_count: number;
-  measureTypes: RawMeasureType[];
+  measure_types: RawMeasureType[];
 };
 
 /**
@@ -28,7 +28,7 @@ export const getMeasureTypes = async (): Promise<MeasureTypeApiResponse[]> => {
       "GET",
     );
 
-    return (data.measureTypes ?? []).map((s) => ({
+    return (data.measure_types ?? []).map((s) => ({
       defaultUnit: s.default_unit,
       deprecated: s.deprecated,
       description: s.description,

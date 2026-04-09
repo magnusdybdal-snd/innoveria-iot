@@ -1,1 +1,1 @@
-export { MeasureTypeMainInfo } from "./MeasureTypeMainInfo.tsx";
+export { MeasureTypeInfo } from "./MeasureTypeInfo.tsx";

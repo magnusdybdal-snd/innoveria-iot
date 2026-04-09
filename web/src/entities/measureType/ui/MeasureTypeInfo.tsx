@@ -17,17 +17,17 @@ type InfoMainProps = {
   /*Format for single measurement type info*/
 }
 /**
- * Renders the primary measurement type row cells: status indicator, name, last reading, and an action menu.
+ * Renders the primary measurement type row cells: default unit, description, display name, slug, and an action menu.
  * @param root0 - Component props
- * @param root0.defaultUnit - Display name of the measurement type
- * @param root0.deprecated - Numeric status code: 0 = online, 1 = warning, 2 = offline
- * @param root0.description - Timestamp or relative time of the most recent measurement type reading
- * @param root0.displayName - Timestamp or relative time of the most recent measurement type reading
- * @param root0.slug - Timestamp or relative time of the most recent measurement type reading
+ * @param root0.defaultUnit - Unit tied to the measurement type
+ * @param root0.deprecated
+ * @param root0.description - Description explaining the measurements type's function
+ * @param root0.displayName - The displayed name of the measurements type
+ * @param root0.slug - The id of the measurement type
  * @param root0.onDeprecate - Called when the user clicks "Deprecate" to deprecates the measurement type
  * @returns The rendered measurement type row cells
  */
-export function MeasureTypeMainInfo({
+export function MeasureTypeInfo({
   defaultUnit,
   deprecated,
   description,
