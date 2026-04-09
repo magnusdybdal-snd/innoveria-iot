@@ -31,6 +31,17 @@ type InfoAllProps = {
   senProf: string;
 };
 
+/**
+ * Renders a single row of sensor metadata fields for display inside the info dialog.
+ * @param props - Component props
+ * @param props.name - Human-readable sensor name
+ * @param props.status - Numeric status code: 0 = online, 1 = warning, 2 = offline
+ * @param props.sensorEui - LoRaWAN DevEUI identifier
+ * @param props.machine - Name of the machine the sensor is attached to
+ * @param props.lastReading - ISO timestamp of the most recent reading
+ * @param props.senProf - Sensor profile ID
+ * @returns A fragment of MUI Typography elements and a status indicator icon
+ */
 function SensorAllInfo({
   name,
   status,
