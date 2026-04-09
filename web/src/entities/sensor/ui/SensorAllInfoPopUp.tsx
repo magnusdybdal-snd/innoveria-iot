@@ -136,8 +136,10 @@ export function SensorAllInfoPopUp(props: AddDeviceProps) {
             />
           </DeviceRow>
         </CategoryHeader>
-
-        {reading && (
+        {/* Show latest reading if available, otherwise show a message indicating no data */}
+        {reading &&
+        reading.payload &&
+        Object.keys(reading.payload).length > 0 ? (
           <>
             <Typography
               sx={{ color: "primary.main", mt: 3, mb: 1, fontWeight: "bold" }}
@@ -161,11 +163,11 @@ export function SensorAllInfoPopUp(props: AddDeviceProps) {
               </DeviceRow>
             </CategoryHeader>
           </>
-        )}
-
-        {reading === null && (
+        ) : (
+          // Show message when no reading data is available
           <Typography sx={{ mt: 2, opacity: 0.5, color: "primary.main" }}>
-            No reading available
+            No sensor data available — device may need configuration or is
+            waiting for its first reading.
           </Typography>
         )}
       </DialogContent>
