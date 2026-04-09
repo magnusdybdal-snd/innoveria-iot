@@ -141,9 +141,9 @@ export function GraphWidgetSettings({
             disabled={draft.useCurrentTime}
           />
 
-          {/* Use current time checkbox — full width */}
+          {/* Use current time checkbox — under To field */}
           <FormControlLabel
-            sx={{ gridColumn: "1 / -1" }}
+            sx={{ gridColumn: "2" }}
             control={
               <Checkbox
                 size="small"
