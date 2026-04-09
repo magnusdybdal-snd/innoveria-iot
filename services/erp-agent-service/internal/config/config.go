@@ -3,6 +3,7 @@ package config
 
 import (
 	"fmt"
+	"log/slog"
 	"strconv"
 	"time"
 
@@ -74,6 +75,13 @@ func Load() (*Config, error) {
 		return nil, fmt.Errorf("invalid MAX_BACKOFF_TIME: %w", err)
 	}
 
+	const defaultERPSvcURL = "http://erp-service:8080"
+	erpSvcURL := env.Get("ERP_SERVICE", "")
+	if erpSvcURL == "" {
+		erpSvcURL = defaultERPSvcURL
+		slog.Warn("ERP_SERVICE is not set; using default ERP service URL", "erp_service_url", erpSvcURL)
+	}
+
 	return &Config{
 		Addr:                    ":" + env.Get("PORT", "8080"),
 		MonitorERPHost:          host,
@@ -85,6 +93,6 @@ func Load() (*Config, error) {
 		PollingInterval:         pollingInterval,
 		CycleTimeout:            cycleTimeout,
 		MaxBackoffTime:          maxBackoffTime,
-		ErpSvcURL:               env.Get("ERP_SERVICE", "http://erp-service:8080"),
+		ErpSvcURL:               erpSvcURL,
 	}, nil
 }
