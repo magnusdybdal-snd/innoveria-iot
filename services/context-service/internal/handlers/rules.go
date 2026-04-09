@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/google/uuid"
 	"innoveria-iot/context-service/internal/domain"
 	"innoveria-iot/context-service/internal/handlers/dto"
 	"innoveria-iot/pkg/json"
+
+	"github.com/google/uuid"
 )
 
 // GetRules retrieves all aggregation rules for a given company ID.
@@ -126,5 +127,41 @@ func CreateRule(svc domain.RuleService) http.HandlerFunc {
 		if err := json.Encode(w, http.StatusCreated, ruleID); err != nil {
 			json.HandleError(w, http.StatusInternalServerError, err, "failed to encode response")
 		}
+	}
+}
+
+// DeleteRule deletes an aggregation rule by its ID.
+//
+// @Summary 		Delete Aggregation Rule
+// @Tags 			context
+// @Param 			rule_id query string true "Rule ID"
+// @Success 		204
+// @Failure 		400
+// @Failure 		404
+// @Failure 		500
+// @Router 			/rules/{rule_id} [delete]
+func DeleteRule(svc domain.RuleService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		ruleID := r.PathValue("id")
+
+		if ruleID == "" {
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("missing rule_id query parameter"), "rule_id is required")
+			return
+		}
+		if _, err := uuid.Parse(ruleID); err != nil {
+			json.HandleError(w, http.StatusBadRequest, err, "invalid rule_id (uuid)")
+			return
+		}
+		if err := svc.DeleteRule(ctx, ruleID); err != nil {
+			switch {
+			case errors.Is(err, domain.ErrNotFound):
+				json.HandleError(w, http.StatusNotFound, err, "rule not found")
+			default:
+				json.HandleError(w, http.StatusInternalServerError, err, "failed to delete rule")
+			}
+			return
+		}
+		w.WriteHeader(http.StatusNoContent)
 	}
 }

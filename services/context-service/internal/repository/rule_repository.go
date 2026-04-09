@@ -32,6 +32,10 @@ const (
 	VALUES ($1, $2, $3, $4, $5, $6, $7)
 	RETURNING rule_id
 `
+	deleteRule = `
+	DELETE FROM context.aggregation_rule
+	WHERE rule_id = $1
+`
 )
 
 // RuleRepository provides methods to interact with the aggregation_rule table in the database.
@@ -126,4 +130,17 @@ func (r *RuleRepository) Create(ctx context.Context, rule domain.AggregationRule
 		return "", err
 	}
 	return ruleID, nil
+}
+
+// DeleteByID deletes an aggregation rule from the database by its ID.
+// Returns domain.ErrNotFound if no rule exists with that ID.
+func (r *RuleRepository) DeleteByID(ctx context.Context, ruleID string) error {
+	cmdTag, err := r.db.Pool.Exec(ctx, deleteRule, ruleID)
+	if err != nil {
+		return fmt.Errorf("rule repo DeleteByID: %w: %w", domain.ErrDatabase, err)
+	}
+	if cmdTag.RowsAffected() == 0 {
+		return domain.ErrNotFound
+	}
+	return nil
 }

@@ -15,6 +15,7 @@ import (
 type mockRuleService struct {
 	createRuleFunc func(ctx context.Context, rule domain.AggregationRule) (string, error)
 	getRulesFunc   func(ctx context.Context, companyID string) ([]domain.AggregationRule, error)
+	deleteRuleFunc func(ctx context.Context, ruleID string) error
 }
 
 func (m *mockRuleService) CreateRule(ctx context.Context, rule domain.AggregationRule) (string, error) {
@@ -23,6 +24,10 @@ func (m *mockRuleService) CreateRule(ctx context.Context, rule domain.Aggregatio
 
 func (m *mockRuleService) GetRules(ctx context.Context, companyID string) ([]domain.AggregationRule, error) {
 	return m.getRulesFunc(ctx, companyID)
+}
+
+func (m *mockRuleService) DeleteRule(ctx context.Context, ruleID string) error {
+	return m.deleteRuleFunc(ctx, ruleID)
 }
 
 const validRuleBody = `{
@@ -220,6 +225,96 @@ func TestCreateRule_ServiceError_Returns500(t *testing.T) {
 	rec := httptest.NewRecorder()
 
 	handlers.CreateRule(svc).ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusInternalServerError {
+		t.Errorf("expected 500, got %d", rec.Code)
+	}
+}
+
+// Tests of DELETE handler for aggregation rules.
+
+const validRuleID = "b1111111-0000-0000-0000-000000000001"
+
+// TestDeleteRule_Success_Returns204 verifies that a valid rule ID returns 204 No Content.
+func TestDeleteRule_Success_Returns204(t *testing.T) {
+	svc := &mockRuleService{
+		deleteRuleFunc: func(_ context.Context, _ string) error {
+			return nil
+		},
+	}
+
+	req := httptest.NewRequest(http.MethodDelete, "/api/v1/context/rules/"+validRuleID, nil)
+	req.SetPathValue("id", validRuleID)
+	rec := httptest.NewRecorder()
+
+	handlers.DeleteRule(svc).ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusNoContent {
+		t.Errorf("expected 204, got %d", rec.Code)
+	}
+}
+
+// TestDeleteRule_MissingID_Returns400 verifies that a missing rule ID path value returns 400 Bad Request.
+func TestDeleteRule_MissingID_Returns400(t *testing.T) {
+	svc := &mockRuleService{}
+
+	req := httptest.NewRequest(http.MethodDelete, "/api/v1/context/rules/", nil)
+	rec := httptest.NewRecorder()
+
+	handlers.DeleteRule(svc).ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("expected 400, got %d", rec.Code)
+	}
+}
+
+// TestDeleteRule_InvalidUUID_Returns400 verifies that a non-UUID rule ID returns 400 Bad Request.
+func TestDeleteRule_InvalidUUID_Returns400(t *testing.T) {
+	svc := &mockRuleService{}
+
+	req := httptest.NewRequest(http.MethodDelete, "/api/v1/context/rules/not-a-uuid", nil)
+	req.SetPathValue("id", "not-a-uuid")
+	rec := httptest.NewRecorder()
+
+	handlers.DeleteRule(svc).ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("expected 400, got %d", rec.Code)
+	}
+}
+
+// TestDeleteRule_NotFound_Returns404 verifies that a non-existent rule ID returns 404 Not Found.
+func TestDeleteRule_NotFound_Returns404(t *testing.T) {
+	svc := &mockRuleService{
+		deleteRuleFunc: func(_ context.Context, _ string) error {
+			return domain.ErrNotFound
+		},
+	}
+
+	req := httptest.NewRequest(http.MethodDelete, "/api/v1/context/rules/"+validRuleID, nil)
+	req.SetPathValue("id", validRuleID)
+	rec := httptest.NewRecorder()
+
+	handlers.DeleteRule(svc).ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusNotFound {
+		t.Errorf("expected 404, got %d", rec.Code)
+	}
+}
+
+// TestDeleteRule_ServiceError_Returns500 verifies that an unexpected service error returns 500 Internal Server Error.
+func TestDeleteRule_ServiceError_Returns500(t *testing.T) {
+	svc := &mockRuleService{
+		deleteRuleFunc: func(_ context.Context, _ string) error {
+			return errors.New("db error")
+		},
+	}
+
+	req := httptest.NewRequest(http.MethodDelete, "/api/v1/context/rules/"+validRuleID, nil)
+	req.SetPathValue("id", validRuleID)
+	rec := httptest.NewRecorder()
+
+	handlers.DeleteRule(svc).ServeHTTP(rec, req)
 
 	if rec.Code != http.StatusInternalServerError {
 		t.Errorf("expected 500, got %d", rec.Code)
