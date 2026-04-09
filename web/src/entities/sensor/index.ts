@@ -13,5 +13,6 @@ export {
 } from "./api";
 export { SensorMainInfo, SensorAllInfoPopUp, SensorsGenInfo } from "./ui";
 export { sortSensors } from "./lib/sortSensors";
+export { hasPayloadData } from "./lib/hasPayloadData";
 export type { SensorSortKey, SortDirection } from "./lib/sortSensors";
 export { useSensors } from "./model/useSensors";
