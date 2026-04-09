@@ -34,7 +34,10 @@ type Config struct {
 
 // Load reads configuration from environment variables.
 func Load() (*Config, error) {
-	goEnv := env.Get("GO_ENV", "development")
+	goEnv, err := env.Required("GO_ENV")
+	if err != nil {
+		return nil, err
+	}
 	useMockMonitor := env.GetBool("MOCK_MONITOR", goEnv == "development")
 
 	if useMockMonitor && goEnv != "development" {
