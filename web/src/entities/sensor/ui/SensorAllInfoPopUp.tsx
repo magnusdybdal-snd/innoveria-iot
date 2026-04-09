@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { fetchSensorReading } from "@entities/sensor/api";
+import { hasPayloadData } from "@entities/sensor/lib/hasPayloadData";
 import type {
   SensorApiResponse,
   SensorReadingApiResponse,
@@ -136,10 +137,7 @@ export function SensorAllInfoPopUp(props: AddDeviceProps) {
             />
           </DeviceRow>
         </CategoryHeader>
-        {/* Show latest reading if available, otherwise show a message indicating no data */}
-        {reading &&
-        reading.payload &&
-        Object.keys(reading.payload).length > 0 ? (
+        {hasPayloadData(reading) ? (
           <>
             <Typography
               sx={{ color: "primary.main", mt: 3, mb: 1, fontWeight: "bold" }}
