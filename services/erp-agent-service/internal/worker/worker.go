@@ -49,7 +49,7 @@ func (w *Worker) Start(ctx context.Context) {
 
 		cycleCtx, cancel := context.WithTimeout(ctx, w.cycleTimeout)
 		err := w.runner.RunCycle(cycleCtx)
-		cancel()
+		defer cancel()
 
 		if err != nil {
 			slog.Error("worker loop failed", "err", err, "backoff", backoff)
