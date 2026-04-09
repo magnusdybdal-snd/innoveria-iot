@@ -3,7 +3,7 @@ import Typography from "@mui/material/Typography";
 
 interface RuleRowProps {
   rule: AggregationRule;
-  onDelete?: (id: string) => void;
+  onDelete?: (id: string) => void; // TODO: wire up delete button once DELETE /v1/context/rules/:id endpoint is implemented
 }
 
 /**
