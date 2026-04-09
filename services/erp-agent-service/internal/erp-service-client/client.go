@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 
+	"innoveria-iot/erp-agent-service/internal/domain"
 	"innoveria-iot/pkg/httpclient"
 )
 
@@ -17,7 +18,7 @@ type Client struct {
 }
 
 // Endpoint is an ERP service API path.
-type Endpoint string
+type Endpoint = domain.ERPEndpoint
 
 // ERP service ingest endpoints.
 const (
