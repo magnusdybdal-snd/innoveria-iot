@@ -25,7 +25,9 @@ type Client struct {
 // because this mock exists to keep the poll -> ingest flow running when the
 // external Monitor ERP dependency is unavailable.
 func New() *Client {
-	return &Client{}
+	return &Client{
+		cycle: 1,
+	}
 }
 
 // Query mimics Monitor endpoint responses with small deterministic payloads.
@@ -38,7 +40,7 @@ func New() *Client {
 // filtering/paging behavior to validate the integration contract.
 func (c *Client) Query(_ context.Context, path monitor.MonitorERPEndpoint, _ url.Values, out any) error {
 	c.mu.Lock()
-	if path == monitor.OrderReportings || c.cycle == 0 {
+	if path == monitor.OrderReportings {
 		c.counter++
 		c.cycle = c.counter
 	}
