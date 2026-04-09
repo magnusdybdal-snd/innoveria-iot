@@ -202,6 +202,7 @@ export function GraphWidgetSettings({
         <Button
           size="small"
           variant="contained"
+          sx={{ "&:hover": { backgroundColor: "primary.main" } }}
           onClick={() => onConfirm(draft)}
         >
           Confirm
