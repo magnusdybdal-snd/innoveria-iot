@@ -3,7 +3,9 @@ package config
 
 import (
 	"fmt"
+	"log/slog"
 	"strconv"
+	"time"
 
 	"innoveria-iot/pkg/env"
 )
@@ -20,7 +22,11 @@ type Config struct {
 	MonitorERPPassword string // Monitor ERP password
 
 	MonitorERPForceRelogin bool // Should be false; true logs out all active Monitor ERP sessions
-	// EnableSwagger bool
+
+	PollingInterval time.Duration
+	CycleTimeout    time.Duration
+	MaxBackoffTime  time.Duration
+	ErpSvcURL       string
 }
 
 // Load reads configuration from environment variables.
@@ -54,6 +60,28 @@ func Load() (*Config, error) {
 		return nil, err
 	}
 
+	pollingInterval, err := time.ParseDuration(env.Get("POLLING_INTERVAL", "10m"))
+	if err != nil {
+		return nil, fmt.Errorf("invalid POLLING_INTERVAL: %w", err)
+	}
+
+	cycleTimeout, err := time.ParseDuration(env.Get("CYCLE_TIMEOUT", "2m"))
+	if err != nil {
+		return nil, fmt.Errorf("invalid CYCLE_TIMEOUT: %w", err)
+	}
+
+	maxBackoffTime, err := time.ParseDuration(env.Get("MAX_BACKOFF_TIME", "5m"))
+	if err != nil {
+		return nil, fmt.Errorf("invalid MAX_BACKOFF_TIME: %w", err)
+	}
+
+	const defaultERPSvcURL = "http://erp-service:8080"
+	erpSvcURL := env.Get("ERP_SERVICE", "")
+	if erpSvcURL == "" {
+		erpSvcURL = defaultERPSvcURL
+		slog.Warn("ERP_SERVICE is not set; using default ERP service URL", "erp_service_url", erpSvcURL)
+	}
+
 	return &Config{
 		Addr:                    ":" + env.Get("PORT", "8080"),
 		MonitorERPHost:          host,
@@ -62,5 +90,9 @@ func Load() (*Config, error) {
 		MonitorERPUsername:      username,
 		MonitorERPPassword:      password,
 		MonitorERPForceRelogin:  env.GetBool("MONITOR_ERP_FORCE_RELOGIN", false),
+		PollingInterval:         pollingInterval,
+		CycleTimeout:            cycleTimeout,
+		MaxBackoffTime:          maxBackoffTime,
+		ErpSvcURL:               erpSvcURL,
 	}, nil
 }

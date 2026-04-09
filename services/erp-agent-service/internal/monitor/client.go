@@ -15,8 +15,24 @@ import (
 	"time"
 
 	"innoveria-iot/erp-agent-service/internal/config"
+	"innoveria-iot/erp-agent-service/internal/domain"
 	"innoveria-iot/erp-agent-service/internal/monitor/dto"
 	"innoveria-iot/pkg/httpclient"
+)
+
+// MonitorERPEndpoint is a relative Monitor ERP API endpoint path.
+type MonitorERPEndpoint = domain.MonitorERPEndpoint
+
+// Monitor ERP manufacturing endpoints.
+const (
+	// Base is the endpoint prefix for manufacturing resources.
+	Base MonitorERPEndpoint = "Manufacturing/"
+	// OrderOperations fetches manufacturing orders operations.
+	OrderOperations MonitorERPEndpoint = Base + "ManufacturingOrders"
+	// OrderReportings fetches manufacturing order operation reportings.
+	OrderReportings MonitorERPEndpoint = Base + "ManufacturingOrderOperationReportings"
+	// Workcenters fetches available work centers.
+	Workcenters MonitorERPEndpoint = Base + "WorkCenters"
 )
 
 // Client manages Monitor ERP session lifecycle and authenticated API calls.
@@ -32,8 +48,8 @@ type Client struct {
 	sessionSetAt time.Time
 }
 
-// NewClient is the constructor for the monitor erp client
-func NewClient(cfg config.Config) *Client {
+// New is the constructor for the monitor erp client
+func New(cfg config.Config) *Client {
 	return &Client{
 		host:         cfg.MonitorERPHost,
 		port:         cfg.MonitorERPPort,
@@ -59,8 +75,8 @@ func (c *Client) loginUrl() string {
 }
 
 // apiUrl returns the target endpoint for monitor erp
-func (c *Client) apiUrl(path string) string {
-	return c.base() + "/api/v1/" + path
+func (c *Client) apiUrl(path MonitorERPEndpoint) string {
+	return c.base() + "/api/v1/" + string(path)
 }
 
 // ensureSession will start a new session with monitor erp
@@ -169,7 +185,7 @@ func (c *Client) queryOnce(ctx context.Context, u, sid string, out any) (err err
 //  1. Ensures a session exists.
 //  2. Executes one request.
 //  3. On 401/403, clears the cached session, re-authenticates and retries once.
-func (c *Client) Query(ctx context.Context, path string, opts url.Values, out any) error {
+func (c *Client) Query(ctx context.Context, path MonitorERPEndpoint, opts url.Values, out any) error {
 	if err := c.ensureSession(ctx); err != nil {
 		return err
 	}
