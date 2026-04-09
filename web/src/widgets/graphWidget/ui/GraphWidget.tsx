@@ -34,6 +34,7 @@ const INITIAL_CONFIG: GraphWidgetConfig = {
   ruleId: "",
   from: toLocalDateTimeString(new Date(Date.now() - 60 * 60 * 1000)),
   to: toLocalDateTimeString(new Date()),
+  useCurrentTime: true,
   bucketValue: "1",
   bucketUnit: "hours",
 };
@@ -122,9 +123,12 @@ export function GraphWidget({ defaultConfig, onDelete }: GraphWidgetProps) {
   };
 
   const handleSettingsConfirm = (newConfig: GraphWidgetConfig) => {
-    setConfig(newConfig);
+    const resolved = newConfig.useCurrentTime
+      ? { ...newConfig, to: toLocalDateTimeString(new Date()) }
+      : newConfig;
+    setConfig(resolved);
     setSettingsOpen(false);
-    fetchData(newConfig);
+    fetchData(resolved);
   };
 
   const isConfigured = Boolean(config.deviceEui && config.ruleId);
