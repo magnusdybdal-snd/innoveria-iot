@@ -10,20 +10,20 @@ import (
 
 // Worker schedules and executes runner cycles with retry backoff.
 type Worker struct {
-	Interval     time.Duration
-	CycleTimeout time.Duration
-	MaxBackoff   time.Duration
+	interval     time.Duration
+	cycleTimeout time.Duration
+	maxBackoff   time.Duration
 
-	Runner domain.Runner
+	runner domain.Runner
 }
 
 // New constructs a worker with interval, timeout, and backoff settings.
 func New(interval, cycleTimeout, maxBackoff time.Duration, runner domain.Runner) *Worker {
 	return &Worker{
-		Interval:     interval,
-		CycleTimeout: cycleTimeout,
-		MaxBackoff:   maxBackoff,
-		Runner:       runner,
+		interval:     interval,
+		cycleTimeout: cycleTimeout,
+		maxBackoff:   maxBackoff,
+		runner:       runner,
 	}
 }
 
@@ -47,22 +47,22 @@ func (w *Worker) Start(ctx context.Context) {
 		case <-timer.C: // Handle one cycle
 		}
 
-		cycleCtx, cancel := context.WithTimeout(ctx, w.CycleTimeout)
-		err := w.Runner.RunCycle(cycleCtx)
+		cycleCtx, cancel := context.WithTimeout(ctx, w.cycleTimeout)
+		err := w.runner.RunCycle(cycleCtx)
 		cancel()
 
 		if err != nil {
 			slog.Error("worker loop failed", "err", err, "backoff", backoff)
 			nextDelay = backoff
 			backoff *= 2
-			if backoff > w.MaxBackoff {
-				backoff = w.MaxBackoff
+			if backoff > w.maxBackoff {
+				backoff = w.maxBackoff
 			}
 			continue
 		}
 
 		slog.Info("woker loop succeeded")
 		backoff = time.Second
-		nextDelay = w.Interval
+		nextDelay = w.interval
 	}
 }
