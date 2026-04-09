@@ -6,7 +6,6 @@ import { DeleteConfirmation } from "@shared/ui/DeleteConfirmation";
 
 type InfoMainProps = {
   defaultUnit: string;
-  deprecated: boolean;
   description: string;
   displayName: string;
   slug: string;
@@ -20,7 +19,6 @@ type InfoMainProps = {
  * Renders the primary measurement type row cells: default unit, description, display name, slug, and an action menu.
  * @param root0 - Component props
  * @param root0.defaultUnit - Unit tied to the measurement type
- * @param root0.deprecated
  * @param root0.description - Description explaining the measurements type's function
  * @param root0.displayName - The displayed name of the measurements type
  * @param root0.slug - The id of the measurement type
@@ -29,7 +27,6 @@ type InfoMainProps = {
  */
 export function MeasureTypeInfo({
   defaultUnit,
-  deprecated,
   description,
   displayName,
   slug,
@@ -52,7 +49,6 @@ export function MeasureTypeInfo({
       <Typography>{displayName}</Typography>
       <Typography>{description}</Typography>
       <Typography>{defaultUnit}</Typography>
-      <Typography>{deprecated}</Typography>
       <ActionMenu items={menuItems} />
       <DeleteConfirmation
         open={deprecateOpen}

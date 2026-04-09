@@ -8,7 +8,7 @@ import { API_ROUTES } from "@/shared/api/routes";
  */
 export const deprecateMeasureType = async (slug: string): Promise<boolean> => {
   try {
-    const response = await serviceClient.delete(
+    const response = await serviceClient.patch(
       `${API_ROUTES.measureTypes}/${encodeURIComponent(slug)}/deprecate`,
     );
     return response.status === 204;

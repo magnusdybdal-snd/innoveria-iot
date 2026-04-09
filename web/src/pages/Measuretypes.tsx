@@ -29,14 +29,12 @@ const measureTypeDetails: string[] = [
   "Display name",
   "Description",
   "Default unit",
-  "Deprecated",
 ];
 
 const sortableColumns: MeasureTypeSortKey[] = [
   "Slug",
   "Display name",
   "Description",
-  "Default unit",
 ];
 
 /**
@@ -148,10 +146,9 @@ export default function MeasureTypes() {
           {isLoading && <p>Loading...</p>}
           {/*TODO: make a better looking loading indicator */}
           {sorted.map((measureType) => (
-            <DeviceRow key={measureType.slug}>
+            <DeviceRow key={measureType.slug} greyed={measureType.deprecated}>
               <MeasureTypeInfo
                 defaultUnit={measureType.defaultUnit}
-                deprecated={measureType.deprecated}
                 description={measureType.description}
                 displayName={measureType.displayName}
                 slug={measureType.slug}
