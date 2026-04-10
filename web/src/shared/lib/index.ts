@@ -1,1 +1,5 @@
-export { formatTimestamp, formatReading } from "./formatters";
+export {
+  formatTimestamp,
+  formatReading,
+  toLocalDateTimeString,
+} from "./formatters";
