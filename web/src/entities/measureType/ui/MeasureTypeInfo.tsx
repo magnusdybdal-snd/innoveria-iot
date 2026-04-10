@@ -1,7 +1,7 @@
 import { useState } from "react";
 
+import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import { ActionMenu } from "@shared/ui/actionMenu";
 import { DeleteConfirmation } from "@shared/ui/DeleteConfirmation";
 
 type InfoMainProps = {
@@ -38,18 +38,27 @@ export function MeasureTypeInfo({
     onDeprecate();
     setDeprecateOpen(false);
   };
-
-  const menuItems = [
-    { label: "Deprecate", onClick: () => setDeprecateOpen(true) },
-  ];
-
   return (
     <>
       <Typography>{slug}</Typography>
       <Typography>{displayName}</Typography>
       <Typography>{description}</Typography>
       <Typography>{defaultUnit}</Typography>
-      <ActionMenu items={menuItems} />
+      <Button
+        variant="outlined"
+        sx={{
+          backgroundColor: "primary.main",
+          color: "primary.dark",
+          "&:hover": { backgroundColor: "primary.main" },
+          borderRadius: 2,
+          textTransform: "none",
+          fontSize: 15,
+          width: "fit-content",
+        }}
+        onClick={() => setDeprecateOpen(true)}
+      >
+        Deprecate
+      </Button>
       <DeleteConfirmation
         open={deprecateOpen}
         onClose={() => setDeprecateOpen(false)}
