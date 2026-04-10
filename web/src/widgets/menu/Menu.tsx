@@ -269,6 +269,7 @@ export default function Menu(menuProps: MenuProps) {
               color: "white",
               "&:hover": {
                 backgroundColor: "secondary.dark",
+                color: "white",
               },
               borderRadius: 2,
               margin: 0,

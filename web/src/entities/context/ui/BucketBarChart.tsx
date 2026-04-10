@@ -30,7 +30,7 @@ export function BucketBarChart({ buckets, unit }: BucketBarChartProps) {
         { scaleType: "band", data: labels, tickLabelStyle: { fontSize: 11 } },
       ]}
       yAxis={[{ label: unit }]}
-      series={[{ data: values, color: "#90caf9" }]}
+      series={[{ data: values, color: "#fe8019" }]}
       height={300}
     />
   );

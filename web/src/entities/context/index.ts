@@ -6,10 +6,5 @@ export type {
   AggregationRule,
 } from "./model/contextSchema";
 export { getContextData, getRules } from "./api";
-export {
-  BucketIntervalField,
-  ContextResultDisplay,
-  DateTimeField,
-  LabeledSelect,
-} from "./ui";
+export { BucketBarChart, BucketLineChart } from "./ui";
 export { toMinutes, BUCKET_UNIT_OPTIONS } from "./lib";
