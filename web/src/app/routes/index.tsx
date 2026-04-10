@@ -8,6 +8,7 @@ import { Route, Routes } from "react-router";
 
 import Context from "@/pages/Context";
 import Factories from "@/pages/Factories";
+import Rules from "@/pages/Rules";
 import StatusPage from "@/pages/StatusPage";
 
 import Layout from "./Layout";
@@ -24,6 +25,7 @@ export default function AppRoutes() {
         <Route path="/" element={<Home />} />
         <Route path="/Dashboard" element={<Dashboard />} />
         <Route path="/Dashboard/Context" element={<Context />} />
+        <Route path="/Admin/Rules" element={<Rules />} />
         <Route path="/Devices/Sensors" element={<Sensors />} />
         <Route path="/Devices/Gateways" element={<Gateways />} />
         <Route path="/Reports" element={<Home />} />
