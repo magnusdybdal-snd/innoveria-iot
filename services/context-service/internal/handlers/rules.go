@@ -134,7 +134,7 @@ func CreateRule(svc domain.RuleService) http.HandlerFunc {
 //
 // @Summary 		Delete Aggregation Rule
 // @Tags 			context
-// @Param 			rule_id query string true "Rule ID"
+// @Param 			id path string true "id"
 // @Success 		204
 // @Failure 		400
 // @Failure 		404
@@ -146,7 +146,7 @@ func DeleteRule(svc domain.RuleService) http.HandlerFunc {
 		ruleID := r.PathValue("id")
 
 		if ruleID == "" {
-			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("missing rule_id query parameter"), "rule_id is required")
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("missing rule_id path parameter"), "rule_id is required")
 			return
 		}
 		if _, err := uuid.Parse(ruleID); err != nil {
