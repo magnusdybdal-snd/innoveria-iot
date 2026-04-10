@@ -69,6 +69,7 @@ export function MeasureTypeInfo({
         open={deprecateOpen}
         onClose={() => setDeprecateOpen(false)}
         onConfirm={handleDeprecateConfirm}
+        action="Deprecate"
       />
     </>
   );
