@@ -30,7 +30,7 @@ export function BucketLineChart({ buckets, unit }: BucketLineChartProps) {
         { scaleType: "band", data: labels, tickLabelStyle: { fontSize: 11 } },
       ]}
       yAxis={[{ label: unit }]}
-      series={[{ data: values, color: "#90caf9", area: true, showMark: false }]}
+      series={[{ data: values, color: "#fe8019", area: true, showMark: false }]}
       height={300}
     />
   );
