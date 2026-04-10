@@ -99,9 +99,18 @@ export function AddEntityDialog({
                 sx={fieldSx}
                 fullWidth
                 value={values[field] ?? ""}
-                onChange={(e) =>
-                  setValues((prev) => ({ ...prev, [field]: e.target.value }))
-                }
+                onChange={(e) => {
+                  let value = e.target.value;
+
+                  if (field === "Slug") {
+                    value = value
+                      .replace(/ /g, "_") // spaces → underscores
+                      .replace(/[^a-zA-Z_]/g, "") // only letters
+                      .toLowerCase();
+                  }
+
+                  setValues((prev) => ({ ...prev, [field]: value }));
+                }}
               />
             </Box>
           ))}
