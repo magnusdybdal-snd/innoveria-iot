@@ -165,6 +165,7 @@ export default function MeasureTypes() {
           open={openAdd}
           title="Add measure type"
           fields={["Slug", "Default unit", "Description", "Display name"]}
+          optionalFields={["Default unit", "Description"]}
           onClose={handleCloseAdd}
           onSubmit={(values) =>
             handleAddMeasureType({
