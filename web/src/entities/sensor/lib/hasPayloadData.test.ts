@@ -1,6 +1,7 @@
+import { describe, expect, test } from "bun:test";
+
 import { hasPayloadData } from "@entities/sensor/lib/hasPayloadData";
 import type { SensorReadingApiResponse } from "@entities/sensor/model/sensorSchema";
-import { describe, expect, test } from "bun:test";
 
 const makeReading = (
   payload: SensorReadingApiResponse["payload"],
