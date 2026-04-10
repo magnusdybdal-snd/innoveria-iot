@@ -15,6 +15,7 @@ import LightModeIcon from "@mui/icons-material/LightMode";
 import MemoryIcon from "@mui/icons-material/Memory";
 import PeopleIcon from "@mui/icons-material/People";
 import RouterIcon from "@mui/icons-material/Router";
+import RuleIcon from "@mui/icons-material/Rule";
 import SettingsRemoteIcon from "@mui/icons-material/SettingsRemote";
 import SpaceDashboardIcon from "@mui/icons-material/SpaceDashboard";
 import SummarizeIcon from "@mui/icons-material/Summarize";
@@ -57,6 +58,7 @@ const pageSymbol: Map<string, ComponentType<SvgIconProps>> = new Map([
   ["Companies", BusinessIcon],
   ["Factories", FactoryIcon],
   ["Users", PeopleIcon],
+  ["Context rules", RuleIcon],
 ]);
 
 const roles: Map<string, string> = new Map([
