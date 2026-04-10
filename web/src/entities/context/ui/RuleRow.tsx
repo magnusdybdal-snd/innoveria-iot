@@ -1,24 +1,55 @@
+import { useState } from "react";
+
+import { deleteRule } from "@entities/context/api/deleteRules";
 import type { AggregationRule } from "@entities/context/model/contextSchema";
 import Typography from "@mui/material/Typography";
+import { ActionMenu } from "@shared/ui/actionMenu";
+import { DeleteConfirmation } from "@shared/ui/DeleteConfirmation";
 
 interface RuleRowProps {
   rule: AggregationRule;
-  onDelete?: (id: string) => void; // TODO: wire up delete button once DELETE /v1/context/rules/:id endpoint is implemented
+  onDelete?: (id: string) => void;
 }
 
 /**
  * Displays a single aggregation rule's fields as a row in the rules list.
+ * Includes an action menu with a delete option backed by the DELETE /context/rules/{id} endpoint.
  * @param props - Component props.
  * @param props.rule - The aggregation rule to display.
+ * @param props.onDelete - Called with the rule ID after successful deletion.
  * @returns The rendered rule row.
  */
-export function RuleRow({ rule }: RuleRowProps) {
+export function RuleRow({ rule, onDelete }: RuleRowProps) {
+  const [deleteOpen, setDeleteOpen] = useState(false);
+
+  const handleDeleteConfirm = async () => {
+    await deleteRule(rule.id);
+    setDeleteOpen(false);
+    onDelete?.(rule.id);
+  };
+
+  const menuItems = [
+    {
+      label: "Delete",
+      onClick: () => {
+        (document.activeElement as HTMLElement)?.blur();
+        setDeleteOpen(true);
+      },
+    },
+  ];
+
   return (
     <>
       <Typography>{rule.name}</Typography>
       <Typography>{rule.measurementType}</Typography>
       <Typography>{rule.aggregationMethod}</Typography>
       <Typography>{rule.isActive ? "Yes" : "No"}</Typography>
+      <ActionMenu items={menuItems} />
+      <DeleteConfirmation
+        open={deleteOpen}
+        onClose={() => setDeleteOpen(false)}
+        onConfirm={handleDeleteConfirm}
+      />
     </>
   );
 }

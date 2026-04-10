@@ -27,6 +27,7 @@ const RULE_COLUMNS = [
   "Measurement type",
   "Aggregation method",
   "Active",
+  "", // Action column with menu, no header
 ];
 
 /**
@@ -65,7 +66,7 @@ export default function Rules() {
         <CategoryHeader categories={RULE_COLUMNS} columns={RULE_COLUMNS.length}>
           {rules.map((rule) => (
             <DeviceRow key={rule.id}>
-              <RuleRow rule={rule} />
+              <RuleRow rule={rule} onDelete={refetch} />
             </DeviceRow>
           ))}
         </CategoryHeader>
