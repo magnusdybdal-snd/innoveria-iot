@@ -152,6 +152,7 @@ export default function MeasureTypes() {
                 description={measureType.description}
                 displayName={measureType.displayName}
                 slug={measureType.slug}
+                deprecated={measureType.deprecated}
                 onDeprecate={() => handleDeprecateMeasureType(measureType.slug)}
               />
             </DeviceRow>
