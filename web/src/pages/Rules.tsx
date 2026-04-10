@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import {
+  deleteRule,
   postRule,
   RuleRow,
   useRules,
@@ -40,6 +41,17 @@ export default function Rules() {
   const [addError, setAddError] = useState<string | null>(null);
   const { show, hide, snackbar } = useSnackbar();
 
+  const handleDeleteRule = (id: string): Promise<void> => {
+    return deleteRule(id)
+      .then(() => {
+        refetch();
+        show("Rule deleted successfully", SNACKBAR_SEVERITY.SUCCESS);
+      })
+      .catch(() => {
+        show("Failed to delete rule.", SNACKBAR_SEVERITY.ERROR);
+      });
+  };
+
   const handleAdd = (rule: CreateRuleRequest): Promise<void> => {
     setAddError(null);
     return postRule(rule)
@@ -66,7 +78,7 @@ export default function Rules() {
         <CategoryHeader categories={RULE_COLUMNS} columns={RULE_COLUMNS.length}>
           {rules.map((rule) => (
             <DeviceRow key={rule.id}>
-              <RuleRow rule={rule} onDelete={refetch} />
+              <RuleRow rule={rule} onDelete={handleDeleteRule} />
             </DeviceRow>
           ))}
         </CategoryHeader>

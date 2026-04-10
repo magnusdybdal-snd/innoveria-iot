@@ -1,6 +1,5 @@
 import { useState } from "react";
 
-import { deleteRule } from "@entities/context/api/deleteRules";
 import type { AggregationRule } from "@entities/context/model/contextSchema";
 import Typography from "@mui/material/Typography";
 import { ActionMenu } from "@shared/ui/actionMenu";
@@ -8,24 +7,24 @@ import { DeleteConfirmation } from "@shared/ui/DeleteConfirmation";
 
 interface RuleRowProps {
   rule: AggregationRule;
-  onDelete?: (id: string) => void;
+  onDelete?: (id: string) => Promise<void>;
 }
 
 /**
  * Displays a single aggregation rule's fields as a row in the rules list.
- * Includes an action menu with a delete option backed by the DELETE /context/rules/{id} endpoint.
+ * Includes an action menu with a delete option; delegates the actual delete
+ * API call and snackbar feedback to the parent via {@link RuleRowProps.onDelete}.
  * @param props - Component props.
  * @param props.rule - The aggregation rule to display.
- * @param props.onDelete - Called with the rule ID after successful deletion.
+ * @param props.onDelete - Called with the rule ID when the user confirms deletion.
  * @returns The rendered rule row.
  */
 export function RuleRow({ rule, onDelete }: RuleRowProps) {
   const [deleteOpen, setDeleteOpen] = useState(false);
 
   const handleDeleteConfirm = async () => {
-    await deleteRule(rule.id);
+    await onDelete?.(rule.id);
     setDeleteOpen(false);
-    onDelete?.(rule.id);
   };
 
   const menuItems = [

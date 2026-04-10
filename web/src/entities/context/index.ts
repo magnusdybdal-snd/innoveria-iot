@@ -6,10 +6,12 @@ export type {
   AggregationRule,
   CreateRuleRequest,
 } from "./model/contextSchema";
-export { getContextData, getRules, postRule } from "./api";
+export { getContextData, getRules, postRule, deleteRule } from "./api";
 export { useRules } from "./model/useRules";
 export {
   BucketIntervalField,
+  BucketBarChart,
+  BucketLineChart,
   ContextResultDisplay,
   DateTimeField,
   LabeledSelect,
