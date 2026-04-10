@@ -1,5 +1,6 @@
-import type { BucketResponse } from "@entities/context/model/contextSchema";
 import { LineChart } from "@mui/x-charts/LineChart";
+
+import type { BucketResponse } from "@entities/context/model/contextSchema";
 
 interface BucketLineChartProps {
   buckets: BucketResponse[];

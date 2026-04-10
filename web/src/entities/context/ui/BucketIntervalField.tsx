@@ -1,8 +1,9 @@
-import { BUCKET_UNIT_OPTIONS } from "@entities/context/lib";
-import type { BucketUnit } from "@entities/context/model/contextSchema";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
+
+import { BUCKET_UNIT_OPTIONS } from "@entities/context/lib";
+import type { BucketUnit } from "@entities/context/model/contextSchema";
 import { DropDownSelect } from "@shared/ui/DropDownSelect";
 
 const textFieldSx = {

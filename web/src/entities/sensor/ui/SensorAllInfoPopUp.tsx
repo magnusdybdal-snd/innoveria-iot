@@ -1,17 +1,18 @@
 import { useEffect, useState } from "react";
 
-import { fetchSensorReading } from "@entities/sensor/api";
-import { hasPayloadData } from "@entities/sensor/lib/hasPayloadData";
-import type {
-  SensorApiResponse,
-  SensorReadingApiResponse,
-} from "@entities/sensor/model/sensorSchema";
 import CircleIcon from "@mui/icons-material/Circle";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { useTheme } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
+
+import { fetchSensorReading } from "@entities/sensor/api";
+import { hasPayloadData } from "@entities/sensor/lib/hasPayloadData";
+import type {
+  SensorApiResponse,
+  SensorReadingApiResponse,
+} from "@entities/sensor/model/sensorSchema";
 import { formatReading, formatTimestamp } from "@shared/lib";
 import { CategoryHeader } from "@shared/ui/CategoryHeader";
 import { DeviceRow } from "@shared/ui/DeviceRow";

@@ -1,8 +1,5 @@
 import { useContext, useState } from "react";
 
-import innLogoDark from "@assets/innoveriaDark.png";
-import innLogoLight from "@assets/innoveriaLight.png";
-import { postLogin } from "@entities/user";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import Box from "@mui/material/Box";
@@ -12,8 +9,12 @@ import IconButton from "@mui/material/IconButton";
 import InputAdornment from "@mui/material/InputAdornment";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { ThemeContext } from "@shared/config/theme/themeContext";
 import { useNavigate } from "react-router";
+
+import innLogoDark from "@assets/innoveriaDark.png";
+import innLogoLight from "@assets/innoveriaLight.png";
+import { postLogin } from "@entities/user";
+import { ThemeContext } from "@shared/config/theme/themeContext";
 
 const textFieldSx = {
   "& .MuiOutlinedInput-root": {

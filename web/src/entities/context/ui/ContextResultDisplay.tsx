@@ -1,6 +1,7 @@
-import type { ContextDataResponse } from "@entities/context/model/contextSchema";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
+
+import type { ContextDataResponse } from "@entities/context/model/contextSchema";
 
 import { BucketBarChart } from "./BucketBarChart";
 import { BucketLineChart } from "./BucketLineChart";

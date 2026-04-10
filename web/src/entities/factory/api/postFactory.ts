@@ -1,7 +1,7 @@
-import type { CreateFactoryRequest } from "@entities/factory";
-
 import { apiRequest, serviceClient } from "@/shared/api";
 import { API_ROUTES } from "@/shared/api/routes";
+
+import type { CreateFactoryRequest } from "@entities/factory";
 
 /**
  * Post new Factory (POST REQUEST)

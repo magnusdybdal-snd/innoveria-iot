@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 
+import { CustomButton } from "@/shared/ui/Button";
+
 import {
   CompanyInfo,
   getCompanies,
@@ -22,8 +24,6 @@ import {
   useSnackbar,
 } from "@shared/ui/snackbar";
 import { SubPageHeader } from "@shared/ui/SubPageHeader";
-
-import { CustomButton } from "@/shared/ui/Button";
 
 // Column labels rendered by CategoryHeader; order determines grid layout
 const companyDetails: string[] = [

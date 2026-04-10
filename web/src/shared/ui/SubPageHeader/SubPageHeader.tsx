@@ -1,8 +1,7 @@
 import type { ReactNode } from "react";
 
-import Typography from "@mui/material/Typography";
-
 import { Path } from "@/shared/ui/Path";
+import Typography from "@mui/material/Typography";
 
 /**
  * Props for the SubPageHeader component.

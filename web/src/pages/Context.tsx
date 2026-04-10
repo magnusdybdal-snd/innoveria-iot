@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+
 import {
   BucketIntervalField,
   ContextResultDisplay,
@@ -12,8 +15,6 @@ import {
   type ContextDataResponse,
 } from "@entities/context";
 import { getSensors } from "@entities/sensor";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
 import { CustomButton } from "@shared/ui/Button";
 import { PageContent } from "@shared/ui/PageContent";
 import { PageDivider } from "@shared/ui/PageDivider";
