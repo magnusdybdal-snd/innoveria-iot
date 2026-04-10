@@ -1,6 +1,5 @@
 import { useState } from "react";
 
-import type { CreateRuleRequest } from "@entities/context/model/contextSchema";
 import Button from "@mui/material/Button";
 import Checkbox from "@mui/material/Checkbox";
 import Dialog from "@mui/material/Dialog";
@@ -10,6 +9,8 @@ import DialogTitle from "@mui/material/DialogTitle";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
+
+import type { CreateRuleRequest } from "@entities/context/model/contextSchema";
 import { DropDownSelect } from "@shared/ui/DropDownSelect";
 
 const AGGREGATION_METHOD_OPTIONS = [

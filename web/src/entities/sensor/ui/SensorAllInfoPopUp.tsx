@@ -1,16 +1,18 @@
 import { useEffect, useState } from "react";
 
-import { fetchSensorReading } from "@entities/sensor/api";
-import type {
-  SensorApiResponse,
-  SensorReadingApiResponse,
-} from "@entities/sensor/model/sensorSchema";
 import CircleIcon from "@mui/icons-material/Circle";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { useTheme } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
+
+import { fetchSensorReading } from "@entities/sensor/api";
+import { hasPayloadData } from "@entities/sensor/lib/hasPayloadData";
+import type {
+  SensorApiResponse,
+  SensorReadingApiResponse,
+} from "@entities/sensor/model/sensorSchema";
 import { formatReading, formatTimestamp } from "@shared/lib";
 import { CategoryHeader } from "@shared/ui/CategoryHeader";
 import { DeviceRow } from "@shared/ui/DeviceRow";
@@ -30,6 +32,17 @@ type InfoAllProps = {
   senProf: string;
 };
 
+/**
+ * Renders a single row of sensor metadata fields for display inside the info dialog.
+ * @param props - Component props
+ * @param props.name - Human-readable sensor name
+ * @param props.status - Numeric status code: 0 = online, 1 = warning, 2 = offline
+ * @param props.sensorEui - LoRaWAN DevEUI identifier
+ * @param props.machine - Name of the machine the sensor is attached to
+ * @param props.lastReading - ISO timestamp of the most recent reading
+ * @param props.senProf - Sensor profile ID
+ * @returns A fragment of MUI Typography elements and a status indicator icon
+ */
 function SensorAllInfo({
   name,
   status,
@@ -136,8 +149,7 @@ export function SensorAllInfoPopUp(props: AddDeviceProps) {
             />
           </DeviceRow>
         </CategoryHeader>
-
-        {reading && (
+        {hasPayloadData(reading) ? (
           <>
             <Typography
               sx={{ color: "primary.main", mt: 3, mb: 1, fontWeight: "bold" }}
@@ -161,11 +173,11 @@ export function SensorAllInfoPopUp(props: AddDeviceProps) {
               </DeviceRow>
             </CategoryHeader>
           </>
-        )}
-
-        {reading === null && (
+        ) : (
+          // Show message when no reading data is available
           <Typography sx={{ mt: 2, opacity: 0.5, color: "primary.main" }}>
-            No reading available
+            No sensor data available — device may need configuration or is
+            waiting for its first reading.
           </Typography>
         )}
       </DialogContent>

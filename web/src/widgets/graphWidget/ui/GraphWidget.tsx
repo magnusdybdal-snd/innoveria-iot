@@ -1,13 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
 
-import {
-  getContextData,
-  getRules,
-  toMinutes,
-  type BucketUnit,
-  type ContextDataResponse,
-} from "@entities/context";
-import { getSensors } from "@entities/sensor";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import SettingsIcon from "@mui/icons-material/Settings";
 import Box from "@mui/material/Box";
@@ -16,6 +8,15 @@ import IconButton from "@mui/material/IconButton";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import Typography from "@mui/material/Typography";
+
+import {
+  getContextData,
+  getRules,
+  toMinutes,
+  type BucketUnit,
+  type ContextDataResponse,
+} from "@entities/context";
+import { getSensors } from "@entities/sensor";
 import { toLocalDateTimeString } from "@shared/lib";
 import {
   CHART_TYPE,

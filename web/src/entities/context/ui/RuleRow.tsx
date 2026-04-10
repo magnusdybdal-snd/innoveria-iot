@@ -1,5 +1,6 @@
-import type { AggregationRule } from "@entities/context/model/contextSchema";
 import Typography from "@mui/material/Typography";
+
+import type { AggregationRule } from "@entities/context/model/contextSchema";
 
 interface RuleRowProps {
   rule: AggregationRule;

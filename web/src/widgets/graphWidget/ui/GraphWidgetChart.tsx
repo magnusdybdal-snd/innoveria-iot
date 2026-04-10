@@ -1,12 +1,13 @@
+import SettingsIcon from "@mui/icons-material/Settings";
+import Box from "@mui/material/Box";
+import CircularProgress from "@mui/material/CircularProgress";
+import Typography from "@mui/material/Typography";
+
 import {
   BucketBarChart,
   BucketLineChart,
   type ContextDataResponse,
 } from "@entities/context";
-import SettingsIcon from "@mui/icons-material/Settings";
-import Box from "@mui/material/Box";
-import CircularProgress from "@mui/material/CircularProgress";
-import Typography from "@mui/material/Typography";
 import { CHART_TYPE, type ChartType } from "@widgets/graphWidget/model/types";
 
 interface GraphWidgetChartProps {

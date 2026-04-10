@@ -1,12 +1,12 @@
 import { useState } from "react";
 
+import { ActionMenu } from "@/shared/ui/actionMenu";
 import CircleIcon from "@mui/icons-material/Circle";
 import { useTheme } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
+
 import { DeleteConfirmation } from "@shared/ui/DeleteConfirmation";
 import { RenameDialog } from "@shared/ui/RenameDialog";
-
-import { ActionMenu } from "@/shared/ui/actionMenu";
 
 type InfoProps = {
   name: string;
