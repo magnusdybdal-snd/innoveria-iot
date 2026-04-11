@@ -23,22 +23,17 @@ type RawMeasurementTypeListApiResponse = {
 export const getMeasurementTypesAll = async (): Promise<
   MeasurementTypeApiResponse[]
 > => {
-  try {
-    const data = await apiRequest<RawMeasurementTypeListApiResponse>(
-      serviceClient,
-      API_ROUTES.measurementTypesAll,
-      "GET",
-    );
+  const data = await apiRequest<RawMeasurementTypeListApiResponse>(
+    serviceClient,
+    API_ROUTES.measurementTypesAll,
+    "GET",
+  );
 
-    return (data.measurement_types ?? []).map((s) => ({
-      defaultUnit: s.default_unit,
-      deprecated: s.deprecated,
-      description: s.description,
-      displayName: s.display_name,
-      slug: s.slug,
-    }));
-  } catch (error) {
-    console.error("Failed to fetch measurement types:", error);
-    return [];
-  }
+  return (data.measurement_types ?? []).map((s) => ({
+    defaultUnit: s.default_unit,
+    deprecated: s.deprecated,
+    description: s.description,
+    displayName: s.display_name,
+    slug: s.slug,
+  }));
 };
