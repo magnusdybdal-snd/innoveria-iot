@@ -26,6 +26,7 @@ const subPages: Map<string, SubPage[]> = new Map([
     [
       { name: "Companies", path: "/Admin/Companies" },
       { name: "Factories", path: "/Admin/Factories" },
+      { name: "Measurement types", path: "/Admin/Measurement" },
       { name: "Users", path: "/Admin/Users" },
     ],
   ],
