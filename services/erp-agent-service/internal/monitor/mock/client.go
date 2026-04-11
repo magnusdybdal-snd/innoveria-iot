@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"innoveria-iot/erp-agent-service/internal/monitor"
-	"innoveria-iot/erp-agent-service/internal/monitor/dto"
+	"innoveria-iot/pkg/monitor/dto"
 )
 
 // Client returns deterministic changing Monitor data for local development.

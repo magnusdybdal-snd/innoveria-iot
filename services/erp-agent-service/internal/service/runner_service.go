@@ -9,7 +9,7 @@ import (
 	"innoveria-iot/erp-agent-service/internal/domain"
 	erpserviceclient "innoveria-iot/erp-agent-service/internal/erp-service-client"
 	"innoveria-iot/erp-agent-service/internal/monitor"
-	"innoveria-iot/erp-agent-service/internal/monitor/dto"
+	"innoveria-iot/pkg/monitor/dto"
 )
 
 // RunnerServiceImpl coordinates endpoint fetches and ERP ingest posts.
