@@ -1,5 +1,10 @@
 package dto
 
+// SampleEUIResponse represents the response for the sample EUI endpoint.
+type SampleEUIResponse struct {
+	DeviceEUI string `json:"device_eui"`
+}
+
 // SensorResponse represents a single sensor in API responses.
 type SensorResponse struct {
 	ID                  string  `json:"id"`

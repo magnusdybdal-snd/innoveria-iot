@@ -272,3 +272,8 @@ func MapPatchSensorProfileConfigDTOToDomain(profileID string, from PatchSensorPr
 		ConfigurableSchema:  from.ConfigurableSchema,
 	}
 }
+
+// MapSampleEUIDomainToDTO maps a device EUI string to a SampleEUIResponse.
+func MapSampleEUIDomainToDTO(deviceEUI string) SampleEUIResponse {
+	return SampleEUIResponse{DeviceEUI: deviceEUI}
+}
