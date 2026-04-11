@@ -163,7 +163,7 @@ export function GraphWidget({ defaultConfig, onDelete }: GraphWidgetProps) {
             sx={{ fontSize: "0.75rem" }}
           >
             {/* Display chart type options */}
-            {Object.entries(CHART_TYPE).map(([, value]) => (
+            {Object.values(CHART_TYPE).map((value) => (
               <MenuItem key={value} value={value}>
                 {value.charAt(0).toUpperCase() + value.slice(1)}
               </MenuItem>
