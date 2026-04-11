@@ -9,13 +9,8 @@ import { API_ROUTES } from "@/shared/api/routes";
 export const deprecateMeasurementType = async (
   slug: string,
 ): Promise<boolean> => {
-  try {
-    const response = await serviceClient.patch(
-      `${API_ROUTES.measurementTypes}/${encodeURIComponent(slug)}/deprecate`,
-    );
-    return response.status === 204;
-  } catch (error) {
-    console.error(`Failed to delete measure type with slug ${slug}:`, error);
-    return false;
-  }
+  const response = await serviceClient.patch(
+    `${API_ROUTES.measurementTypes}/${encodeURIComponent(slug)}/deprecate`,
+  );
+  return response.status === 204;
 };
