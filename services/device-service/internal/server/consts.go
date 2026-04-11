@@ -54,4 +54,9 @@ const (
 
 	// SENSOR_METRICS_ROUTE is the route for sensor metric endpoints.
 	SENSOR_METRICS_ROUTE = DEVICE_ROUTE + "/sensors/{eui}/metrics"
+
+	// SENSOR_PROFILE_CONFIG_ROUTE is the route for sensor profile config collection endpoints.
+	SENSOR_PROFILE_CONFIG_ROUTE = DEVICE_ROUTE + "/sensor-profile-config"
+	// SENSOR_PROFILE_CONFIG_ROUTE_ID is the route for single sensor profile config endpoints, with a {profile_id} path parameter.
+	SENSOR_PROFILE_CONFIG_ROUTE_ID = DEVICE_ROUTE + "/sensor-profile-config/{profile_id}"
 )
