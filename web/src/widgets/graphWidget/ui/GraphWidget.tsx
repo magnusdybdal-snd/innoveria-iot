@@ -162,8 +162,12 @@ export function GraphWidget({ defaultConfig, onDelete }: GraphWidgetProps) {
             onChange={(e) => setChartType(e.target.value as ChartType)}
             sx={{ fontSize: "0.75rem" }}
           >
-            <MenuItem value={CHART_TYPE.bar}>Bar</MenuItem>
-            <MenuItem value={CHART_TYPE.line}>Line</MenuItem>
+            {/* Display chart type options */}
+            {Object.values(CHART_TYPE).map((value) => (
+              <MenuItem key={value} value={value}>
+                {value.charAt(0).toUpperCase() + value.slice(1)}
+              </MenuItem>
+            ))}
           </Select>
           <IconButton size="small" onClick={handleSettingsOpen}>
             <SettingsIcon fontSize="small" />

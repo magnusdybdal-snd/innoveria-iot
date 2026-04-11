@@ -3,6 +3,7 @@ import type { BucketUnit } from "@entities/context";
 export const CHART_TYPE = {
   bar: "bar",
   line: "line",
+  lineFilled: "line (filled)",
 } as const;
 
 export type ChartType = (typeof CHART_TYPE)[keyof typeof CHART_TYPE];
