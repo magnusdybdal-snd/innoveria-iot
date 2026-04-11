@@ -99,5 +99,12 @@ export function GraphWidgetChart({
       return <BucketBarChart buckets={buckets} unit={unit} />;
     case CHART_TYPE.line:
       return <BucketLineChart buckets={buckets} unit={unit} />;
+    case CHART_TYPE.lineFilled:
+      return <BucketLineChart buckets={buckets} unit={unit} area />;
+    default: {
+      // Will throw a compile-time error if a new chart type is added to CHART_TYPE but not handled here.
+      const _exhaustiveCheck: never = chartType;
+      return _exhaustiveCheck;
+    }
   }
 }
