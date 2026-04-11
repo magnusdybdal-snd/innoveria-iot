@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -157,6 +158,47 @@ func PatchSensor(svc domain.SensorService) http.HandlerFunc {
 		}
 
 		w.WriteHeader(http.StatusNoContent)
+	}
+}
+
+// GetSampleEUI returns a single device EUI from any sensor registered on the given Chirpstack profile.
+// Used by the admin UI to obtain a sample EUI for payload key discovery.
+//
+// @Summary		Get a sample device EUI for a Chirpstack profile
+// @Tags		sensors
+// @Produce		json
+// @Param		chirpstack_profile_id	query		string	true	"Chirpstack profile ID"
+// @Success		200						{object}	dto.SampleEUIResponse
+// @Failure		400
+// @Failure		404
+// @Failure		500
+// @Router		/sensors/sample-eui [get]
+func GetSampleEUI(svc domain.SensorService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+
+		profileID := r.URL.Query().Get("chirpstack_profile_id")
+		if profileID == "" {
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("chirpstack_profile_id is required"), "bad request")
+			return
+		}
+
+		eui, err := svc.GetSampleEUI(ctx, profileID)
+		if err != nil {
+			if errors.Is(err, domain.ErrNotFound) {
+				json.HandleError(w, http.StatusNotFound, err, "no sensor found for this profile")
+				return
+			}
+			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			return
+		}
+
+		resp := dto.MapSampleEUIDomainToDTO(eui)
+
+		if err := json.Encode(w, http.StatusOK, resp); err != nil {
+			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			return
+		}
 	}
 }
 
