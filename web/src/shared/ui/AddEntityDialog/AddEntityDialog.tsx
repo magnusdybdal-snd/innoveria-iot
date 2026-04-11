@@ -111,7 +111,7 @@ export function AddEntityDialog({
                   if (field === "Slug") {
                     value = value
                       .replace(/ /g, "_") // spaces → underscores
-                      .replace(/[^a-zA-Z_]/g, "") // only letters
+                      .replace(/[^a-zA-Z0-9_]/g, "") // only letters
                       .toLowerCase();
                   }
 
