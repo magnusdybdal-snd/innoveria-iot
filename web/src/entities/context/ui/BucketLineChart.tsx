@@ -1,6 +1,7 @@
 import { LineChart } from "@mui/x-charts/LineChart";
 
 import type { BucketResponse } from "@entities/context/model/contextSchema";
+import { downsample } from "@shared/lib";
 
 interface BucketLineChartProps {
   buckets: BucketResponse[];
@@ -9,13 +10,16 @@ interface BucketLineChartProps {
 
 /**
  * Renders a line chart of aggregated time bucket values.
+ * Downsamples to at most 500 points when the bucket array exceeds that limit.
  * @param props - Component props
  * @param props.buckets - Array of time buckets to plot
  * @param props.unit - Optional unit label shown on the value axis
  * @returns Line chart with period start labels on the x-axis and bucket values on the y-axis
  */
 export function BucketLineChart({ buckets, unit }: BucketLineChartProps) {
-  const labels = buckets.map((b) =>
+  const sampled = downsample(buckets);
+
+  const labels = sampled.map((b) =>
     new Date(b.periodStart).toLocaleString(undefined, {
       month: "short",
       day: "numeric",
@@ -23,7 +27,7 @@ export function BucketLineChart({ buckets, unit }: BucketLineChartProps) {
       minute: "2-digit",
     }),
   );
-  const values = buckets.map((b) => b.value);
+  const values = sampled.map((b) => b.value);
 
   return (
     <LineChart
