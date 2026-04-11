@@ -17,6 +17,6 @@ export const API_ROUTES = {
   user: `/v1/auth/me`,
   login: `/v1/auth/login`,
   refresh: `/v1/auth/refresh`,
-  measureTypes: `/v1/device/measurement-types`,
-  measureTypesAll: `/v1/device/measurement-types/all`,
+  measurementTypes: `/v1/device/measurement-types`,
+  measurementTypesAll: `/v1/device/measurement-types/all`,
 };

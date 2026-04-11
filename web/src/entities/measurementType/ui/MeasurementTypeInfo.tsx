@@ -27,7 +27,7 @@ type InfoMainProps = {
  * @param root0.onDeprecate - Called when the user clicks "Deprecate" to deprecates the measurement type
  * @returns The rendered measurement type row cells
  */
-export function MeasureTypeInfo({
+export function MeasurementTypeInfo({
   defaultUnit,
   description,
   displayName,

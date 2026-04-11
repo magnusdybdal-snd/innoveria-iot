@@ -1,8 +1,8 @@
-import type { MeasureTypeApiResponse } from "@entities/measureType/model/measureTypeSchema.ts";
+import type { MeasurementTypeApiResponse } from "@entities/measurementType/model/measurementTypeSchema.ts";
 import { apiRequest, serviceClient } from "@shared/api";
 import { API_ROUTES } from "@shared/api/routes";
 
-type RawMeasureType = {
+type RawMeasurementType = {
   default_unit: string;
   deprecated: boolean;
   description: string;
@@ -10,25 +10,27 @@ type RawMeasureType = {
   slug: string;
 };
 
-type RawMeasureTypeListApiResponse = {
+type RawMeasurementTypeListApiResponse = {
   total_count: number;
-  measure_types: RawMeasureType[];
+  measurement_types: RawMeasurementType[];
 };
 
 /**
  * Fetches all non-deprecated measure types from the collection-service via the API gateway.
  * Maps snake_case API response keys to camelCase.
- * @returns Array of MeasureTypeApiResponse objects, or an empty array if the request fails
+ * @returns Array of MeasurementTypeApiResponse objects, or an empty array if the request fails
  */
-export const getMeasureTypes = async (): Promise<MeasureTypeApiResponse[]> => {
+export const getMeasurementTypes = async (): Promise<
+  MeasurementTypeApiResponse[]
+> => {
   try {
-    const data = await apiRequest<RawMeasureTypeListApiResponse>(
+    const data = await apiRequest<RawMeasurementTypeListApiResponse>(
       serviceClient,
-      API_ROUTES.measureTypes,
+      API_ROUTES.measurementTypes,
       "GET",
     );
 
-    return (data.measure_types ?? []).map((s) => ({
+    return (data.measurement_types ?? []).map((s) => ({
       defaultUnit: s.default_unit,
       deprecated: s.deprecated,
       description: s.description,

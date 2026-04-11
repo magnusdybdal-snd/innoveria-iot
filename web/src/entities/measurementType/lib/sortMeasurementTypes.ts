@@ -1,27 +1,27 @@
-import type { MeasureTypeApiResponse } from "@entities/measureType/model/measureTypeSchema.ts";
+import type { MeasurementTypeApiResponse } from "@entities/measurementType/model/measurementTypeSchema.ts";
 
 export type SortDirection = "asc" | "desc";
-export type MeasureTypeSortKey =
+export type MeasurementTypeSortKey =
   | "Default unit"
   | "Description"
   | "Display name"
   | "Slug";
 
-// Sorting measureTypes based on Key (MeasureTypeSortKey)
+// Sorting measurementTypes based on Key (MeasurementTypeSortKey)
 /**
  * Returns a sorted copy of the measure type array based on the given column and direction.
- * @param measureTypes - Array of MeasureTypeApiResponse objects to sort
+ * @param measurementTypes - Array of MeasurementTypeApiResponse objects to sort
  * @param key - Column to sort by, or null to return the array unsorted
  * @param direction - Sort order: "asc" or "desc"
- * @returns A new sorted MeasureTypeApiResponse array (does not mutate the input)
+ * @returns A new sorted MeasurementTypeApiResponse array (does not mutate the input)
  */
-export function sortMeasureTypes(
-  measureTypes: MeasureTypeApiResponse[],
-  key: MeasureTypeSortKey | null,
+export function sortMeasurementTypes(
+  measurementTypes: MeasurementTypeApiResponse[],
+  key: MeasurementTypeSortKey | null,
   direction: SortDirection,
-): MeasureTypeApiResponse[] {
-  if (!key) return measureTypes;
-  return [...measureTypes].sort((a, b) => {
+): MeasurementTypeApiResponse[] {
+  if (!key) return measurementTypes;
+  return [...measurementTypes].sort((a, b) => {
     let cmp = 0;
     switch (key) {
       case "Default unit":

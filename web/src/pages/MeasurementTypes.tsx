@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
 
 import {
-  deprecateMeasureType,
-  getMeasureTypesAll,
-  MeasureTypeInfo,
-  postMeasureType,
-  sortMeasureTypes,
-  type MeasureTypeApiResponse,
-  type MeasureTypeSortKey,
+  deprecateMeasurementType,
+  getMeasurementTypesAll,
+  MeasurementTypeInfo,
+  postMeasurementType,
+  sortMeasurementTypes,
+  type MeasurementTypeApiResponse,
+  type MeasurementTypeSortKey,
   type SortDirection,
-} from "@entities/measureType";
+} from "@entities/measurementType";
 import { AddEntityDialog } from "@shared/ui/AddEntityDialog";
 import { CustomButton } from "@shared/ui/Button";
 import { CategoryHeader } from "@shared/ui/CategoryHeader";
@@ -24,14 +24,14 @@ import {
 } from "@shared/ui/snackbar";
 import { SubPageHeader } from "@shared/ui/SubPageHeader";
 
-const measureTypeDetails: string[] = [
+const measurementTypeDetails: string[] = [
   "Slug",
   "Display name",
   "Description",
   "Default unit",
 ];
 
-const sortableColumns: MeasureTypeSortKey[] = [
+const sortableColumns: MeasurementTypeSortKey[] = [
   "Slug",
   "Display name",
   "Description",
@@ -39,15 +39,15 @@ const sortableColumns: MeasureTypeSortKey[] = [
 
 /**
  * Full-page view listing all measure types registered on the site.
- * @returns The rendered MeasureTypes page
+ * @returns The rendered MeasurementTypes page
  */
-export default function MeasureTypes() {
-  const [measureTypes, setMeasureTypes] = useState<MeasureTypeApiResponse[]>(
-    [],
-  );
+export default function MeasurementTypes() {
+  const [measurementTypes, setMeasurementTypes] = useState<
+    MeasurementTypeApiResponse[]
+  >([]);
   const [isLoading, setIsLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState<{
-    key: MeasureTypeSortKey | null;
+    key: MeasurementTypeSortKey | null;
     direction: SortDirection;
   }>({ key: null, direction: "asc" });
 
@@ -64,21 +64,21 @@ export default function MeasureTypes() {
   const addButton = (
     <CustomButton onClick={handleClickOpenAdd}>Add measure type</CustomButton>
   );
-  const handleAddMeasureType = (measureTypeData: {
+  const handleAddMeasurementType = (measurementTypeData: {
     defaultUnit: string;
     description: string;
     displayName: string;
     slug: string;
   }) => {
     setAddError(null);
-    return postMeasureType({
-      defaultUnit: measureTypeData.defaultUnit,
-      description: measureTypeData.description,
-      displayName: measureTypeData.displayName,
-      slug: measureTypeData.slug,
+    return postMeasurementType({
+      defaultUnit: measurementTypeData.defaultUnit,
+      description: measurementTypeData.description,
+      displayName: measurementTypeData.displayName,
+      slug: measurementTypeData.slug,
     })
       .then(() => {
-        fetchMeasureTypes();
+        fetchMeasurementTypes();
         setOpenAdd(false);
         show("Measure type added successfully", SNACKBAR_SEVERITY.SUCCESS);
       })
@@ -93,18 +93,18 @@ export default function MeasureTypes() {
   // State for controlling success snackbar
   const { show, hide, snackbar } = useSnackbar();
 
-  const fetchMeasureTypes = () => {
-    getMeasureTypesAll().then((data) => {
-      setMeasureTypes(data);
+  const fetchMeasurementTypes = () => {
+    getMeasurementTypesAll().then((data) => {
+      setMeasurementTypes(data);
       setIsLoading(false);
     });
   };
 
   //TODO: use deletion confirmation dialog when it has been implemented.
-  const handleDeprecateMeasureType = (id: string) => {
-    deprecateMeasureType(id)
+  const handleDeprecateMeasurementType = (id: string) => {
+    deprecateMeasurementType(id)
       .then(() => {
-        fetchMeasureTypes();
+        fetchMeasurementTypes();
         show("Measure type deprecated successfully", SNACKBAR_SEVERITY.SUCCESS);
       })
       .catch(() => {
@@ -113,11 +113,11 @@ export default function MeasureTypes() {
   };
 
   useEffect(() => {
-    fetchMeasureTypes();
+    fetchMeasurementTypes();
   }, []);
 
   function handleSort(column: string) {
-    const col = column as MeasureTypeSortKey;
+    const col = column as MeasurementTypeSortKey;
     setSortConfig((prev) =>
       prev.key === col
         ? { key: col, direction: prev.direction === "asc" ? "desc" : "asc" }
@@ -125,8 +125,8 @@ export default function MeasureTypes() {
     );
   }
 
-  const sorted = sortMeasureTypes(
-    measureTypes,
+  const sorted = sortMeasurementTypes(
+    measurementTypes,
     sortConfig.key,
     sortConfig.direction,
   );
@@ -137,23 +137,28 @@ export default function MeasureTypes() {
         <SubPageHeader title="Measurement types" action={addButton} />
         <PageDivider />
         <CategoryHeader
-          categories={measureTypeDetails}
-          columns={measureTypeDetails.length + 1}
+          categories={measurementTypeDetails}
+          columns={measurementTypeDetails.length + 1}
           sortableColumns={sortableColumns}
           sortConfig={sortConfig}
           onSort={handleSort}
         >
           {isLoading && <p>Loading...</p>}
           {/*TODO: make a better looking loading indicator */}
-          {sorted.map((measureType) => (
-            <DeviceRow key={measureType.slug} greyed={measureType.deprecated}>
-              <MeasureTypeInfo
-                defaultUnit={measureType.defaultUnit}
-                description={measureType.description}
-                displayName={measureType.displayName}
-                slug={measureType.slug}
-                deprecated={measureType.deprecated}
-                onDeprecate={() => handleDeprecateMeasureType(measureType.slug)}
+          {sorted.map((measurementType) => (
+            <DeviceRow
+              key={measurementType.slug}
+              greyed={measurementType.deprecated}
+            >
+              <MeasurementTypeInfo
+                defaultUnit={measurementType.defaultUnit}
+                description={measurementType.description}
+                displayName={measurementType.displayName}
+                slug={measurementType.slug}
+                deprecated={measurementType.deprecated}
+                onDeprecate={() =>
+                  handleDeprecateMeasurementType(measurementType.slug)
+                }
               />
             </DeviceRow>
           ))}
@@ -168,7 +173,7 @@ export default function MeasureTypes() {
           optionalFields={["Default unit", "Description"]}
           onClose={handleCloseAdd}
           onSubmit={(values) =>
-            handleAddMeasureType({
+            handleAddMeasurementType({
               slug: values["Slug"],
               defaultUnit: values["Default unit"],
               description: values["Description"],

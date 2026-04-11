@@ -3,7 +3,7 @@ import Dashboard from "@pages/Dashboard.tsx";
 import Gateways from "@pages/Gateways";
 import Home from "@pages/Home.tsx";
 import Login from "@pages/Login.tsx";
-import MeasureTypes from "@pages/Measuretypes.tsx";
+import MeasurementTypes from "@pages/MeasurementTypes.tsx";
 import Sensors from "@pages/Sensors.tsx";
 import { Route, Routes } from "react-router";
 
@@ -30,7 +30,7 @@ export default function AppRoutes() {
         <Route path="/Reports" element={<Home />} />
         <Route path="/Admin/Companies" element={<Companies />} />
         <Route path="/Admin/Factories" element={<Factories />} />
-        <Route path="/Admin/Measurement" element={<MeasureTypes />} />
+        <Route path="/Admin/Measurement" element={<MeasurementTypes />} />
         <Route path="/Admin/Users" element={<Home />} />
         <Route
           path="*"
