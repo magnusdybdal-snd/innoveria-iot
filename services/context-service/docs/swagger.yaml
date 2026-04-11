@@ -88,8 +88,6 @@ info:
 paths:
   /data:
     get:
-      consumes:
-      - application/json
       parameters:
       - description: Company ID
         in: query
@@ -143,8 +141,6 @@ paths:
       - context
   /rules:
     get:
-      consumes:
-      - application/json
       parameters:
       - description: Company ID
         in: query
@@ -184,9 +180,31 @@ paths:
           description: Created
         "400":
           description: Bad Request
+        "409":
+          description: Conflict
         "500":
           description: Internal Server Error
       summary: Create Aggregation Rule
+      tags:
+      - context
+  /rules/{rule_id}:
+    delete:
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Delete Aggregation Rule
       tags:
       - context
 swagger: "2.0"

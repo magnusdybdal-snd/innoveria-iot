@@ -7,8 +7,9 @@ import "@/app/providers/styles/index.css";
 
 import { useState } from "react";
 
-import AppRoutes from "@app/routes/index.tsx";
 import Box from "@mui/material/Box";
+
+import AppRoutes from "@app/routes/index.tsx";
 import { DarkMode } from "@shared/config/theme/darkMode";
 import { LightMode } from "@shared/config/theme/lightMode";
 import { ThemeContext } from "@shared/config/theme/themeContext";

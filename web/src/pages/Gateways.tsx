@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react";
 
+import Box from "@mui/material/Box";
+import Tab from "@mui/material/Tab";
+import Tabs from "@mui/material/Tabs";
+
 import { getFactories, type FactoryApiResponse } from "@entities/factory";
 import {
   getFactoryAreas,
@@ -16,9 +20,6 @@ import {
   type SortDirection,
 } from "@entities/gateway";
 import { AddDevice } from "@features/addDevice";
-import Box from "@mui/material/Box";
-import Tab from "@mui/material/Tab";
-import Tabs from "@mui/material/Tabs";
 import { formatTimestamp } from "@shared/lib";
 import { CustomButton } from "@shared/ui/Button";
 import { CategoryHeader } from "@shared/ui/CategoryHeader";

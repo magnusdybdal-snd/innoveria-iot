@@ -1,6 +1,5 @@
-import Typography from "@mui/material/Typography";
-
 import { ActionMenu } from "@/shared/ui/actionMenu";
+import Typography from "@mui/material/Typography";
 
 type InfoProps = {
   name: string;

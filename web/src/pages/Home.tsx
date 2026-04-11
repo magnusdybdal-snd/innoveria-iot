@@ -1,4 +1,5 @@
 import Typography from "@mui/material/Typography";
+
 import { PageContent } from "@shared/ui/PageContent";
 import { SubPageHeader } from "@shared/ui/SubPageHeader";
 

@@ -6,9 +6,6 @@ import {
   type ReactNode,
 } from "react";
 
-import innLogoDark from "@assets/innoveriaDark.png";
-import innLogoLight from "@assets/innoveriaLight.png";
-import { getUser, type UserApiResponse } from "@entities/user";
 import BusinessIcon from "@mui/icons-material/Business";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -18,6 +15,7 @@ import LightModeIcon from "@mui/icons-material/LightMode";
 import MemoryIcon from "@mui/icons-material/Memory";
 import PeopleIcon from "@mui/icons-material/People";
 import RouterIcon from "@mui/icons-material/Router";
+import RuleIcon from "@mui/icons-material/Rule";
 import SettingsRemoteIcon from "@mui/icons-material/SettingsRemote";
 import SpaceDashboardIcon from "@mui/icons-material/SpaceDashboard";
 import SummarizeIcon from "@mui/icons-material/Summarize";
@@ -37,10 +35,14 @@ import ListItemText from "@mui/material/ListItemText";
 import type { SvgIconProps } from "@mui/material/SvgIcon";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
+import { Link as RouterLink, useLocation } from "react-router";
+
+import innLogoDark from "@assets/innoveriaDark.png";
+import innLogoLight from "@assets/innoveriaLight.png";
+import { getUser, type UserApiResponse } from "@entities/user";
 import MainPages from "@shared/config/navigation/mainPageList";
 import SubPages from "@shared/config/navigation/subPageList";
 import { ThemeContext } from "@shared/config/theme/themeContext";
-import { Link as RouterLink, useLocation } from "react-router";
 
 interface MenuProps {
   children: ReactNode;
@@ -56,6 +58,7 @@ const pageSymbol: Map<string, ComponentType<SvgIconProps>> = new Map([
   ["Companies", BusinessIcon],
   ["Factories", FactoryIcon],
   ["Users", PeopleIcon],
+  ["Context rules", RuleIcon],
 ]);
 
 const roles: Map<string, string> = new Map([
@@ -269,6 +272,7 @@ export default function Menu(menuProps: MenuProps) {
               color: "white",
               "&:hover": {
                 backgroundColor: "secondary.dark",
+                color: "white",
               },
               borderRadius: 2,
               margin: 0,

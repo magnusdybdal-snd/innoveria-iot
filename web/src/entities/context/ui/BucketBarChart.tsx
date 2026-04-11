@@ -1,6 +1,6 @@
-import type { BucketResponse } from "@entities/context/model/contextSchema";
-import WarningAmber from "@mui/icons-material/WarningAmber";
 import { BarChart } from "@mui/x-charts/BarChart";
+
+import type { BucketResponse } from "@entities/context/model/contextSchema";
 
 interface BucketBarChartProps {
   buckets: BucketResponse[];
@@ -38,33 +38,13 @@ export function BucketBarChart({ buckets, unit }: BucketBarChartProps) {
   const values = sampled.map((b) => b.value);
 
   return (
-    <div>
-      {isDownsampled && (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 6,
-            color: "#f59e0b",
-            fontSize: 13,
-            marginBottom: 4,
-          }}
-        >
-          <WarningAmber fontSize="small" />
-          <span>
-            Data downsampled from {buckets.length} to {MAX_BARS} points —
-            rendering may not reflect all values accurately.
-          </span>
-        </div>
-      )}
-      <BarChart
-        xAxis={[
-          { scaleType: "band", data: labels, tickLabelStyle: { fontSize: 11 } },
-        ]}
-        yAxis={[{ label: unit }]}
-        series={[{ data: values, color: "#90caf9" }]}
-        height={300}
-      />
-    </div>
+    <BarChart
+      xAxis={[
+        { scaleType: "band", data: labels, tickLabelStyle: { fontSize: 11 } },
+      ]}
+      yAxis={[{ label: unit }]}
+      series={[{ data: values, color: "#fe8019" }]}
+      height={300}
+    />
   );
 }

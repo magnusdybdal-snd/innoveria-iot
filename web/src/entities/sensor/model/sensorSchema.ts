@@ -21,7 +21,7 @@ export interface SensorApiResponse {
 export interface SensorReadingApiResponse {
   deviceEui: string;
   timestamp: string;
-  payload: Record<string, unknown>;
+  payload: Record<string, unknown> | null;
   companyId: string;
 }
 
