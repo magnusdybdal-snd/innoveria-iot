@@ -34,7 +34,7 @@ export interface AddEntityDialogProps {
  * @param props.open - Whether the dialog is visible
  * @param props.title - Title displayed at the top of the dialog
  * @param props.fields - Field labels to render as text inputs
- * @param props.optionalFields
+ * @param props.optionalFields - Fields that are not required to be filled
  * @param props.onClose - Called when the dialog should close without submitting
  * @param props.onSubmit - Called with a map of field label to value when the user confirms
  * @param props.submitError - Error message to display if the submission fails

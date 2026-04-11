@@ -13,7 +13,7 @@ type DeviceRowProps = {
  * @param root0 - Component props
  * @param root0.children - Cell content to render inside the row
  * @param root0.onClick - Optional click handler; enables hover highlight when provided
- * @param root0.greyed
+ * @param root0.greyed - Optional bool for weather the row is greyed out
  * @returns The rendered device row
  */
 export function DeviceRow({

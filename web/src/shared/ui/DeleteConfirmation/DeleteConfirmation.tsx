@@ -14,8 +14,8 @@ interface DeleteConfirmationProps {
  * @param props - Component props.
  * @param props.open - UseState for opening dialog.
  * @param props.onClose - UseState for closing dialog.
- * @param props.onConfirm - Called when the confirm is clicked.
- * @param props.action
+ * @param props.onConfirm - Called when the "confirm" is clicked.
+ * @param props.action - Potential other action that "delete"
  * @returns The rendered dialog element.
  */
 export function DeleteConfirmation({

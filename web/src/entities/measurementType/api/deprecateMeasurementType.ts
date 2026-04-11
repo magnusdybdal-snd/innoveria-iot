@@ -3,8 +3,8 @@ import { API_ROUTES } from "@/shared/api/routes";
 
 /**
  * Deprecates a measure type from the device-service via the API gateway.
- * @param slug - The slug of the measure type to delete
- * @returns True if the deletion was successful, false otherwise
+ * @param slug - The slug of the measure type to deprecate
+ * @returns True if the deprecation was successful, false otherwise
  */
 export const deprecateMeasurementType = async (
   slug: string,
