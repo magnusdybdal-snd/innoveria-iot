@@ -1,5 +1,6 @@
-import type { BucketResponse } from "@entities/context/model/contextSchema";
 import { LineChart } from "@mui/x-charts/LineChart";
+
+import type { BucketResponse } from "@entities/context/model/contextSchema";
 
 interface BucketLineChartProps {
   buckets: BucketResponse[];
@@ -30,7 +31,7 @@ export function BucketLineChart({ buckets, unit }: BucketLineChartProps) {
         { scaleType: "band", data: labels, tickLabelStyle: { fontSize: 11 } },
       ]}
       yAxis={[{ label: unit }]}
-      series={[{ data: values, color: "#90caf9", area: true, showMark: false }]}
+      series={[{ data: values, color: "#fe8019", area: true, showMark: false }]}
       height={300}
     />
   );

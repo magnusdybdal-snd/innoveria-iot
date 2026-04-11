@@ -139,18 +139,18 @@ func CreateRule(svc domain.RuleService) http.HandlerFunc {
 // @Failure 		400
 // @Failure 		404
 // @Failure 		500
-// @Router 			/rules/{rule_id} [delete]
+// @Router 			/rules/{id} [delete]
 func DeleteRule(svc domain.RuleService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		ruleID := r.PathValue("id")
 
 		if ruleID == "" {
-			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("missing rule_id path parameter"), "rule_id is required")
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("missing id path parameter"), "id is required")
 			return
 		}
 		if _, err := uuid.Parse(ruleID); err != nil {
-			json.HandleError(w, http.StatusBadRequest, err, "invalid rule_id (uuid)")
+			json.HandleError(w, http.StatusBadRequest, err, "invalid id (uuid)")
 			return
 		}
 		if err := svc.DeleteRule(ctx, ruleID); err != nil {

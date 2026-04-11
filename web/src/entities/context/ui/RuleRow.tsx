@@ -1,7 +1,8 @@
 import { useState } from "react";
 
-import type { AggregationRule } from "@entities/context/model/contextSchema";
 import Typography from "@mui/material/Typography";
+
+import type { AggregationRule } from "@entities/context/model/contextSchema";
 import { ActionMenu } from "@shared/ui/actionMenu";
 import { DeleteConfirmation } from "@shared/ui/DeleteConfirmation";
 

@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from "react";
 
+import { getFactories, type FactoryApiResponse } from "@/entities/factory";
+import {
+  getFactoryAreas,
+  type FactoryAreaApiResponse,
+} from "@/entities/factoryArea";
+import Box from "@mui/material/Box";
+import Tab from "@mui/material/Tab";
+import Tabs from "@mui/material/Tabs";
+
 import {
   getSensorProfiles,
   postSensor,
@@ -15,9 +24,6 @@ import {
 } from "@entities/sensor";
 import { deleteSensor } from "@entities/sensor/api/deleteSensor";
 import { AddDevice } from "@features/addDevice";
-import Box from "@mui/material/Box";
-import Tab from "@mui/material/Tab";
-import Tabs from "@mui/material/Tabs";
 import { formatTimestamp } from "@shared/lib";
 import { CustomButton } from "@shared/ui/Button";
 import { CategoryHeader } from "@shared/ui/CategoryHeader";
@@ -30,12 +36,6 @@ import {
   useSnackbar,
 } from "@shared/ui/snackbar";
 import { SubPageHeader } from "@shared/ui/SubPageHeader";
-
-import { getFactories, type FactoryApiResponse } from "@/entities/factory";
-import {
-  getFactoryAreas,
-  type FactoryAreaApiResponse,
-} from "@/entities/factoryArea";
 
 const sensorMainDetails: string[] = ["Status", "Name", "Last reading"];
 const addSensorDetails: string[] = [

@@ -1,8 +1,7 @@
+import type { SubPage } from "@/shared/config/navigation/subPageList";
 import Box from "@mui/material/Box";
 import Link from "@mui/material/Link";
 import { Link as RouterLink } from "react-router";
-
-import type { SubPage } from "@/shared/config/navigation/subPageList";
 
 type MenuBoxProps = {
   title: string;

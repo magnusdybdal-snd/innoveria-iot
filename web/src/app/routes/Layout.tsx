@@ -1,5 +1,6 @@
-import { Menu } from "@widgets/menu";
 import { Outlet } from "react-router";
+
+import { Menu } from "@widgets/menu";
 
 /**
  *  Layout component that wraps all pages with a common Menu and renders the current route's content via Outlet.
