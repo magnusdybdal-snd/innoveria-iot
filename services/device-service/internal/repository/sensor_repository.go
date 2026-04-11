@@ -60,6 +60,13 @@ const (
 		DELETE FROM device.sensor
 		WHERE sensor_id = $1
 	`
+
+	findOneByChirpstackProfileIDQuery = `
+		SELECT sensor_id, company_id, device_eui, app_key, name, description, state, factory_id, factory_area_id, production_resource_id, chirpstack_profile_id, created_at, updated_at
+		FROM device.sensor
+		WHERE chirpstack_profile_id = $1
+		LIMIT 1
+	`
 )
 
 // SensorRepository handles persistence of sensor metadata stored in the database.
@@ -253,6 +260,37 @@ func (r *SensorRepository) FindByEUI(ctx context.Context, deviceEUI string) (dom
 			return domain.Sensor{}, domain.ErrNotFound
 		}
 		return domain.Sensor{}, fmt.Errorf("find sensor by eui: %w", err)
+	}
+
+	return out, nil
+
+}
+
+// FindOneByChirpstackProfileID retrieves any single sensor registered on the given Chirpstack profile.
+// Used to obtain a sample EUI for payload key discovery.
+func (r *SensorRepository) FindOneByChirpstackProfileID(ctx context.Context, chirpstackProfileID string) (domain.Sensor, error) {
+
+	var out domain.Sensor
+	err := r.db.Pool.QueryRow(ctx, findOneByChirpstackProfileIDQuery, chirpstackProfileID).Scan(
+		&out.Id,
+		&out.CompanyID,
+		&out.DeviceEUI,
+		&out.AppKey,
+		&out.Name,
+		&out.Description,
+		&out.State,
+		&out.FactoryID,
+		&out.FactoryAreaID,
+		&out.ProductionResource,
+		&out.ChirpstackProfileID,
+		&out.CreatedAt,
+		&out.UpdatedAt,
+	)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return domain.Sensor{}, domain.ErrNotFound
+		}
+		return domain.Sensor{}, fmt.Errorf("find sensor by chirpstack profile id: %w", err)
 	}
 
 	return out, nil

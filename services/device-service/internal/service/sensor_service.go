@@ -216,6 +216,15 @@ func (s *SensorServiceImpl) GetByProductionResourceID(ctx context.Context, produ
 	return result, nil
 }
 
+// GetSampleEUI returns a single device EUI from any sensor registered on the given Chirpstack profile.
+func (s *SensorServiceImpl) GetSampleEUI(ctx context.Context, chirpstackProfileID string) (string, error) {
+	sensor, err := s.sensorRepo.FindOneByChirpstackProfileID(ctx, chirpstackProfileID)
+	if err != nil {
+		return "", fmt.Errorf("get sample eui: %w", err)
+	}
+	return sensor.DeviceEUI, nil
+}
+
 // Delete removes a sensor from Chirpstack and then from the database.
 // If the database delete fails, the sensor is re-created in Chirpstack as a compensating
 // transaction to keep both systems in sync.
