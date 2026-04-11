@@ -6,7 +6,7 @@ export type {
   AggregationRule,
   CreateRuleRequest,
 } from "./model/contextSchema";
-export { getContextData, getRules, postRule } from "./api";
+export { getContextData, getRules, postRule, deleteRule } from "./api";
 export { useRules } from "./model/useRules";
 export { RuleRow } from "./ui";
 export { BucketBarChart, BucketLineChart } from "./ui";
