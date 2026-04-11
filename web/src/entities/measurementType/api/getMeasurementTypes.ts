@@ -1,19 +1,9 @@
-import type { MeasurementTypeApiResponse } from "@entities/measurementType/model/measurementTypeSchema.ts";
+import type {
+  MeasurementTypeApiResponse,
+  RawMeasurementTypeListApiResponse,
+} from "@entities/measurementType/model/measurementTypeSchema.ts";
 import { apiRequest, serviceClient } from "@shared/api";
 import { API_ROUTES } from "@shared/api/routes";
-
-type RawMeasurementType = {
-  default_unit: string;
-  deprecated: boolean;
-  description: string;
-  display_name: string;
-  slug: string;
-};
-
-type RawMeasurementTypeListApiResponse = {
-  total_count: number;
-  measurement_types: RawMeasurementType[];
-};
 
 /**
  * Fetches all non-deprecated measure types from the collection-service via the API gateway.

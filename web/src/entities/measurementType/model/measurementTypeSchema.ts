@@ -4,7 +4,7 @@
  */
 export interface MeasurementTypeListApiResponse {
   totalCount: number;
-  sensors: MeasurementTypeApiResponse[];
+  measurementTypes: MeasurementTypeApiResponse[];
 }
 
 export interface MeasurementTypeApiResponse {
@@ -20,4 +20,17 @@ export interface CreateMeasurementTypeRequest {
   description: string;
   displayName: string;
   slug: string;
+}
+
+export interface RawMeasurementType {
+  default_unit: string;
+  deprecated: boolean;
+  description: string;
+  display_name: string;
+  slug: string;
+}
+
+export interface RawMeasurementTypeListApiResponse {
+  total_count: number;
+  measurement_types: RawMeasurementType[];
 }
