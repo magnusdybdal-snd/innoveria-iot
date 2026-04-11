@@ -18,6 +18,7 @@ func MergeSensor(cs dto.ChirpstackSensor, db domain.Sensor) domain.Sensor {
 		AppKey:              db.AppKey,
 		Name:                db.Name,
 		Description:         db.Description,
+		Voltage:             db.Voltage,
 		State:               db.State,
 		FactoryID:           db.FactoryID,
 		FactoryAreaID:       db.FactoryAreaID,

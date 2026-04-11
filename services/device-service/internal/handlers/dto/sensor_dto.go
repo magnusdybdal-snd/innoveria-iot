@@ -6,6 +6,7 @@ type SensorResponse struct {
 	CompanyID           string  `json:"company_id"`
 	Name                string  `json:"name"`
 	Description         *string `json:"description"`
+	Voltage             *int    `json:"voltage"`
 	DeviceEUI           string  `json:"device_eui"`
 	AppKey              string  `json:"app_key"`
 	State               string  `json:"state"`
@@ -30,6 +31,7 @@ type UpdateSensorRequest struct {
 	Name                *string `json:"name"`
 	ChirpstackProfileID *string `json:"device_profile_id"`
 	Description         *string `json:"description"`
+	Voltage             *int    `json:"voltage"`
 	FactoryID           *string `json:"factory_id"`
 	FactoryAreaID       *string `json:"factory_area_id"`     // Optional — UUID, omit if service not yet available
 	ProductionResource  *string `json:"production_resource"` // Optional — UUID, omit if service not yet available
@@ -44,6 +46,7 @@ type CreateSensorRequest struct {
 	AppKey              string  `json:"app_key"               binding:"required"`
 	ChirpstackProfileID string  `json:"device_profile_id"     binding:"required"`
 	Description         *string `json:"description"`
+	Voltage             *int    `json:"voltage"`
 	FactoryID           string  `json:"factory_id"            binding:"required"`
 	FactoryAreaID       string  `json:"factory_area_id"       binding:"required"`
 	ProductionResource  *string `json:"production_resource"` // Optional — UUID, omit if service not yet available

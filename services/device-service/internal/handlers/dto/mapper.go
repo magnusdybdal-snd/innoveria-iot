@@ -133,6 +133,7 @@ func MapUpdateSensorDTOToDomain(from UpdateSensorRequest) domain.Sensor {
 	return domain.Sensor{
 		Name:                ptrutil.Deref(from.Name),
 		Description:         from.Description,
+		Voltage:             from.Voltage,
 		FactoryID:           ptrutil.Deref(from.FactoryID),
 		FactoryAreaID:       ptrutil.Deref(from.FactoryAreaID),
 		ChirpstackProfileID: ptrutil.Deref(from.ChirpstackProfileID),
@@ -156,6 +157,7 @@ func MapCreateSensorDTOToDomain(from CreateSensorRequest) domain.Sensor {
 		CompanyID:           from.CompanyID,
 		Name:                from.Name,
 		Description:         from.Description,
+		Voltage:             from.Voltage,
 		DeviceEUI:           strings.ToLower(from.DeviceEUI),
 		AppKey:              from.AppKey,
 		ChirpstackProfileID: from.ChirpstackProfileID,
@@ -187,6 +189,7 @@ func mapSensor(from domain.Sensor) SensorResponse {
 		CompanyID:           from.CompanyID,
 		Name:                from.Name,
 		Description:         from.Description,
+		Voltage:             from.Voltage,
 		DeviceEUI:           from.DeviceEUI,
 		AppKey:              from.AppKey,
 		State:               string(from.State),
