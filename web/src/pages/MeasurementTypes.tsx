@@ -94,10 +94,18 @@ export default function MeasurementTypes() {
   const { show, hide, snackbar } = useSnackbar();
 
   const fetchMeasurementTypes = () => {
-    getMeasurementTypesAll().then((data) => {
-      setMeasurementTypes(data);
-      setIsLoading(false);
-    });
+    setIsLoading(true);
+
+    getMeasurementTypesAll()
+      .then((data) => {
+        setMeasurementTypes(data);
+      })
+      .catch(() => {
+        show("Failed to fetch measurement types", SNACKBAR_SEVERITY.ERROR);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
   //TODO: use deletion confirmation dialog when it has been implemented.
