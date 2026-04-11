@@ -1,7 +1,7 @@
 import { BarChart } from "@mui/x-charts/BarChart";
 
 import type { BucketResponse } from "@entities/context/model/contextSchema";
-import { downsample } from "@shared/lib";
+import { buildChartAxisConfig, downsample } from "@shared/lib";
 
 interface BucketBarChartProps {
   buckets: BucketResponse[];
@@ -19,20 +19,19 @@ interface BucketBarChartProps {
 export function BucketBarChart({ buckets, unit }: BucketBarChartProps) {
   const sampled = downsample(buckets);
 
-  const labels = sampled.map((b) =>
-    new Date(b.periodStart).toLocaleString(undefined, {
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    }),
-  );
+  const timestamps = sampled.map((b) => new Date(b.periodStart));
+  const { labels, tickLabelInterval } = buildChartAxisConfig(timestamps);
   const values = sampled.map((b) => b.value);
 
   return (
     <BarChart
       xAxis={[
-        { scaleType: "band", data: labels, tickLabelStyle: { fontSize: 11 } },
+        {
+          scaleType: "band",
+          data: labels,
+          tickLabelStyle: { fontSize: 11 },
+          tickLabelInterval,
+        },
       ]}
       yAxis={[{ label: unit }]}
       series={[{ data: values, color: "#fe8019" }]}
