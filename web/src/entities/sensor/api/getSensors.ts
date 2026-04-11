@@ -21,28 +21,23 @@ type RawSensorListApiResponse = {
 /**
  * Fetches all sensors from the collection-service via the API gateway.
  * Maps snake_case API response keys to camelCase.
- * @returns Array of SensorApiResponse objects, or an empty array if the request fails
+ * @returns Array of SensorApiResponse objects
  */
 export const getSensors = async (): Promise<SensorApiResponse[]> => {
-  try {
-    const data = await apiRequest<RawSensorListApiResponse>(
-      serviceClient,
-      API_ROUTES.sensors,
-      "GET",
-    );
+  const data = await apiRequest<RawSensorListApiResponse>(
+    serviceClient,
+    API_ROUTES.sensors,
+    "GET",
+  );
 
-    return (data.sensors ?? []).map((s) => ({
-      id: s.id,
-      deviceEui: s.device_eui,
-      name: s.name,
-      factory: s.factory_id,
-      status: s.status,
-      machine: s.production_resource ?? "",
-      lastReading: s.last_seen_at,
-      sensorProfileId: s.device_profile_id,
-    }));
-  } catch (error) {
-    console.error("Failed to fetch sensors:", error);
-    return [];
-  }
+  return (data.sensors ?? []).map((s) => ({
+    id: s.id,
+    deviceEui: s.device_eui,
+    name: s.name,
+    factory: s.factory_id,
+    status: s.status,
+    machine: s.production_resource ?? "",
+    lastReading: s.last_seen_at,
+    sensorProfileId: s.device_profile_id,
+  }));
 };
