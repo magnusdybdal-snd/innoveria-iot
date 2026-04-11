@@ -24,3 +24,8 @@ func (s *RuleServiceImpl) GetRules(ctx context.Context, companyID string) ([]dom
 func (s *RuleServiceImpl) CreateRule(ctx context.Context, rule domain.AggregationRule) (string, error) {
 	return s.repo.Create(ctx, rule)
 }
+
+// DeleteRule deletes an aggregation rule by its ID.
+func (s *RuleServiceImpl) DeleteRule(ctx context.Context, ruleID string) error {
+	return s.repo.DeleteByID(ctx, ruleID)
+}
