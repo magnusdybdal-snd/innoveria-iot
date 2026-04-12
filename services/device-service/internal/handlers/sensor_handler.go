@@ -193,6 +193,11 @@ func GetSampleEUI(svc domain.SensorService) http.HandlerFunc {
 			return
 		}
 
+		if eui == "" {
+			json.HandleError(w, http.StatusInternalServerError, fmt.Errorf("sample EUI is empty"), "internal server error")
+			return
+		}
+
 		resp := dto.MapSampleEUIDomainToDTO(eui)
 
 		if err := json.Encode(w, http.StatusOK, resp); err != nil {

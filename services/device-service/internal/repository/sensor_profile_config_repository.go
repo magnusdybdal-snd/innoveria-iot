@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
+
 	"innoveria-iot/device-service/internal/domain"
 	"innoveria-iot/pkg/dbutil"
 
@@ -44,6 +46,7 @@ func (r *SensorProfileConfigRepository) Get(ctx context.Context, chirpstackProfi
 	)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
+			slog.Debug("no sensor profile config found, returning default", "chirpstack_profile_id", chirpstackProfileID)
 			return domain.SensorProfileConfig{ChirpstackProfileID: chirpstackProfileID, ConfigurableSchema: false}, nil
 		}
 		return domain.SensorProfileConfig{}, fmt.Errorf("get sensor profile config: %w", err)

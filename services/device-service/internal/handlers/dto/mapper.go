@@ -265,7 +265,7 @@ func MapSensorProfileConfigDomainToDTO(from domain.SensorProfileConfig) SensorPr
 	}
 }
 
-// MapPutSensorProfileConfigDTOToDomain maps a PatchSensorProfileConfigRequest to a domain SensorProfileConfig.
+// MapPutSensorProfileConfigDTOToDomain maps a PutSensorProfileConfigRequest to a domain SensorProfileConfig.
 func MapPutSensorProfileConfigDTOToDomain(profileID string, from PutSensorProfileConfigRequest) domain.SensorProfileConfig {
 	return domain.SensorProfileConfig{
 		ChirpstackProfileID: profileID,

@@ -191,6 +191,10 @@ definitions:
   dto.PutSensorProfileConfigRequest:
     properties:
       configurable_schema:
+        description: |-
+          ConfigurableSchema uses *bool to distinguish an explicit false from a missing field,
+          since Go's JSON decoder cannot differentiate the two for plain bool types.
+          The field is required — a nil value is rejected with 400.
         type: boolean
     type: object
   dto.SampleEUIResponse:

@@ -1075,6 +1075,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "configurable_schema": {
+                    "description": "ConfigurableSchema uses *bool to distinguish an explicit false from a missing field,\nsince Go's JSON decoder cannot differentiate the two for plain bool types.\nThe field is required — a nil value is rejected with 400.",
                     "type": "boolean"
                 }
             }
