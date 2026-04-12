@@ -66,7 +66,7 @@ func NewRouter(
 
 	// Sensor profile config routes:
 	mux.HandleFunc("GET "+SENSOR_PROFILE_CONFIG_ROUTE_ID, handlers.GetSensorProfileConfig(sensorProfileConfigSvc))
-	mux.HandleFunc("PATCH "+SENSOR_PROFILE_CONFIG_ROUTE_ID, handlers.PatchSensorProfileConfig(sensorProfileConfigSvc))
+	mux.HandleFunc("PUT "+SENSOR_PROFILE_CONFIG_ROUTE_ID, handlers.PutSensorProfileConfig(sensorProfileConfigSvc))
 
 	// Swagger docs
 	if enableSwagger {

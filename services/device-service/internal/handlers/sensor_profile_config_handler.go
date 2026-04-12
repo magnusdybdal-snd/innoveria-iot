@@ -44,18 +44,18 @@ func GetSensorProfileConfig(svc domain.SensorProfileConfigService) http.HandlerF
 	}
 }
 
-// PatchSensorProfileConfig updates the configuration for a Chirpstack device profile.
+// PutSensorProfileConfig updates the configuration for a Chirpstack device profile.
 //
 // @Summary		Update sensor profile config
 // @Tags		sensor-profile-config
 // @Accept		json
 // @Param		profile_id	path	string								true	"Chirpstack profile ID"
-// @Param		body		body	dto.PatchSensorProfileConfigRequest	true	"Sensor profile config payload"
+// @Param		body		body	dto.PutSensorProfileConfigRequest	true	"Sensor profile config payload"
 // @Success		204
 // @Failure		400
 // @Failure		500
-// @Router		/sensor-profile-config/{profile_id} [patch]
-func PatchSensorProfileConfig(svc domain.SensorProfileConfigService) http.HandlerFunc {
+// @Router		/sensor-profile-config/{profile_id} [put]
+func PutSensorProfileConfig(svc domain.SensorProfileConfigService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
@@ -65,13 +65,17 @@ func PatchSensorProfileConfig(svc domain.SensorProfileConfigService) http.Handle
 			return
 		}
 
-		payload, err := json.Decode[dto.PatchSensorProfileConfigRequest](r)
+		payload, err := json.Decode[dto.PutSensorProfileConfigRequest](r)
+		if payload.ConfigurableSchema == nil {
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("configurable_schema is required"), "bad request")
+			return
+		}
 		if err != nil {
 			json.HandleError(w, http.StatusBadRequest, err, "bad request")
 			return
 		}
 
-		data := dto.MapPatchSensorProfileConfigDTOToDomain(profileID, payload)
+		data := dto.MapPutSensorProfileConfigDTOToDomain(profileID, payload)
 
 		if err := svc.Upsert(ctx, data); err != nil {
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")

@@ -6,7 +6,7 @@ type SensorProfileConfigResponse struct {
 	ConfigurableSchema  bool   `json:"configurable_schema"`
 }
 
-// PatchSensorProfileConfigRequest represents the fields a caller can update on a sensor profile config.
-type PatchSensorProfileConfigRequest struct {
-	ConfigurableSchema bool `json:"configurable_schema"`
+// PutSensorProfileConfigRequest represents the fields a caller can update on a sensor profile config.
+type PutSensorProfileConfigRequest struct {
+	ConfigurableSchema *bool `json:"configurable_schema"`
 }

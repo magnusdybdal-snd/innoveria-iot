@@ -265,11 +265,11 @@ func MapSensorProfileConfigDomainToDTO(from domain.SensorProfileConfig) SensorPr
 	}
 }
 
-// MapPatchSensorProfileConfigDTOToDomain maps a PatchSensorProfileConfigRequest to a domain SensorProfileConfig.
-func MapPatchSensorProfileConfigDTOToDomain(profileID string, from PatchSensorProfileConfigRequest) domain.SensorProfileConfig {
+// MapPutSensorProfileConfigDTOToDomain maps a PatchSensorProfileConfigRequest to a domain SensorProfileConfig.
+func MapPutSensorProfileConfigDTOToDomain(profileID string, from PutSensorProfileConfigRequest) domain.SensorProfileConfig {
 	return domain.SensorProfileConfig{
 		ChirpstackProfileID: profileID,
-		ConfigurableSchema:  from.ConfigurableSchema,
+		ConfigurableSchema:  *from.ConfigurableSchema,
 	}
 }
 
