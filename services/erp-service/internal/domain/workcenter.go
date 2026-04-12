@@ -1,13 +1,13 @@
 package domain
 
-type WorkCenterType int
+type WorkCenterType string
 
 const (
-	Machine WorkCenterType = iota
-	ManualWork
-	SubContract
-	Pool
-	Pick
+	WorkCenterTypeMachine     WorkCenterType = "machine"
+	WorkCenterTypeManualWork  WorkCenterType = "manual_work"
+	WorkCenterTypeSubContract WorkCenterType = "sub_contract"
+	WorkCenterTypePool        WorkCenterType = "pool"
+	WorkCenterTypePick        WorkCenterType = "pick"
 )
 
 type WorkCenter struct {
