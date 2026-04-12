@@ -58,8 +58,6 @@ const (
 	// SENSOR_SAMPLE_EUI_ROUTE is the route for the sample EUI endpoint.
 	SENSOR_SAMPLE_EUI_ROUTE = DEVICE_ROUTE + "/sensors/sample-eui"
 
-	// SENSOR_PROFILE_CONFIG_ROUTE is the route for sensor profile config collection endpoints.
-	SENSOR_PROFILE_CONFIG_ROUTE = DEVICE_ROUTE + "/sensor-profile-config"
 	// SENSOR_PROFILE_CONFIG_ROUTE_ID is the route for single sensor profile config endpoints, with a {profile_id} path parameter.
 	SENSOR_PROFILE_CONFIG_ROUTE_ID = DEVICE_ROUTE + "/sensor-profile-config/{profile_id}"
 )

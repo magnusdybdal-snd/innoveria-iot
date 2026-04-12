@@ -444,6 +444,78 @@ const docTemplate = `{
                 }
             }
         },
+        "/sensor-profile-config/{profile_id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "sensor-profile-config"
+                ],
+                "summary": "Get sensor profile config",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Chirpstack profile ID",
+                        "name": "profile_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SensorProfileConfigResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "sensor-profile-config"
+                ],
+                "summary": "Update sensor profile config",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Chirpstack profile ID",
+                        "name": "profile_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Sensor profile config payload",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.PutSensorProfileConfigRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/sensor-profiles": {
             "get": {
                 "description": "Not authenticated — every user can access this list.",
@@ -524,6 +596,43 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/sensors/sample-eui": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "sensors"
+                ],
+                "summary": "Get a sample device EUI for a Chirpstack profile",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Chirpstack profile ID",
+                        "name": "chirpstack_profile_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SampleEUIResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not Found"
                     },
                     "500": {
                         "description": "Internal Server Error"
@@ -959,6 +1068,22 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.PutSensorProfileConfigRequest": {
+            "type": "object",
+            "properties": {
+                "configurable_schema": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "dto.SampleEUIResponse": {
+            "type": "object",
+            "properties": {
+                "device_eui": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.SavePayloadSchemaLabelsRequest": {
             "type": "object",
             "required": [
@@ -1030,6 +1155,17 @@ const docTemplate = `{
                 },
                 "unit": {
                     "type": "string"
+                }
+            }
+        },
+        "dto.SensorProfileConfigResponse": {
+            "type": "object",
+            "properties": {
+                "chirpstack_profile_id": {
+                    "type": "string"
+                },
+                "configurable_schema": {
+                    "type": "boolean"
                 }
             }
         },

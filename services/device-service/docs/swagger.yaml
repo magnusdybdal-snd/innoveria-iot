@@ -188,6 +188,16 @@ definitions:
       unit:
         type: string
     type: object
+  dto.PutSensorProfileConfigRequest:
+    properties:
+      configurable_schema:
+        type: boolean
+    type: object
+  dto.SampleEUIResponse:
+    properties:
+      device_eui:
+        type: string
+    type: object
   dto.SavePayloadSchemaLabelsRequest:
     properties:
       labels:
@@ -235,6 +245,13 @@ definitions:
         type: string
       unit:
         type: string
+    type: object
+  dto.SensorProfileConfigResponse:
+    properties:
+      chirpstack_profile_id:
+        type: string
+      configurable_schema:
+        type: boolean
     type: object
   dto.SensorProfileListResponse:
     properties:
@@ -618,6 +635,53 @@ paths:
       summary: List profiles with unlabeled payload schema rows
       tags:
       - payload-schema
+  /sensor-profile-config/{profile_id}:
+    get:
+      parameters:
+      - description: Chirpstack profile ID
+        in: path
+        name: profile_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.SensorProfileConfigResponse'
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Get sensor profile config
+      tags:
+      - sensor-profile-config
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Chirpstack profile ID
+        in: path
+        name: profile_id
+        required: true
+        type: string
+      - description: Sensor profile config payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.PutSensorProfileConfigRequest'
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Update sensor profile config
+      tags:
+      - sensor-profile-config
   /sensor-profiles:
     get:
       description: Not authenticated — every user can access this list.
@@ -766,6 +830,30 @@ paths:
         "500":
           description: Internal Server Error
       summary: Update a sensor
+      tags:
+      - sensors
+  /sensors/sample-eui:
+    get:
+      parameters:
+      - description: Chirpstack profile ID
+        in: query
+        name: chirpstack_profile_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.SampleEUIResponse'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get a sample device EUI for a Chirpstack profile
       tags:
       - sensors
 swagger: "2.0"

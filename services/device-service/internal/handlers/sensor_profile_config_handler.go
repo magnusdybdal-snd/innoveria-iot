@@ -17,6 +17,7 @@ import (
 // @Produce		json
 // @Param		profile_id	path		string	true	"Chirpstack profile ID"
 // @Success		200			{object}	dto.SensorProfileConfigResponse
+// @Failure     400
 // @Failure		500
 // @Router		/sensor-profile-config/{profile_id} [get]
 func GetSensorProfileConfig(svc domain.SensorProfileConfigService) http.HandlerFunc {
