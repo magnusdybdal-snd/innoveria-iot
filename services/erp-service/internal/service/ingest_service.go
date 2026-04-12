@@ -3,8 +3,7 @@ package service
 import "context"
 
 // IngestServiceImpl contains application logic for ERP ingest use-cases.
-type IngestServiceImpl struct {
-}
+type IngestServiceImpl struct{}
 
 // New creates a new ingest service instance.
 func New() *IngestServiceImpl {

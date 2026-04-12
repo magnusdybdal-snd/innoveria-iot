@@ -10,7 +10,7 @@ const (
 	ERP_ROUTE    = API_ROUTE + "/erp"
 	INGEST_ROUTE = ERP_ROUTE + "/ingest"
 
-	ORDER_OPERATIONS_ROUTE  = INGEST_ROUTE + "/order-operations"
-	ORDER_REPORTINGS_ROUTE  = INGEST_ROUTE + "/order-reportings"
-	ORDER_WORKCENTERS_ROUTE = INGEST_ROUTE + "/workcenters"
+	ORDER_OPERATIONS_ROUTE = INGEST_ROUTE + "/order-operations"
+	ORDER_REPORTINGS_ROUTE = INGEST_ROUTE + "/order-reportings"
+	WORKCENTERS_ROUTE      = INGEST_ROUTE + "/workcenters"
 )

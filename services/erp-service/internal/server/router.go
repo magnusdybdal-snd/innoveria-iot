@@ -12,6 +12,10 @@ func NewRouter() *http.ServeMux {
 
 	mux.HandleFunc("GET /", handlers.Root)
 
+	mux.HandleFunc("POST "+ORDER_OPERATIONS_ROUTE, handlers.PostIngestOrderOperations())
+	mux.HandleFunc("POST "+ORDER_REPORTINGS_ROUTE, handlers.PostIngestOrderOperations())
+	mux.HandleFunc("POST "+WORKCENTERS_ROUTE, handlers.PostIngestOrderOperations())
+
 	// Swagger docs
 	// mux.HandleFunc("GET /swagger/", httpSwagger.WrapHandler)
 
