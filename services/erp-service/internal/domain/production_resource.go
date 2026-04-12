@@ -1,5 +1,7 @@
 package domain
 
+import "time"
+
 type WorkCenterType string
 
 const (
@@ -10,12 +12,13 @@ const (
 	WorkCenterTypePick        WorkCenterType = "pick"
 )
 
-type WorkCenter struct {
-	ID int
-	// CompanyID
-	// FactoryID
+type ProductionResource struct {
+	ID        int
+	CompanyID int
+	FactoryID int
 	// FactoryAreaID ???
 	Number      string
 	Description string
 	Type        WorkCenterType
+	ReceivedAt  time.Time
 }

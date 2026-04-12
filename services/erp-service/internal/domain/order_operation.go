@@ -15,7 +15,9 @@ const (
 
 type OrderOperation struct {
 	ID                      int
-	WorkCenterID            int
+	CompanyID               int
+	FactoryID               int
+	ProductionResource      int
 	ReportedQuantity        float64
 	RestQuantity            float64
 	OrderId                 int64 // referenced by Order, which is NOT retreived.
@@ -27,4 +29,5 @@ type OrderOperation struct {
 	Status                  OperationStatus
 	WorkshopOperationStatus OperationStatus
 	Description             *string
+	ReceivedAt              time.Time
 }

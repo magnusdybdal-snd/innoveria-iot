@@ -34,7 +34,7 @@ const (
 	OrderStatusHistorical     OrderStatus = "historical"
 )
 
-type OrderReporting struct {
+type OrderReport struct {
 	ID                 int
 	OperationID        int // referenced by OrderOperation
 	Quantity           float64
@@ -45,4 +45,5 @@ type OrderReporting struct {
 	WipLocation        *string
 	PreviousNodeStatus OrderStatus
 	ReportingTimestamp time.Time
+	ReceivedAt         time.Time
 }
