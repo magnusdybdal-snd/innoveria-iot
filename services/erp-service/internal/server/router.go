@@ -12,6 +12,7 @@ func NewRouter() *http.ServeMux {
 
 	mux.HandleFunc("GET /", handlers.Root)
 
+	// ERP AGENT SERVICE Endpoints
 	mux.HandleFunc("POST "+ORDER_OPERATIONS_ROUTE, handlers.PostIngestOrderOperations())
 	mux.HandleFunc("POST "+ORDER_REPORTINGS_ROUTE, handlers.PostIngestOrderOperations())
 	mux.HandleFunc("POST "+WORKCENTERS_ROUTE, handlers.PostIngestOrderOperations())
