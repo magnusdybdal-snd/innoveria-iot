@@ -36,6 +36,7 @@ type SensorService interface {
 	GetByProductionResourceID(ctx context.Context, productionResourceID string) ([]Sensor, error)
 	// GetSampleEUI returns a single device EUI from any sensor registered on the given Chirpstack profile.
 	// Used by the admin UI to obtain a sample EUI for payload key discovery.
+	// Returns domain.ErrNotFound (wrapped) if no sensor exists for the given profile.
 	GetSampleEUI(ctx context.Context, chirpstackProfileID string) (string, error)
 	Delete(ctx context.Context, deviceID string) error
 }

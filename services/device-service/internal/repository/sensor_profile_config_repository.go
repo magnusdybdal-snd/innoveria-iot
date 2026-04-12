@@ -25,12 +25,12 @@ const (
 	`
 )
 
-// SensorProfileConfigRepository
+// SensorProfileConfigRepository handles persistence of sensor profile configuration in the database.
 type SensorProfileConfigRepository struct {
 	db *dbutil.DB
 }
 
-// NewSensorProfileConfigRepository
+// NewSensorProfileConfigRepository creates a new SensorProfileConfigRepository with the given database.
 func NewSensorProfileConfigRepository(db *dbutil.DB) *SensorProfileConfigRepository {
 	return &SensorProfileConfigRepository{db: db}
 }

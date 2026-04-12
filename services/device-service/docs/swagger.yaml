@@ -672,6 +672,8 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/dto.PutSensorProfileConfigRequest'
+      produces:
+      - application/json
       responses:
         "204":
           description: No Content
@@ -679,7 +681,7 @@ paths:
           description: Bad Request
         "500":
           description: Internal Server Error
-      summary: Update sensor profile config
+      summary: Set sensor profile config
       tags:
       - sensor-profile-config
   /sensor-profiles:

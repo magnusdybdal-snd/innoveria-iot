@@ -45,11 +45,12 @@ func GetSensorProfileConfig(svc domain.SensorProfileConfigService) http.HandlerF
 	}
 }
 
-// PutSensorProfileConfig updates the configuration for a Chirpstack device profile.
+// PutSensorProfileConfig sets the configuration for a Chirpstack device profile, creating it if it does not exist.
 //
-// @Summary		Update sensor profile config
+// @Summary		Set sensor profile config
 // @Tags		sensor-profile-config
 // @Accept		json
+// @Produce		json
 // @Param		profile_id	path	string								true	"Chirpstack profile ID"
 // @Param		body		body	dto.PutSensorProfileConfigRequest	true	"Sensor profile config payload"
 // @Success		204
@@ -67,12 +68,13 @@ func PutSensorProfileConfig(svc domain.SensorProfileConfigService) http.HandlerF
 		}
 
 		payload, err := json.Decode[dto.PutSensorProfileConfigRequest](r)
-		if payload.ConfigurableSchema == nil {
-			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("configurable_schema is required"), "bad request")
-			return
-		}
 		if err != nil {
 			json.HandleError(w, http.StatusBadRequest, err, "bad request")
+			return
+		}
+
+		if payload.ConfigurableSchema == nil {
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("configurable_schema is required"), "bad request")
 			return
 		}
 

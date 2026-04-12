@@ -481,10 +481,13 @@ const docTemplate = `{
                 "consumes": [
                     "application/json"
                 ],
+                "produces": [
+                    "application/json"
+                ],
                 "tags": [
                     "sensor-profile-config"
                 ],
-                "summary": "Update sensor profile config",
+                "summary": "Set sensor profile config",
                 "parameters": [
                     {
                         "type": "string",
