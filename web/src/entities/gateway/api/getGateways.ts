@@ -17,26 +17,21 @@ type RawGatewayApiResponse = {
 };
 /**
  * Fetches all gateways from the collection-service via the API gateway.
- * @returns Array of GatewayApiResponse objects, or an empty array if the request fails
+ * @returns Array of GatewayApiResponse objects
  */
 export const getGateways = async (): Promise<GatewayApiResponse[]> => {
-  try {
-    const data = await apiRequest<RawGatewayListApiResponse>(
-      serviceClient,
-      API_ROUTES.gateways,
-      "GET",
-    );
+  const data = await apiRequest<RawGatewayListApiResponse>(
+    serviceClient,
+    API_ROUTES.gateways,
+    "GET",
+  );
 
-    return (data.gateways ?? []).map((a) => ({
-      id: a.id,
-      companyId: a.company_id,
-      gatewayEui: a.gateway_eui,
-      name: a.name,
-      status: a.status,
-      lastSeenAt: a.last_seen_at,
-    }));
-  } catch (error) {
-    console.error("Failed to fetch gateways:", error);
-    return [];
-  }
+  return (data.gateways ?? []).map((a) => ({
+    id: a.id,
+    companyId: a.company_id,
+    gatewayEui: a.gateway_eui,
+    name: a.name,
+    status: a.status,
+    lastSeenAt: a.last_seen_at,
+  }));
 };

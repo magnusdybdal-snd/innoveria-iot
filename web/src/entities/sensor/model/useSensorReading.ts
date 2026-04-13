@@ -1,21 +1,22 @@
 import { useCallback, useEffect, useState } from "react";
 
-import { getSensors } from "@entities/sensor/api";
-import type { SensorApiResponse } from "@entities/sensor/model/sensorSchema";
+import { fetchSensorReading } from "@entities/sensor/api";
+import type { SensorReadingApiResponse } from "@entities/sensor/model/sensorSchema";
 
-export interface UseSensorsResult {
-  sensors: SensorApiResponse[];
+export interface UseSensorReadingResult {
+  reading: SensorReadingApiResponse | null;
   isLoading: boolean;
   error: Error | null;
   refetch: () => void;
 }
 
 /**
- * Fetches and manages the list of sensors from the collection-service.
- * @returns Sensors array, loading flag, error state, and a stable refetch callback.
+ * Fetches the latest sensor reading for a given device EUI and exposes loading/error state.
+ * @param deviceEUI - LoRaWAN Device EUI used to identify the sensor
+ * @returns Reading, loading flag, error state, and a stable refetch callback.
  */
-export function useSensors(): UseSensorsResult {
-  const [sensors, setSensors] = useState<SensorApiResponse[]>([]);
+export function useSensorReading(deviceEUI: string): UseSensorReadingResult {
+  const [reading, setReading] = useState<SensorReadingApiResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [refetchIndex, setRefetchIndex] = useState(0);
@@ -27,10 +28,10 @@ export function useSensors(): UseSensorsResult {
 
   useEffect(() => {
     let cancelled = false;
-    getSensors()
+    fetchSensorReading(deviceEUI)
       .then((data) => {
         if (!cancelled) {
-          setSensors(data);
+          setReading(data);
           setIsLoading(false);
         }
       })
@@ -43,7 +44,7 @@ export function useSensors(): UseSensorsResult {
     return () => {
       cancelled = true;
     };
-  }, [refetchIndex]);
+  }, [deviceEUI, refetchIndex]);
 
-  return { sensors, isLoading, error, refetch };
+  return { reading, isLoading, error, refetch };
 }

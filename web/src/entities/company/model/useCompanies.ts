@@ -1,21 +1,21 @@
 import { useCallback, useEffect, useState } from "react";
 
-import { getSensors } from "@entities/sensor/api";
-import type { SensorApiResponse } from "@entities/sensor/model/sensorSchema";
+import { getCompanies } from "@entities/company/api";
+import type { CompanyApiResponse } from "@entities/company/model/companySchema";
 
-export interface UseSensorsResult {
-  sensors: SensorApiResponse[];
+export interface UseCompaniesResult {
+  companies: CompanyApiResponse[];
   isLoading: boolean;
   error: Error | null;
   refetch: () => void;
 }
 
 /**
- * Fetches and manages the list of sensors from the collection-service.
- * @returns Sensors array, loading flag, error state, and a stable refetch callback.
+ * Fetches all companies and exposes loading/error state.
+ * @returns Companies array, loading flag, error state, and a stable refetch callback.
  */
-export function useSensors(): UseSensorsResult {
-  const [sensors, setSensors] = useState<SensorApiResponse[]>([]);
+export function useCompanies(): UseCompaniesResult {
+  const [companies, setCompanies] = useState<CompanyApiResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [refetchIndex, setRefetchIndex] = useState(0);
@@ -27,10 +27,10 @@ export function useSensors(): UseSensorsResult {
 
   useEffect(() => {
     let cancelled = false;
-    getSensors()
+    getCompanies()
       .then((data) => {
         if (!cancelled) {
-          setSensors(data);
+          setCompanies(data);
           setIsLoading(false);
         }
       })
@@ -45,5 +45,5 @@ export function useSensors(): UseSensorsResult {
     };
   }, [refetchIndex]);
 
-  return { sensors, isLoading, error, refetch };
+  return { companies, isLoading, error, refetch };
 }

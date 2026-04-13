@@ -1,24 +1,20 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
-import { getFactories, type FactoryApiResponse } from "@/entities/factory";
-import {
-  getFactoryAreas,
-  type FactoryAreaApiResponse,
-} from "@/entities/factoryArea";
 import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
 
+import { useFactories } from "@entities/factory";
+import { useFactoryAreas } from "@entities/factoryArea";
 import {
-  getSensorProfiles,
   postSensor,
   SensorAllInfoPopUp,
   SensorMainInfo,
   SensorsGenInfo,
   sortSensors,
+  useSensorProfiles,
   useSensors,
   type SensorApiResponse,
-  type SensorProfileApiResponse,
   type SensorSortKey,
   type SortDirection,
 } from "@entities/sensor";
@@ -60,17 +56,13 @@ const sortableColumns: SensorSortKey[] = [
  */
 export default function Sensors() {
   const { sensors, isLoading, refetch } = useSensors();
+  const { factories } = useFactories();
+  const { factoryAreas } = useFactoryAreas();
+  const { sensorProfiles } = useSensorProfiles();
   const [openAdd, setOpenAdd] = useState(false);
   const [addError, setAddError] = useState<string | null>(null);
   const [selectedSensor, setSelectedSensor] =
     useState<SensorApiResponse | null>(null);
-  const [sensorProfiles, setSensorProfiles] = useState<
-    SensorProfileApiResponse[]
-  >([]);
-  const [factory, setFactory] = useState<FactoryApiResponse[]>([]); // factory location sensor
-  const [factoryAreas, setFactoryAreas] = useState<FactoryAreaApiResponse[]>(
-    [],
-  );
 
   const { show, hide, snackbar } = useSnackbar();
   const [tabValue, setTabValue] = useState<number | string>(0);
@@ -81,18 +73,6 @@ export default function Sensors() {
   ) => {
     setTabValue(newValue);
   };
-
-  useEffect(() => {
-    getSensorProfiles().then(setSensorProfiles);
-  }, []);
-
-  useEffect(() => {
-    getFactories().then(setFactory);
-  }, []);
-
-  useEffect(() => {
-    getFactoryAreas().then(setFactoryAreas);
-  }, []);
 
   // Handler for deleting a sensor; refreshes list on success
   const handleDeleteSensor = (id: string) => {
@@ -215,7 +195,7 @@ export default function Sensors() {
             aria-label="scrollable auto tabs example"
           >
             <Tab label="All" value={0} />
-            {factory.map((factory) => (
+            {factories.map((factory) => (
               <Tab label={factory.name} value={factory.id} />
             ))}
           </Tabs>
@@ -270,7 +250,7 @@ export default function Sensors() {
         profileOptions={sensorProfiles}
         onAdd={handleAddSensor}
         submitError={addError}
-        factoryOptions={factory}
+        factoryOptions={factories}
         factoryAreaOptions={factoryAreas}
       />
       <AppSnackbar
