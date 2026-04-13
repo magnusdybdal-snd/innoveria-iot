@@ -31,6 +31,7 @@ export default function AppRoutes() {
         <Route path="/Admin/Companies" element={<Companies />} />
         <Route path="/Admin/Factories" element={<Factories />} />
         <Route path="/Admin/Measurement" element={<MeasurementTypes />} />
+        <Route path="/Admin/PayloadSchema" element={<Home />} />
         <Route path="/Admin/Users" element={<Home />} />
         <Route
           path="*"

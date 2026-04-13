@@ -19,4 +19,6 @@ export const API_ROUTES = {
   refresh: `/v1/auth/refresh`,
   measurementTypes: `/v1/device/measurement-types`,
   measurementTypesAll: `/v1/device/measurement-types/all`,
+  payloadSchema: `/v1/device/payload-schema/{profile_id}`,
+  payloadTags: `/v1/collection/collection/payload-tags`,
 };
