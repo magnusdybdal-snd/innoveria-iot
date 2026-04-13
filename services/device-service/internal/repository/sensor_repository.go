@@ -12,19 +12,19 @@ import (
 
 const (
 	createSensorQuery = `
-		INSERT INTO device.sensor (company_id, device_eui, app_key, name, description, voltage, state, factory_id, factory_area_id, production_resource_id, chirpstack_profile_id)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-		RETURNING sensor_id, company_id, device_eui, app_key, name, description, voltage, state, factory_id, factory_area_id, production_resource_id, chirpstack_profile_id, created_at, updated_at
+		INSERT INTO device.sensor (company_id, device_eui, app_key, name, description, electricity_sensor, voltage, state, factory_id, factory_area_id, production_resource_id, chirpstack_profile_id)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+		RETURNING sensor_id, company_id, device_eui, app_key, name, description, electricity_sensor, voltage, state, factory_id, factory_area_id, production_resource_id, chirpstack_profile_id, created_at, updated_at
 	`
 
 	findSensorByIDQuery = `
-		SELECT sensor_id, company_id, device_eui, app_key, name, description, voltage, state, factory_id, factory_area_id, production_resource_id, chirpstack_profile_id, created_at, updated_at
+		SELECT sensor_id, company_id, device_eui, app_key, name, description, electricity_sensor, voltage, state, factory_id, factory_area_id, production_resource_id, chirpstack_profile_id, created_at, updated_at
 		FROM device.sensor
 		WHERE sensor_id = $1
 	`
 
 	findAllSensorsByCompanyIDQuery = `
-		SELECT sensor_id, company_id, device_eui, app_key, name, description, voltage, state, factory_id, factory_area_id, production_resource_id, chirpstack_profile_id, created_at, updated_at
+		SELECT sensor_id, company_id, device_eui, app_key, name, description, electricity_sensor, voltage, state, factory_id, factory_area_id, production_resource_id, chirpstack_profile_id, created_at, updated_at
 		FROM device.sensor
 		WHERE company_id = $1
 		ORDER BY created_at ASC
@@ -32,14 +32,14 @@ const (
 
 	// TODO: Add AND company_id = $2 when auth is wired
 	findByProductionResourceIDQuery = `
-		SELECT sensor_id, company_id, device_eui, app_key, name, description, voltage, state, factory_id, factory_area_id, production_resource_id, chirpstack_profile_id, created_at, updated_at
+		SELECT sensor_id, company_id, device_eui, app_key, name, description, electricity_sensor, voltage, state, factory_id, factory_area_id, production_resource_id, chirpstack_profile_id, created_at, updated_at
 		FROM device.sensor
 		WHERE production_resource_id = $1
 		ORDER BY created_at ASC
 	`
 
 	findSensorByEUIQuery = `
-		SELECT sensor_id, company_id, device_eui, app_key, name, description, voltage, state, factory_id, factory_area_id, production_resource_id, chirpstack_profile_id, created_at, updated_at
+		SELECT sensor_id, company_id, device_eui, app_key, name, description, electricity_sensor, voltage, state, factory_id, factory_area_id, production_resource_id, chirpstack_profile_id, created_at, updated_at
 		FROM device.sensor
 		WHERE device_eui = $1
 	`
@@ -52,8 +52,8 @@ const (
 
 	updateSensorQuery = `
 		UPDATE device.sensor
-		SET name = $1, description = $2, voltage = $3, factory_id = $4, factory_area_id = $5, chirpstack_profile_id = $6, updated_at = now()
-		WHERE sensor_id = $7
+		SET name = $1, description = $2, electricity_sensor = $3, voltage = $4, factory_id = $5, factory_area_id = $6, chirpstack_profile_id = $7, updated_at = now()
+		WHERE sensor_id = $8
 	`
 
 	deleteSensorQuery = `
@@ -83,6 +83,7 @@ func (r *SensorRepository) Create(ctx context.Context, sensor domain.Sensor) (do
 		sensor.AppKey,
 		sensor.Name,
 		sensor.Description,
+		sensor.ElectricitySensor,
 		sensor.Voltage,
 		sensor.State,
 		sensor.FactoryID,
@@ -96,6 +97,7 @@ func (r *SensorRepository) Create(ctx context.Context, sensor domain.Sensor) (do
 		&out.AppKey,
 		&out.Name,
 		&out.Description,
+		&out.ElectricitySensor,
 		&out.Voltage,
 		&out.State,
 		&out.FactoryID,
@@ -123,6 +125,7 @@ func (r *SensorRepository) FindByID(ctx context.Context, sensorID string) (domai
 		&out.AppKey,
 		&out.Name,
 		&out.Description,
+		&out.ElectricitySensor,
 		&out.Voltage,
 		&out.State,
 		&out.FactoryID,
@@ -163,6 +166,7 @@ func (r *SensorRepository) FindAllByCompanyID(ctx context.Context, companyID str
 			&sensor.AppKey,
 			&sensor.Name,
 			&sensor.Description,
+			&sensor.ElectricitySensor,
 			&sensor.Voltage,
 			&sensor.State,
 			&sensor.FactoryID,
@@ -210,6 +214,7 @@ func (r *SensorRepository) FindByProductionResourceID(ctx context.Context, produ
 			&sensor.AppKey,
 			&sensor.Name,
 			&sensor.Description,
+			&sensor.ElectricitySensor,
 			&sensor.Voltage,
 			&sensor.State,
 			&sensor.FactoryID,
@@ -245,6 +250,7 @@ func (r *SensorRepository) FindByEUI(ctx context.Context, deviceEUI string) (dom
 		&out.AppKey,
 		&out.Name,
 		&out.Description,
+		&out.ElectricitySensor,
 		&out.Voltage,
 		&out.State,
 		&out.FactoryID,
@@ -288,6 +294,7 @@ func (r *SensorRepository) Update(ctx context.Context, sensorID string, payload 
 	tag, err := r.db.Pool.Exec(ctx, updateSensorQuery,
 		payload.Name,
 		payload.Description,
+		payload.ElectricitySensor,
 		payload.Voltage,
 		payload.FactoryID,
 		payload.FactoryAreaID,
