@@ -46,11 +46,6 @@ func (s *SensorServiceImpl) Create(ctx context.Context, payload domain.Sensor) e
 	}
 	payload.ChirpstackProfileID = tenantProfileID
 
-	// Validate electricity sensor fields.
-	if payload.ElectricitySensor != nil && *payload.ElectricitySensor && payload.Voltage == nil {
-		return fmt.Errorf("create sensor: voltage must be set when electricity_sensor is true")
-	}
-
 	// Post request to Chirpstack
 	sensorReq := mappers.MapChirpstackSensorRequest(payload, cfg.ChirpstackApplicationID)
 	if err := s.cc.CreateSensor(ctx, sensorReq); err != nil {
@@ -128,9 +123,6 @@ func (s *SensorServiceImpl) Update(ctx context.Context, sensorID string, payload
 		sensor.ProductionResource = payload.ProductionResource
 	}
 	if payload.ElectricitySensor != nil {
-		if *payload.ElectricitySensor && payload.Voltage == nil {
-			return fmt.Errorf("update sensor: voltage must be set when electricity_sensor is true")
-		}
 		sensor.ElectricitySensor = payload.ElectricitySensor
 		if !*payload.ElectricitySensor {
 			sensor.Voltage = nil

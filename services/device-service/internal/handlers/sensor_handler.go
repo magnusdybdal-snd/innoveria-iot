@@ -91,6 +91,11 @@ func PostSensor(svc domain.SensorService) http.HandlerFunc {
 			return
 		}
 
+		if payload.ElectricitySensor && payload.Voltage == nil {
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("voltage must be set when electricity_sensor is true"), "bad request")
+			return
+		}
+
 		data := dto.MapCreateSensorDTOToDomain(payload)
 
 		if err := svc.Create(ctx, data); err != nil {
@@ -135,7 +140,7 @@ func PatchSensor(svc domain.SensorService) http.HandlerFunc {
 			return
 		}
 
-		if payload.Name == nil && payload.Description == nil && payload.FactoryID == nil && payload.FactoryAreaID == nil && payload.ChirpstackProfileID == nil && payload.ProductionResource == nil {
+		if payload.Name == nil && payload.Description == nil && payload.ElectricitySensor == nil && payload.FactoryID == nil && payload.FactoryAreaID == nil && payload.ChirpstackProfileID == nil && payload.ProductionResource == nil {
 			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("no fields provided"), "bad request")
 			return
 		}
@@ -147,6 +152,11 @@ func PatchSensor(svc domain.SensorService) http.HandlerFunc {
 					return
 				}
 			}
+		}
+
+		if payload.ElectricitySensor != nil && *payload.ElectricitySensor && payload.Voltage == nil {
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("voltage must be set when electricity_sensor is true"), "bad request")
+			return
 		}
 
 		data := dto.MapUpdateSensorDTOToDomain(payload)
