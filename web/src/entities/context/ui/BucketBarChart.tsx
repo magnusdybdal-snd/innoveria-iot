@@ -20,7 +20,8 @@ export function BucketBarChart({ buckets, unit }: BucketBarChartProps) {
   const sampled = downsample(buckets);
 
   const timestamps = sampled.map((b) => new Date(b.periodStart));
-  const { labels, tickLabelInterval } = buildChartAxisConfig(timestamps);
+  const { data, valueFormatter, tickLabelInterval } =
+    buildChartAxisConfig(timestamps);
   const values = sampled.map((b) => b.value);
 
   return (
@@ -28,13 +29,20 @@ export function BucketBarChart({ buckets, unit }: BucketBarChartProps) {
       xAxis={[
         {
           scaleType: "band",
-          data: labels,
+          data,
+          valueFormatter,
           tickLabelStyle: { fontSize: 11 },
           tickLabelInterval,
         },
       ]}
       yAxis={[{ label: unit }]}
-      series={[{ data: values, color: "#fe8019" }]}
+      series={[
+        {
+          data: values,
+          color: "#fe8019",
+          // TODO: add valueFormatter with unit derived from sensor field type (e.g. temperature → °C, humidity → %)
+        },
+      ]}
       height={300}
     />
   );

@@ -22,22 +22,40 @@ function formatTime(d: Date): string {
   return d.toLocaleString(undefined, { hour: "2-digit", minute: "2-digit" });
 }
 
+function formatFull(d: Date): string {
+  return d.toLocaleString(undefined, {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
 /**
- * Computes x-axis labels and a tick visibility filter for time-series bucket charts.
+ * Computes x-axis data, a value formatter, and a tick visibility filter for
+ * time-series bucket charts.
  *
- * Ticks are shown at logical time boundaries (5 min, 15 min, 30 min, 1 h, 6 h, midnight)
- * based on the total range of the timestamps. Midnight ticks show as date-only ("Mar 5").
- * If no midnight falls in the range, the first tick shows the date instead of the time
- * so the axis always has at least one date anchor.
+ * X-axis data is stored as ISO timestamp strings so the full date is always
+ * available. The `valueFormatter` renders an abbreviated label for axis ticks
+ * ("Apr 13", "14:00") and a full date+time string in the hover tooltip
+ * ("13 Apr 2026, 14:00"). Ticks are shown at logical time boundaries (5 min,
+ * 15 min, 30 min, 1 h, 6 h, midnight) based on the total range.
  * @param timestamps - Ordered array of bucket start times
- * @returns labels for every point and a tickLabelInterval predicate for MUI x-charts
+ * @returns `data` (ISO strings), `valueFormatter`, and a `tickLabelInterval`
+ *   predicate for MUI x-charts
  */
 export function buildChartAxisConfig(timestamps: Date[]): {
-  labels: string[];
+  data: string[];
+  valueFormatter: (value: string, context: { location: string }) => string;
   tickLabelInterval: (value: unknown) => boolean;
 } {
   if (timestamps.length === 0) {
-    return { labels: [], tickLabelInterval: () => false };
+    return {
+      data: [],
+      valueFormatter: () => "",
+      tickLabelInterval: () => false,
+    };
   }
 
   const first = timestamps[0].getTime();
@@ -51,24 +69,36 @@ export function buildChartAxisConfig(timestamps: Date[]): {
     return d.getDate() !== prev.getDate() || d.getMonth() !== prev.getMonth();
   };
 
-  const labels = timestamps.map((d, i) => {
-    if (isFirstOfDay(d, i)) return formatDate(d);
-    return formatTime(d);
-  });
+  const data = timestamps.map((d) => d.toISOString());
 
-  // Pre-compute which labels are visible so the predicate uses value lookup
-  // instead of index — MUI x-charts may call tickLabelInterval with indices
-  // outside our timestamps array bounds.
-  const visibleLabels = new Set<string>();
+  // Precompute which ISOs are first-of-day (drives tick label format) and
+  // which should have visible tick labels.
+  const firstOfDayIsos = new Set<string>();
+  const visibleIsos = new Set<string>();
+
   timestamps.forEach((d, i) => {
+    const iso = data[i];
+    if (isFirstOfDay(d, i)) {
+      firstOfDayIsos.add(iso);
+      visibleIsos.add(iso);
+    }
     const minutesInDay = d.getHours() * 60 + d.getMinutes();
-    if (isFirstOfDay(d, i) || minutesInDay % intervalMinutes === 0) {
-      visibleLabels.add(labels[i]);
+    if (minutesInDay % intervalMinutes === 0) {
+      visibleIsos.add(iso);
     }
   });
 
-  const tickLabelInterval = (value: unknown): boolean =>
-    visibleLabels.has(String(value));
+  const valueFormatter = (
+    value: string,
+    context: { location: string },
+  ): string => {
+    const d = new Date(value);
+    if (context.location === "tooltip") return formatFull(d);
+    return firstOfDayIsos.has(value) ? formatDate(d) : formatTime(d);
+  };
 
-  return { labels, tickLabelInterval };
+  const tickLabelInterval = (value: unknown): boolean =>
+    visibleIsos.has(String(value));
+
+  return { data, valueFormatter, tickLabelInterval };
 }
