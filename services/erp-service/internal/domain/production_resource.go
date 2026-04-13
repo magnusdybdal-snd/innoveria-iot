@@ -13,7 +13,7 @@ const (
 )
 
 type ProductionResource struct {
-	ID          string
+	ID          int64
 	CompanyID   string
 	Number      string  // human readable machine name
 	Description *string // Monitor erp description

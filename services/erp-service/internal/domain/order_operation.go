@@ -14,19 +14,22 @@ const (
 )
 
 type OrderOperation struct {
-	ID                       string
-	CompanyID                string
-	ProductionResourceID     string
-	ReportedQuantity         float64
-	RestQuantity             float64
-	OrderId                  int64 // referenced by Order, which is NOT retreived.
-	OperationNumber          int   // Represent the Order. Order represent the whole process
-	PlannedStartDate         time.Time
-	PlannedFinishDate        time.Time
-	ActualStartDate          *time.Time
-	ActualFinishDate         *time.Time
+	ID                   int64
+	CompanyID            string
+	ProductionResourceID string
+	// ReportedQuantity         float64
+	// RestQuantity             float64
+	OrderId int64 // referenced by Order
+	// OperationNumber          int   // Retreived in Get Order
+
+	// Gives time interval per production resource
+	PlannedStartDate  time.Time
+	PlannedFinishDate time.Time
+	ActualStartDate   *time.Time
+	ActualFinishDate  *time.Time
+
 	Status                   OperationStatus // Whats planned to happen
 	ProductionResourceStatus OperationStatus // What the Machine is doing right now
-	Description              *string         // Monitor erp description
-	ReceivedAt               time.Time
+	// Description              *string         // Monitor erp description
+	ReceivedAt time.Time
 }

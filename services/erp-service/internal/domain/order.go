@@ -39,10 +39,12 @@ type Order struct {
 	ID                int
 	OrderNumber       string
 	PartID            string
+	PartDescription   string // Human readable product name
 	PlannedStartDate  time.Time
 	PlannedFinishDate time.Time
 	ActualStartDate   *time.Time
 	ActualFinishDate  *time.Time
 	Status            OrderStatus
 	Priority          int
+	ReceivedAt        time.Time
 }
