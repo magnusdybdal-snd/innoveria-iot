@@ -25,3 +25,27 @@ export const BUCKET_UNIT_OPTIONS: { id: BucketUnit; name: string }[] = [
   { id: "weeks", name: "Weeks" },
   { id: "months", name: "Months" },
 ];
+
+const HOUR_MS = 60 * 60 * 1000;
+const DAY_MS = 24 * HOUR_MS;
+
+/**
+ * Suggests a human-friendly bucket interval for the given time range.
+ * Keeps the number of buckets roughly between 50 and 500.
+ * @param from - Range start as an ISO/datetime-local string
+ * @param to - Range end as an ISO/datetime-local string
+ * @returns Suggested bucket value and unit
+ */
+export function suggestBucketInterval(
+  from: string,
+  to: string,
+): { value: number; unit: BucketUnit } {
+  const rangeMs = new Date(to).getTime() - new Date(from).getTime();
+
+  if (rangeMs > 90 * DAY_MS) return { value: 1, unit: "days" };
+  if (rangeMs > 30 * DAY_MS) return { value: 12, unit: "hours" };
+  if (rangeMs > 7 * DAY_MS) return { value: 6, unit: "hours" };
+  if (rangeMs > DAY_MS) return { value: 1, unit: "hours" };
+  if (rangeMs > 2 * HOUR_MS) return { value: 15, unit: "minutes" };
+  return { value: 1, unit: "minutes" };
+}

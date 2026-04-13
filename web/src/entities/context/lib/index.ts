@@ -1,1 +1,5 @@
-export { toMinutes, BUCKET_UNIT_OPTIONS } from "./bucketMinutes";
+export {
+  toMinutes,
+  BUCKET_UNIT_OPTIONS,
+  suggestBucketInterval,
+} from "./bucketMinutes";
