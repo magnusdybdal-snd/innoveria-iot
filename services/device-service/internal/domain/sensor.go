@@ -15,7 +15,8 @@ type Sensor struct {
 	AppKey              string // password for sensor to connect to an application
 	Name                string
 	Description         *string
-	Voltage             *int        // 230/400 - leave empty for non electricity sensors
+	ElectricitySensor   bool        // true if this sensor measures electrical supply
+	Voltage             *int        // 230/400 - only set when ElectricitySensor is true
 	State               DeviceState // administrative state: ACTIVE / INACTIVE
 	FactoryID           string      // loose cross-service ref
 	FactoryAreaID       string      // loose cross-service ref
