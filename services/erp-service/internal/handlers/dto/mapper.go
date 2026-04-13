@@ -8,3 +8,7 @@ import (
 func MapMonitorOrderOperationToDomain(from []dto.ManufacturingOrderOperation) []domain.OrderOperation {
 	return []domain.OrderOperation{}
 }
+
+func MapMonitorOrderToDomain(from []dto.ManufacturingOrder) []domain.Order {
+	return []domain.Order{}
+}

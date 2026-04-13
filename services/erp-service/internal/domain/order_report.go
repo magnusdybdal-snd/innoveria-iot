@@ -21,19 +21,6 @@ const (
 	OrderReportTypePickWorkCenter               OrderReportType = "pick_work_center"
 )
 
-type OrderStatus string
-
-const (
-	OrderStatusNotInitialized OrderStatus = "not_initialized"
-	OrderStatusRegistered     OrderStatus = "registered"
-	OrderStatusPrinted        OrderStatus = "printed"
-	OrderStatusStarted        OrderStatus = "started"
-	OrderStatusFinished       OrderStatus = "finished"
-	OrderStatusPostCalculated OrderStatus = "post_calculated"
-	OrderStatusDelivered      OrderStatus = "delivered"
-	OrderStatusHistorical     OrderStatus = "historical"
-)
-
 type OrderReport struct {
 	ID                   string
 	CompanyID            string

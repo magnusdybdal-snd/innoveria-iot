@@ -9,6 +9,22 @@ import (
 	monitordto "innoveria-iot/pkg/monitor/dto"
 )
 
+func PostIngestOrder(svc domain.Ingest) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		payload, err := json.Decode[[]monitordto.ManufacturingOrder](r)
+		if err != nil {
+			json.HandleError(w, http.StatusBadRequest, err, "bad request")
+			return
+		}
+		result := dto.MapMonitorOrderToDomain(payload)
+		if err := svc.CreateOrder(ctx, result); err != nil {
+			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			return
+		}
+	}
+}
+
 // PostIngestOrderOperations handles batch ingest of manufacturing order operations
 // pushed from erp-agent-service.
 func PostIngestOrderOperations(svc domain.Ingest) http.HandlerFunc {
