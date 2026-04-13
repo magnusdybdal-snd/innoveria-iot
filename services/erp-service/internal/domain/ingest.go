@@ -1,9 +1,12 @@
 package domain
 
-import "context"
+import (
+	"context"
+)
 
 type Ingest interface {
-	CreateOrderOperation(ctx context.Context) error
-	CreateOrderReporting(ctx context.Context) error
-	CreateWorkCenter(ctx context.Context) error
+	CreateOrder(ctx context.Context) error
+	CreateOrderOperation(ctx context.Context, payload []OrderOperation) error
+	CreateOrderReport(ctx context.Context, payload []OrderReport) error
+	CreateProductionResource(ctx context.Context, payload []ProductionResource) error
 }

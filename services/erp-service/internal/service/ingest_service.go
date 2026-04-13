@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+
 	"innoveria-iot/erp-service/internal/domain"
 )
 
@@ -9,12 +10,19 @@ import (
 type IngestServiceImpl struct{}
 
 // New creates a new ingest service instance.
-func New() *IngestServiceImpl {
+func NewIngestService() *IngestServiceImpl {
 	return &IngestServiceImpl{}
 }
 
+func (i *IngestServiceImpl) CreateOrder(ctx context.Context) error
+
 // CreateOrderOperation stores one order operation ingest payload.
 func (i *IngestServiceImpl) CreateOrderOperation(ctx context.Context, payload []domain.OrderOperation) error {
+	return nil
+}
 
+func (i *IngestServiceImpl) CreateOrderReport(ctx context.Context, payload []domain.OrderReport) error
+
+func (i *IngestServiceImpl) CreateProductionResource(ctx context.Context, payload []domain.ProductionResource) error {
 	return nil
 }

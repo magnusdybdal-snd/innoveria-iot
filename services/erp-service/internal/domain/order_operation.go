@@ -16,7 +16,6 @@ const (
 type OrderOperation struct {
 	ID                       string
 	CompanyID                string
-	FactoryID                string
 	ProductionResourceID     string
 	ReportedQuantity         float64
 	RestQuantity             float64
@@ -28,6 +27,6 @@ type OrderOperation struct {
 	ActualFinishDate         *time.Time
 	Status                   OperationStatus // Whats planned to happen
 	ProductionResourceStatus OperationStatus // What the Machine is doing right now
-	Description              *string
+	Description              *string         // Monitor erp description
 	ReceivedAt               time.Time
 }

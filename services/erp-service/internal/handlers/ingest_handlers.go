@@ -2,14 +2,28 @@ package handlers
 
 import (
 	"net/http"
+
+	"innoveria-iot/erp-service/internal/domain"
+	"innoveria-iot/erp-service/internal/handlers/dto"
+	"innoveria-iot/pkg/json"
+	monitordto "innoveria-iot/pkg/monitor/dto"
 )
 
 // PostIngestOrderOperations handles batch ingest of manufacturing order operations
 // pushed from erp-agent-service.
-func PostIngestOrderOperations() http.HandlerFunc {
+func PostIngestOrderOperations(svc domain.Ingest) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		_ = r
-		http.Error(w, "not implemented", http.StatusNotImplemented)
+		ctx := r.Context()
+		payload, err := json.Decode[[]monitordto.ManufacturingOrderOperation](r)
+		if err != nil {
+			json.HandleError(w, http.StatusBadRequest, err, "bad request")
+			return
+		}
+		result := dto.MapMonitorOrderOperationToDomain(payload)
+		if err := svc.CreateOrderOperation(ctx, result); err != nil {
+			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			return
+		}
 	}
 }
 
