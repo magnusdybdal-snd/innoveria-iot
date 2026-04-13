@@ -14,20 +14,20 @@ const (
 )
 
 type OrderOperation struct {
-	ID                      int
-	CompanyID               int
-	FactoryID               int
-	ProductionResource      int
-	ReportedQuantity        float64
-	RestQuantity            float64
-	OrderId                 int64 // referenced by Order, which is NOT retreived.
-	OperationNumber         int   // Represent the Order. Order represent the whole process
-	PlannedStartDate        time.Time
-	PlannedFinishDate       time.Time
-	ActualStartDate         *time.Time
-	ActualFinishDate        *time.Time
-	Status                  OperationStatus
-	WorkshopOperationStatus OperationStatus
-	Description             *string
-	ReceivedAt              time.Time
+	ID                       string
+	CompanyID                string
+	FactoryID                string
+	ProductionResourceID     string
+	ReportedQuantity         float64
+	RestQuantity             float64
+	OrderId                  int64 // referenced by Order, which is NOT retreived.
+	OperationNumber          int   // Represent the Order. Order represent the whole process
+	PlannedStartDate         time.Time
+	PlannedFinishDate        time.Time
+	ActualStartDate          *time.Time
+	ActualFinishDate         *time.Time
+	Status                   OperationStatus // Whats planned to happen
+	ProductionResourceStatus OperationStatus // What the Machine is doing right now
+	Description              *string
+	ReceivedAt               time.Time
 }

@@ -13,12 +13,12 @@ const (
 )
 
 type ProductionResource struct {
-	ID        int
-	CompanyID int
-	FactoryID int
-	// FactoryAreaID ???
-	Number      string
-	Description string
-	Type        WorkCenterType
-	ReceivedAt  time.Time
+	ID            string
+	CompanyID     string
+	FactoryID     string
+	FactoryAreaID string
+	Number        string // human readable machine name
+	Description   string
+	Type          WorkCenterType
+	ReceivedAt    time.Time
 }

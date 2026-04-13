@@ -35,15 +35,17 @@ const (
 )
 
 type OrderReport struct {
-	ID                 int
-	OperationID        int // referenced by OrderOperation
-	Quantity           float64
-	WorkCenterID       int // referenced by workcenter
-	ActualReportedDate *time.Time
-	RestQuantity       float64
-	Type               OrderReportType
-	WipLocation        *string
-	PreviousNodeStatus OrderStatus
-	ReportingTimestamp time.Time
-	ReceivedAt         time.Time
+	ID                   string
+	CompanyID            string
+	FactoryID            string
+	OperationID          int // referenced by OrderOperation
+	ProductionResourceID string
+	Quantity             float64
+	ActualReportedDate   *time.Time
+	RestQuantity         float64
+	Type                 OrderReportType
+	WipLocation          *string
+	PreviousNodeStatus   OrderStatus
+	ReportingTimestamp   time.Time
+	ReceivedAt           time.Time
 }
