@@ -1,10 +1,9 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import {
   deleteFactory,
-  getFactories,
   sortFactories,
-  type FactoryApiResponse,
+  useFactories,
   type FactorySortKey,
   type SortDirection,
 } from "@entities/factory";
@@ -44,8 +43,7 @@ const sortableColumns: FactorySortKey[] = [
  * @returns The rendered Factories page
  */
 export default function Factories() {
-  const [factories, setFactories] = useState<FactoryApiResponse[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { factories, isLoading, refetch } = useFactories();
   const [sortConfig, setSortConfig] = useState<{
     key: FactorySortKey | null;
     direction: SortDirection;
@@ -72,7 +70,7 @@ export default function Factories() {
       address: factoryData.address,
     })
       .then(() => {
-        fetchFactories();
+        refetch();
         setOpenAdd(false);
         show("Factory added successfully", SNACKBAR_SEVERITY.SUCCESS);
       })
@@ -87,28 +85,17 @@ export default function Factories() {
   // State for controlling success snackbar
   const { show, hide, snackbar } = useSnackbar();
 
-  const fetchFactories = () => {
-    getFactories().then((data) => {
-      setFactories(data);
-      setIsLoading(false);
-    });
-  };
-
   //TODO: use deletion confirmation dialog when it has been implemented.
   const handleDeleteFactory = (id: string) => {
     deleteFactory(id)
       .then(() => {
-        fetchFactories();
+        refetch();
         show("Factory deleted successfully", SNACKBAR_SEVERITY.SUCCESS);
       })
       .catch(() => {
         show("Failed to delete factory", SNACKBAR_SEVERITY.ERROR);
       });
   };
-
-  useEffect(() => {
-    fetchFactories();
-  }, []);
 
   function handleSort(column: string) {
     const col = column as FactorySortKey;

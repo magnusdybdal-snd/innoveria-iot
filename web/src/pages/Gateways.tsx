@@ -1,21 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
 
-import { getFactories, type FactoryApiResponse } from "@entities/factory";
-import {
-  getFactoryAreas,
-  type FactoryAreaApiResponse,
-} from "@entities/factoryArea";
+import { useFactories } from "@entities/factory";
+import { useFactoryAreas } from "@entities/factoryArea";
 import {
   deleteGateway,
   GatewayInfo,
-  getGateways,
   postGateway,
   sortGateways,
-  type GatewayApiResponse,
+  useGateways,
   type GatewaySortKey,
   type SortDirection,
 } from "@entities/gateway";
@@ -50,8 +46,9 @@ const addGatewayDetails: string[] = [
  * @returns The rendered Gateways page
  */
 export default function Gateways() {
-  const [gateways, setGateways] = useState<GatewayApiResponse[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { gateways, isLoading, refetch } = useGateways();
+  const { factories } = useFactories();
+  const { factoryAreas } = useFactoryAreas();
   const [addError, setAddError] = useState<string | null>(null);
 
   // State for controlling success snackbar
@@ -59,10 +56,6 @@ export default function Gateways() {
 
   // Factory tabs
   const [tabValue, setTabValue] = useState<number | string>(0);
-  const [factory, setFactory] = useState<FactoryApiResponse[]>([]); // factory location sensor
-  const [factoryAreas, setFactoryAreas] = useState<FactoryAreaApiResponse[]>(
-    [],
-  );
 
   const handleTabChange = (
     _event: React.SyntheticEvent,
@@ -71,35 +64,16 @@ export default function Gateways() {
     setTabValue(newValue);
   };
 
-  const fetchGateways = () => {
-    getGateways().then((data) => {
-      setGateways(data);
-      setIsLoading(false);
-    });
-  };
-
   const handleDeleteGateway = (id: string) => {
     deleteGateway(id)
       .then(() => {
-        fetchGateways();
+        refetch();
         show("Gateway deleted successfully", SNACKBAR_SEVERITY.SUCCESS);
       })
       .catch(() => {
         show("Failed to delete gateway.", SNACKBAR_SEVERITY.ERROR);
       });
   };
-
-  useEffect(() => {
-    fetchGateways();
-  }, []);
-
-  useEffect(() => {
-    getFactories().then(setFactory);
-  }, []);
-
-  useEffect(() => {
-    getFactoryAreas().then(setFactoryAreas);
-  }, []);
 
   const [openAdd, setOpenAdd] = useState(false);
   const [sortConfig, setSortConfig] = useState<{
@@ -134,7 +108,7 @@ export default function Gateways() {
       factoryAreaId: gatewayData.factoryArea,
     })
       .then(() => {
-        fetchGateways();
+        refetch();
         setOpenAdd(false);
         show("Gateway added successfully", SNACKBAR_SEVERITY.SUCCESS);
       })
@@ -186,7 +160,7 @@ export default function Gateways() {
             aria-label="scrollable auto tabs example"
           >
             <Tab label="All" value={0} />
-            {factory.map((factory) => (
+            {factories.map((factory) => (
               <Tab label={factory.name} value={factory.id} />
             ))}
           </Tabs>
@@ -222,7 +196,7 @@ export default function Gateways() {
         addOptions={addGatewayDetails}
         onAdd={handleAddGateway}
         submitError={addError}
-        factoryOptions={factory}
+        factoryOptions={factories}
         factoryAreaOptions={factoryAreas}
       />
       <AppSnackbar

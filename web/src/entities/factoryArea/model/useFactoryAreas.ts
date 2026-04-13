@@ -1,21 +1,23 @@
 import { useCallback, useEffect, useState } from "react";
 
-import { getSensors } from "@entities/sensor/api";
-import type { SensorApiResponse } from "@entities/sensor/model/sensorSchema";
+import { getFactoryAreas } from "@entities/factoryArea/api/getFactoryAreas";
+import type { FactoryAreaApiResponse } from "@entities/factoryArea/model/factoryAreaSchema";
 
-export interface UseSensorsResult {
-  sensors: SensorApiResponse[];
+export interface UseFactoryAreasResult {
+  factoryAreas: FactoryAreaApiResponse[];
   isLoading: boolean;
   error: Error | null;
   refetch: () => void;
 }
 
 /**
- * Fetches and manages the list of sensors from the collection-service.
- * @returns Sensors array, loading flag, error state, and a stable refetch callback.
+ * Fetches all factory areas and exposes loading/error state.
+ * @returns Factory areas array, loading flag, error state, and a stable refetch callback.
  */
-export function useSensors(): UseSensorsResult {
-  const [sensors, setSensors] = useState<SensorApiResponse[]>([]);
+export function useFactoryAreas(): UseFactoryAreasResult {
+  const [factoryAreas, setFactoryAreas] = useState<FactoryAreaApiResponse[]>(
+    [],
+  );
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [refetchIndex, setRefetchIndex] = useState(0);
@@ -27,10 +29,10 @@ export function useSensors(): UseSensorsResult {
 
   useEffect(() => {
     let cancelled = false;
-    getSensors()
+    getFactoryAreas()
       .then((data) => {
         if (!cancelled) {
-          setSensors(data);
+          setFactoryAreas(data);
           setIsLoading(false);
         }
       })
@@ -45,5 +47,5 @@ export function useSensors(): UseSensorsResult {
     };
   }, [refetchIndex]);
 
-  return { sensors, isLoading, error, refetch };
+  return { factoryAreas, isLoading, error, refetch };
 }
