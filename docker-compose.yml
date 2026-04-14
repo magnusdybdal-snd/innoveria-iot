@@ -269,6 +269,18 @@ services:
     environment:
       - GO_ENV=development
 
+  erp-db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    ports:
+      - "5437:5432"
+    volumes:
+      - erpdata:/var/lib/postgresql/data
+    environment:
+      - ERP_USER=erp
+      - ERP_PASSWORD=erp
+      - ERP_DB=erp
+
   erp-agent-service:
     build:
       context: .
