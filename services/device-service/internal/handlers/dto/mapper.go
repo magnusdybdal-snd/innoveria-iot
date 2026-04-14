@@ -262,3 +262,24 @@ func mapSensorProfiles(from domain.SensorProfile) SensorProfileResponse {
 		VendorName: from.VendorName,
 	}
 }
+
+// MapSensorProfileConfigDomainToDTO maps a domain SensorProfileConfig to a SensorProfileConfigResponse.
+func MapSensorProfileConfigDomainToDTO(from domain.SensorProfileConfig) SensorProfileConfigResponse {
+	return SensorProfileConfigResponse{
+		ChirpstackProfileID: from.ChirpstackProfileID,
+		ConfigurableSchema:  from.ConfigurableSchema,
+	}
+}
+
+// MapPutSensorProfileConfigDTOToDomain maps a PutSensorProfileConfigRequest to a domain SensorProfileConfig.
+func MapPutSensorProfileConfigDTOToDomain(profileID string, from PutSensorProfileConfigRequest) domain.SensorProfileConfig {
+	return domain.SensorProfileConfig{
+		ChirpstackProfileID: profileID,
+		ConfigurableSchema:  *from.ConfigurableSchema,
+	}
+}
+
+// MapSampleEUIDomainToDTO maps a device EUI string to a SampleEUIResponse.
+func MapSampleEUIDomainToDTO(deviceEUI string) SampleEUIResponse {
+	return SampleEUIResponse{DeviceEUI: deviceEUI}
+}
