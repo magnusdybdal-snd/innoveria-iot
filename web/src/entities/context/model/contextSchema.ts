@@ -1,5 +1,23 @@
 export type BucketUnit = "minutes" | "hours" | "days" | "weeks" | "months";
 
+export interface OrderReporting {
+  reportingId: string;
+  timestamp: string;
+  quantity: number;
+  status: string;
+}
+
+export interface Order {
+  orderId: string;
+  productName: string;
+  status: string;
+  startTime: string;
+  endTime: string;
+  workcenterId: string;
+  workcenterName: string;
+  reportings: OrderReporting[];
+}
+
 export interface CreateRuleRequest {
   companyId: string;
   name: string;

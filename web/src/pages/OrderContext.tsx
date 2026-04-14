@@ -3,20 +3,24 @@ import { useState } from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 
+import { useOrders } from "@entities/context";
 import { DropDownSelect } from "@shared/ui/DropDownSelect";
 import { PageContent } from "@shared/ui/PageContent";
 import { PageDivider } from "@shared/ui/PageDivider";
 import { SubPageHeader } from "@shared/ui/SubPageHeader";
-
-// TODO: replace with data from GET /api/v1/context/orders once the hook is wired up
-const ORDER_OPTIONS: { id: string; name: string }[] = [];
 
 /**
  * OrderContext page for displaying ERP order data enriched with sensor context.
  * @returns The rendered OrderContext page
  */
 export default function OrderContext() {
+  const { orders, isLoading } = useOrders();
   const [selectedOrderId, setSelectedOrderId] = useState<string>("");
+
+  const orderOptions = orders.map((o) => ({
+    id: o.orderId,
+    name: o.productName,
+  }));
 
   return (
     <div className="flex h-screen">
@@ -28,11 +32,13 @@ export default function OrderContext() {
             Orders
           </Typography>
           <Box sx={{ maxWidth: 400 }}>
-            <DropDownSelect
-              options={ORDER_OPTIONS}
-              value={selectedOrderId}
-              onChange={setSelectedOrderId}
-            />
+            {!isLoading && (
+              <DropDownSelect
+                options={orderOptions}
+                value={selectedOrderId}
+                onChange={setSelectedOrderId}
+              />
+            )}
           </Box>
         </Box>
       </PageContent>
