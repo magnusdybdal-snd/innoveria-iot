@@ -1,4 +1,4 @@
-// package main is the main package and entrypoint for the server
+// Package main is the erp-service application entrypoint.
 package main
 
 import (

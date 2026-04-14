@@ -9,6 +9,7 @@ import (
 	monitordto "innoveria-iot/pkg/monitor/dto"
 )
 
+// PostIngestOrder handles batch ingest of manufacturing orders pushed from erp-agent-service.
 func PostIngestOrder(svc domain.Ingest) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()

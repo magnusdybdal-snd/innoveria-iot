@@ -2,17 +2,25 @@ package domain
 
 import "time"
 
+// OperationStatus describes operation progress at plan or resource level.
 type OperationStatus string
 
 const (
-	OperationStatusNone              OperationStatus = "none"
-	OperationStatusStarted           OperationStatus = "started"
-	OperationStatusPartiallyShipped  OperationStatus = "partially_shipped"
-	OperationStatusFullyShipped      OperationStatus = "fully_shipped"
+	// OperationStatusNone means no operation progress is reported.
+	OperationStatusNone OperationStatus = "none"
+	// OperationStatusStarted means operation has started.
+	OperationStatusStarted OperationStatus = "started"
+	// OperationStatusPartiallyShipped means operation output is partially shipped.
+	OperationStatusPartiallyShipped OperationStatus = "partially_shipped"
+	// OperationStatusFullyShipped means operation output is fully shipped.
+	OperationStatusFullyShipped OperationStatus = "fully_shipped"
+	// OperationStatusPartiallyReported means operation is partially reported.
 	OperationStatusPartiallyReported OperationStatus = "partially_reported"
-	OperationStatusFinished          OperationStatus = "finished"
+	// OperationStatusFinished means operation is finished.
+	OperationStatusFinished OperationStatus = "finished"
 )
 
+// OrderOperation represents one manufacturing operation from Monitor ERP.
 type OrderOperation struct {
 	ID                   int64
 	CompanyID            string

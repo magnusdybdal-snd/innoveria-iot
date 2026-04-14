@@ -1,3 +1,4 @@
+// Package dto contains transport-to-domain mapping helpers for ERP handlers.
 package dto
 
 import (
@@ -8,6 +9,7 @@ import (
 	"innoveria-iot/pkg/monitor/dto"
 )
 
+// MapMonitorOrderOperationToDomain maps Monitor order operations into domain entities.
 func MapMonitorOrderOperationToDomain(from []dto.ManufacturingOrderOperation) []domain.OrderOperation {
 	to := make([]domain.OrderOperation, 0, len(from))
 	receivedAt := time.Now().UTC()
@@ -30,6 +32,7 @@ func MapMonitorOrderOperationToDomain(from []dto.ManufacturingOrderOperation) []
 	return to
 }
 
+// MapMonitorOrderToDomain maps Monitor manufacturing orders into domain entities.
 func MapMonitorOrderToDomain(from []dto.ManufacturingOrder) []domain.Order {
 	to := make([]domain.Order, 0, len(from))
 	receivedAt := time.Now().UTC()
@@ -53,6 +56,7 @@ func MapMonitorOrderToDomain(from []dto.ManufacturingOrder) []domain.Order {
 	return to
 }
 
+// MapMonitorOrderReportToDomain maps Monitor operation reportings into domain entities.
 func MapMonitorOrderReportToDomain(from []dto.ManufacturingOrderOperationReporting) []domain.OrderReport {
 	to := make([]domain.OrderReport, 0, len(from))
 	receivedAt := time.Now().UTC()
@@ -74,6 +78,7 @@ func MapMonitorOrderReportToDomain(from []dto.ManufacturingOrderOperationReporti
 	return to
 }
 
+// MapMonitorWorkcenterToDomain maps Monitor work centers into production resources.
 func MapMonitorWorkcenterToDomain(from []dto.WorkCenter) []domain.ProductionResource {
 	to := make([]domain.ProductionResource, 0, len(from))
 	receivedAt := time.Now().UTC()
@@ -92,6 +97,7 @@ func MapMonitorWorkcenterToDomain(from []dto.WorkCenter) []domain.ProductionReso
 	return to
 }
 
+// mapOrderStatus converts Monitor order status values to domain order statuses.
 func mapOrderStatus(status int) domain.OrderStatus {
 	switch status {
 	case 0:
@@ -115,6 +121,7 @@ func mapOrderStatus(status int) domain.OrderStatus {
 	}
 }
 
+// mapOperationStatus converts Monitor operation status values to domain operation statuses.
 func mapOperationStatus(status int) domain.OperationStatus {
 	switch status {
 	case 1:
@@ -132,6 +139,7 @@ func mapOperationStatus(status int) domain.OperationStatus {
 	}
 }
 
+// mapOrderReportType converts Monitor report type values to domain report types.
 func mapOrderReportType(reportType int) domain.OrderReportType {
 	switch reportType {
 	case 1:
@@ -165,6 +173,7 @@ func mapOrderReportType(reportType int) domain.OrderReportType {
 	}
 }
 
+// mapWorkCenterType converts Monitor work center type values to domain resource types.
 func mapWorkCenterType(workCenterType int) domain.WorkCenterType {
 	switch workCenterType {
 	case 1:
