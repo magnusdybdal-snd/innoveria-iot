@@ -19,6 +19,7 @@ const (
 
 type Order struct {
 	ID                int64
+	CompanyID         string
 	OrderNumber       string
 	PartID            string
 	PartDescription   string // Human readable product name
