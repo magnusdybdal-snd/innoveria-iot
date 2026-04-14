@@ -301,12 +301,6 @@ Consistent with the existing `production_resource_id` filter pattern.
 Context-service does not yet call `GET /sensors/{eui}/metrics` before aggregating.
 Will be handled in a separate branch.
 
-### 4. Remove /discover endpoint and draft concept from payload_schema
-`PostDiscoverPayloadKeys` and the draft (null measurement_type) mechanism in
-`payload_schema` are unused in the agreed flows. Keys always come from `payload-tags`
-at labeling time. Draft rows add complexity with no benefit — the endpoint and
-null-measurement_type handling can be removed.
-
 ---
 
 ## API Reference

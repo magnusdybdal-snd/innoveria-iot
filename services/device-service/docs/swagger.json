@@ -301,28 +301,6 @@
                 }
             }
         },
-        "/payload-schema/drafts": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "payload-schema"
-                ],
-                "summary": "List profiles with unlabeled payload schema rows",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/dto.DraftProfilesResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error"
-                    }
-                }
-            }
-        },
         "/payload-schema/{chirpstack_profile_id}": {
             "get": {
                 "produces": [
@@ -391,46 +369,6 @@
                     },
                     "422": {
                         "description": "Unprocessable Entity"
-                    },
-                    "500": {
-                        "description": "Internal Server Error"
-                    }
-                }
-            }
-        },
-        "/payload-schema/{chirpstack_profile_id}/discover": {
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "tags": [
-                    "payload-schema"
-                ],
-                "summary": "Discover payload keys for a profile",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "ChirpStack profile ID",
-                        "name": "chirpstack_profile_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Discovered payload keys",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.DiscoverPayloadKeysRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created"
-                    },
-                    "400": {
-                        "description": "Bad Request"
                     },
                     "500": {
                         "description": "Internal Server Error"
@@ -898,34 +836,6 @@
                     "type": "string"
                 },
                 "voltage": {
-                    "type": "integer"
-                }
-            }
-        },
-        "dto.DiscoverPayloadKeysRequest": {
-            "type": "object",
-            "required": [
-                "payload_keys"
-            ],
-            "properties": {
-                "payload_keys": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            }
-        },
-        "dto.DraftProfilesResponse": {
-            "type": "object",
-            "properties": {
-                "profile_ids": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "total_count": {
                     "type": "integer"
                 }
             }
