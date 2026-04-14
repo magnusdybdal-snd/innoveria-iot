@@ -62,7 +62,7 @@ func (c *Client) Query(_ context.Context, path monitor.MonitorERPEndpoint, _ url
 
 		*orders = []dto.ManufacturingOrder{
 			{
-				ID:                300 + int(tick%8),
+				ID:                300 + int64(tick%8),
 				OrderNumber:       fmt.Sprintf("MO-%05d", 30_000+tick),
 				PartID:            fmt.Sprintf("PART-%03d", 100+(tick%20)),
 				PartDescription:   "Mock production part",
