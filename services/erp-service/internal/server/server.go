@@ -14,11 +14,19 @@ import (
 
 	"innoveria-iot/erp-service/internal/config"
 	"innoveria-iot/erp-service/internal/service"
+	"innoveria-iot/pkg/dbutil"
 )
 
 // Run starts the erp service HTTP server and handles graceful shutdown.
 func Run() error {
 	cfg := config.Load()
+
+	// Init connection to erp database
+	database, err := dbutil.New(cfg.DB_URL, "erp-db")
+	if err != nil {
+		return fmt.Errorf("db error: %w", err)
+	}
+	defer database.Close()
 
 	// Service implementation
 	ingestSvc := service.NewIngestService()
