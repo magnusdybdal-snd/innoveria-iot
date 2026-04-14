@@ -1,0 +1,235 @@
+import { useEffect, useState } from "react";
+
+import {
+  deprecateMeasurementType,
+  getMeasurementTypesAll,
+  MeasurementTypeInfo,
+  postMeasurementType,
+  sortMeasurementTypes,
+  type MeasurementTypeApiResponse,
+  type MeasurementTypeSortKey,
+  type SortDirection,
+} from "@entities/measurementType";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
+import { AddEntityDialog } from "@shared/ui/AddEntityDialog";
+import { CustomButton } from "@shared/ui/Button";
+import { CategoryHeader } from "@shared/ui/CategoryHeader";
+import { DeviceRow } from "@shared/ui/DeviceRow";
+import { NotFoundCard } from "@shared/ui/NotFoundCard";
+import { PageContent } from "@shared/ui/PageContent";
+import { PageDivider } from "@shared/ui/PageDivider";
+import {
+  AppSnackbar,
+  SNACKBAR_SEVERITY,
+  useSnackbar,
+} from "@shared/ui/snackbar";
+import { SubPageHeader } from "@shared/ui/SubPageHeader";
+
+const measurementTypeDetails: string[] = [
+  "Slug",
+  "Display name",
+  "Description",
+  "Default unit",
+];
+
+const sortableColumns: MeasurementTypeSortKey[] = [
+  "Slug",
+  "Display name",
+  "Description",
+];
+
+/**
+ * Full-page view listing all measure types registered on the site.
+ * @returns The rendered MeasurementTypes page
+ */
+export default function PayloadSchema() {
+  const [measurementTypes, setMeasurementTypes] = useState<
+    MeasurementTypeApiResponse[]
+  >([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [sortConfig, setSortConfig] = useState<{
+    key: MeasurementTypeSortKey | null;
+    direction: SortDirection;
+  }>({ key: null, direction: "asc" });
+  const [options, setOptions] = useState<string[]>([]);
+  const [selected, setSelected] = useState<string>("");
+
+  // Adding a new measure type
+  const [openAdd, setOpenAdd] = useState(false);
+  const [addError, setAddError] = useState<string | null>(null);
+  const handleClickOpenAdd = () => {
+    setOpenAdd(true);
+  };
+  const handleCloseAdd = () => {
+    setOpenAdd(false);
+    setAddError(null);
+  };
+  const addButton = (
+    <CustomButton onClick={handleClickOpenAdd}>Add measure type</CustomButton>
+  );
+  const handleAddMeasurementType = (measurementTypeData: {
+    defaultUnit: string;
+    description: string;
+    displayName: string;
+    slug: string;
+  }) => {
+    setAddError(null);
+    return postMeasurementType({
+      defaultUnit: measurementTypeData.defaultUnit,
+      description: measurementTypeData.description,
+      displayName: measurementTypeData.displayName,
+      slug: measurementTypeData.slug,
+    })
+      .then(() => {
+        fetchMeasurementTypes();
+        setOpenAdd(false);
+        show("Measure type added successfully", SNACKBAR_SEVERITY.SUCCESS);
+      })
+      .catch(() => {
+        setAddError(
+          "Failed to add measure type.", // TODO: throw non-hardcoded error messages - based on actual error
+        );
+        show("Failed to add measure type", SNACKBAR_SEVERITY.ERROR);
+      });
+  };
+
+  // State for controlling success snackbar
+  const { show, hide, snackbar } = useSnackbar();
+
+  const fetchMeasurementTypes = () => {
+    setIsLoading(true);
+
+    getMeasurementTypesAll()
+      .then((data) => {
+        setMeasurementTypes(data);
+      })
+      .catch(() => {
+        show("Failed to fetch measurement types", SNACKBAR_SEVERITY.ERROR);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
+
+  // Dropdown list
+  useEffect(() => {
+    getMeasurementTypesAll().then((data) => {
+      const mapped = data.map((item) => item.slug);
+
+      setOptions(mapped);
+
+      const preferred = "humidity";
+
+      if (mapped.includes(preferred)) {
+        setSelected(preferred);
+      } else if (mapped.length > 0) {
+        setSelected(mapped[0]); // fallback
+      }
+    });
+  }, []);
+
+  //TODO: use deletion confirmation dialog when it has been implemented.
+  const handleDeprecateMeasurementType = (id: string) => {
+    deprecateMeasurementType(id)
+      .then(() => {
+        fetchMeasurementTypes();
+        show("Measure type deprecated successfully", SNACKBAR_SEVERITY.SUCCESS);
+      })
+      .catch(() => {
+        show("Failed to deprecate measure type", SNACKBAR_SEVERITY.ERROR);
+      });
+  };
+
+  useEffect(() => {
+    fetchMeasurementTypes();
+  }, []);
+
+  function handleSort(column: string) {
+    const col = column as MeasurementTypeSortKey;
+    setSortConfig((prev) =>
+      prev.key === col
+        ? { key: col, direction: prev.direction === "asc" ? "desc" : "asc" }
+        : { key: col, direction: "asc" },
+    );
+  }
+
+  const sorted = sortMeasurementTypes(
+    measurementTypes,
+    sortConfig.key,
+    sortConfig.direction,
+  );
+
+  return (
+    <div className="flex h-screen">
+      <PageContent>
+        <SubPageHeader title="Measurement types" action={addButton} />
+        <PageDivider />
+
+        <Select
+          value={selected}
+          onChange={(e) => setSelected(e.target.value)}
+          displayEmpty
+        >
+          {options.map((option) => (
+            <MenuItem key={option} value={option}>
+              {option}
+            </MenuItem>
+          ))}
+        </Select>
+        <CategoryHeader
+          categories={measurementTypeDetails}
+          columns={measurementTypeDetails.length + 1}
+          sortableColumns={sortableColumns}
+          sortConfig={sortConfig}
+          onSort={handleSort}
+        >
+          {isLoading && <p>Loading...</p>}
+          {/*TODO: make a better looking loading indicator */}
+          {sorted.map((measurementType) => (
+            <DeviceRow
+              key={measurementType.slug}
+              greyed={measurementType.deprecated}
+            >
+              <MeasurementTypeInfo
+                defaultUnit={measurementType.defaultUnit}
+                description={measurementType.description}
+                displayName={measurementType.displayName}
+                slug={measurementType.slug}
+                deprecated={measurementType.deprecated}
+                onDeprecate={() =>
+                  handleDeprecateMeasurementType(measurementType.slug)
+                }
+              />
+            </DeviceRow>
+          ))}
+        </CategoryHeader>
+        {!isLoading && sorted.length === 0 && (
+          <NotFoundCard page="measure types" isEmpty={true} />
+        )}
+        <AddEntityDialog
+          open={openAdd}
+          title="Add measure type"
+          fields={["Slug", "Default unit", "Description", "Display name"]}
+          optionalFields={["Default unit", "Description"]}
+          onClose={handleCloseAdd}
+          onSubmit={(values) =>
+            handleAddMeasurementType({
+              slug: values["Slug"],
+              defaultUnit: values["Default unit"],
+              description: values["Description"],
+              displayName: values["Display name"],
+            })
+          }
+          submitError={addError}
+        />
+        <AppSnackbar
+          open={snackbar?.open ?? false}
+          message={snackbar?.message ?? ""}
+          severity={snackbar?.severity}
+          onClose={hide}
+        />
+      </PageContent>
+    </div>
+  );
+}
