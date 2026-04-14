@@ -94,11 +94,14 @@ func (s *SensorServiceImpl) Update(ctx context.Context, sensorID string, payload
 	}
 
 	// Ensure a tenant-level copy of the selected profile exists, get its ID.
-	tenantProfileID, err := s.sensorProfileService.EnsureTenantProfile(ctx, payload.ChirpstackProfileID, companycfg.ChirpstackTenantID)
-	if err != nil {
-		return fmt.Errorf("update sensor: ensure tenant profile: %w", err)
+	// Only needed when the caller is changing the profile.
+	if payload.ChirpstackProfileID != "" {
+		tenantProfileID, err := s.sensorProfileService.EnsureTenantProfile(ctx, payload.ChirpstackProfileID, companycfg.ChirpstackTenantID)
+		if err != nil {
+			return fmt.Errorf("update sensor: ensure tenant profile: %w", err)
+		}
+		payload.ChirpstackProfileID = tenantProfileID
 	}
-	payload.ChirpstackProfileID = tenantProfileID
 
 	// Retain old values before merging payload, needed for potential compensation.
 	oldSensor := sensor
@@ -121,6 +124,20 @@ func (s *SensorServiceImpl) Update(ctx context.Context, sensorID string, payload
 	}
 	if payload.ProductionResource != nil {
 		sensor.ProductionResource = payload.ProductionResource
+	}
+	if payload.Voltage != nil && payload.ElectricitySensor == nil {
+		if sensor.ElectricitySensor == nil || !*sensor.ElectricitySensor {
+			return fmt.Errorf("update sensor: cannot set voltage on a non-electricity sensor")
+		}
+		sensor.Voltage = payload.Voltage
+	}
+	if payload.ElectricitySensor != nil {
+		sensor.ElectricitySensor = payload.ElectricitySensor
+		if !*payload.ElectricitySensor {
+			sensor.Voltage = nil
+		} else {
+			sensor.Voltage = payload.Voltage
+		}
 	}
 
 	// Only call Chirpstack if a Chirpstack-stored field changed (name, description, profile).

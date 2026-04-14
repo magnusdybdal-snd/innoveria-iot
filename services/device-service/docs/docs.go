@@ -775,6 +775,9 @@ const docTemplate = `{
                 "device_profile_id": {
                     "type": "string"
                 },
+                "electricity_sensor": {
+                    "type": "boolean"
+                },
                 "factory_area_id": {
                     "type": "string"
                 },
@@ -787,6 +790,9 @@ const docTemplate = `{
                 "production_resource": {
                     "description": "Optional — UUID, omit if service not yet available",
                     "type": "string"
+                },
+                "voltage": {
+                    "type": "integer"
                 }
             }
         },
@@ -1095,6 +1101,9 @@ const docTemplate = `{
                 "device_profile_id": {
                     "type": "string"
                 },
+                "electricity_sensor": {
+                    "type": "boolean"
+                },
                 "factory_area_id": {
                     "type": "string"
                 },
@@ -1121,6 +1130,9 @@ const docTemplate = `{
                 },
                 "updated_at": {
                     "type": "string"
+                },
+                "voltage": {
+                    "type": "integer"
                 }
             }
         },
@@ -1150,6 +1162,9 @@ const docTemplate = `{
                 "device_profile_id": {
                     "type": "string"
                 },
+                "electricity_sensor": {
+                    "type": "boolean"
+                },
                 "factory_area_id": {
                     "description": "Optional — UUID, omit if service not yet available",
                     "type": "string"
@@ -1163,6 +1178,9 @@ const docTemplate = `{
                 "production_resource": {
                     "description": "Optional — UUID, omit if service not yet available",
                     "type": "string"
+                },
+                "voltage": {
+                    "type": "integer"
                 }
             }
         },
