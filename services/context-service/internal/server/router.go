@@ -22,6 +22,8 @@ func NewRouter(contextSvc domain.ContextService, ruleSvc domain.RuleService) *ht
 	mux.HandleFunc("DELETE "+RULES_ID_ROUTE, handlers.DeleteRule(ruleSvc))
 	// Context data endpoint
 	mux.HandleFunc("GET "+CONTEXT_DATA_ROUTE, handlers.GetContextData(contextSvc))
+	// Orders endpoint
+	mux.HandleFunc("GET "+ORDERS_ROUTE, handlers.GetOrders(contextSvc))
 
 	// Swagger docs
 	mux.HandleFunc("GET /swagger/", httpSwagger.WrapHandler)

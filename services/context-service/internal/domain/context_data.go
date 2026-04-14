@@ -38,4 +38,8 @@ type ContextService interface {
 		from, to time.Time,
 		bucketMins int,
 	) ([]ContextData, error)
+	// GetOrders retrieves all ERP orders enriched with their full detail.
+	//
+	// TODO: replace with AUTH — companyID should be read from the gateway-injected X-Auth-Company-Id header once auth middleware propagation is wired up.
+	GetOrders(ctx context.Context, companyID string) ([]ERPOrderDetail, error)
 }

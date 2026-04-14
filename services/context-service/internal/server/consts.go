@@ -15,4 +15,5 @@ const (
 	RULES_ROUTE        = CONTEXT_ROUTE + "/rules"
 	RULES_ID_ROUTE     = RULES_ROUTE + "/{id}"
 	CONTEXT_DATA_ROUTE = CONTEXT_ROUTE + "/data"
+	ORDERS_ROUTE       = CONTEXT_ROUTE + "/orders"
 )

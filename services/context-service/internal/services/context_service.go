@@ -14,14 +14,16 @@ import (
 // ContextServiceImpl implements context use cases for context service.
 type ContextServiceImpl struct {
 	collectionClient domain.CollectionClient
+	erpClient        domain.ERPClient
 	ruleRepo         domain.RuleRepository
 	calculators      map[string]calculators.Calculator
 }
 
 // NewContextServiceImpl creates a new ContextServiceImpl instance.
-func NewContextServiceImpl(collectionClient domain.CollectionClient, ruleRepo domain.RuleRepository) *ContextServiceImpl {
+func NewContextServiceImpl(collectionClient domain.CollectionClient, erpClient domain.ERPClient, ruleRepo domain.RuleRepository) *ContextServiceImpl {
 	return &ContextServiceImpl{
 		collectionClient: collectionClient,
+		erpClient:        erpClient,
 		ruleRepo:         ruleRepo,
 		calculators:      calculators.NewRegistry(),
 	}
@@ -101,4 +103,26 @@ func (s *ContextServiceImpl) GetContextData(
 	}
 
 	return results, nil
+}
+
+// GetOrders retrieves all orders from the ERP service and enriches each with
+// its full detail (reportings, workcenter). The companyID is used to scope
+// the initial orders query.
+//
+// TODO: replace with AUTH — use X-Auth-Company-Id header once auth middleware propagation is wired up end-to-end.
+func (s *ContextServiceImpl) GetOrders(ctx context.Context, companyID string) ([]domain.ERPOrderDetail, error) {
+	orders, err := s.erpClient.GetOrders(ctx, companyID)
+	if err != nil {
+		return nil, fmt.Errorf("fetching orders from ERP: %w", err)
+	}
+
+	details := make([]domain.ERPOrderDetail, 0, len(orders))
+	for _, o := range orders {
+		detail, err := s.erpClient.GetOrderDetail(ctx, o.OrderID)
+		if err != nil {
+			return nil, fmt.Errorf("fetching order detail for %s: %w", o.OrderID, err)
+		}
+		details = append(details, *detail)
+	}
+	return details, nil
 }
