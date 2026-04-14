@@ -8,16 +8,6 @@ import (
 	"innoveria-iot/pkg/ptrutil"
 )
 
-// MapDraftProfilesToDTO maps a slice of draft profile IDs to a DraftProfilesResponse.
-func MapDraftProfilesToDTO(from []string) DraftProfilesResponse {
-	profileIDs := make([]string, len(from))
-	copy(profileIDs, from)
-	return DraftProfilesResponse{
-		TotalCount: len(profileIDs),
-		ProfileIDs: profileIDs,
-	}
-}
-
 // MapPayloadSchemaDomainToDTO maps a slice of domain PayloadSchemas to a PayloadSchemaListResponse.
 func MapPayloadSchemaDomainToDTO(from []domain.PayloadSchema) PayloadSchemaListResponse {
 	schemas := make([]PayloadSchemaResponse, len(from))
@@ -40,11 +30,10 @@ func MapPayloadSchemaDomainToDTO(from []domain.PayloadSchema) PayloadSchemaListR
 func MapSaveLabelsRequestToDomain(chirpstackProfileID string, from SavePayloadSchemaLabelsRequest) []domain.PayloadSchema {
 	schemas := make([]domain.PayloadSchema, len(from.Labels))
 	for i, l := range from.Labels {
-		mt := l.MeasurementType
 		schemas[i] = domain.PayloadSchema{
 			ChirpstackProfileID: chirpstackProfileID,
 			PayloadKey:          l.PayloadKey,
-			MeasurementType:     &mt,
+			MeasurementType:     l.MeasurementType,
 			Unit:                l.Unit,
 		}
 	}
