@@ -12,3 +12,11 @@ func MapMonitorOrderOperationToDomain(from []dto.ManufacturingOrderOperation) []
 func MapMonitorOrderToDomain(from []dto.ManufacturingOrder) []domain.Order {
 	return []domain.Order{}
 }
+
+func MapMonitorOrderReportToDomain(from []dto.ManufacturingOrderOperationReporting) []domain.OrderReport {
+	return []domain.OrderReport{}
+}
+
+func MapMonitorWorkcenterToDomain(from []dto.WorkCenter) []domain.ProductionResource {
+	return []domain.ProductionResource{}
+}

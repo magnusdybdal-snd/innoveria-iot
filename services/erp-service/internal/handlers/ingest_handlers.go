@@ -45,18 +45,36 @@ func PostIngestOrderOperations(svc domain.Ingest) http.HandlerFunc {
 
 // PostIngestOrderReportings handles batch ingest of manufacturing order operation
 // reporting events pushed from erp-agent-service.
-func PostIngestOrderReportings() http.HandlerFunc {
+func PostIngestOrderReports(svc domain.Ingest) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		_ = r
-		http.Error(w, "not implemented", http.StatusNotImplemented)
+		ctx := r.Context()
+		payload, err := json.Decode[[]monitordto.ManufacturingOrderOperationReporting](r)
+		if err != nil {
+			json.HandleError(w, http.StatusBadRequest, err, "bad request")
+			return
+		}
+		result := dto.MapMonitorOrderReportToDomain(payload)
+		if err := svc.CreateOrderReport(ctx, result); err != nil {
+			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			return
+		}
 	}
 }
 
 // PostIngestWorkCenters handles batch ingest of work center master data pushed
 // from erp-agent-service.
-func PostIngestWorkCenters() http.HandlerFunc {
+func PostIngestWorkCenters(svc domain.Ingest) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		_ = r
-		http.Error(w, "not implemented", http.StatusNotImplemented)
+		ctx := r.Context()
+		payload, err := json.Decode[[]monitordto.WorkCenter](r)
+		if err != nil {
+			json.HandleError(w, http.StatusBadRequest, err, "bad request")
+			return
+		}
+		result := dto.MapMonitorWorkcenterToDomain(payload)
+		if err := svc.CreateProductionResource(ctx, result); err != nil {
+			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			return
+		}
 	}
 }
