@@ -3,7 +3,7 @@ import { useState } from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 
-import { useOrders } from "@entities/context";
+import { useOrders, type Order } from "@entities/context";
 import { DropDownSelect } from "@shared/ui/DropDownSelect";
 import { PageContent } from "@shared/ui/PageContent";
 import { PageDivider } from "@shared/ui/PageDivider";
@@ -21,6 +21,10 @@ export default function OrderContext() {
     id: o.orderId,
     name: o.productName,
   }));
+
+  const selectedOrder: Order | undefined = orders.find(
+    (o) => o.orderId === selectedOrderId,
+  );
 
   return (
     <div className="flex h-screen">
@@ -40,6 +44,22 @@ export default function OrderContext() {
               />
             )}
           </Box>
+          {selectedOrder && (
+            <Box
+              component="pre"
+              sx={{
+                mt: 3,
+                p: 2,
+                backgroundColor: "primary.dark",
+                color: "primary.main",
+                borderRadius: 1,
+                fontSize: "0.8rem",
+                overflowX: "auto",
+              }}
+            >
+              {JSON.stringify(selectedOrder, null, 2)}
+            </Box>
+          )}
         </Box>
       </PageContent>
     </div>
