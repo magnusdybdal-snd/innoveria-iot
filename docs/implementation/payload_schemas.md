@@ -240,7 +240,7 @@ If no sensor on the profile has sent data yet, step 5 returns empty and the UI s
 1. Admin installs the sensor, it sends at least one reading
 2. Opens payload schema page, selects the Chirpstack profile
 3. Admin checks configurable_schema box
-   → PATCH /sensor-profile-config/{chirpstack_profile_id}  (sets configurable_schema = true)
+   → PUT /sensor-profile-config/{chirpstack_profile_id}  (sets configurable_schema = true)
    → devEUI picker appears
 4. Admin selects the specific sensor EUI
 5. UI calls GET /collection/payload-tags?device_eui={eui}
@@ -292,27 +292,16 @@ Requires a backend change to the sensor list query and response DTO.
 Add derived `metrics_configured` field to the sensor list endpoint response.
 Computed via subquery — no schema change needed.
 
-### 2. sensor_profile_config table
-New table and endpoints to mark a profile as configurable-schema.
-Required for the UI to differentiate fixed vs configurable sensors.
+### 2. Sensor list filter by chirpstack_profile_id
+Add `?chirpstack_profile_id=` as an optional query param to `GET /sensors`.
+Used by the configurable sensor devEUI picker — currently the UI fetches all sensors and filters client-side.
+Consistent with the existing `production_resource_id` filter pattern.
 
-### 3. sample-eui endpoint
-```
-GET /api/v1/device/sensors/sample-eui?chirpstack_profile_id={id}
-```
-Returns a single device EUI from any sensor on that profile.
-Limited response — EUI only, no company or sensor details.
-Admin-only. When role-based access is added, this endpoint is how admin avoids
-needing full cross-tenant sensor visibility.
-
-### 4. Sensors by profile filter
-Or alternatively, the sample-eui endpoint covers this need entirely.
-
-### 5. Context-service wiring
+### 3. Context-service wiring
 Context-service does not yet call `GET /sensors/{eui}/metrics` before aggregating.
 Will be handled in a separate branch.
 
-### 6. Remove /discover endpoint and draft concept from payload_schema
+### 4. Remove /discover endpoint and draft concept from payload_schema
 `PostDiscoverPayloadKeys` and the draft (null measurement_type) mechanism in
 `payload_schema` are unused in the agreed flows. Keys always come from `payload-tags`
 at labeling time. Draft rows add complexity with no benefit — the endpoint and
@@ -340,7 +329,7 @@ null-measurement_type handling can be removed.
 | Method | Path | Description | Access |
 |---|---|---|---|
 | GET | `/api/v1/device/sensor-profile-config/{profile_id}` | Get config for a profile | Admin |
-| PATCH | `/api/v1/device/sensor-profile-config/{profile_id}` | Set configurable_schema flag | Admin |
+| PUT | `/api/v1/device/sensor-profile-config/{profile_id}` | Set configurable_schema flag | Admin |
 
 ### Sensor Metrics (device-service)
 | Method | Path | Description | Access |
@@ -392,13 +381,13 @@ Label payload keys for a profile. Entry point for both sensor types.
   - Show labeling form with keys pre-filled, measurement type dropdown per key
   - **Save:** `PUT /payload-schema/{profile_id}` with all labeled rows
 - If configurable:
-  - Show devEUI picker (dropdown of sensors with that chirpstack profile id — fetched from sensor list filtered by profile, displayed with name)
+  - Show devEUI picker (dropdown of sensors using this profile — call `GET /sensors`, filter client-side by `chirpstack_profile_id`, display by name)
   - `GET /collection/payload-tags?device_eui={selected_eui}` → get keys
   - Show labeling form
   - **Save:** `PUT /sensors/{eui}/metrics`
 
 **Toggle configurable_schema:**
-- `PATCH /sensor-profile-config/{profile_id}` with `{ configurable_schema: true/false }`
+- `PUT /sensor-profile-config/{profile_id}` with `{ configurable_schema: true/false }`
 
 **Empty state (no readings yet):**
 "No readings available for this profile — deploy a sensor and wait for its first transmission."
