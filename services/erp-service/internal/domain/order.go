@@ -1,7 +1,6 @@
 package domain
 
 import (
-	"fmt"
 	"time"
 )
 
@@ -18,25 +17,8 @@ const (
 	OrderStatusHistorical     OrderStatus = "historical"
 )
 
-func ParseOrderStatus(value string) (OrderStatus, error) {
-	status := OrderStatus(value)
-	switch status {
-	case OrderStatusNotInitialized,
-		OrderStatusRegistered,
-		OrderStatusPrinted,
-		OrderStatusStarted,
-		OrderStatusFinished,
-		OrderStatusPostCalculated,
-		OrderStatusDelivered,
-		OrderStatusHistorical:
-		return status, nil
-	default:
-		return "", fmt.Errorf("invalid order status: %q", value)
-	}
-}
-
 type Order struct {
-	ID                int
+	ID                int64
 	OrderNumber       string
 	PartID            string
 	PartDescription   string // Human readable product name

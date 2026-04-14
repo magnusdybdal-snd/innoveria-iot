@@ -17,7 +17,7 @@ import "time"
 type ManufacturingOrder struct {
 	// --- Identity ---
 
-	ID          int    // Internal unique identifier (primary key from Monitor)
+	ID          int64  // Internal unique identifier (primary key from Monitor)
 	OrderNumber string // Human-readable order number (useful for UI/logging)
 
 	// --- Product context ---
