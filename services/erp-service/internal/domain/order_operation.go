@@ -16,7 +16,7 @@ const (
 type OrderOperation struct {
 	ID                   int64
 	CompanyID            string
-	ProductionResourceID string
+	ProductionResourceID int64
 	// ReportedQuantity         float64
 	// RestQuantity             float64
 	OrderId int64 // referenced by Order

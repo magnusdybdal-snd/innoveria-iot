@@ -15,7 +15,7 @@ func MapMonitorOrderOperationToDomain(from []dto.ManufacturingOrderOperation) []
 	for _, item := range from {
 		to = append(to, domain.OrderOperation{
 			ID:                       item.ID,
-			ProductionResourceID:     strconv.FormatInt(item.WorkCenterId, 10),
+			ProductionResourceID:     item.WorkCenterId,
 			OrderId:                  item.ManufacturingOrderId,
 			PlannedStartDate:         item.PlannedStartDate,
 			PlannedFinishDate:        item.PlannedFinishDate,
@@ -60,7 +60,7 @@ func MapMonitorOrderReportToDomain(from []dto.ManufacturingOrderOperationReporti
 	for _, item := range from {
 		to = append(to, domain.OrderReport{
 			ID:                   item.ID,
-			OrderOperationID:     int(item.OperationId),
+			OrderOperationID:     item.OperationId,
 			ProductionResourceID: strconv.FormatInt(item.WorkCenterId, 10),
 			Quantity:             item.Quantity,
 			RestQuantity:         item.RestQuantity,
