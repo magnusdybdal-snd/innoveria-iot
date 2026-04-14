@@ -45,12 +45,8 @@ const (
 
 	// PAYLOAD_SCHEMA_ROUTE is the route for payload schema endpoints.
 	PAYLOAD_SCHEMA_ROUTE = DEVICE_ROUTE + "/payload-schema"
-	// PAYLOAD_SCHEMA_ROUTE_DRAFTS is the route for listing profiles with unlabeled rows.
-	PAYLOAD_SCHEMA_ROUTE_DRAFTS = DEVICE_ROUTE + "/payload-schema/drafts"
 	// PAYLOAD_SCHEMA_ROUTE_PROFILE is the route for a single profile's payload schema.
 	PAYLOAD_SCHEMA_ROUTE_PROFILE = DEVICE_ROUTE + "/payload-schema/{chirpstack_profile_id}"
-	// PAYLOAD_SCHEMA_ROUTE_DISCOVER is the route for discovering payload keys for a profile.
-	PAYLOAD_SCHEMA_ROUTE_DISCOVER = DEVICE_ROUTE + "/payload-schema/{chirpstack_profile_id}/discover"
 
 	// SENSOR_METRICS_ROUTE is the route for sensor metric endpoints.
 	SENSOR_METRICS_ROUTE = DEVICE_ROUTE + "/sensors/{eui}/metrics"
