@@ -43,7 +43,7 @@ const fieldSx = {
  * @param props.profileOptions - Sensor profile choices for the dropdown
  * @param props.factoryOptions - Factory choices for the dropdown
  * @param props.factoryAreaOptions - Factory area choices for the dropdown
- * @param props.voltageOptions
+ * @param props.voltageOptions - Voltage choices for the dropdown
  * @param props.lengthErrors - Map of field name to whether it has a length error
  * @param props.lengthErrorMessages - Map of field name to its error message
  * @param props.inputHints - Map of field name to its placeholder hint
