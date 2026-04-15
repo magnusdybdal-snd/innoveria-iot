@@ -1,21 +1,34 @@
 export type BucketUnit = "minutes" | "hours" | "days" | "weeks" | "months";
 
-export interface OrderReporting {
-  reportingId: string;
-  timestamp: string;
-  quantity: number;
+export interface ProductionResource {
+  id: number;
+  number: string;
+  description: string | null;
+  type: string;
+}
+
+export interface OrderOperation {
+  id: number;
+  productionResource: ProductionResource;
+  plannedStartDate: string;
+  plannedFinishDate: string;
+  actualStartDate: string | null;
+  actualFinishDate: string | null;
   status: string;
+  productionResourceStatus: string;
 }
 
 export interface Order {
-  orderId: string;
-  productName: string;
+  id: number;
+  orderNumber: string;
+  partDescription: string;
+  plannedStartDate: string;
+  plannedFinishDate: string;
+  actualStartDate: string | null;
+  actualFinishDate: string | null;
   status: string;
-  startTime: string;
-  endTime: string;
-  workcenterId: string;
-  workcenterName: string;
-  reportings: OrderReporting[];
+  priority: number;
+  operations: OrderOperation[];
 }
 
 export interface CreateRuleRequest {

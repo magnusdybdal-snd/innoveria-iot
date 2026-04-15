@@ -6,7 +6,8 @@ export type {
   AggregationRule,
   CreateRuleRequest,
   Order,
-  OrderReporting,
+  OrderOperation,
+  ProductionResource,
 } from "./model/contextSchema";
 export {
   getContextData,

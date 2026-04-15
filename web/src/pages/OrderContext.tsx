@@ -19,12 +19,12 @@ export default function OrderContext() {
   const [selectedOrderId, setSelectedOrderId] = useState<string>("");
 
   const orderOptions = orders.map((o) => ({
-    id: o.orderId,
-    name: o.productName,
+    id: String(o.id),
+    name: `${o.orderNumber} — ${o.partDescription}`,
   }));
 
   const selectedOrder: Order | undefined = orders.find(
-    (o) => o.orderId === selectedOrderId,
+    (o) => String(o.id) === selectedOrderId,
   );
 
   return (

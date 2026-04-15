@@ -1,40 +1,73 @@
 import type {
   Order,
-  OrderReporting,
+  OrderOperation,
+  ProductionResource,
 } from "@entities/context/model/contextSchema";
 import { apiRequest, serviceClient } from "@shared/api";
 import { API_ROUTES } from "@shared/api/routes";
 
-/** Raw order reporting shape as returned by the API (snake_case). */
-type RawOrderReporting = {
-  reporting_id: string;
-  timestamp: string;
-  quantity: number;
+/** Raw production resource shape as returned by the API (snake_case). */
+type RawProductionResource = {
+  id: number;
+  number: string;
+  description: string | null;
+  type: string;
+};
+
+/** Raw order operation shape as returned by the API (snake_case). */
+type RawOrderOperation = {
+  id: number;
+  production_resource: RawProductionResource;
+  planned_start_date: string;
+  planned_finish_date: string;
+  actual_start_date: string | null;
+  actual_finish_date: string | null;
   status: string;
+  production_resource_status: string;
 };
 
 /** Raw order shape as returned by the API (snake_case). */
 type RawOrder = {
-  order_id: string;
-  product_name: string;
+  id: number;
+  order_number: string;
+  part_description: string;
+  planned_start_date: string;
+  planned_finish_date: string;
+  actual_start_date: string | null;
+  actual_finish_date: string | null;
   status: string;
-  start_time: string;
-  end_time: string;
-  workcenter_id: string;
-  workcenter_name: string;
-  reportings: RawOrderReporting[];
+  priority: number;
+  operations: RawOrderOperation[];
 };
 
 /**
- * Maps a raw API order reporting to the domain `OrderReporting` type.
- * @param r - Raw reporting object from the API response
- * @returns Camel-cased `OrderReporting`
+ * Maps a raw API production resource to the domain `ProductionResource` type.
+ * @param r - Raw production resource object from the API response
+ * @returns Camel-cased `ProductionResource`
  */
-const toOrderReporting = (r: RawOrderReporting): OrderReporting => ({
-  reportingId: r.reporting_id,
-  timestamp: r.timestamp,
-  quantity: r.quantity,
-  status: r.status,
+const toProductionResource = (
+  r: RawProductionResource,
+): ProductionResource => ({
+  id: r.id,
+  number: r.number,
+  description: r.description,
+  type: r.type,
+});
+
+/**
+ * Maps a raw API order operation to the domain `OrderOperation` type.
+ * @param op - Raw operation object from the API response
+ * @returns Camel-cased `OrderOperation`
+ */
+const toOrderOperation = (op: RawOrderOperation): OrderOperation => ({
+  id: op.id,
+  productionResource: toProductionResource(op.production_resource),
+  plannedStartDate: op.planned_start_date,
+  plannedFinishDate: op.planned_finish_date,
+  actualStartDate: op.actual_start_date,
+  actualFinishDate: op.actual_finish_date,
+  status: op.status,
+  productionResourceStatus: op.production_resource_status,
 });
 
 /**
@@ -43,14 +76,16 @@ const toOrderReporting = (r: RawOrderReporting): OrderReporting => ({
  * @returns Camel-cased `Order`
  */
 const toOrder = (o: RawOrder): Order => ({
-  orderId: o.order_id,
-  productName: o.product_name,
+  id: o.id,
+  orderNumber: o.order_number,
+  partDescription: o.part_description,
+  plannedStartDate: o.planned_start_date,
+  plannedFinishDate: o.planned_finish_date,
+  actualStartDate: o.actual_start_date,
+  actualFinishDate: o.actual_finish_date,
   status: o.status,
-  startTime: o.start_time,
-  endTime: o.end_time,
-  workcenterId: o.workcenter_id,
-  workcenterName: o.workcenter_name,
-  reportings: o.reportings.map(toOrderReporting),
+  priority: o.priority,
+  operations: o.operations.map(toOrderOperation),
 });
 
 /**
