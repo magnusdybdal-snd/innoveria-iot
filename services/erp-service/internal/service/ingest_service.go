@@ -31,18 +31,27 @@ func (i *IngestServiceImpl) CreateOrder(ctx context.Context, payload []domain.Or
 
 // CreateOrderOperation stores one order operation ingest payload.
 func (i *IngestServiceImpl) CreateOrderOperation(ctx context.Context, payload []domain.OrderOperation) error {
+	if err := i.ingestRepo.CreateOrderOperation(ctx, payload); err != nil {
+		return err
+	}
 	slog.Info("successfully ingested order operations", "count", len(payload))
 	return nil
 }
 
 // CreateOrderReport stores a batch of order report ingest payloads.
 func (i *IngestServiceImpl) CreateOrderReport(ctx context.Context, payload []domain.OrderReport) error {
+	if err := i.ingestRepo.CreateOrderReport(ctx, payload); err != nil {
+		return err
+	}
 	slog.Info("successfully ingested order reports", "count", len(payload))
 	return nil
 }
 
 // CreateProductionResource stores a batch of production resource ingest payloads.
 func (i *IngestServiceImpl) CreateProductionResource(ctx context.Context, payload []domain.ProductionResource) error {
+	if err := i.ingestRepo.CreateProductionResource(ctx, payload); err != nil {
+		return err
+	}
 	slog.Info("successfully ingested production resources", "count", len(payload))
 	return nil
 }
