@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"innoveria-iot/erp-agent-service/internal/monitor"
-	"innoveria-iot/erp-agent-service/internal/monitor/dto"
+	"innoveria-iot/pkg/monitor/dto"
 )
 
 // Client returns deterministic changing Monitor data for local development.
@@ -40,7 +40,7 @@ func New() *Client {
 // filtering/paging behavior to validate the integration contract.
 func (c *Client) Query(_ context.Context, path monitor.MonitorERPEndpoint, _ url.Values, out any) error {
 	c.mu.Lock()
-	if path == monitor.OrderReportings {
+	if path == monitor.Order {
 		c.counter++
 		c.cycle = c.counter
 	}
@@ -50,6 +50,34 @@ func (c *Client) Query(_ context.Context, path monitor.MonitorERPEndpoint, _ url
 	now := time.Now().UTC()
 
 	switch path {
+	case monitor.Order:
+		orders, ok := out.(*[]dto.ManufacturingOrder)
+		if !ok {
+			return fmt.Errorf("mock monitor expected *[]dto.ManufacturingOrder for %s", path)
+		}
+
+		plannedStart := now.Add(-2 * time.Hour)
+		plannedFinish := now.Add(6 * time.Hour)
+		actualStart := now.Add(-90 * time.Minute)
+
+		*orders = []dto.ManufacturingOrder{
+			{
+				ID:                300 + int64(tick%8),
+				OrderNumber:       fmt.Sprintf("MO-%05d", 30_000+tick),
+				PartID:            fmt.Sprintf("PART-%03d", 100+(tick%20)),
+				PartDescription:   "Mock production part",
+				PlannedQuantity:   float64(100 + (tick % 50)),
+				ReportedQuantity:  float64((tick % 40) + 10),
+				RestQuantity:      float64(90 - (tick % 30)),
+				PlannedStartDate:  plannedStart,
+				PlannedFinishDate: plannedFinish,
+				ActualStartDate:   &actualStart,
+				ActualFinishDate:  nil,
+				Status:            int(tick % 4),
+				Priority:          int((tick % 3) + 1),
+			},
+		}
+
 	case monitor.OrderReportings:
 		reportings, ok := out.(*[]dto.ManufacturingOrderOperationReporting)
 		if !ok {
@@ -102,25 +130,22 @@ func (c *Client) Query(_ context.Context, path monitor.MonitorERPEndpoint, _ url
 
 		*workcenters = []dto.WorkCenter{
 			{
-				ID:                   700,
-				Number:               "WC-700",
-				Description:          "Mock Cutter",
-				OperationDescription: "Cutting operations",
-				Type:                 1,
+				ID:          700,
+				Number:      "WC-700",
+				Description: "Mock Cutter",
+				Type:        1,
 			},
 			{
-				ID:                   701,
-				Number:               "WC-701",
-				Description:          "Mock Assembly",
-				OperationDescription: "Assembly operations",
-				Type:                 2,
+				ID:          701,
+				Number:      "WC-701",
+				Description: "Mock Assembly",
+				Type:        2,
 			},
 			{
-				ID:                   702,
-				Number:               "WC-702",
-				Description:          "Mock QA",
-				OperationDescription: "Quality checks",
-				Type:                 3,
+				ID:          702,
+				Number:      "WC-702",
+				Description: "Mock QA",
+				Type:        3,
 			},
 		}
 

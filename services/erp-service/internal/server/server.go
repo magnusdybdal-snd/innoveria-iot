@@ -13,14 +13,18 @@ import (
 	"time"
 
 	"innoveria-iot/erp-service/internal/config"
+	"innoveria-iot/erp-service/internal/service"
 )
 
 // Run starts the erp service HTTP server and handles graceful shutdown.
 func Run() error {
 	cfg := config.Load()
 
+	// Service implementation
+	ingestSvc := service.NewIngestService()
+
 	// Setting up mux and http server
-	mux := NewRouter()
+	mux := NewRouter(ingestSvc)
 	server := &http.Server{
 		Addr:              cfg.Addr,
 		Handler:           mux,
