@@ -73,12 +73,19 @@ func PutPayloadSchemaLabels(svc domain.PayloadSchemaService) http.HandlerFunc {
 			return
 		}
 
+		seen := make(map[string]struct{}, len(payload.Labels))
 		for i, label := range payload.Labels {
 			payload.Labels[i].PayloadKey = strings.TrimSpace(label.PayloadKey)
 			if payload.Labels[i].PayloadKey == "" {
 				json.HandleError(w, http.StatusBadRequest, fmt.Errorf("payload_key must not be empty"), "bad request")
 				return
 			}
+
+			if _, dup := seen[payload.Labels[i].PayloadKey]; dup {
+				json.HandleError(w, http.StatusBadRequest, fmt.Errorf("duplicate payload_key: %q", payload.Labels[i].PayloadKey), "bad request")
+				return
+			}
+			seen[payload.Labels[i].PayloadKey] = struct{}{}
 
 			payload.Labels[i].MeasurementType = strings.TrimSpace(label.MeasurementType)
 			if payload.Labels[i].MeasurementType == "" {
