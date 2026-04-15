@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+import { InfoWidget } from "@/widgets/infoWidget";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 
@@ -61,6 +62,7 @@ export default function OrderContext() {
             </Box>
           )}
         </Box>
+        <InfoWidget label="Test-label" value="25" unit="ppm" />
       </PageContent>
     </div>
   );
