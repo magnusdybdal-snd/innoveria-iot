@@ -18,7 +18,7 @@ const hardcodedCompanyID = "00000000-0000-0000-0000-000000000001"
 // @Summary		Get Orders
 // @Tags		orders
 // @Produce		json
-// @Success		200	{array}		dto.OrderDetailResponse
+// @Success		200	{array}		dto.OrderResponse
 // @Failure		500
 // @Router		/orders [get]
 func GetOrders(svc domain.ContextService) http.HandlerFunc {

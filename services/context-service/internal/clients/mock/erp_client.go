@@ -3,7 +3,6 @@ package mock
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"innoveria-iot/context-service/internal/domain"
@@ -19,45 +18,111 @@ func NewERPClient() *ERPClient {
 	return &ERPClient{}
 }
 
+var (
+	desc1 = "Welding Station 1"
+	desc2 = "Press Station 2"
+	desc3 = "Assembly Line A"
+)
+
 var mockOrders = []domain.ERPOrder{
 	{
-		OrderID:        "order-001",
-		ProductName:    "Steel Frame A",
-		Status:         "IN_PROGRESS",
-		StartTime:      time.Date(2026, 4, 14, 6, 0, 0, 0, time.UTC),
-		EndTime:        time.Date(2026, 4, 14, 14, 0, 0, 0, time.UTC),
-		WorkcenterID:   "wc-101",
-		WorkcenterName: "Welding Station 1",
+		ID:                1,
+		OrderNumber:       "MO-2026-001",
+		PartDescription:   "Steel Frame A",
+		PlannedStartDate:  time.Date(2026, 4, 14, 6, 0, 0, 0, time.UTC),
+		PlannedFinishDate: time.Date(2026, 4, 14, 14, 0, 0, 0, time.UTC),
+		ActualStartDate:   ptr(time.Date(2026, 4, 14, 6, 12, 0, 0, time.UTC)),
+		ActualFinishDate:  nil,
+		Status:            "started",
+		Priority:          1,
+		Operations: []domain.ERPOrderOperation{
+			{
+				ID: 10,
+				ProductionResource: domain.ERPProductionResource{
+					ID:          1,
+					Number:      "WC-101",
+					Description: &desc1,
+					Type:        "machine",
+				},
+				PlannedStartDate:         time.Date(2026, 4, 14, 6, 0, 0, 0, time.UTC),
+				PlannedFinishDate:        time.Date(2026, 4, 14, 14, 0, 0, 0, time.UTC),
+				ActualStartDate:          ptr(time.Date(2026, 4, 14, 6, 12, 0, 0, time.UTC)),
+				ActualFinishDate:         nil,
+				Status:                   "started",
+				ProductionResourceStatus: "started",
+			},
+		},
 	},
 	{
-		OrderID:        "order-002",
-		ProductName:    "Aluminium Panel B",
-		Status:         "PLANNED",
-		StartTime:      time.Date(2026, 4, 14, 14, 0, 0, 0, time.UTC),
-		EndTime:        time.Date(2026, 4, 14, 22, 0, 0, 0, time.UTC),
-		WorkcenterID:   "wc-102",
-		WorkcenterName: "Press Station 2",
+		ID:                2,
+		OrderNumber:       "MO-2026-002",
+		PartDescription:   "Aluminium Panel B",
+		PlannedStartDate:  time.Date(2026, 4, 14, 14, 0, 0, 0, time.UTC),
+		PlannedFinishDate: time.Date(2026, 4, 14, 22, 0, 0, 0, time.UTC),
+		ActualStartDate:   nil,
+		ActualFinishDate:  nil,
+		Status:            "registered",
+		Priority:          2,
+		Operations: []domain.ERPOrderOperation{
+			{
+				ID: 20,
+				ProductionResource: domain.ERPProductionResource{
+					ID:          2,
+					Number:      "WC-102",
+					Description: &desc2,
+					Type:        "machine",
+				},
+				PlannedStartDate:         time.Date(2026, 4, 14, 14, 0, 0, 0, time.UTC),
+				PlannedFinishDate:        time.Date(2026, 4, 14, 22, 0, 0, 0, time.UTC),
+				ActualStartDate:          nil,
+				ActualFinishDate:         nil,
+				Status:                   "none",
+				ProductionResourceStatus: "none",
+			},
+		},
 	},
 	{
-		OrderID:        "order-003",
-		ProductName:    "Copper Coil C",
-		Status:         "COMPLETED",
-		StartTime:      time.Date(2026, 4, 13, 6, 0, 0, 0, time.UTC),
-		EndTime:        time.Date(2026, 4, 13, 14, 0, 0, 0, time.UTC),
-		WorkcenterID:   "wc-101",
-		WorkcenterName: "Welding Station 1",
-	},
-}
-
-var mockReportings = map[string][]domain.ERPOrderReporting{
-	"order-001": {
-		{ReportingID: "rep-001-1", Timestamp: time.Date(2026, 4, 14, 7, 30, 0, 0, time.UTC), Quantity: 10, Status: "REPORTED"},
-		{ReportingID: "rep-001-2", Timestamp: time.Date(2026, 4, 14, 10, 0, 0, 0, time.UTC), Quantity: 25, Status: "REPORTED"},
-	},
-	"order-002": {},
-	"order-003": {
-		{ReportingID: "rep-003-1", Timestamp: time.Date(2026, 4, 13, 8, 0, 0, 0, time.UTC), Quantity: 50, Status: "REPORTED"},
-		{ReportingID: "rep-003-2", Timestamp: time.Date(2026, 4, 13, 12, 0, 0, 0, time.UTC), Quantity: 50, Status: "REPORTED"},
+		ID:                3,
+		OrderNumber:       "MO-2026-003",
+		PartDescription:   "Copper Coil C",
+		PlannedStartDate:  time.Date(2026, 4, 13, 6, 0, 0, 0, time.UTC),
+		PlannedFinishDate: time.Date(2026, 4, 13, 14, 0, 0, 0, time.UTC),
+		ActualStartDate:   ptr(time.Date(2026, 4, 13, 6, 5, 0, 0, time.UTC)),
+		ActualFinishDate:  ptr(time.Date(2026, 4, 13, 13, 50, 0, 0, time.UTC)),
+		Status:            "finished",
+		Priority:          1,
+		Operations: []domain.ERPOrderOperation{
+			{
+				ID: 30,
+				ProductionResource: domain.ERPProductionResource{
+					ID:          1,
+					Number:      "WC-101",
+					Description: &desc1,
+					Type:        "machine",
+				},
+				PlannedStartDate:         time.Date(2026, 4, 13, 6, 0, 0, 0, time.UTC),
+				PlannedFinishDate:        time.Date(2026, 4, 13, 10, 0, 0, 0, time.UTC),
+				ActualStartDate:          ptr(time.Date(2026, 4, 13, 6, 5, 0, 0, time.UTC)),
+				ActualFinishDate:         ptr(time.Date(2026, 4, 13, 9, 55, 0, 0, time.UTC)),
+				Status:                   "finished",
+				ProductionResourceStatus: "finished",
+			},
+			{
+				ID: 31,
+				ProductionResource: domain.ERPProductionResource{
+					ID:          3,
+					Number:      "WC-103",
+					Description: &desc3,
+					Type:        "manual_work",
+				},
+				PlannedStartDate:         time.Date(2026, 4, 13, 10, 0, 0, 0, time.UTC),
+				PlannedFinishDate:        time.Date(2026, 4, 13, 14, 0, 0, 0, time.UTC),
+				ActualStartDate:          ptr(time.Date(2026, 4, 13, 10, 10, 0, 0, time.UTC)),
+				ActualFinishDate:         ptr(time.Date(2026, 4, 13, 13, 50, 0, 0, time.UTC)),
+				Status:                   "finished",
+				ProductionResourceStatus: "finished",
+			},
+		},
 	},
 }
 
@@ -66,16 +131,6 @@ func (c *ERPClient) GetOrders(_ context.Context, _ string) ([]domain.ERPOrder, e
 	return mockOrders, nil
 }
 
-// GetOrderDetail returns mock order detail for a known order ID.
-// Returns an error for unknown IDs to simulate real service behaviour.
-func (c *ERPClient) GetOrderDetail(_ context.Context, orderID string) (*domain.ERPOrderDetail, error) {
-	for _, o := range mockOrders {
-		if o.OrderID == orderID {
-			return &domain.ERPOrderDetail{
-				ERPOrder:   o,
-				Reportings: mockReportings[orderID],
-			}, nil
-		}
-	}
-	return nil, fmt.Errorf("mock ERP: order %q not found", orderID)
+func ptr(t time.Time) *time.Time {
+	return &t
 }

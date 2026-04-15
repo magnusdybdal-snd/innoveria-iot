@@ -105,24 +105,14 @@ func (s *ContextServiceImpl) GetContextData(
 	return results, nil
 }
 
-// GetOrders retrieves all orders from the ERP service and enriches each with
-// its full detail (reportings, workcenter). The companyID is used to scope
-// the initial orders query.
+// GetOrders retrieves all ERP orders enriched with their operations and
+// production resources. The companyID is used to scope the query.
 //
 // TODO: replace with AUTH — use X-Auth-Company-Id header once auth middleware propagation is wired up end-to-end.
-func (s *ContextServiceImpl) GetOrders(ctx context.Context, companyID string) ([]domain.ERPOrderDetail, error) {
+func (s *ContextServiceImpl) GetOrders(ctx context.Context, companyID string) ([]domain.ERPOrder, error) {
 	orders, err := s.erpClient.GetOrders(ctx, companyID)
 	if err != nil {
 		return nil, fmt.Errorf("fetching orders from ERP: %w", err)
 	}
-
-	details := make([]domain.ERPOrderDetail, 0, len(orders))
-	for _, o := range orders {
-		detail, err := s.erpClient.GetOrderDetail(ctx, o.OrderID)
-		if err != nil {
-			return nil, fmt.Errorf("fetching order detail for %s: %w", o.OrderID, err)
-		}
-		details = append(details, *detail)
-	}
-	return details, nil
+	return orders, nil
 }

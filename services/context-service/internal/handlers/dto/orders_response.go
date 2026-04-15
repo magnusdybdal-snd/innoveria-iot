@@ -6,54 +6,79 @@ import (
 	"innoveria-iot/context-service/internal/domain"
 )
 
-// OrderReportingResponse represents a single production reporting event in the API response.
-type OrderReportingResponse struct {
-	ReportingID string    `json:"reporting_id"`
-	Timestamp   time.Time `json:"timestamp"`
-	Quantity    float64   `json:"quantity"`
-	Status      string    `json:"status"`
+// ProductionResourceResponse represents a work center in the API response.
+type ProductionResourceResponse struct {
+	ID          int64   `json:"id"`
+	Number      string  `json:"number"`
+	Description *string `json:"description"`
+	Type        string  `json:"type"`
 }
 
-// OrderDetailResponse is the API response shape for a single ERP order.
-type OrderDetailResponse struct {
-	OrderID        string                   `json:"order_id"`
-	ProductName    string                   `json:"product_name"`
-	Status         string                   `json:"status"`
-	StartTime      time.Time                `json:"start_time"`
-	EndTime        time.Time                `json:"end_time"`
-	WorkcenterID   string                   `json:"workcenter_id"`
-	WorkcenterName string                   `json:"workcenter_name"`
-	Reportings     []OrderReportingResponse `json:"reportings"`
+// OrderOperationResponse represents a single manufacturing operation in the API response.
+type OrderOperationResponse struct {
+	ID                       int64                      `json:"id"`
+	ProductionResource       ProductionResourceResponse `json:"production_resource"`
+	PlannedStartDate         time.Time                  `json:"planned_start_date"`
+	PlannedFinishDate        time.Time                  `json:"planned_finish_date"`
+	ActualStartDate          *time.Time                 `json:"actual_start_date"`
+	ActualFinishDate         *time.Time                 `json:"actual_finish_date"`
+	Status                   string                     `json:"status"`
+	ProductionResourceStatus string                     `json:"production_resource_status"`
 }
 
-// MapOrderDetailDomainToDTO converts a domain ERPOrderDetail to its API response shape.
-func MapOrderDetailDomainToDTO(order domain.ERPOrderDetail) OrderDetailResponse {
-	reportings := make([]OrderReportingResponse, len(order.Reportings))
-	for i, r := range order.Reportings {
-		reportings[i] = OrderReportingResponse{
-			ReportingID: r.ReportingID,
-			Timestamp:   r.Timestamp,
-			Quantity:    r.Quantity,
-			Status:      r.Status,
+// OrderResponse is the API response shape for a single ERP order.
+type OrderResponse struct {
+	ID                int64                    `json:"id"`
+	OrderNumber       string                   `json:"order_number"`
+	PartDescription   string                   `json:"part_description"`
+	PlannedStartDate  time.Time                `json:"planned_start_date"`
+	PlannedFinishDate time.Time                `json:"planned_finish_date"`
+	ActualStartDate   *time.Time               `json:"actual_start_date"`
+	ActualFinishDate  *time.Time               `json:"actual_finish_date"`
+	Status            string                   `json:"status"`
+	Priority          int                      `json:"priority"`
+	Operations        []OrderOperationResponse `json:"operations"`
+}
+
+// MapOrderDomainToDTO converts a domain ERPOrder to its API response shape.
+func MapOrderDomainToDTO(o domain.ERPOrder) OrderResponse {
+	ops := make([]OrderOperationResponse, len(o.Operations))
+	for i, op := range o.Operations {
+		ops[i] = OrderOperationResponse{
+			ID: op.ID,
+			ProductionResource: ProductionResourceResponse{
+				ID:          op.ProductionResource.ID,
+				Number:      op.ProductionResource.Number,
+				Description: op.ProductionResource.Description,
+				Type:        op.ProductionResource.Type,
+			},
+			PlannedStartDate:         op.PlannedStartDate,
+			PlannedFinishDate:        op.PlannedFinishDate,
+			ActualStartDate:          op.ActualStartDate,
+			ActualFinishDate:         op.ActualFinishDate,
+			Status:                   op.Status,
+			ProductionResourceStatus: op.ProductionResourceStatus,
 		}
 	}
-	return OrderDetailResponse{
-		OrderID:        order.OrderID,
-		ProductName:    order.ProductName,
-		Status:         order.Status,
-		StartTime:      order.StartTime,
-		EndTime:        order.EndTime,
-		WorkcenterID:   order.WorkcenterID,
-		WorkcenterName: order.WorkcenterName,
-		Reportings:     reportings,
+	return OrderResponse{
+		ID:                o.ID,
+		OrderNumber:       o.OrderNumber,
+		PartDescription:   o.PartDescription,
+		PlannedStartDate:  o.PlannedStartDate,
+		PlannedFinishDate: o.PlannedFinishDate,
+		ActualStartDate:   o.ActualStartDate,
+		ActualFinishDate:  o.ActualFinishDate,
+		Status:            o.Status,
+		Priority:          o.Priority,
+		Operations:        ops,
 	}
 }
 
-// MapOrdersDomainToDTO converts a slice of domain ERPOrderDetail to its API response shape.
-func MapOrdersDomainToDTO(orders []domain.ERPOrderDetail) []OrderDetailResponse {
-	result := make([]OrderDetailResponse, len(orders))
+// MapOrdersDomainToDTO converts a slice of domain ERPOrder to its API response shape.
+func MapOrdersDomainToDTO(orders []domain.ERPOrder) []OrderResponse {
+	result := make([]OrderResponse, len(orders))
 	for i, o := range orders {
-		result[i] = MapOrderDetailDomainToDTO(o)
+		result[i] = MapOrderDomainToDTO(o)
 	}
 	return result
 }
