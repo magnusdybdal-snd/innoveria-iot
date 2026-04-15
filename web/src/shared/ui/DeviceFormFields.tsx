@@ -85,11 +85,13 @@ export function DeviceFormFields({
           </Typography>
 
           {option in dropdownOptions ? (
-            <DropDownSelect
-              options={dropdownData[dropdownOptions[option]]}
-              value={typeof values[option] === "string" ? values[option] : ""}
-              onChange={(value) => onChange(option, value)}
-            />
+            (option != "Voltage" || Boolean(values["Electricity sensor"])) && (
+              <DropDownSelect
+                options={dropdownData[dropdownOptions[option]]}
+                value={typeof values[option] === "string" ? values[option] : ""}
+                onChange={(value) => onChange(option, value)}
+              />
+            )
           ) : checkBoxes.includes(option) ? (
             <Checkbox
               checked={Boolean(values[option])}
