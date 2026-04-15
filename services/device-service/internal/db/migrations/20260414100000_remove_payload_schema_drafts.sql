@@ -1,6 +1,8 @@
 -- +goose Up
 
 -- Remove any existing draft rows before enforcing NOT NULL.
+-- Safe to run unconditionally: the draft concept was never merged to dev or deployed to prod,
+-- so no real data exists with measurement_type IS NULL.
 DELETE FROM device.payload_schema WHERE measurement_type IS NULL;
 
 ALTER TABLE device.payload_schema
