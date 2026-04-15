@@ -55,9 +55,7 @@ func NewRouter(
 	mux.HandleFunc("PATCH "+MEASUREMENT_TYPE_ROUTE_DEPRECATE, handlers.PatchDeprecateMeasurementType(measurementTypeSvc))
 
 	// Payload schema routes:
-	mux.HandleFunc("GET "+PAYLOAD_SCHEMA_ROUTE_DRAFTS, handlers.GetPayloadSchemaDrafts(payloadSchemaSvc))
 	mux.HandleFunc("GET "+PAYLOAD_SCHEMA_ROUTE_PROFILE, handlers.GetPayloadSchemaByProfile(payloadSchemaSvc))
-	mux.HandleFunc("POST "+PAYLOAD_SCHEMA_ROUTE_DISCOVER, handlers.PostDiscoverPayloadKeys(payloadSchemaSvc))
 	mux.HandleFunc("PUT "+PAYLOAD_SCHEMA_ROUTE_PROFILE, handlers.PutPayloadSchemaLabels(payloadSchemaSvc))
 
 	// Sensor metric routes:

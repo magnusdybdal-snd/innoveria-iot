@@ -82,24 +82,6 @@ definitions:
     - factory_id
     - name
     type: object
-  dto.DiscoverPayloadKeysRequest:
-    properties:
-      payload_keys:
-        items:
-          type: string
-        type: array
-    required:
-    - payload_keys
-    type: object
-  dto.DraftProfilesResponse:
-    properties:
-      profile_ids:
-        items:
-          type: string
-        type: array
-      total_count:
-        type: integer
-    type: object
   dto.GatewayListResponse:
     properties:
       gateways:
@@ -609,46 +591,6 @@ paths:
         "500":
           description: Internal Server Error
       summary: Save payload schema labels for a profile
-      tags:
-      - payload-schema
-  /payload-schema/{chirpstack_profile_id}/discover:
-    post:
-      consumes:
-      - application/json
-      parameters:
-      - description: ChirpStack profile ID
-        in: path
-        name: chirpstack_profile_id
-        required: true
-        type: string
-      - description: Discovered payload keys
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/dto.DiscoverPayloadKeysRequest'
-      responses:
-        "201":
-          description: Created
-        "400":
-          description: Bad Request
-        "500":
-          description: Internal Server Error
-      summary: Discover payload keys for a profile
-      tags:
-      - payload-schema
-  /payload-schema/drafts:
-    get:
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/dto.DraftProfilesResponse'
-        "500":
-          description: Internal Server Error
-      summary: List profiles with unlabeled payload schema rows
       tags:
       - payload-schema
   /sensor-profile-config/{profile_id}:

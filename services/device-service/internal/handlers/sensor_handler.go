@@ -172,7 +172,7 @@ func PatchSensor(svc domain.SensorService) http.HandlerFunc {
 }
 
 // GetSampleEUI returns a single device EUI from any sensor registered on the given Chirpstack profile.
-// Used by the admin UI to obtain a sample EUI for payload key discovery.
+// Used by the admin UI to obtain a sample EUI for payload key lookup via collection-service /payload-tags.
 //
 // @Summary		Get a sample device EUI for a Chirpstack profile
 // @Tags		sensors
