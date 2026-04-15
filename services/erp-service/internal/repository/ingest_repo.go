@@ -25,6 +25,8 @@ const (
 	orderOperationColsPerRow     = 11
 	orderReportColsPerRow        = 10
 	productionResourceColsPerRow = 6
+	maxBindParametersPerStmt     = 65535
+	defaultMaxRowsPerChunk       = 1000
 
 	upsertOrderQuery = `
 	INSERT INTO erp_raw."order" (
@@ -163,51 +165,61 @@ func (r *IngestRepoImpl) CreateOrder(ctx context.Context, payload []domain.Order
 		return nil
 	}
 
-	args := make([]any, 0, len(payload)*orderColsPerRow)
+	// This looks like a big bottleneck at first glance
+	// Although its still O(n) (in total work)
+	// Outerloop does chunck by chunck
+	// Inner loop builds up the SQL placeholders, and insert after the loop
+	rowsPerChunk := chunkSizeForColumns(orderColsPerRow)
+	for start := 0; start < len(payload); start += rowsPerChunk {
+		end := minInt(start+rowsPerChunk, len(payload))
+		chunk := payload[start:end]
 
-	var values strings.Builder
-	for i, order := range payload {
-		if i > 0 {
-			values.WriteString(",")
+		args := make([]any, 0, len(chunk)*orderColsPerRow)
+
+		var values strings.Builder
+		for i, order := range chunk {
+			if i > 0 {
+				values.WriteString(",")
+			}
+
+			argStart := i*orderColsPerRow + 1
+			fmt.Fprintf(&values, "($%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d)",
+				argStart,
+				argStart+1,
+				argStart+2,
+				argStart+3,
+				argStart+4,
+				argStart+5,
+				argStart+6,
+				argStart+7,
+				argStart+8,
+				argStart+9,
+				argStart+10,
+				argStart+11,
+			)
+
+			args = append(args,
+				order.CompanyID,
+				order.ID,
+				order.OrderNumber,
+				order.PartID,
+				order.PartDescription,
+				order.PlannedStartDate,
+				order.PlannedFinishDate,
+				order.ActualStartDate,
+				order.ActualFinishDate,
+				string(order.Status),
+				order.Priority,
+				order.ReceivedAt,
+			)
 		}
 
-		start := i*orderColsPerRow + 1
-		fmt.Fprintf(&values, "($%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d)",
-			start,
-			start+1,
-			start+2,
-			start+3,
-			start+4,
-			start+5,
-			start+6,
-			start+7,
-			start+8,
-			start+9,
-			start+10,
-			start+11,
-		)
+		query := fmt.Sprintf(upsertOrderQuery, values.String())
 
-		args = append(args,
-			order.CompanyID,
-			order.ID,
-			order.OrderNumber,
-			order.PartID,
-			order.PartDescription,
-			order.PlannedStartDate,
-			order.PlannedFinishDate,
-			order.ActualStartDate,
-			order.ActualFinishDate,
-			string(order.Status),
-			order.Priority,
-			order.ReceivedAt,
-		)
-	}
-
-	query := fmt.Sprintf(upsertOrderQuery, values.String())
-
-	_, err := r.db.Pool.Exec(ctx, query, args...)
-	if err != nil {
-		return fmt.Errorf("upsert raw order batch: %w", errors.Join(mapPgError(err), err))
+		_, err := r.db.Pool.Exec(ctx, query, args...)
+		if err != nil {
+			return fmt.Errorf("upsert raw order batch: %w", errors.Join(mapPgError(err), err))
+		}
 	}
 
 	return nil
@@ -388,4 +400,16 @@ func mapPgError(err error) error {
 		}
 		return domain.ErrDatabase
 	}
+}
+
+func chunkSizeForColumns(columnsPerRow int) int {
+	maxRowsByBindLimit := maxBindParametersPerStmt / columnsPerRow
+	return minInt(maxRowsByBindLimit, defaultMaxRowsPerChunk)
+}
+
+func minInt(a int, b int) int {
+	if a < b {
+		return a
+	}
+	return b
 }
