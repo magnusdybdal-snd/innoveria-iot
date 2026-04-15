@@ -7,6 +7,8 @@ import (
 	"time"
 )
 
+const defaultReconcileInterval = 30 * time.Second
+
 // Config holds erp-service runtime configuration.
 type Config struct {
 	Addr  string
@@ -27,8 +29,8 @@ func Load() *Config {
 
 	reconcileIntervalRaw := env.Get("ERP_RECONCILE_INTERVAL", "30s")
 	reconcileInterval, err := time.ParseDuration(reconcileIntervalRaw)
-	if err != nil {
-		reconcileInterval = 30 * time.Second
+	if err != nil || reconcileInterval <= 0 {
+		reconcileInterval = defaultReconcileInterval
 	}
 
 	return &Config{

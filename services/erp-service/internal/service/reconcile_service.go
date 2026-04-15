@@ -9,7 +9,10 @@ import (
 	"innoveria-iot/erp-service/internal/domain"
 )
 
-const reconcileBatchSize = 500
+const (
+	reconcileBatchSize    = 500
+	defaultTickerInterval = 30 * time.Second
+)
 
 // ReconcileImpl orchestrates one reconcile pass from raw to curated ERP data.
 type ReconcileImpl struct {
@@ -58,6 +61,11 @@ func (s *ReconcileImpl) RunOnce(ctx context.Context) error {
 // Start runs reconciliation on a fixed interval until ctx is cancelled.
 // It starts a background goroutine and returns immediately.
 func (s *ReconcileImpl) Start(ctx context.Context, interval time.Duration) {
+	if interval <= 0 {
+		slog.Warn("invalid reconcile interval, using default", "interval", interval, "default", defaultTickerInterval)
+		interval = defaultTickerInterval
+	}
+
 	go func() {
 		// Ticker lives for the lifetime of this background worker.
 		ticker := time.NewTicker(interval)
