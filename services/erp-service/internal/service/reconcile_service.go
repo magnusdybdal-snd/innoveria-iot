@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"time"
 
 	"innoveria-iot/erp-service/internal/domain"
 )
@@ -52,4 +53,27 @@ func (s *ReconcileImpl) RunOnce(ctx context.Context) error {
 	)
 
 	return nil
+}
+
+// Start runs reconciliation on a fixed interval until ctx is cancelled.
+// It starts a background goroutine and returns immediately.
+func (s *ReconcileImpl) Start(ctx context.Context, interval time.Duration) {
+	go func() {
+		// Ticker lives for the lifetime of this background worker.
+		ticker := time.NewTicker(interval)
+		defer ticker.Stop()
+
+		for {
+			select {
+			// Stop worker on service shutdown.
+			case <-ctx.Done():
+				return
+			// Run one reconcile cycle per tick.
+			case <-ticker.C:
+				if err := s.RunOnce(ctx); err != nil {
+					slog.Error("reconcile cycle failed", "err", err)
+				}
+			}
+		}
+	}()
 }
