@@ -34,13 +34,22 @@ export function InfoWidget({ label, value, unit }: InfoWidgetProps) {
         justifyContent: "center",
         alignItems: "center",
         gap: 1,
-        maxWidth: 200,
+        width: 200,
+        containerType: "inline-size",
       }}
     >
       <Typography variant="subtitle2" sx={{ opacity: 0.7 }}>
         {label}
       </Typography>
-      <Typography variant="h2" sx={{ fontWeight: 600, textAlign: "center" }}>
+      <Typography
+        variant="h2"
+        sx={{
+          fontWeight: 600,
+          textAlign: "center",
+          whiteSpace: "nowrap",
+          fontSize: "clamp(0.90rem, 90cqi, 3rem)", // floor, card internal size, ceiling
+        }}
+      >
         {value}
       </Typography>
       <Typography variant="subtitle2" sx={{ opacity: 0.7 }}>

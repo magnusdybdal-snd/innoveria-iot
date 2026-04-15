@@ -52,7 +52,7 @@ export default function OrderContext() {
                 <InfoWidget
                   key={op.id}
                   label={op.productionResource.number} // TODO display workcenter name instead of number
-                  value={op.status} // TODO: display sensor value
+                  value={op.productionResourceStatus} // TODO: display sensor value
                   unit={op.productionResource.description ?? undefined} // TODO: display sensor unit instead of workcenter description
                 />
               ))}
