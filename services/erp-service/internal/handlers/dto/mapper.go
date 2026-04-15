@@ -2,7 +2,6 @@
 package dto
 
 import (
-	"strconv"
 	"time"
 
 	"innoveria-iot/erp-service/internal/domain"
@@ -65,7 +64,7 @@ func MapMonitorOrderReportToDomain(from []dto.ManufacturingOrderOperationReporti
 		to = append(to, domain.OrderReport{
 			ID:                   item.ID,
 			OrderOperationID:     item.OperationId,
-			ProductionResourceID: strconv.FormatInt(item.WorkCenterId, 10),
+			ProductionResourceID: item.WorkCenterId,
 			Quantity:             item.Quantity,
 			RestQuantity:         item.RestQuantity,
 			Type:                 mapOrderReportType(item.Type),

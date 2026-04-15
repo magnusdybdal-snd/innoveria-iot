@@ -41,7 +41,7 @@ type OrderReport struct {
 	ID                   int64
 	CompanyID            string
 	OrderOperationID     int64 // referenced by OrderOperation id, (Not order)
-	ProductionResourceID string
+	ProductionResourceID int64
 	Quantity             float64
 	RestQuantity         float64
 	Type                 OrderReportType
