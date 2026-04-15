@@ -279,7 +279,7 @@ func (r *SensorRepository) FindByEUI(ctx context.Context, deviceEUI string) (dom
 }
 
 // FindOneByChirpstackProfileID retrieves any single sensor registered on the given Chirpstack profile.
-// Used to obtain a sample EUI for payload key discovery.
+// Used to obtain a sample EUI for payload key lookup via collection-service /payload-tags.
 func (r *SensorRepository) FindOneByChirpstackProfileID(ctx context.Context, chirpstackProfileID string) (domain.Sensor, error) {
 
 	var out domain.Sensor
