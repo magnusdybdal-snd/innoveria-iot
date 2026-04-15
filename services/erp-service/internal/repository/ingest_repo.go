@@ -231,49 +231,55 @@ func (r *IngestRepoImpl) CreateOrderOperation(ctx context.Context, payload []dom
 		return nil
 	}
 
-	args := make([]any, 0, len(payload)*orderOperationColsPerRow)
+	rowsPerChunk := chunkSizeForColumns(orderOperationColsPerRow)
+	for start := 0; start < len(payload); start += rowsPerChunk {
+		end := minInt(start+rowsPerChunk, len(payload))
+		chunk := payload[start:end]
 
-	var values strings.Builder
-	for i, operation := range payload {
-		if i > 0 {
-			values.WriteString(",")
+		args := make([]any, 0, len(chunk)*orderOperationColsPerRow)
+
+		var values strings.Builder
+		for i, operation := range chunk {
+			if i > 0 {
+				values.WriteString(",")
+			}
+
+			argStart := i*orderOperationColsPerRow + 1
+			fmt.Fprintf(&values, "($%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d)",
+				argStart,
+				argStart+1,
+				argStart+2,
+				argStart+3,
+				argStart+4,
+				argStart+5,
+				argStart+6,
+				argStart+7,
+				argStart+8,
+				argStart+9,
+				argStart+10,
+			)
+
+			args = append(args,
+				operation.CompanyID,
+				operation.ID,
+				operation.ProductionResourceID,
+				operation.OrderID,
+				operation.PlannedStartDate,
+				operation.PlannedFinishDate,
+				operation.ActualStartDate,
+				operation.ActualFinishDate,
+				string(operation.Status),
+				string(operation.ProductionResourceStatus),
+				operation.ReceivedAt,
+			)
 		}
 
-		start := i*orderOperationColsPerRow + 1
-		fmt.Fprintf(&values, "($%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d)",
-			start,
-			start+1,
-			start+2,
-			start+3,
-			start+4,
-			start+5,
-			start+6,
-			start+7,
-			start+8,
-			start+9,
-			start+10,
-		)
+		query := fmt.Sprintf(upsertOrderOperationQuery, values.String())
 
-		args = append(args,
-			operation.CompanyID,
-			operation.ID,
-			operation.ProductionResourceID,
-			operation.OrderID,
-			operation.PlannedStartDate,
-			operation.PlannedFinishDate,
-			operation.ActualStartDate,
-			operation.ActualFinishDate,
-			string(operation.Status),
-			string(operation.ProductionResourceStatus),
-			operation.ReceivedAt,
-		)
-	}
-
-	query := fmt.Sprintf(upsertOrderOperationQuery, values.String())
-
-	_, err := r.db.Pool.Exec(ctx, query, args...)
-	if err != nil {
-		return fmt.Errorf("upsert raw order operation batch: %w", errors.Join(mapPgError(err), err))
+		_, err := r.db.Pool.Exec(ctx, query, args...)
+		if err != nil {
+			return fmt.Errorf("upsert raw order operation batch: %w", errors.Join(mapPgError(err), err))
+		}
 	}
 
 	return nil
@@ -285,47 +291,53 @@ func (r *IngestRepoImpl) CreateOrderReport(ctx context.Context, payload []domain
 		return nil
 	}
 
-	args := make([]any, 0, len(payload)*orderReportColsPerRow)
+	rowsPerChunk := chunkSizeForColumns(orderReportColsPerRow)
+	for start := 0; start < len(payload); start += rowsPerChunk {
+		end := minInt(start+rowsPerChunk, len(payload))
+		chunk := payload[start:end]
 
-	var values strings.Builder
-	for i, report := range payload {
-		if i > 0 {
-			values.WriteString(",")
+		args := make([]any, 0, len(chunk)*orderReportColsPerRow)
+
+		var values strings.Builder
+		for i, report := range chunk {
+			if i > 0 {
+				values.WriteString(",")
+			}
+
+			argStart := i*orderReportColsPerRow + 1
+			fmt.Fprintf(&values, "($%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d)",
+				argStart,
+				argStart+1,
+				argStart+2,
+				argStart+3,
+				argStart+4,
+				argStart+5,
+				argStart+6,
+				argStart+7,
+				argStart+8,
+				argStart+9,
+			)
+
+			args = append(args,
+				report.CompanyID,
+				report.ID,
+				report.OrderOperationID,
+				report.ProductionResourceID,
+				report.Quantity,
+				report.RestQuantity,
+				string(report.Type),
+				report.ReportingTimestamp,
+				report.ActualReportedDate,
+				report.ReceivedAt,
+			)
 		}
 
-		start := i*orderReportColsPerRow + 1
-		fmt.Fprintf(&values, "($%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d)",
-			start,
-			start+1,
-			start+2,
-			start+3,
-			start+4,
-			start+5,
-			start+6,
-			start+7,
-			start+8,
-			start+9,
-		)
+		query := fmt.Sprintf(upsertOrderReportQuery, values.String())
 
-		args = append(args,
-			report.CompanyID,
-			report.ID,
-			report.OrderOperationID,
-			report.ProductionResourceID,
-			report.Quantity,
-			report.RestQuantity,
-			string(report.Type),
-			report.ReportingTimestamp,
-			report.ActualReportedDate,
-			report.ReceivedAt,
-		)
-	}
-
-	query := fmt.Sprintf(upsertOrderReportQuery, values.String())
-
-	_, err := r.db.Pool.Exec(ctx, query, args...)
-	if err != nil {
-		return fmt.Errorf("upsert raw order report batch: %w", errors.Join(mapPgError(err), err))
+		_, err := r.db.Pool.Exec(ctx, query, args...)
+		if err != nil {
+			return fmt.Errorf("upsert raw order report batch: %w", errors.Join(mapPgError(err), err))
+		}
 	}
 
 	return nil
@@ -337,39 +349,45 @@ func (r *IngestRepoImpl) CreateProductionResource(ctx context.Context, payload [
 		return nil
 	}
 
-	args := make([]any, 0, len(payload)*productionResourceColsPerRow)
+	rowsPerChunk := chunkSizeForColumns(productionResourceColsPerRow)
+	for start := 0; start < len(payload); start += rowsPerChunk {
+		end := minInt(start+rowsPerChunk, len(payload))
+		chunk := payload[start:end]
 
-	var values strings.Builder
-	for i, resource := range payload {
-		if i > 0 {
-			values.WriteString(",")
+		args := make([]any, 0, len(chunk)*productionResourceColsPerRow)
+
+		var values strings.Builder
+		for i, resource := range chunk {
+			if i > 0 {
+				values.WriteString(",")
+			}
+
+			argStart := i*productionResourceColsPerRow + 1
+			fmt.Fprintf(&values, "($%d,$%d,$%d,$%d,$%d,$%d)",
+				argStart,
+				argStart+1,
+				argStart+2,
+				argStart+3,
+				argStart+4,
+				argStart+5,
+			)
+
+			args = append(args,
+				resource.CompanyID,
+				resource.ID,
+				resource.Number,
+				resource.Description,
+				string(resource.Type),
+				resource.ReceivedAt,
+			)
 		}
 
-		start := i*productionResourceColsPerRow + 1
-		fmt.Fprintf(&values, "($%d,$%d,$%d,$%d,$%d,$%d)",
-			start,
-			start+1,
-			start+2,
-			start+3,
-			start+4,
-			start+5,
-		)
+		query := fmt.Sprintf(upsertProductionResourceQuery, values.String())
 
-		args = append(args,
-			resource.CompanyID,
-			resource.ID,
-			resource.Number,
-			resource.Description,
-			string(resource.Type),
-			resource.ReceivedAt,
-		)
-	}
-
-	query := fmt.Sprintf(upsertProductionResourceQuery, values.String())
-
-	_, err := r.db.Pool.Exec(ctx, query, args...)
-	if err != nil {
-		return fmt.Errorf("upsert raw production resource batch: %w", errors.Join(mapPgError(err), err))
+		_, err := r.db.Pool.Exec(ctx, query, args...)
+		if err != nil {
+			return fmt.Errorf("upsert raw production resource batch: %w", errors.Join(mapPgError(err), err))
+		}
 	}
 
 	return nil
