@@ -62,7 +62,7 @@ const (
 	`
 
 	findOneByChirpstackProfileIDQuery = `
-		SELECT sensor_id, company_id, device_eui, app_key, name, description, state, factory_id, factory_area_id, production_resource_id, chirpstack_profile_id, created_at, updated_at
+		SELECT sensor_id, company_id, device_eui, app_key, name, description, electricity_sensor, voltage, state, factory_id, factory_area_id, production_resource_id, chirpstack_profile_id, created_at, updated_at
 		FROM device.sensor
 		WHERE chirpstack_profile_id = $1
 		LIMIT 1
@@ -290,6 +290,8 @@ func (r *SensorRepository) FindOneByChirpstackProfileID(ctx context.Context, chi
 		&out.AppKey,
 		&out.Name,
 		&out.Description,
+		&out.ElectricitySensor,
+		&out.Voltage,
 		&out.State,
 		&out.FactoryID,
 		&out.FactoryAreaID,
