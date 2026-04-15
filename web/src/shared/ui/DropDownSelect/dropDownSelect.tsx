@@ -38,20 +38,19 @@ export function DropDownSelect({
   value,
   onChange,
 }: DropDownSelectProps) {
-  const selected = options.find((o) => o.id === value);
+  const selected = options.find((o) => o.id === value) ?? null;
 
   return (
     <Autocomplete
       sx={autocompleteSx}
       fullWidth
-      disableClearable
       options={options}
       getOptionKey={(option) => option.id}
       getOptionLabel={(option) => option.name}
       isOptionEqualToValue={(option, val) => option.id === val.id}
-      value={selected ?? undefined}
+      value={selected}
       onChange={(_, newValue) => {
-        if (newValue) onChange(newValue.id);
+        onChange(newValue ? newValue.id : "");
       }}
       renderInput={(params) => <TextField {...params} />}
     />
