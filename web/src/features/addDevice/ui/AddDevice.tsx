@@ -73,9 +73,15 @@ export function AddDevice(props: AddDeviceProps) {
   };
 
   const handleSafeClose = () => {
-    const allFilled = addOptions.every(
-      (option) => (values[option] ?? "").trim() !== "",
-    );
+    const electricityEnabled = values["Electricity sensor"] === "true";
+
+    const allFilled = addOptions
+      .filter(
+        (option) =>
+          option !== "Electricity sensor" &&
+          (option !== "Voltage" || electricityEnabled),
+      )
+      .every((option) => (values[option] ?? "").trim() !== "");
 
     const newLengthErrors = {
       DeviceEUI: (values["DeviceEUI"] ?? "").length !== 16,
