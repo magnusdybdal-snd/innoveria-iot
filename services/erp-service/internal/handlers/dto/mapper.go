@@ -2,6 +2,7 @@
 package dto
 
 import (
+	"log/slog"
 	"time"
 
 	"innoveria-iot/erp-service/internal/domain"
@@ -116,6 +117,7 @@ func mapOrderStatus(status int) domain.OrderStatus {
 	case 7:
 		return domain.OrderStatusHistorical
 	default:
+		slog.Warn("unknown monitor order status, falling back", "status", status, "fallback", domain.OrderStatusNotInitialized)
 		return domain.OrderStatusNotInitialized
 	}
 }
@@ -134,6 +136,7 @@ func mapOperationStatus(status int) domain.OperationStatus {
 	case 5:
 		return domain.OperationStatusFinished
 	default:
+		slog.Warn("unknown monitor operation status, falling back", "status", status, "fallback", domain.OperationStatusNone)
 		return domain.OperationStatusNone
 	}
 }
