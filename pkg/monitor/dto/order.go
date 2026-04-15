@@ -17,32 +17,32 @@ import "time"
 type ManufacturingOrder struct {
 	// --- Identity ---
 
-	ID          int64  // Internal unique identifier (primary key from Monitor)
-	OrderNumber string // Human-readable order number (useful for UI/logging)
+	ID          int64  `json:"Id"`          // Internal unique identifier (primary key from Monitor)
+	OrderNumber string `json:"OrderNumber"` // Human-readable order number (useful for UI/logging)
 
 	// --- Product context ---
 
-	PartID          string // What is being produced (critical for sensor grouping)
-	PartDescription string // Optional: human-readable product name
+	PartID          string `json:"PartId"`          // What is being produced (critical for sensor grouping)
+	PartDescription string `json:"PartDescription"` // Optional: human-readable product name
 
 	// --- Quantity / progress ---
 
-	PlannedQuantity  float64 // Total quantity planned for production
-	ReportedQuantity float64 // Quantity already produced (actual output)
-	RestQuantity     float64 // Remaining quantity (Planned - Reported)
+	PlannedQuantity  float64 `json:"PlannedQuantity"`  // Total quantity planned for production
+	ReportedQuantity float64 `json:"ReportedQuantity"` // Quantity already produced (actual output)
+	RestQuantity     float64 `json:"RestQuantity"`     // Remaining quantity (Planned - Reported)
 
 	// --- Time context ---
 
-	PlannedStartDate  time.Time // When production was supposed to start
-	PlannedFinishDate time.Time // When production is expected to finish
+	PlannedStartDate  time.Time `json:"PlannedStartDate"`  // When production was supposed to start
+	PlannedFinishDate time.Time `json:"PlannedFinishDate"` // When production is expected to finish
 
-	ActualStartDate  *time.Time // When production ACTUALLY started (nil if not started)
-	ActualFinishDate *time.Time // When production ACTUALLY finished (nil if ongoing)
+	ActualStartDate  *time.Time `json:"ActualStartDate"`  // When production ACTUALLY started (nil if not started)
+	ActualFinishDate *time.Time `json:"ActualFinishDate"` // When production ACTUALLY finished (nil if ongoing)
 
 	// --- Status / lifecycle ---
 
-	Status   int // High-level progress state (NotStarted, Started, Finished, etc.)
-	Priority int // Optional: useful for scheduling or filtering important orders
+	Status   int `json:"Status"`   // High-level progress state (NotStarted, Started, Finished, etc.)
+	Priority int `json:"Priority"` // Optional: useful for scheduling or filtering important orders
 
 	// =========================================================
 	//  NOT NEEDED FOR SENSOR / CONTEXT PLATFORM (COMMENTED OUT)
