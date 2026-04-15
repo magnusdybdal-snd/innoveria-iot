@@ -44,36 +44,37 @@ export default function OrderContext() {
                 onChange={setSelectedOrderId}
               />
             )}
-            {/* Displays the operations of the selected order as InfoWidgets */}
-            {selectedOrder && (
-              <Box sx={{ mt: 3, display: "flex", flexWrap: "wrap", gap: 2 }}>
-                {selectedOrder.operations.map((op) => (
-                  <InfoWidget
-                    key={op.id}
-                    label={op.productionResource.number} // TODO display workcenter name instead of number
-                    value={op.status} // TODO: display sensor value
-                    unit={op.productionResource.description ?? undefined} // TODO: display sensor unit instead of workcenter description
-                  />
-                ))}
-              </Box>
-            )}
-            {selectedOrder && (
-              <Box
-                component="pre"
-                sx={{
-                  mt: 3,
-                  p: 2,
-                  backgroundColor: "primary.dark",
-                  color: "primary.main",
-                  borderRadius: 1,
-                  fontSize: "0.8rem",
-                  overflowX: "auto",
-                }}
-              >
-                {JSON.stringify(selectedOrder, null, 2)}
-              </Box>
-            )}
           </Box>
+          {/* Displays the operations of the selected order as InfoWidgets */}
+          {selectedOrder && (
+            <Box sx={{ mt: 3, display: "flex", flexWrap: "wrap", gap: 2 }}>
+              {selectedOrder.operations.map((op) => (
+                <InfoWidget
+                  key={op.id}
+                  label={op.productionResource.number} // TODO display workcenter name instead of number
+                  value={op.status} // TODO: display sensor value
+                  unit={op.productionResource.description ?? undefined} // TODO: display sensor unit instead of workcenter description
+                />
+              ))}
+            </Box>
+          )}
+          {/* DEBUG: Display selected order details in a formatted JSON block */}
+          {selectedOrder && (
+            <Box
+              component="pre"
+              sx={{
+                mt: 3,
+                p: 2,
+                backgroundColor: "primary.dark",
+                color: "primary.main",
+                borderRadius: 1,
+                fontSize: "0.8rem",
+                overflowX: "auto",
+              }}
+            >
+              {JSON.stringify(selectedOrder, null, 2)}
+            </Box>
+          )}
         </Box>
       </PageContent>
     </div>
