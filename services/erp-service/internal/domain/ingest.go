@@ -14,7 +14,7 @@ type Ingest interface {
 
 // IngestRepo defines the write operation for persistant storage
 type IngestRepo interface {
-	CreateOrder(ctx context.Context) error
+	CreateOrder(ctx context.Context, payload []Order) error
 	CreateOrderOperation(ctx context.Context) error
 	CreateOrderReport(ctx context.Context) error
 	CreateProductionResource(ctx context.Context) error

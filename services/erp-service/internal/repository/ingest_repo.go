@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 
+	"innoveria-iot/erp-service/internal/domain"
 	"innoveria-iot/pkg/dbutil"
 )
 
@@ -19,7 +20,10 @@ func NewIngestRepo(db *dbutil.DB) *IngestRepoImpl {
 	}
 }
 
-func (r *IngestRepoImpl) CreateOrder(ctx context.Context) error {
+func (r *IngestRepoImpl) CreateOrder(ctx context.Context, payload []domain.Order) error {
+	if len(payload) == 0 {
+		return nil
+	}
 	return nil
 }
 

@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"innoveria-iot/erp-service/internal/config"
+	"innoveria-iot/erp-service/internal/repository"
 	"innoveria-iot/erp-service/internal/service"
 	"innoveria-iot/pkg/dbutil"
 )
@@ -28,8 +29,11 @@ func Run() error {
 	}
 	defer database.Close()
 
-	// Service implementation
-	ingestSvc := service.NewIngestService()
+	// repository init
+	ingestRepo := repository.NewIngestRepo(database)
+
+	// Service init
+	ingestSvc := service.NewIngestService(ingestRepo)
 
 	// Setting up mux and http server
 	mux := NewRouter(ingestSvc)

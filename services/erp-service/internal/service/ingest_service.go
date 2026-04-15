@@ -9,15 +9,22 @@ import (
 )
 
 // IngestServiceImpl contains application logic for ERP ingest use-cases.
-type IngestServiceImpl struct{}
+type IngestServiceImpl struct {
+	ingestRepo domain.IngestRepo
+}
 
 // NewIngestService creates a new ingest service instance.
-func NewIngestService() *IngestServiceImpl {
-	return &IngestServiceImpl{}
+func NewIngestService(ingestRepo domain.IngestRepo) *IngestServiceImpl {
+	return &IngestServiceImpl{
+		ingestRepo: ingestRepo,
+	}
 }
 
 // CreateOrder stores a batch of order ingest payloads.
 func (i *IngestServiceImpl) CreateOrder(ctx context.Context, payload []domain.Order) error {
+	if err := i.ingestRepo.CreateOrder(ctx, payload); err != nil {
+		return err
+	}
 	slog.Info("successfully ingested orders", "count", len(payload))
 	return nil
 }
