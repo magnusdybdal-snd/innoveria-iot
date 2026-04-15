@@ -45,19 +45,37 @@ export default function OrderContext() {
               />
             )}
           </Box>
+
           {/* Displays the operations of the selected order as InfoWidgets */}
           {selectedOrder && (
-            <Box sx={{ mt: 3, display: "flex", flexWrap: "wrap", gap: 2 }}>
-              {selectedOrder.operations.map((op) => (
-                <InfoWidget
-                  key={op.id}
-                  label={op.productionResource.number} // TODO display workcenter name instead of number
-                  value={op.productionResourceStatus} // TODO: display sensor value
-                  unit={op.productionResource.description ?? undefined} // TODO: display sensor unit instead of workcenter description
-                />
-              ))}
-            </Box>
+            <>
+              {" "}
+              <PageDivider />
+              <Typography
+                variant="h3"
+                sx={{ color: "primary.main", fontWeight: 500 }}
+              >
+                Machines
+              </Typography>
+              <Typography
+                variant="subtitle1"
+                sx={{ mb: 2, color: "primary.main" }}
+              >
+                Work centers and their current status for the selected order
+              </Typography>
+              <Box sx={{ mt: 3, display: "flex", flexWrap: "wrap", gap: 2 }}>
+                {selectedOrder.operations.map((op) => (
+                  <InfoWidget
+                    key={op.id}
+                    label={op.productionResource.number} // TODO display workcenter name instead of number
+                    value={op.productionResourceStatus} // TODO: display sensor value
+                    unit={op.productionResource.description ?? undefined} // TODO: display sensor unit instead of workcenter description
+                  />
+                ))}
+              </Box>
+            </>
           )}
+          <PageDivider />
           {/* DEBUG: Display selected order details in a formatted JSON block */}
           {selectedOrder && (
             <Box
