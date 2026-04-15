@@ -5,25 +5,37 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"strconv"
 	"time"
+
+	"golang.org/x/sync/errgroup"
 
 	"innoveria-iot/context-service/internal/calculators"
 	"innoveria-iot/context-service/internal/domain"
 )
 
+// hardcodedCompanyID is a temporary placeholder used while auth middleware
+// propagation is not yet wired up end-to-end.
+//
+// TODO: replace with AUTH — read from X-Auth-Company-Id header once the gateway
+// injects trusted headers into this service.
+const hardcodedCompanyID = "00000000-0000-0000-0000-000000000001"
+
 // ContextServiceImpl implements context use cases for context service.
 type ContextServiceImpl struct {
 	collectionClient domain.CollectionClient
 	erpClient        domain.ERPClient
+	deviceClient     domain.DeviceClient
 	ruleRepo         domain.RuleRepository
 	calculators      map[string]calculators.Calculator
 }
 
 // NewContextServiceImpl creates a new ContextServiceImpl instance.
-func NewContextServiceImpl(collectionClient domain.CollectionClient, erpClient domain.ERPClient, ruleRepo domain.RuleRepository) *ContextServiceImpl {
+func NewContextServiceImpl(collectionClient domain.CollectionClient, erpClient domain.ERPClient, deviceClient domain.DeviceClient, ruleRepo domain.RuleRepository) *ContextServiceImpl {
 	return &ContextServiceImpl{
 		collectionClient: collectionClient,
 		erpClient:        erpClient,
+		deviceClient:     deviceClient,
 		ruleRepo:         ruleRepo,
 		calculators:      calculators.NewRegistry(),
 	}
@@ -115,4 +127,112 @@ func (s *ContextServiceImpl) GetOrders(ctx context.Context, companyID string) ([
 		return nil, fmt.Errorf("fetching orders from ERP: %w", err)
 	}
 	return orders, nil
+}
+
+// GetOrderContext aggregates ERP order data with sensor and measurement context
+// for a single order identified by orderID.
+//
+// TODO: replace with AUTH — companyID is hardcoded until auth middleware propagation is wired up.
+func (s *ContextServiceImpl) GetOrderContext(ctx context.Context, orderID int64) (*domain.OrderContext, error) {
+	// TODO: replace with AUTH — read from X-Auth-Company-Id header once auth middleware is wired up.
+	const companyID = hardcodedCompanyID
+
+	orders, err := s.erpClient.GetOrders(ctx, companyID)
+	if err != nil {
+		return nil, fmt.Errorf("fetching orders from ERP: %w", err)
+	}
+
+	var found *domain.ERPOrder
+	for i := range orders {
+		if orders[i].ID == orderID {
+			found = &orders[i]
+			break
+		}
+	}
+	if found == nil {
+		return nil, domain.ErrNotFound
+	}
+
+	ops := make([]domain.OperationContext, len(found.Operations))
+
+	// Guard: if the order has no actual time window, return operations without sensor data.
+	if found.ActualStartDate == nil || found.ActualFinishDate == nil {
+		for i, op := range found.Operations {
+			ops[i] = domain.OperationContext{
+				Operation: op,
+				Sensors:   []domain.SensorContext{},
+			}
+		}
+		return &domain.OrderContext{
+			Order:           *found,
+			Operations:      ops,
+			HasMeasurements: false,
+		}, nil
+	}
+
+	from := *found.ActualStartDate
+	to := *found.ActualFinishDate
+
+	g, gctx := errgroup.WithContext(ctx)
+
+	for i, op := range found.Operations {
+		g.Go(func() error {
+			// TODO: verify — device-service stores ERPProductionResource.ID (int64) as a
+			// string in the production_resource field. Double-check this when the real
+			// device-service integration is live.
+			productionResourceID := strconv.FormatInt(op.ProductionResource.ID, 10)
+
+			sensors, err := s.deviceClient.GetSensorsByProductionResourceID(gctx, productionResourceID)
+			if err != nil {
+				// No sensors linked yet or device-service rejected the ID — skip gracefully.
+				slog.Warn("could not fetch sensors for production resource, skipping", "production_resource_id", productionResourceID, "error", err)
+				ops[i] = domain.OperationContext{Operation: op, Sensors: []domain.SensorContext{}}
+				return nil
+			}
+
+			sensorContexts := make([]domain.SensorContext, len(sensors))
+			sg, sgctx := errgroup.WithContext(gctx)
+
+			for j, sensor := range sensors {
+				sg.Go(func() error {
+					metrics, err := s.deviceClient.GetSensorMetrics(sgctx, sensor.DeviceEUI)
+					if err != nil {
+						return fmt.Errorf("fetching metrics for sensor %s: %w", sensor.DeviceEUI, err)
+					}
+
+					measurements, err := s.collectionClient.GetMeasurements(sgctx, sensor.DeviceEUI, from, to)
+					if err != nil {
+						return fmt.Errorf("fetching measurements for sensor %s: %w", sensor.DeviceEUI, err)
+					}
+
+					sensorContexts[j] = domain.SensorContext{
+						Sensor:       sensor,
+						Metrics:      metrics,
+						Measurements: measurements,
+					}
+					return nil
+				})
+			}
+
+			if err := sg.Wait(); err != nil {
+				return err
+			}
+
+			ops[i] = domain.OperationContext{
+				Operation: op,
+				Sensors:   sensorContexts,
+			}
+			return nil
+		})
+	}
+
+	if err := g.Wait(); err != nil {
+		return nil, err
+	}
+
+	return &domain.OrderContext{
+		Order:           *found,
+		Operations:      ops,
+		HasMeasurements: true,
+	}, nil
 }

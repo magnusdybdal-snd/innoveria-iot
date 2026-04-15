@@ -28,6 +28,29 @@ type ContextData struct {
 	CalculatedAt         time.Time
 }
 
+// OrderContext is the aggregated result for a single ERP order, enriched with
+// sensor data for each of its operations.
+type OrderContext struct {
+	Order           ERPOrder
+	Operations      []OperationContext
+	HasMeasurements bool // false when the order has no actual start/finish dates
+}
+
+// OperationContext pairs a single manufacturing operation with the sensors
+// assigned to its production resource.
+type OperationContext struct {
+	Operation ERPOrderOperation
+	Sensors   []SensorContext
+}
+
+// SensorContext holds a sensor, its metric definitions, and its raw measurements
+// within the order's actual time window.
+type SensorContext struct {
+	Sensor       DeviceSensor
+	Metrics      []SensorMetric
+	Measurements []MeasurementReading
+}
+
 // ContextService defines the context service interface for the context domain.
 type ContextService interface {
 	GetContextData(
@@ -43,4 +66,9 @@ type ContextService interface {
 	//
 	// TODO: replace with AUTH — companyID should be read from the gateway-injected X-Auth-Company-Id header once auth middleware propagation is wired up.
 	GetOrders(ctx context.Context, companyID string) ([]ERPOrder, error)
+	// GetOrderContext aggregates ERP order data with sensor readings for a single order.
+	//
+	// TODO: replace with AUTH — companyID is hardcoded inside the implementation until
+	// auth middleware propagation is wired up end-to-end.
+	GetOrderContext(ctx context.Context, orderID int64) (*OrderContext, error)
 }
