@@ -43,8 +43,11 @@ func Run() error {
 	ingestSvc := service.NewIngestService(ingestRepo)
 
 	// Reconcile worker
+	workerCtx, workerCancel := context.WithCancel(context.Background())
+	defer workerCancel()
+
 	reconcileWorker := service.NewReconcileService(reconcileRepo)
-	reconcileWorker.Start(context.Background(), cfg.ReconcileInterval)
+	reconcileWorker.Start(workerCtx, cfg.ReconcileInterval)
 
 	// Setting up mux and http server
 	mux := NewRouter(ingestSvc)
