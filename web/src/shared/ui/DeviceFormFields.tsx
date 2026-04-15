@@ -80,10 +80,11 @@ export function DeviceFormFields({
     <Box display="flex" flexDirection="column" gap={2}>
       {options.map((option) => (
         <Box key={option}>
-          <Typography variant="body2" color="primary.main" mb={0.5}>
-            {option}
-          </Typography>
-
+          {(option != "Voltage" || values["Electricity sensor"] === "true") && (
+            <Typography variant="body2" color="primary.main" mb={0.5}>
+              {option}
+            </Typography>
+          )}
           {option in dropdownOptions ? (
             (option != "Voltage" ||
               values["Electricity sensor"] === "true") && (
