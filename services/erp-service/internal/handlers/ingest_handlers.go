@@ -44,7 +44,7 @@ func PostIngestOrderOperations(svc domain.Ingest) http.HandlerFunc {
 	}
 }
 
-// PostIngestOrderReportings handles batch ingest of manufacturing order operation
+// PostIngestOrderReports handles batch ingest of manufacturing order operation
 // reporting events pushed from erp-agent-service.
 func PostIngestOrderReports(svc domain.Ingest) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
