@@ -3,7 +3,9 @@ package service
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"log/slog"
 	"net/url"
 
 	"innoveria-iot/erp-agent-service/internal/domain"
@@ -28,31 +30,37 @@ func New(monitor domain.MonitorHandler, erpSvc domain.ERPIngestClient) *RunnerSe
 
 // RunCycle executes one sync cycle across configured endpoints.
 func (r *RunnerServiceImpl) RunCycle(ctx context.Context) error {
+	var cycleErr error
+
 	if err := syncRows[dto.ManufacturingOrder](
 		ctx, r.monitorClient, r.erpSvcClient, monitor.Order, nil, erpserviceclient.Order,
 	); err != nil {
-		return err
+		slog.Warn("sync step failed", "monitor_endpoint", monitor.Order, "erp_endpoint", erpserviceclient.Order, "err", err)
+		cycleErr = errors.Join(cycleErr, err)
 	}
 
 	if err := syncRows[dto.ManufacturingOrderOperationReporting](
 		ctx, r.monitorClient, r.erpSvcClient, monitor.OrderReportings, nil, erpserviceclient.OrderReportings,
 	); err != nil {
-		return err
+		slog.Warn("sync step failed", "monitor_endpoint", monitor.OrderReportings, "erp_endpoint", erpserviceclient.OrderReportings, "err", err)
+		cycleErr = errors.Join(cycleErr, err)
 	}
 
 	if err := syncRows[dto.ManufacturingOrderOperation](
 		ctx, r.monitorClient, r.erpSvcClient, monitor.OrderOperations, nil, erpserviceclient.OrderOperations,
 	); err != nil {
-		return err
+		slog.Warn("sync step failed", "monitor_endpoint", monitor.OrderOperations, "erp_endpoint", erpserviceclient.OrderOperations, "err", err)
+		cycleErr = errors.Join(cycleErr, err)
 	}
 
 	if err := syncRows[dto.WorkCenter](
 		ctx, r.monitorClient, r.erpSvcClient, monitor.Workcenters, nil, erpserviceclient.Workcenters,
 	); err != nil {
-		return err
+		slog.Warn("sync step failed", "monitor_endpoint", monitor.Workcenters, "erp_endpoint", erpserviceclient.Workcenters, "err", err)
+		cycleErr = errors.Join(cycleErr, err)
 	}
 
-	return nil
+	return cycleErr
 }
 
 func syncRows[T any](

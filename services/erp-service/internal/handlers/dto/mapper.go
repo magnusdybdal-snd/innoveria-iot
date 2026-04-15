@@ -2,7 +2,7 @@
 package dto
 
 import (
-	"strconv"
+	"log/slog"
 	"time"
 
 	"innoveria-iot/erp-service/internal/domain"
@@ -18,7 +18,7 @@ func MapMonitorOrderOperationToDomain(from []dto.ManufacturingOrderOperation) []
 		to = append(to, domain.OrderOperation{
 			ID:                       item.ID,
 			ProductionResourceID:     item.WorkCenterId,
-			OrderId:                  item.ManufacturingOrderId,
+			OrderID:                  item.ManufacturingOrderId,
 			PlannedStartDate:         item.PlannedStartDate,
 			PlannedFinishDate:        item.PlannedFinishDate,
 			ActualStartDate:          item.ActualStartDate,
@@ -65,7 +65,7 @@ func MapMonitorOrderReportToDomain(from []dto.ManufacturingOrderOperationReporti
 		to = append(to, domain.OrderReport{
 			ID:                   item.ID,
 			OrderOperationID:     item.OperationId,
-			ProductionResourceID: strconv.FormatInt(item.WorkCenterId, 10),
+			ProductionResourceID: item.WorkCenterId,
 			Quantity:             item.Quantity,
 			RestQuantity:         item.RestQuantity,
 			Type:                 mapOrderReportType(item.Type),
@@ -88,7 +88,7 @@ func MapMonitorWorkcenterToDomain(from []dto.WorkCenter) []domain.ProductionReso
 		to = append(to, domain.ProductionResource{
 			ID:          item.ID,
 			Number:      item.Number,
-			Description: &description,
+			Description: description,
 			Type:        mapWorkCenterType(item.Type),
 			ReceivedAt:  receivedAt,
 		})
@@ -117,6 +117,7 @@ func mapOrderStatus(status int) domain.OrderStatus {
 	case 7:
 		return domain.OrderStatusHistorical
 	default:
+		slog.Warn("unknown monitor order status, falling back", "status", status, "fallback", domain.OrderStatusNotInitialized)
 		return domain.OrderStatusNotInitialized
 	}
 }
@@ -135,6 +136,7 @@ func mapOperationStatus(status int) domain.OperationStatus {
 	case 5:
 		return domain.OperationStatusFinished
 	default:
+		slog.Warn("unknown monitor operation status, falling back", "status", status, "fallback", domain.OperationStatusNone)
 		return domain.OperationStatusNone
 	}
 }
