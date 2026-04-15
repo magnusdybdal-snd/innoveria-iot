@@ -16,6 +16,7 @@ func MapMonitorOrderOperationToDomain(from []dto.ManufacturingOrderOperation) []
 
 	for _, item := range from {
 		to = append(to, domain.OrderOperation{
+			CompanyID:                "a0000000-0000-0000-0000-000000000001", // TODO: Change this. Its hardcoded to innoveria for now, which ofc is bad
 			ID:                       item.ID,
 			ProductionResourceID:     item.WorkCenterId,
 			OrderID:                  item.ManufacturingOrderId,
@@ -39,6 +40,7 @@ func MapMonitorOrderToDomain(from []dto.ManufacturingOrder) []domain.Order {
 
 	for _, item := range from {
 		to = append(to, domain.Order{
+			CompanyID:         "a0000000-0000-0000-0000-000000000001", // TODO: change this
 			ID:                item.ID,
 			OrderNumber:       item.OrderNumber,
 			PartID:            item.PartID,
@@ -63,6 +65,7 @@ func MapMonitorOrderReportToDomain(from []dto.ManufacturingOrderOperationReporti
 
 	for _, item := range from {
 		to = append(to, domain.OrderReport{
+			CompanyID:            "a0000000-0000-0000-0000-000000000001", // TODO: change this
 			ID:                   item.ID,
 			OrderOperationID:     item.OperationId,
 			ProductionResourceID: item.WorkCenterId,

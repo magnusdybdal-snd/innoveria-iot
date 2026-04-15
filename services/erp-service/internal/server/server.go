@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"innoveria-iot/erp-service/internal/config"
+	"innoveria-iot/erp-service/internal/db"
 	"innoveria-iot/erp-service/internal/repository"
 	"innoveria-iot/erp-service/internal/service"
 	"innoveria-iot/pkg/dbutil"
@@ -28,6 +29,11 @@ func Run() error {
 		return fmt.Errorf("db error: %w", err)
 	}
 	defer database.Close()
+
+	// setup database with migrations
+	if err := db.RunMigrations(database.Pool); err != nil {
+		return fmt.Errorf("migrations: %w", err)
+	}
 
 	// repository init
 	ingestRepo := repository.NewIngestRepo(database)
