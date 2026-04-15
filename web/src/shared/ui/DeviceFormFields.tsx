@@ -85,7 +85,8 @@ export function DeviceFormFields({
           </Typography>
 
           {option in dropdownOptions ? (
-            (option != "Voltage" || Boolean(values["Electricity sensor"])) && (
+            (option != "Voltage" ||
+              values["Electricity sensor"] === "true") && (
               <DropDownSelect
                 options={dropdownData[dropdownOptions[option]]}
                 value={typeof values[option] === "string" ? values[option] : ""}
@@ -94,7 +95,7 @@ export function DeviceFormFields({
             )
           ) : checkBoxes.includes(option) ? (
             <Checkbox
-              checked={Boolean(values[option])}
+              checked={values[option] === "true"}
               onChange={(_, checked) => onChange(option, String(checked))}
               slotProps={{
                 input: { "aria-label": "controlled" },
