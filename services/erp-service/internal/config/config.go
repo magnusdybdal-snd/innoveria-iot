@@ -4,12 +4,15 @@ package config
 import (
 	"fmt"
 	"innoveria-iot/pkg/env"
+	"time"
 )
 
 // Config holds erp-service runtime configuration.
 type Config struct {
-	Addr   string
-	DB_URL string
+	Addr  string
+	DBURL string
+
+	ReconcileInterval time.Duration
 	// EnableSwagger bool
 }
 
@@ -22,9 +25,15 @@ func Load() *Config {
 	dbName := env.Get("DB_NAME", "erp")
 	sslmode := env.Get("DB_SSLMODE", "disable")
 
+	reconcileIntervalRaw := env.Get("ERP_RECONCILE_INTERVAL", "30s")
+	reconcileInterval, err := time.ParseDuration(reconcileIntervalRaw)
+	if err != nil {
+		reconcileInterval = 30 * time.Second
+	}
+
 	return &Config{
 		Addr: ":" + env.Get("PORT", "8080"),
-		DB_URL: fmt.Sprintf(
+		DBURL: fmt.Sprintf(
 			"postgres://%s:%s@%s:%s/%s?sslmode=%s",
 			dbUser,
 			dbPassword,
@@ -33,5 +42,6 @@ func Load() *Config {
 			dbName,
 			sslmode,
 		),
+		ReconcileInterval: reconcileInterval,
 	}
 }

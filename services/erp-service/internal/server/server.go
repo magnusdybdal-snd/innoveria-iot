@@ -24,7 +24,7 @@ func Run() error {
 	cfg := config.Load()
 
 	// Init connection to erp database
-	database, err := dbutil.New(cfg.DB_URL, "erp-db")
+	database, err := dbutil.New(cfg.DBURL, "erp-db")
 	if err != nil {
 		return fmt.Errorf("db error: %w", err)
 	}
@@ -37,9 +37,14 @@ func Run() error {
 
 	// repository init
 	ingestRepo := repository.NewIngestRepo(database)
+	reconcileRepo := repository.NewReconcileRepo(database)
 
 	// Service init
 	ingestSvc := service.NewIngestService(ingestRepo)
+
+	// Reconcile worker
+	reconcileWorker := service.NewReconcileService(reconcileRepo)
+	reconcileWorker.Start(context.Background(), cfg.ReconcileInterval)
 
 	// Setting up mux and http server
 	mux := NewRouter(ingestSvc)

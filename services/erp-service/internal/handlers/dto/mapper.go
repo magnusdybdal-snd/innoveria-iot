@@ -89,6 +89,7 @@ func MapMonitorWorkcenterToDomain(from []dto.WorkCenter) []domain.ProductionReso
 	for _, item := range from {
 		description := item.Description
 		to = append(to, domain.ProductionResource{
+			CompanyID:   "a0000000-0000-0000-0000-000000000001",
 			ID:          item.ID,
 			Number:      item.Number,
 			Description: description,
