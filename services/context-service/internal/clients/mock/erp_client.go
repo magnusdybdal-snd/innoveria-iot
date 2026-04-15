@@ -122,6 +122,38 @@ var mockOrders = []domain.ERPOrder{
 				Status:                   "finished",
 				ProductionResourceStatus: "finished",
 			},
+			{
+				// Edge case: numeric-looking status (2-digit number)
+				ID: 32,
+				ProductionResource: domain.ERPProductionResource{
+					ID:          4,
+					Number:      "WC-104",
+					Description: nil,
+					Type:        "machine",
+				},
+				PlannedStartDate:         time.Date(2026, 4, 13, 14, 0, 0, 0, time.UTC),
+				PlannedFinishDate:        time.Date(2026, 4, 13, 16, 0, 0, 0, time.UTC),
+				ActualStartDate:          ptr(time.Date(2026, 4, 13, 14, 5, 0, 0, time.UTC)),
+				ActualFinishDate:         ptr(time.Date(2026, 4, 13, 15, 58, 0, 0, time.UTC)),
+				Status:                   "finished",
+				ProductionResourceStatus: "42",
+			},
+			{
+				// Edge case: long string status with a space
+				ID: 33,
+				ProductionResource: domain.ERPProductionResource{
+					ID:          5,
+					Number:      "WC-105",
+					Description: nil,
+					Type:        "machine",
+				},
+				PlannedStartDate:         time.Date(2026, 4, 13, 16, 0, 0, 0, time.UTC),
+				PlannedFinishDate:        time.Date(2026, 4, 13, 18, 0, 0, 0, time.UTC),
+				ActualStartDate:          ptr(time.Date(2026, 4, 13, 16, 10, 0, 0, time.UTC)),
+				ActualFinishDate:         ptr(time.Date(2026, 4, 13, 17, 55, 0, 0, time.UTC)),
+				Status:                   "finished",
+				ProductionResourceStatus: "thisisalongstringfortesting andthisisanewline",
+			},
 		},
 	},
 }
