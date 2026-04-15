@@ -27,12 +27,14 @@ export interface SensorReadingApiResponse {
 
 export interface CreateSensorRequest {
   companyId: string;
+  electricitySensor: boolean;
   factoryId: string;
   factoryAreaId: string;
   deviceEui: string;
   appKey: string;
   sensorProfileId: string;
   name: string;
+  voltage: number;
 }
 
 // Sensor profile API responses

@@ -15,14 +15,17 @@ export interface AddDeviceProps {
   profileOptions?: { id: string; name: string }[];
   factoryOptions?: { id: string; name: string }[];
   factoryAreaOptions?: { id: string; name: string }[];
+  voltageOptions?: { id: string; name: string }[];
   onAdd: (sensor: {
     name: string;
     deviceEui: string;
+    electricitySensor: boolean;
     factory: string;
     factoryArea: string;
     machine: string;
     appKey: string;
     senProf: string;
+    voltage: number;
   }) => Promise<void>;
   submitError?: string | null;
 }
@@ -58,6 +61,7 @@ export function AddDevice(props: AddDeviceProps) {
     profileOptions = [],
     factoryOptions = [],
     factoryAreaOptions = [],
+    voltageOptions = [],
     submitError,
   } = props;
   const [values, setValues] = useState<Record<string, string>>({});
@@ -95,11 +99,13 @@ export function AddDevice(props: AddDeviceProps) {
       .onAdd({
         name: values["Name"],
         deviceEui: values["DeviceEUI"],
+        electricitySensor: values["Electricity sensor"] === "true",
         factory: values["Factory"],
         factoryArea: values["Factory area"],
         machine: values["Machine"],
         appKey: values["Application key"],
         senProf: values["Sensor profile"],
+        voltage: Number(values["Voltage"]),
       })
       .then(() => {
         setValues({});
@@ -134,6 +140,7 @@ export function AddDevice(props: AddDeviceProps) {
           profileOptions={profileOptions}
           factoryOptions={factoryOptions}
           factoryAreaOptions={factoryAreaOptions}
+          voltageOptions={voltageOptions}
           lengthErrors={lengthErrors}
           lengthErrorMessages={inputLengthError}
           inputHints={inputHints}

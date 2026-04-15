@@ -1,4 +1,5 @@
 import Box from "@mui/material/Box";
+import Checkbox from "@mui/material/Checkbox";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { DropDownSelect } from "@shared/ui/DropDownSelect";
@@ -9,6 +10,7 @@ interface DeviceFormFieldsProps {
   profileOptions: { id: string; name: string }[];
   factoryOptions: { id: string; name: string }[];
   factoryAreaOptions: { id: string; name: string }[];
+  voltageOptions: { id: string; name: string }[];
   lengthErrors: Record<string, boolean>;
   lengthErrorMessages: Record<string, string>;
   inputHints: Record<string, string>;
@@ -19,7 +21,10 @@ const dropdownOptions: Record<string, string> = {
   "Sensor profile": "profileOptions",
   Factory: "factoryOptions",
   "Factory area": "factoryAreaOptions",
+  Voltage: "voltageOptions",
 };
+
+const checkBoxes: string[] = ["Electricity sensor"];
 
 const fieldSx = {
   "& .MuiOutlinedInput-root": {
@@ -38,6 +43,7 @@ const fieldSx = {
  * @param props.profileOptions - Sensor profile choices for the dropdown
  * @param props.factoryOptions - Factory choices for the dropdown
  * @param props.factoryAreaOptions - Factory area choices for the dropdown
+ * @param props.voltageOptions
  * @param props.lengthErrors - Map of field name to whether it has a length error
  * @param props.lengthErrorMessages - Map of field name to its error message
  * @param props.inputHints - Map of field name to its placeholder hint
@@ -50,6 +56,7 @@ export function DeviceFormFields({
   profileOptions,
   factoryOptions,
   factoryAreaOptions,
+  voltageOptions,
   lengthErrors,
   lengthErrorMessages,
   inputHints,
@@ -59,6 +66,7 @@ export function DeviceFormFields({
     profileOptions,
     factoryOptions,
     factoryAreaOptions,
+    voltageOptions,
   };
 
   const maxLengths: Record<string, number> = {
@@ -79,8 +87,16 @@ export function DeviceFormFields({
           {option in dropdownOptions ? (
             <DropDownSelect
               options={dropdownData[dropdownOptions[option]]}
-              value={values[option] ?? ""}
+              value={typeof values[option] === "string" ? values[option] : ""}
               onChange={(value) => onChange(option, value)}
+            />
+          ) : checkBoxes.includes(option) ? (
+            <Checkbox
+              checked={Boolean(values[option])}
+              onChange={(_, checked) => onChange(option, String(checked))}
+              slotProps={{
+                input: { "aria-label": "controlled" },
+              }}
             />
           ) : (
             <TextField
@@ -91,7 +107,7 @@ export function DeviceFormFields({
                 lengthErrors[option] ? lengthErrorMessages[option] : ""
               }
               error={!!lengthErrors[option]}
-              value={values[option] ?? ""}
+              value={typeof values[option] === "string" ? values[option] : ""}
               slotProps={{
                 htmlInput: {
                   maxLength: maxLengths[option],

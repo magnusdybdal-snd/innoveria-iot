@@ -46,12 +46,18 @@ const addSensorDetails: string[] = [
   "Machine",
   "Application key",
   "Sensor profile",
+  "Electricity sensor",
+  "Voltage",
 ];
 const sortableColumns: SensorSortKey[] = [
   "Status",
   "Factory",
   "Name",
   "Last reading",
+];
+const voltageOptions = [
+  { id: "230", name: "230V" },
+  { id: "400", name: "400V" },
 ];
 
 /**
@@ -119,21 +125,25 @@ export default function Sensors() {
   const handleAddSensor = (sensorData: {
     name: string;
     deviceEui: string;
+    electricitySensor: boolean;
     factory: string;
     factoryArea: string;
     machine: string;
     appKey: string;
     senProf: string;
+    voltage: number;
   }): Promise<void> => {
     setAddError(null);
     return postSensor({
       companyId: "a0000000-0000-0000-0000-000000000001", // TODO: replace with real company ID from auth
+      electricitySensor: sensorData.electricitySensor,
       factoryId: sensorData.factory,
       factoryAreaId: sensorData.factoryArea,
       deviceEui: sensorData.deviceEui,
       sensorProfileId: sensorData.senProf,
       appKey: sensorData.appKey,
       name: sensorData.name,
+      voltage: sensorData.voltage,
     })
       .then(() => {
         refetch();
@@ -268,6 +278,7 @@ export default function Sensors() {
         onClose={handleCloseAdd}
         addOptions={addSensorDetails}
         profileOptions={sensorProfiles}
+        voltageOptions={voltageOptions}
         onAdd={handleAddSensor}
         submitError={addError}
         factoryOptions={factory}
