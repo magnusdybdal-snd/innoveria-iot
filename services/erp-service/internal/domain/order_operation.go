@@ -27,7 +27,7 @@ type OrderOperation struct {
 	ProductionResourceID int64
 	// ReportedQuantity         float64
 	// RestQuantity             float64
-	OrderId int64 // referenced by Order
+	OrderID int64 // referenced by Order
 	// OperationNumber          int   // Retreived in Get Order
 
 	// Gives time interval per production resource

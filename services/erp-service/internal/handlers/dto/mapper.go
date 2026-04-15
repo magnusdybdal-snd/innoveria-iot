@@ -18,7 +18,7 @@ func MapMonitorOrderOperationToDomain(from []dto.ManufacturingOrderOperation) []
 		to = append(to, domain.OrderOperation{
 			ID:                       item.ID,
 			ProductionResourceID:     item.WorkCenterId,
-			OrderId:                  item.ManufacturingOrderId,
+			OrderID:                  item.ManufacturingOrderId,
 			PlannedStartDate:         item.PlannedStartDate,
 			PlannedFinishDate:        item.PlannedFinishDate,
 			ActualStartDate:          item.ActualStartDate,
