@@ -130,25 +130,22 @@ func (c *Client) Query(_ context.Context, path monitor.MonitorERPEndpoint, _ url
 
 		*workcenters = []dto.WorkCenter{
 			{
-				ID:                   700,
-				Number:               "WC-700",
-				Description:          "Mock Cutter",
-				OperationDescription: "Cutting operations",
-				Type:                 1,
+				ID:          700,
+				Number:      "WC-700",
+				Description: "Mock Cutter",
+				Type:        1,
 			},
 			{
-				ID:                   701,
-				Number:               "WC-701",
-				Description:          "Mock Assembly",
-				OperationDescription: "Assembly operations",
-				Type:                 2,
+				ID:          701,
+				Number:      "WC-701",
+				Description: "Mock Assembly",
+				Type:        2,
 			},
 			{
-				ID:                   702,
-				Number:               "WC-702",
-				Description:          "Mock QA",
-				OperationDescription: "Quality checks",
-				Type:                 3,
+				ID:          702,
+				Number:      "WC-702",
+				Description: "Mock QA",
+				Type:        3,
 			},
 		}
 
