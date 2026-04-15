@@ -76,17 +76,13 @@ func (s *SensorMetricServiceImpl) GetEffectiveMetrics(ctx context.Context, devic
 		return nil, fmt.Errorf("get effective metrics: find payload schema: %w", err)
 	}
 
-	// Only return labeled rows — drafts (nil MeasurementType) are not actionable.
-	out := []domain.SensorMetric{}
-	for _, schema := range schemas {
-		if schema.MeasurementType == nil {
-			continue
-		}
-		out = append(out, domain.SensorMetric{
+	out := make([]domain.SensorMetric, len(schemas))
+	for i, schema := range schemas {
+		out[i] = domain.SensorMetric{
 			PayloadKey:      schema.PayloadKey,
-			MeasurementType: *schema.MeasurementType,
+			MeasurementType: schema.MeasurementType,
 			Unit:            schema.Unit,
-		})
+		}
 	}
 
 	return out, nil

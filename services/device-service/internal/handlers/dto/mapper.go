@@ -8,16 +8,6 @@ import (
 	"innoveria-iot/pkg/ptrutil"
 )
 
-// MapDraftProfilesToDTO maps a slice of draft profile IDs to a DraftProfilesResponse.
-func MapDraftProfilesToDTO(from []string) DraftProfilesResponse {
-	profileIDs := make([]string, len(from))
-	copy(profileIDs, from)
-	return DraftProfilesResponse{
-		TotalCount: len(profileIDs),
-		ProfileIDs: profileIDs,
-	}
-}
-
 // MapPayloadSchemaDomainToDTO maps a slice of domain PayloadSchemas to a PayloadSchemaListResponse.
 func MapPayloadSchemaDomainToDTO(from []domain.PayloadSchema) PayloadSchemaListResponse {
 	schemas := make([]PayloadSchemaResponse, len(from))
@@ -40,11 +30,10 @@ func MapPayloadSchemaDomainToDTO(from []domain.PayloadSchema) PayloadSchemaListR
 func MapSaveLabelsRequestToDomain(chirpstackProfileID string, from SavePayloadSchemaLabelsRequest) []domain.PayloadSchema {
 	schemas := make([]domain.PayloadSchema, len(from.Labels))
 	for i, l := range from.Labels {
-		mt := l.MeasurementType
 		schemas[i] = domain.PayloadSchema{
 			ChirpstackProfileID: chirpstackProfileID,
 			PayloadKey:          l.PayloadKey,
-			MeasurementType:     &mt,
+			MeasurementType:     l.MeasurementType,
 			Unit:                l.Unit,
 		}
 	}
@@ -261,4 +250,25 @@ func mapSensorProfiles(from domain.SensorProfile) SensorProfileResponse {
 		VendorId:   from.VendorId,
 		VendorName: from.VendorName,
 	}
+}
+
+// MapSensorProfileConfigDomainToDTO maps a domain SensorProfileConfig to a SensorProfileConfigResponse.
+func MapSensorProfileConfigDomainToDTO(from domain.SensorProfileConfig) SensorProfileConfigResponse {
+	return SensorProfileConfigResponse{
+		ChirpstackProfileID: from.ChirpstackProfileID,
+		ConfigurableSchema:  from.ConfigurableSchema,
+	}
+}
+
+// MapPutSensorProfileConfigDTOToDomain maps a PutSensorProfileConfigRequest to a domain SensorProfileConfig.
+func MapPutSensorProfileConfigDTOToDomain(profileID string, from PutSensorProfileConfigRequest) domain.SensorProfileConfig {
+	return domain.SensorProfileConfig{
+		ChirpstackProfileID: profileID,
+		ConfigurableSchema:  *from.ConfigurableSchema,
+	}
+}
+
+// MapSampleEUIDomainToDTO maps a device EUI string to a SampleEUIResponse.
+func MapSampleEUIDomainToDTO(deviceEUI string) SampleEUIResponse {
+	return SampleEUIResponse{DeviceEUI: deviceEUI}
 }

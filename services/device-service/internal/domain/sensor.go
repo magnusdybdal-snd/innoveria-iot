@@ -36,6 +36,10 @@ type SensorService interface {
 	Update(ctx context.Context, deviceID string, payload Sensor) error
 	GetAll(ctx context.Context) ([]Sensor, error)
 	GetByProductionResourceID(ctx context.Context, productionResourceID string) ([]Sensor, error)
+	// GetSampleEUI returns a single device EUI from any sensor registered on the given Chirpstack profile.
+	// Used by the admin UI to obtain a sample EUI for payload key lookup via collection-service /payload-tags.
+	// Returns domain.ErrNotFound (wrapped) if no sensor exists for the given profile.
+	GetSampleEUI(ctx context.Context, chirpstackProfileID string) (string, error)
 	Delete(ctx context.Context, deviceID string) error
 }
 
@@ -47,6 +51,9 @@ type SensorRepository interface {
 	FindByProductionResourceID(ctx context.Context, productionResourceID string) ([]Sensor, error)
 	FindAllByCompanyID(ctx context.Context, companyID string) ([]Sensor, error)
 	FindByEUI(ctx context.Context, deviceEUI string) (Sensor, error)
+	// FindOneByChirpstackProfileID returns any single sensor registered on the given Chirpstack profile.
+	// Used to obtain a sample EUI for payload key lookup via collection-service /payload-tags. Returns domain.ErrNotFound if no sensor exists on the profile.
+	FindOneByChirpstackProfileID(ctx context.Context, chirpstackProfileID string) (Sensor, error)
 	UpdateState(ctx context.Context, sensorID string, state DeviceState) error
 	Update(ctx context.Context, deviceID string, sensor Sensor) error
 	Delete(ctx context.Context, deviceID string) error
