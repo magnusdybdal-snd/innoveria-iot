@@ -88,7 +88,7 @@ func MapMonitorWorkcenterToDomain(from []dto.WorkCenter) []domain.ProductionReso
 		to = append(to, domain.ProductionResource{
 			ID:          item.ID,
 			Number:      item.Number,
-			Description: &description,
+			Description: description,
 			Type:        mapWorkCenterType(item.Type),
 			ReceivedAt:  receivedAt,
 		})

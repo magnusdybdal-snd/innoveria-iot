@@ -22,8 +22,8 @@ const (
 type ProductionResource struct {
 	ID          int64
 	CompanyID   string
-	Number      string  // human readable machine name
-	Description *string // Monitor erp description
+	Number      string // human readable machine name
+	Description string // Monitor erp description
 	Type        WorkCenterType
 	ReceivedAt  time.Time
 }
