@@ -81,6 +81,11 @@ definitions:
     type: object
   dto.OperationContextResponse:
     properties:
+      degraded:
+        description: |-
+          Degraded is true when sensor data could not be loaded due to a technical error.
+          A false value with an empty sensors array means no sensors are mapped (expected state).
+        type: boolean
       operation:
         $ref: '#/definitions/dto.OrderOperationResponse'
       sensors:
@@ -90,8 +95,6 @@ definitions:
     type: object
   dto.OrderContextResponse:
     properties:
-      has_measurements:
-        type: boolean
       operations:
         items:
           $ref: '#/definitions/dto.OperationContextResponse'

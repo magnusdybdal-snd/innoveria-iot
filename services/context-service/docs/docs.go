@@ -383,6 +383,10 @@ const docTemplate = `{
         "dto.OperationContextResponse": {
             "type": "object",
             "properties": {
+                "degraded": {
+                    "description": "Degraded is true when sensor data could not be loaded due to a technical error.\nA false value with an empty sensors array means no sensors are mapped (expected state).",
+                    "type": "boolean"
+                },
                 "operation": {
                     "$ref": "#/definitions/dto.OrderOperationResponse"
                 },
@@ -397,9 +401,6 @@ const docTemplate = `{
         "dto.OrderContextResponse": {
             "type": "object",
             "properties": {
-                "has_measurements": {
-                    "type": "boolean"
-                },
                 "operations": {
                     "type": "array",
                     "items": {
