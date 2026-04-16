@@ -93,6 +93,68 @@ const docTemplate = `{
                 }
             }
         },
+        "/orders": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "orders"
+                ],
+                "summary": "Get Orders",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.OrderResponse"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/orders/{id}/context": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "orders"
+                ],
+                "summary": "Get Order Context",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ERP Order ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.OrderContextResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/rules": {
             "get": {
                 "produces": [
@@ -167,7 +229,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/rules/{rule_id}": {
+        "/rules/{id}": {
             "delete": {
                 "tags": [
                     "context"
@@ -315,6 +377,176 @@ const docTemplate = `{
                 },
                 "time_bucket_minutes": {
                     "type": "integer"
+                }
+            }
+        },
+        "dto.OperationContextResponse": {
+            "type": "object",
+            "properties": {
+                "operation": {
+                    "$ref": "#/definitions/dto.OrderOperationResponse"
+                },
+                "sensors": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.SensorContextResponse"
+                    }
+                }
+            }
+        },
+        "dto.OrderContextResponse": {
+            "type": "object",
+            "properties": {
+                "has_measurements": {
+                    "type": "boolean"
+                },
+                "operations": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.OperationContextResponse"
+                    }
+                },
+                "order": {
+                    "$ref": "#/definitions/dto.OrderResponse"
+                }
+            }
+        },
+        "dto.OrderOperationResponse": {
+            "type": "object",
+            "properties": {
+                "actual_finish_date": {
+                    "type": "string"
+                },
+                "actual_start_date": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "planned_finish_date": {
+                    "type": "string"
+                },
+                "planned_start_date": {
+                    "type": "string"
+                },
+                "production_resource": {
+                    "$ref": "#/definitions/dto.ProductionResourceResponse"
+                },
+                "production_resource_status": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.OrderResponse": {
+            "type": "object",
+            "properties": {
+                "actual_finish_date": {
+                    "type": "string"
+                },
+                "actual_start_date": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "operations": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.OrderOperationResponse"
+                    }
+                },
+                "order_number": {
+                    "type": "string"
+                },
+                "part_description": {
+                    "type": "string"
+                },
+                "planned_finish_date": {
+                    "type": "string"
+                },
+                "planned_start_date": {
+                    "type": "string"
+                },
+                "priority": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.ProductionResourceResponse": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "number": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.SensorContextResponse": {
+            "type": "object",
+            "properties": {
+                "device_eui": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "measurements": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/internal_handlers_dto.MeasurementResponse"
+                    }
+                },
+                "metrics": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/internal_handlers_dto.SensorMetricResponse"
+                    }
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_handlers_dto.MeasurementResponse": {
+            "type": "object",
+            "properties": {
+                "device_eui": {
+                    "type": "string"
+                },
+                "payload": {
+                    "type": "object",
+                    "additionalProperties": {}
+                },
+                "timestamp": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_handlers_dto.SensorMetricResponse": {
+            "type": "object",
+            "properties": {
+                "measurement_type": {
+                    "type": "string"
+                },
+                "payload_key": {
+                    "type": "string"
+                },
+                "unit": {
+                    "type": "string"
                 }
             }
         }
