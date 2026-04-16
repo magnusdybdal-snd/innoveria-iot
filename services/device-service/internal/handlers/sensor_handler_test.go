@@ -145,6 +145,25 @@ func TestGetSensors_UUIDProductionResourceID_Returns400(t *testing.T) {
 	}
 }
 
+// TestGetSensors_NonPositiveProductionResourceID_Returns400 verifies that zero and negative values
+// are rejected — ERP production resource IDs start from 1.
+func TestGetSensors_NonPositiveProductionResourceID_Returns400(t *testing.T) {
+	svc := &mockSensorService{t: t}
+
+	for _, id := range []string{"0", "-1", "-100"} {
+		t.Run("id="+id, func(t *testing.T) {
+			req := httptest.NewRequest(http.MethodGet, "/api/v1/sensors?production_resource_id="+id, nil)
+			rec := httptest.NewRecorder()
+
+			handlers.GetSensors(svc).ServeHTTP(rec, req)
+
+			if rec.Code != http.StatusBadRequest {
+				t.Errorf("expected 400, got %d", rec.Code)
+			}
+		})
+	}
+}
+
 // TestGetSensors_ServiceError_Returns500 verifies that a service error returns 500.
 func TestGetSensors_ServiceError_Returns500(t *testing.T) {
 	svc := &mockSensorService{

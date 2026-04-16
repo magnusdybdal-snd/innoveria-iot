@@ -34,8 +34,8 @@ func GetSensors(svc domain.SensorService) http.HandlerFunc {
 
 		if productionResourceID != "" {
 			parsedID, parseErr := strconv.ParseInt(productionResourceID, 10, 64)
-			if parseErr != nil {
-				json.HandleError(w, http.StatusBadRequest, parseErr, "bad request")
+			if parseErr != nil || parsedID <= 0 {
+				json.HandleError(w, http.StatusBadRequest, fmt.Errorf("production_resource_id must be a positive integer"), "bad request")
 				return
 			}
 			data, err = svc.GetByProductionResourceID(ctx, parsedID)
