@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"errors"
 	"net/http"
 
 	"innoveria-iot/erp-service/internal/domain"
@@ -20,7 +21,8 @@ func PostIngestOrder(svc domain.Ingest) http.HandlerFunc {
 		}
 		result := dto.MapMonitorOrderToDomain(payload)
 		if err := svc.CreateOrder(ctx, result); err != nil {
-			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			status, message, cause := mapIngestDomainError(err)
+			json.HandleError(w, status, cause, message)
 			return
 		}
 	}
@@ -38,7 +40,8 @@ func PostIngestOrderOperations(svc domain.Ingest) http.HandlerFunc {
 		}
 		result := dto.MapMonitorOrderOperationToDomain(payload)
 		if err := svc.CreateOrderOperation(ctx, result); err != nil {
-			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			status, message, cause := mapIngestDomainError(err)
+			json.HandleError(w, status, cause, message)
 			return
 		}
 	}
@@ -56,7 +59,8 @@ func PostIngestOrderReports(svc domain.Ingest) http.HandlerFunc {
 		}
 		result := dto.MapMonitorOrderReportToDomain(payload)
 		if err := svc.CreateOrderReport(ctx, result); err != nil {
-			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			status, message, cause := mapIngestDomainError(err)
+			json.HandleError(w, status, cause, message)
 			return
 		}
 	}
@@ -74,8 +78,21 @@ func PostIngestWorkCenters(svc domain.Ingest) http.HandlerFunc {
 		}
 		result := dto.MapMonitorWorkcenterToDomain(payload)
 		if err := svc.CreateProductionResource(ctx, result); err != nil {
-			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			status, message, cause := mapIngestDomainError(err)
+			json.HandleError(w, status, cause, message)
 			return
 		}
 	}
+}
+
+func mapIngestDomainError(err error) (int, string, error) {
+	if errors.Is(err, domain.ErrInvalidInput) {
+		return http.StatusBadRequest, "bad request", err
+	}
+
+	if errors.Is(err, domain.ErrConflict) {
+		return http.StatusConflict, "conflict", err
+	}
+
+	return http.StatusInternalServerError, "internal server error", err
 }
