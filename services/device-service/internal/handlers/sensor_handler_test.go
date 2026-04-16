@@ -372,22 +372,19 @@ func TestPatchSensor_SetsProductionResource_PassesValueToService(t *testing.T) {
 	}
 }
 
-// TestPatchSensor_ClearsProductionResource_PassesNilToService verifies that sending
-// production_resource: null explicitly clears the workcenter assignment in the service payload.
-func TestPatchSensor_ClearsProductionResource_PassesNilToService(t *testing.T) {
-	var called bool
+// TestPatchSensor_ClearsProductionResource_PassesZeroToService verifies that sending
+// production_resource: 0 forwards the sentinel value to the service, which interprets it as "clear".
+func TestPatchSensor_ClearsProductionResource_PassesZeroToService(t *testing.T) {
+	var gotProductionResource *int64
 	svc := &mockSensorService{
 		t: t,
 		updateFunc: func(_ context.Context, _ string, payload domain.Sensor) error {
-			called = true
-			if payload.ProductionResource != nil {
-				t.Errorf("expected nil ProductionResource, got %v", *payload.ProductionResource)
-			}
+			gotProductionResource = payload.ProductionResource
 			return nil
 		},
 	}
 
-	body := `{"production_resource": null, "name": "keep-alive"}`
+	body := `{"production_resource": 0}`
 	req := httptest.NewRequest(http.MethodPatch, "/api/v1/sensors/"+validSensorID, strings.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
 	req.SetPathValue("id", validSensorID)
@@ -398,8 +395,26 @@ func TestPatchSensor_ClearsProductionResource_PassesNilToService(t *testing.T) {
 	if rec.Code != http.StatusNoContent {
 		t.Errorf("expected 204, got %d", rec.Code)
 	}
-	if !called {
-		t.Error("expected Update to be called")
+	if gotProductionResource == nil || *gotProductionResource != 0 {
+		t.Errorf("expected ProductionResource=0 (clear sentinel), got %v", gotProductionResource)
+	}
+}
+
+// TestPatchSensor_NegativeProductionResource_Returns400 verifies that a negative production_resource
+// is rejected — only 0 (clear) and positive integers are valid.
+func TestPatchSensor_NegativeProductionResource_Returns400(t *testing.T) {
+	svc := &mockSensorService{t: t}
+
+	body := `{"production_resource": -1}`
+	req := httptest.NewRequest(http.MethodPatch, "/api/v1/sensors/"+validSensorID, strings.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
+	req.SetPathValue("id", validSensorID)
+	rec := httptest.NewRecorder()
+
+	handlers.PatchSensor(svc).ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("expected 400, got %d", rec.Code)
 	}
 }
 

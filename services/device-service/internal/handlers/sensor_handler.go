@@ -142,6 +142,11 @@ func PatchSensor(svc domain.SensorService) http.HandlerFunc {
 			return
 		}
 
+		if payload.ProductionResource != nil && *payload.ProductionResource < 0 {
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("production_resource must be 0 (to clear) or a positive integer"), "bad request")
+			return
+		}
+
 		for _, field := range []*string{payload.FactoryID, payload.FactoryAreaID, payload.ChirpstackProfileID} {
 			if field != nil {
 				if _, err := uuid.Parse(*field); err != nil {
