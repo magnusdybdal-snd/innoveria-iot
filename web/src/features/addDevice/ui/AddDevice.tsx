@@ -116,10 +116,10 @@ export function AddDevice(props: AddDeviceProps) {
       })
       .then(() => {
         setValues({});
-      });
-
-    setFillError(false);
-    setLengthErrors({});
+        setFillError(false); // only clear on success
+        setLengthErrors({});
+      })
+      .catch(() => {});
   };
 
   return (
