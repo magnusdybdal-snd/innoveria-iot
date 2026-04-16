@@ -131,7 +131,7 @@ export default function Sensors() {
     machine: string;
     appKey: string;
     senProf: string;
-    voltage: number;
+    voltage: number | null;
   }): Promise<void> => {
     setAddError(null);
     return postSensor({

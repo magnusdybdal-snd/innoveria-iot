@@ -34,7 +34,7 @@ export interface CreateSensorRequest {
   appKey: string;
   sensorProfileId: string;
   name: string;
-  voltage: number;
+  voltage: number | null;
 }
 
 // Sensor profile API responses

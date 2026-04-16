@@ -26,7 +26,7 @@ export interface AddDeviceProps {
     machine: string;
     appKey: string;
     senProf: string;
-    voltage: number;
+    voltage: number | null;
   }) => Promise<void>;
   submitError?: string | null;
 }
