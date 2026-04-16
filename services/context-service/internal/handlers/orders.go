@@ -37,7 +37,11 @@ func GetOrderContext(svc domain.ContextService) http.HandlerFunc {
 			return
 		}
 
-		orderCtx, err := svc.GetOrderContext(ctx, orderID)
+		// TODO: replace with AUTH — use r.Header.Get("X-Auth-Company-Id") once
+		// the auth middleware is propagated to this service.
+		companyID := hardcodedCompanyID
+
+		orderCtx, err := svc.GetOrderContext(ctx, companyID, orderID)
 		if err != nil {
 			if errors.Is(err, domain.ErrNotFound) {
 				json.HandleError(w, http.StatusNotFound, err, "order not found")

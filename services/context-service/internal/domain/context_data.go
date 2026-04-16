@@ -68,7 +68,6 @@ type ContextService interface {
 	GetOrders(ctx context.Context, companyID string) ([]ERPOrder, error)
 	// GetOrderContext aggregates ERP order data with sensor readings for a single order.
 	//
-	// TODO: replace with AUTH — companyID is hardcoded inside the implementation until
-	// auth middleware propagation is wired up end-to-end.
-	GetOrderContext(ctx context.Context, orderID int64) (*OrderContext, error)
+	// TODO: replace with AUTH — companyID should be read from the gateway-injected X-Auth-Company-Id header once auth middleware propagation is wired up.
+	GetOrderContext(ctx context.Context, companyID string, orderID int64) (*OrderContext, error)
 }

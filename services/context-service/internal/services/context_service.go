@@ -14,13 +14,6 @@ import (
 	"innoveria-iot/context-service/internal/domain"
 )
 
-// hardcodedCompanyID is a temporary placeholder used while auth middleware
-// propagation is not yet wired up end-to-end.
-//
-// TODO: replace with AUTH — read from X-Auth-Company-Id header once the gateway
-// injects trusted headers into this service.
-const hardcodedCompanyID = "00000000-0000-0000-0000-000000000001"
-
 // ContextServiceImpl implements context use cases for context service.
 type ContextServiceImpl struct {
 	collectionClient domain.CollectionClient
@@ -133,24 +126,10 @@ func (s *ContextServiceImpl) GetOrders(ctx context.Context, companyID string) ([
 // for a single order identified by orderID.
 //
 // TODO: replace with AUTH — companyID is hardcoded until auth middleware propagation is wired up.
-func (s *ContextServiceImpl) GetOrderContext(ctx context.Context, orderID int64) (*domain.OrderContext, error) {
-	// TODO: replace with AUTH — read from X-Auth-Company-Id header once auth middleware is wired up.
-	const companyID = hardcodedCompanyID
-
-	orders, err := s.erpClient.GetOrders(ctx, companyID)
+func (s *ContextServiceImpl) GetOrderContext(ctx context.Context, companyID string, orderID int64) (*domain.OrderContext, error) {
+	found, err := s.erpClient.GetOrderByID(ctx, companyID, orderID)
 	if err != nil {
-		return nil, fmt.Errorf("fetching orders from ERP: %w", err)
-	}
-
-	var found *domain.ERPOrder
-	for i := range orders {
-		if orders[i].ID == orderID {
-			found = &orders[i]
-			break
-		}
-	}
-	if found == nil {
-		return nil, domain.ErrNotFound
+		return nil, fmt.Errorf("fetching order from ERP: %w", err)
 	}
 
 	ops := make([]domain.OperationContext, len(found.Operations))

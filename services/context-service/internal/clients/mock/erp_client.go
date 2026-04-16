@@ -163,6 +163,16 @@ func (c *ERPClient) GetOrders(_ context.Context, _ string) ([]domain.ERPOrder, e
 	return mockOrders, nil
 }
 
+// GetOrderByID returns a single mock order by ID. companyID is accepted but not used.
+func (c *ERPClient) GetOrderByID(_ context.Context, _ string, orderID int64) (*domain.ERPOrder, error) {
+	for i := range mockOrders {
+		if mockOrders[i].ID == orderID {
+			return &mockOrders[i], nil
+		}
+	}
+	return nil, domain.ErrNotFound
+}
+
 func ptr(t time.Time) *time.Time {
 	return &t
 }
