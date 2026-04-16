@@ -112,7 +112,7 @@ export function AddDevice(props: AddDeviceProps) {
         machine: values["Machine"],
         appKey: values["Application key"],
         senProf: values["Sensor profile"],
-        voltage: Number(values["Voltage"]),
+        voltage: electricityEnabled ? Number(values["Voltage"]) : null,
       })
       .then(() => {
         setValues({});
