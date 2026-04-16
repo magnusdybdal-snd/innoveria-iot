@@ -3,6 +3,7 @@ package dto
 
 import (
 	"log/slog"
+	"strconv"
 	"time"
 
 	"innoveria-iot/erp-service/internal/domain"
@@ -121,8 +122,8 @@ func mapOrderStatus(status int) domain.OrderStatus {
 	case 7:
 		return domain.OrderStatusHistorical
 	default:
-		slog.Warn("unknown monitor order status, falling back", "status", status, "fallback", domain.OrderStatusNotInitialized)
-		return domain.OrderStatusNotInitialized
+		slog.Warn("unknown monitor order status, preserving raw value", "status", status)
+		return domain.OrderStatus(strconv.Itoa(status))
 	}
 }
 
@@ -140,8 +141,8 @@ func mapOperationStatus(status int) domain.OperationStatus {
 	case 5:
 		return domain.OperationStatusFinished
 	default:
-		slog.Warn("unknown monitor operation status, falling back", "status", status, "fallback", domain.OperationStatusNone)
-		return domain.OperationStatusNone
+		slog.Warn("unknown monitor operation status, preserving raw value", "status", status)
+		return domain.OperationStatus(strconv.Itoa(status))
 	}
 }
 
@@ -175,7 +176,8 @@ func mapOrderReportType(reportType int) domain.OrderReportType {
 	case 13:
 		return domain.OrderReportTypePickWorkCenter
 	default:
-		return domain.OrderReportTypeRegular
+		slog.Warn("unknown monitor order report type, preserving raw value", "type", reportType)
+		return domain.OrderReportType(strconv.Itoa(reportType))
 	}
 }
 
@@ -193,6 +195,7 @@ func mapWorkCenterType(workCenterType int) domain.WorkCenterType {
 	case 5:
 		return domain.WorkCenterTypePick
 	default:
-		return domain.WorkCenterTypeMachine
+		slog.Warn("unknown monitor work center type, preserving raw value", "type", workCenterType)
+		return domain.WorkCenterType(strconv.Itoa(workCenterType))
 	}
 }
