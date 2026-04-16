@@ -324,6 +324,66 @@ func TestPatchSensor_NoFields_Returns400(t *testing.T) {
 	}
 }
 
+// TestPatchSensor_SetsProductionResource_PassesValueToService verifies that the production_resource
+// field is forwarded to the service so it reaches the UPDATE query.
+// This guards against the previous bug where production_resource_id was silently dropped from the SET clause.
+func TestPatchSensor_SetsProductionResource_PassesValueToService(t *testing.T) {
+	var gotProductionResource *int64
+	svc := &mockSensorService{
+		t: t,
+		updateFunc: func(_ context.Context, _ string, payload domain.Sensor) error {
+			gotProductionResource = payload.ProductionResource
+			return nil
+		},
+	}
+
+	body := `{"production_resource": 42}`
+	req := httptest.NewRequest(http.MethodPatch, "/api/v1/sensors/"+validSensorID, strings.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
+	req.SetPathValue("id", validSensorID)
+	rec := httptest.NewRecorder()
+
+	handlers.PatchSensor(svc).ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusNoContent {
+		t.Errorf("expected 204, got %d", rec.Code)
+	}
+	if gotProductionResource == nil || *gotProductionResource != 42 {
+		t.Errorf("expected ProductionResource=42, got %v", gotProductionResource)
+	}
+}
+
+// TestPatchSensor_ClearsProductionResource_PassesNilToService verifies that sending
+// production_resource: null explicitly clears the workcenter assignment in the service payload.
+func TestPatchSensor_ClearsProductionResource_PassesNilToService(t *testing.T) {
+	var called bool
+	svc := &mockSensorService{
+		t: t,
+		updateFunc: func(_ context.Context, _ string, payload domain.Sensor) error {
+			called = true
+			if payload.ProductionResource != nil {
+				t.Errorf("expected nil ProductionResource, got %v", *payload.ProductionResource)
+			}
+			return nil
+		},
+	}
+
+	body := `{"production_resource": null, "name": "keep-alive"}`
+	req := httptest.NewRequest(http.MethodPatch, "/api/v1/sensors/"+validSensorID, strings.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
+	req.SetPathValue("id", validSensorID)
+	rec := httptest.NewRecorder()
+
+	handlers.PatchSensor(svc).ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusNoContent {
+		t.Errorf("expected 204, got %d", rec.Code)
+	}
+	if !called {
+		t.Error("expected Update to be called")
+	}
+}
+
 // TestPatchSensor_ServiceError_Returns500 verifies that a service error returns 500.
 func TestPatchSensor_ServiceError_Returns500(t *testing.T) {
 	svc := &mockSensorService{
