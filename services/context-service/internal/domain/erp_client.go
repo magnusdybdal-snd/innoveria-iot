@@ -14,6 +14,10 @@ type ERPClient interface {
 	// GetOrders returns all orders for the given company, each enriched with
 	// their operations and associated production resources (work centers).
 	GetOrders(ctx context.Context, companyID string) ([]ERPOrder, error)
+
+	// GetOrderByID returns a single order by its ID, enriched with operations
+	// and production resources. Returns ErrNotFound if no order matches.
+	GetOrderByID(ctx context.Context, companyID string, orderID int64) (*ERPOrder, error)
 }
 
 // ERPProductionResource represents a work center from Monitor ERP.

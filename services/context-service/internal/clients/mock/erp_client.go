@@ -32,8 +32,8 @@ var mockOrders = []domain.ERPOrder{
 		PlannedStartDate:  time.Date(2026, 4, 14, 6, 0, 0, 0, time.UTC),
 		PlannedFinishDate: time.Date(2026, 4, 14, 14, 0, 0, 0, time.UTC),
 		ActualStartDate:   ptr(time.Date(2026, 4, 14, 6, 12, 0, 0, time.UTC)),
-		ActualFinishDate:  nil,
-		Status:            "started",
+		ActualFinishDate:  ptr(time.Date(2026, 4, 14, 13, 55, 0, 0, time.UTC)),
+		Status:            "finished",
 		Priority:          1,
 		Operations: []domain.ERPOrderOperation{
 			{
@@ -47,9 +47,9 @@ var mockOrders = []domain.ERPOrder{
 				PlannedStartDate:         time.Date(2026, 4, 14, 6, 0, 0, 0, time.UTC),
 				PlannedFinishDate:        time.Date(2026, 4, 14, 14, 0, 0, 0, time.UTC),
 				ActualStartDate:          ptr(time.Date(2026, 4, 14, 6, 12, 0, 0, time.UTC)),
-				ActualFinishDate:         nil,
-				Status:                   "started",
-				ProductionResourceStatus: "started",
+				ActualFinishDate:         ptr(time.Date(2026, 4, 14, 13, 55, 0, 0, time.UTC)),
+				Status:                   "finished",
+				ProductionResourceStatus: "finished",
 			},
 		},
 	},
@@ -59,9 +59,9 @@ var mockOrders = []domain.ERPOrder{
 		PartDescription:   "Aluminium Panel B",
 		PlannedStartDate:  time.Date(2026, 4, 14, 14, 0, 0, 0, time.UTC),
 		PlannedFinishDate: time.Date(2026, 4, 14, 22, 0, 0, 0, time.UTC),
-		ActualStartDate:   nil,
-		ActualFinishDate:  nil,
-		Status:            "registered",
+		ActualStartDate:   ptr(time.Date(2026, 4, 14, 14, 5, 0, 0, time.UTC)),
+		ActualFinishDate:  ptr(time.Date(2026, 4, 14, 21, 50, 0, 0, time.UTC)),
+		Status:            "finished",
 		Priority:          2,
 		Operations: []domain.ERPOrderOperation{
 			{
@@ -74,10 +74,10 @@ var mockOrders = []domain.ERPOrder{
 				},
 				PlannedStartDate:         time.Date(2026, 4, 14, 14, 0, 0, 0, time.UTC),
 				PlannedFinishDate:        time.Date(2026, 4, 14, 22, 0, 0, 0, time.UTC),
-				ActualStartDate:          nil,
-				ActualFinishDate:         nil,
-				Status:                   "none",
-				ProductionResourceStatus: "none",
+				ActualStartDate:          ptr(time.Date(2026, 4, 14, 14, 5, 0, 0, time.UTC)),
+				ActualFinishDate:         ptr(time.Date(2026, 4, 14, 21, 50, 0, 0, time.UTC)),
+				Status:                   "finished",
+				ProductionResourceStatus: "finished",
 			},
 		},
 	},
@@ -161,6 +161,16 @@ var mockOrders = []domain.ERPOrder{
 // GetOrders returns the mock order list. companyID is accepted but not used.
 func (c *ERPClient) GetOrders(_ context.Context, _ string) ([]domain.ERPOrder, error) {
 	return mockOrders, nil
+}
+
+// GetOrderByID returns a single mock order by ID. companyID is accepted but not used.
+func (c *ERPClient) GetOrderByID(_ context.Context, _ string, orderID int64) (*domain.ERPOrder, error) {
+	for i := range mockOrders {
+		if mockOrders[i].ID == orderID {
+			return &mockOrders[i], nil
+		}
+	}
+	return nil, domain.ErrNotFound
 }
 
 func ptr(t time.Time) *time.Time {

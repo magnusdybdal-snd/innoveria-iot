@@ -56,6 +56,8 @@ func NewRouter(cfg *config.Config) *http.ServeMux {
 	handlers.RegisterProxyService(mux, CONTEXT_ROUTE, "context-service", cfg.ContextSvcURL, []string{
 		"/rules",
 		"/data",
+		"/orders",
+		"/orders/{id}/context",
 	})
 
 	// Swagger — merged spec from all services, served via the gateway

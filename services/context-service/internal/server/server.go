@@ -40,6 +40,7 @@ func Run() error {
 		return fmt.Errorf("seeds: %w", err)
 	}
 	client := clients.NewCollectionClient(cfg.CollectionSvcURL)
+	deviceClient := clients.NewDeviceClient(cfg.DeviceSvcURL)
 
 	var erpClient domain.ERPClient
 	if cfg.UseMockERP {
@@ -50,7 +51,7 @@ func Run() error {
 	}
 
 	repo := repository.NewRuleRepository(database)
-	contextSvc := services.NewContextServiceImpl(client, erpClient, repo)
+	contextSvc := services.NewContextServiceImpl(client, erpClient, deviceClient, repo)
 	ruleSvc := services.NewRuleServiceImpl(repo)
 
 	// Setting up mux and http server

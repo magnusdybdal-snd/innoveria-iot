@@ -3,9 +3,13 @@ package services
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
+	"strconv"
 	"time"
+
+	"golang.org/x/sync/errgroup"
 
 	"innoveria-iot/context-service/internal/calculators"
 	"innoveria-iot/context-service/internal/domain"
@@ -15,15 +19,17 @@ import (
 type ContextServiceImpl struct {
 	collectionClient domain.CollectionClient
 	erpClient        domain.ERPClient
+	deviceClient     domain.DeviceClient
 	ruleRepo         domain.RuleRepository
 	calculators      map[string]calculators.Calculator
 }
 
 // NewContextServiceImpl creates a new ContextServiceImpl instance.
-func NewContextServiceImpl(collectionClient domain.CollectionClient, erpClient domain.ERPClient, ruleRepo domain.RuleRepository) *ContextServiceImpl {
+func NewContextServiceImpl(collectionClient domain.CollectionClient, erpClient domain.ERPClient, deviceClient domain.DeviceClient, ruleRepo domain.RuleRepository) *ContextServiceImpl {
 	return &ContextServiceImpl{
 		collectionClient: collectionClient,
 		erpClient:        erpClient,
+		deviceClient:     deviceClient,
 		ruleRepo:         ruleRepo,
 		calculators:      calculators.NewRegistry(),
 	}
@@ -115,4 +121,94 @@ func (s *ContextServiceImpl) GetOrders(ctx context.Context, companyID string) ([
 		return nil, fmt.Errorf("fetching orders from ERP: %w", err)
 	}
 	return orders, nil
+}
+
+// GetOrderContext aggregates ERP order data with sensor and measurement context
+// for a single order identified by orderID.
+func (s *ContextServiceImpl) GetOrderContext(ctx context.Context, companyID string, orderID int64) (*domain.OrderContext, error) {
+	found, err := s.erpClient.GetOrderByID(ctx, companyID, orderID)
+	if err != nil {
+		return nil, fmt.Errorf("fetching order from ERP: %w", err)
+	}
+
+	ops := make([]domain.OperationContext, len(found.Operations))
+
+	// Guard: if the order has no actual time window, return operations without sensor data.
+	if found.ActualStartDate == nil || found.ActualFinishDate == nil {
+		for i, op := range found.Operations {
+			ops[i] = domain.OperationContext{Operation: op, Sensors: []domain.SensorContext{}}
+		}
+		return &domain.OrderContext{Order: *found, Operations: ops}, nil
+	}
+
+	from := *found.ActualStartDate
+	to := *found.ActualFinishDate
+
+	g, gctx := errgroup.WithContext(ctx)
+
+	for i, op := range found.Operations {
+		g.Go(func() error {
+			ops[i] = s.buildOperationContext(gctx, op, from, to)
+			return nil
+		})
+	}
+
+	if err := g.Wait(); err != nil {
+		return nil, err
+	}
+
+	return &domain.OrderContext{Order: *found, Operations: ops}, nil
+}
+
+// buildOperationContext fetches sensors for an operation and enriches each with
+// metrics and measurements over the given time window.
+func (s *ContextServiceImpl) buildOperationContext(ctx context.Context, op domain.ERPOrderOperation, from, to time.Time) domain.OperationContext {
+	productionResourceID := strconv.FormatInt(op.ProductionResource.ID, 10)
+
+	sensors, err := s.deviceClient.GetSensorsByProductionResourceID(ctx, productionResourceID)
+	if err != nil {
+		if errors.Is(err, domain.ErrNotFound) {
+			// No sensors mapped to this production resource — expected, not an error.
+			return domain.OperationContext{Operation: op, Sensors: []domain.SensorContext{}}
+		}
+		// Technical failure (timeout, 5xx) — return partial data but mark as degraded.
+		slog.Warn("failed to fetch sensors for production resource, returning degraded operation", "production_resource_id", productionResourceID, "error", err)
+		return domain.OperationContext{Operation: op, Sensors: []domain.SensorContext{}, Degraded: true}
+	}
+
+	sensorContexts := make([]domain.SensorContext, len(sensors))
+	g, gctx := errgroup.WithContext(ctx)
+
+	for j, sensor := range sensors {
+		g.Go(func() error {
+			sc, err := s.buildSensorContext(gctx, sensor, from, to)
+			if err != nil {
+				return err
+			}
+			sensorContexts[j] = sc
+			return nil
+		})
+	}
+
+	if err := g.Wait(); err != nil {
+		slog.Warn("failed to build sensor context for operation, returning degraded operation", "production_resource_id", productionResourceID, "error", err)
+		return domain.OperationContext{Operation: op, Sensors: []domain.SensorContext{}, Degraded: true}
+	}
+
+	return domain.OperationContext{Operation: op, Sensors: sensorContexts}
+}
+
+// buildSensorContext fetches metrics and measurements for a single sensor over the given time window.
+func (s *ContextServiceImpl) buildSensorContext(ctx context.Context, sensor domain.DeviceSensor, from, to time.Time) (domain.SensorContext, error) {
+	metrics, err := s.deviceClient.GetSensorMetrics(ctx, sensor.DeviceEUI)
+	if err != nil {
+		return domain.SensorContext{}, fmt.Errorf("fetching metrics for sensor %s: %w", sensor.DeviceEUI, err)
+	}
+
+	measurements, err := s.collectionClient.GetMeasurements(ctx, sensor.DeviceEUI, from, to)
+	if err != nil {
+		return domain.SensorContext{}, fmt.Errorf("fetching measurements for sensor %s: %w", sensor.DeviceEUI, err)
+	}
+
+	return domain.SensorContext{Sensor: sensor, Metrics: metrics, Measurements: measurements}, nil
 }

@@ -46,3 +46,22 @@ func (c *ERPClient) GetOrders(ctx context.Context, companyID string) ([]domain.E
 	}
 	return orders, nil
 }
+
+// GetOrderByID fetches a single order by ID from the ERP service, enriched with
+// its operations and production resources.
+//
+// TODO: the route /api/v1/erp/orders/{id} does not exist on the erp-service yet.
+// Update the URL once the GET endpoint is implemented.
+func (c *ERPClient) GetOrderByID(ctx context.Context, companyID string, orderID int64) (*domain.ERPOrder, error) {
+	url := fmt.Sprintf("%s/api/v1/erp/orders/%d?company_id=%s", c.baseURL, orderID, companyID)
+
+	resp, err := httpclient.DoRequest[dto.ERPOrderResponse](
+		c.client, ctx, url, http.MethodGet, nil, nil,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	order := mappers.ToERPOrder(resp)
+	return &order, nil
+}
