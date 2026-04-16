@@ -2,6 +2,7 @@ import Box from "@mui/material/Box";
 import Checkbox from "@mui/material/Checkbox";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
+import { ELECTRICITY_SENSOR, VOLTAGE } from "@shared/const";
 import { DropDownSelect } from "@shared/ui/DropDownSelect";
 
 interface DeviceFormFieldsProps {
@@ -23,10 +24,6 @@ const dropdownOptions: Record<string, string> = {
   "Factory area": "factoryAreaOptions",
   Voltage: "voltageOptions",
 };
-
-const ELECTRICITY_SENSOR = "Electricity sensor";
-const VOLTAGE = "Voltage";
-
 const checkBoxes: string[] = [ELECTRICITY_SENSOR];
 
 const fieldSx = {

@@ -6,6 +6,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import Typography from "@mui/material/Typography";
+import { ELECTRICITY_SENSOR, VOLTAGE } from "@shared/const";
 import { DeviceFormFields } from "@shared/ui/DeviceFormFields";
 
 export interface AddDeviceProps {
@@ -41,9 +42,6 @@ const inputLengthError: Record<string, string> = {
   DeviceEUI: "DeviceEUI must be 16 characters",
   "Application key": "Application key must be 32 characters",
 };
-
-const ELECTRICITY_SENSOR = "Electricity sensor";
-const VOLTAGE = "Voltage";
 
 /**
  * Modal dialog for registering a new sensor device, with input validation for DeviceEUI and Application key lengths.
