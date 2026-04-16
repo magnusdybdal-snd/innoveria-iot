@@ -97,7 +97,10 @@ export function DeviceFormFields({
           ) : checkBoxes.includes(option) ? (
             <Checkbox
               checked={values[option] === "true"}
-              onChange={(_, checked) => onChange(option, String(checked))}
+              onChange={(_, checked) => {
+                onChange(option, String(checked));
+                if (!checked) onChange("Voltage", "");
+              }}
               slotProps={{
                 input: { "aria-label": "controlled" },
               }}
