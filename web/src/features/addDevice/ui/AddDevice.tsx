@@ -42,6 +42,9 @@ const inputLengthError: Record<string, string> = {
   "Application key": "Application key must be 32 characters",
 };
 
+const ELECTRICITY_SENSOR = "Electricity sensor";
+const VOLTAGE = "Voltage";
+
 /**
  * Modal dialog for registering a new sensor device, with input validation for DeviceEUI and Application key lengths.
  * @param props - Component props
@@ -73,13 +76,13 @@ export function AddDevice(props: AddDeviceProps) {
   };
 
   const handleSafeClose = () => {
-    const electricityEnabled = values["Electricity sensor"] === "true";
+    const electricityEnabled = values[ELECTRICITY_SENSOR] === "true";
 
     const allFilled = addOptions
       .filter(
         (option) =>
-          option !== "Electricity sensor" &&
-          (option !== "Voltage" || electricityEnabled),
+          option !== ELECTRICITY_SENSOR &&
+          (option !== VOLTAGE || electricityEnabled),
       )
       .every((option) => (values[option] ?? "").trim() !== "");
 

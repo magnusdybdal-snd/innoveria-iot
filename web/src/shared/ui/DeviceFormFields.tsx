@@ -24,7 +24,10 @@ const dropdownOptions: Record<string, string> = {
   Voltage: "voltageOptions",
 };
 
-const checkBoxes: string[] = ["Electricity sensor"];
+const ELECTRICITY_SENSOR = "Electricity sensor";
+const VOLTAGE = "Voltage";
+
+const checkBoxes: string[] = [ELECTRICITY_SENSOR];
 
 const fieldSx = {
   "& .MuiOutlinedInput-root": {
@@ -80,14 +83,13 @@ export function DeviceFormFields({
     <Box display="flex" flexDirection="column" gap={2}>
       {options.map((option) => (
         <Box key={option}>
-          {(option != "Voltage" || values["Electricity sensor"] === "true") && (
+          {(option != VOLTAGE || values[ELECTRICITY_SENSOR] === "true") && (
             <Typography variant="body2" color="primary.main" mb={0.5}>
               {option}
             </Typography>
           )}
           {option in dropdownOptions ? (
-            (option != "Voltage" ||
-              values["Electricity sensor"] === "true") && (
+            (option != VOLTAGE || values[ELECTRICITY_SENSOR] === "true") && (
               <DropDownSelect
                 options={dropdownData[dropdownOptions[option]]}
                 value={typeof values[option] === "string" ? values[option] : ""}
@@ -99,7 +101,7 @@ export function DeviceFormFields({
               checked={values[option] === "true"}
               onChange={(_, checked) => {
                 onChange(option, String(checked));
-                if (!checked) onChange("Voltage", "");
+                if (!checked) onChange(VOLTAGE, "");
               }}
               slotProps={{
                 input: { "aria-label": "controlled" },
