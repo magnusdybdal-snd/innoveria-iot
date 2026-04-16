@@ -12,13 +12,29 @@ const (
 	syncProductionResourcesQuery = `
 	WITH picked AS (
 		SELECT company_id, id, number, description, type, received_at
-		FROM erp_raw.production_resource
-		WHERE sync_status = 'pending'
+		FROM erp_raw.production_resource r
+		WHERE sync_status IN ('pending', 'deferred')
 		  AND (next_retry_at IS NULL OR next_retry_at <= now())
-		  AND type = ANY(enum_range(NULL::erp.work_center_type)::text[])
 		ORDER BY received_at
 		LIMIT $1
 		FOR UPDATE SKIP LOCKED
+	),
+	failed_enum AS (
+		UPDATE erp_raw.production_resource r
+		SET sync_status = 'failed',
+			sync_error = 'invalid work_center_type',
+			retry_count = r.retry_count + 1,
+			next_retry_at = NULL
+		FROM picked p
+		WHERE r.company_id = p.company_id
+		  AND r.id = p.id
+		  AND NOT (p.type = ANY(enum_range(NULL::erp.work_center_type)::text[]))
+		RETURNING r.company_id, r.id
+	),
+	ready AS (
+		SELECT p.*
+		FROM picked p
+		WHERE p.type = ANY(enum_range(NULL::erp.work_center_type)::text[])
 	),
 	upserted AS (
 		INSERT INTO erp.production_resource (
@@ -36,7 +52,7 @@ const (
 			description,
 			type::erp.work_center_type,
 			received_at
-		FROM picked
+		FROM ready
 		ON CONFLICT (company_id, id) DO UPDATE SET
 			number = EXCLUDED.number,
 			description = EXCLUDED.description,
@@ -47,6 +63,8 @@ const (
 	UPDATE erp_raw.production_resource r
 	SET sync_status = 'synced',
 		sync_error = NULL,
+		retry_count = 0,
+		next_retry_at = NULL,
 		last_synced_at = now()
 	WHERE EXISTS (
 		SELECT 1 FROM upserted u
@@ -59,13 +77,29 @@ const (
 	WITH picked AS (
 		SELECT company_id, id, order_number, part_id, part_description, planned_start_date,
 			planned_finish_date, actual_start_date, actual_finish_date, status, priority, received_at
-		FROM erp_raw."order"
-		WHERE sync_status = 'pending'
+		FROM erp_raw."order" r
+		WHERE sync_status IN ('pending', 'deferred')
 		  AND (next_retry_at IS NULL OR next_retry_at <= now())
-		  AND status = ANY(enum_range(NULL::erp.order_status)::text[])
 		ORDER BY received_at
 		LIMIT $1
 		FOR UPDATE SKIP LOCKED
+	),
+	failed_enum AS (
+		UPDATE erp_raw."order" r
+		SET sync_status = 'failed',
+			sync_error = 'invalid order_status',
+			retry_count = r.retry_count + 1,
+			next_retry_at = NULL
+		FROM picked p
+		WHERE r.company_id = p.company_id
+		  AND r.id = p.id
+		  AND NOT (p.status = ANY(enum_range(NULL::erp.order_status)::text[]))
+		RETURNING r.company_id, r.id
+	),
+	ready AS (
+		SELECT p.*
+		FROM picked p
+		WHERE p.status = ANY(enum_range(NULL::erp.order_status)::text[])
 	),
 	upserted AS (
 		INSERT INTO erp."order" (
@@ -95,7 +129,7 @@ const (
 			status::erp.order_status,
 			priority,
 			received_at
-		FROM picked
+		FROM ready
 		ON CONFLICT (company_id, id) DO UPDATE SET
 			order_number = EXCLUDED.order_number,
 			part_id = EXCLUDED.part_id,
@@ -112,6 +146,8 @@ const (
 	UPDATE erp_raw."order" r
 	SET sync_status = 'synced',
 		sync_error = NULL,
+		retry_count = 0,
+		next_retry_at = NULL,
 		last_synced_at = now()
 	WHERE EXISTS (
 		SELECT 1 FROM upserted u
@@ -126,25 +162,71 @@ const (
 			planned_finish_date, actual_start_date, actual_finish_date, status,
 			production_resource_status, received_at
 		FROM erp_raw.order_operation r
-		WHERE sync_status = 'pending'
+		WHERE sync_status IN ('pending', 'deferred')
 		  AND (next_retry_at IS NULL OR next_retry_at <= now())
-		  AND status = ANY(enum_range(NULL::erp.operation_status)::text[])
-		  AND production_resource_status = ANY(enum_range(NULL::erp.operation_status)::text[])
+		ORDER BY received_at
+		LIMIT $1
+		FOR UPDATE SKIP LOCKED
+	),
+	failed_enum AS (
+		UPDATE erp_raw.order_operation r
+		SET sync_status = 'failed',
+			sync_error = 'invalid operation_status or production_resource_status',
+			retry_count = r.retry_count + 1,
+			next_retry_at = NULL
+		FROM picked p
+		WHERE r.company_id = p.company_id
+		  AND r.id = p.id
+		  AND NOT (
+			p.status = ANY(enum_range(NULL::erp.operation_status)::text[])
+			AND p.production_resource_status = ANY(enum_range(NULL::erp.operation_status)::text[])
+		  )
+		RETURNING r.company_id, r.id
+	),
+	deferred_dependency AS (
+		UPDATE erp_raw.order_operation r
+		SET sync_status = 'deferred',
+			sync_error = 'deferred: missing order or production_resource dependency',
+			retry_count = r.retry_count + 1,
+			next_retry_at = now() + make_interval(secs => LEAST(300, 5 * (2 ^ LEAST(r.retry_count, 6))))
+		FROM picked p
+		WHERE r.company_id = p.company_id
+		  AND r.id = p.id
+		  AND p.status = ANY(enum_range(NULL::erp.operation_status)::text[])
+		  AND p.production_resource_status = ANY(enum_range(NULL::erp.operation_status)::text[])
+		  AND (
+			NOT EXISTS (
+				SELECT 1
+				FROM erp."order" o
+				WHERE o.company_id = p.company_id
+				  AND o.id = p.order_id
+			)
+			OR NOT EXISTS (
+				SELECT 1
+				FROM erp.production_resource pr
+				WHERE pr.company_id = p.company_id
+				  AND pr.id = p.production_resource_id
+			)
+		  )
+		RETURNING r.company_id, r.id
+	),
+	ready AS (
+		SELECT p.*
+		FROM picked p
+		WHERE p.status = ANY(enum_range(NULL::erp.operation_status)::text[])
+		  AND p.production_resource_status = ANY(enum_range(NULL::erp.operation_status)::text[])
 		  AND EXISTS (
 			SELECT 1
 			FROM erp."order" o
-			WHERE o.company_id = r.company_id
-			  AND o.id = r.order_id
+			WHERE o.company_id = p.company_id
+			  AND o.id = p.order_id
 		  )
 		  AND EXISTS (
 			SELECT 1
 			FROM erp.production_resource pr
-			WHERE pr.company_id = r.company_id
-			  AND pr.id = r.production_resource_id
+			WHERE pr.company_id = p.company_id
+			  AND pr.id = p.production_resource_id
 		  )
-		ORDER BY received_at
-		LIMIT $1
-		FOR UPDATE SKIP LOCKED
 	),
 	upserted AS (
 		INSERT INTO erp.order_operation (
@@ -172,7 +254,7 @@ const (
 			status::erp.operation_status,
 			production_resource_status::erp.operation_status,
 			received_at
-		FROM picked
+		FROM ready
 		ON CONFLICT (company_id, id) DO UPDATE SET
 			production_resource_id = EXCLUDED.production_resource_id,
 			order_id = EXCLUDED.order_id,
@@ -188,6 +270,8 @@ const (
 	UPDATE erp_raw.order_operation r
 	SET sync_status = 'synced',
 		sync_error = NULL,
+		retry_count = 0,
+		next_retry_at = NULL,
 		last_synced_at = now()
 	WHERE EXISTS (
 		SELECT 1 FROM upserted u
@@ -201,24 +285,66 @@ const (
 		SELECT company_id, id, order_operation_id, production_resource_id, quantity,
 			rest_quantity, type, reporting_timestamp, actual_reported_date, received_at
 		FROM erp_raw.order_report r
-		WHERE sync_status = 'pending'
+		WHERE sync_status IN ('pending', 'deferred')
 		  AND (next_retry_at IS NULL OR next_retry_at <= now())
-		  AND type = ANY(enum_range(NULL::erp.order_report_type)::text[])
+		ORDER BY received_at
+		LIMIT $1
+		FOR UPDATE SKIP LOCKED
+	),
+	failed_enum AS (
+		UPDATE erp_raw.order_report r
+		SET sync_status = 'failed',
+			sync_error = 'invalid order_report_type',
+			retry_count = r.retry_count + 1,
+			next_retry_at = NULL
+		FROM picked p
+		WHERE r.company_id = p.company_id
+		  AND r.id = p.id
+		  AND NOT (p.type = ANY(enum_range(NULL::erp.order_report_type)::text[]))
+		RETURNING r.company_id, r.id
+	),
+	deferred_dependency AS (
+		UPDATE erp_raw.order_report r
+		SET sync_status = 'deferred',
+			sync_error = 'deferred: missing order_operation or production_resource dependency',
+			retry_count = r.retry_count + 1,
+			next_retry_at = now() + make_interval(secs => LEAST(300, 5 * (2 ^ LEAST(r.retry_count, 6))))
+		FROM picked p
+		WHERE r.company_id = p.company_id
+		  AND r.id = p.id
+		  AND p.type = ANY(enum_range(NULL::erp.order_report_type)::text[])
+		  AND (
+			NOT EXISTS (
+				SELECT 1
+				FROM erp.order_operation op
+				WHERE op.company_id = p.company_id
+				  AND op.id = p.order_operation_id
+			)
+			OR NOT EXISTS (
+				SELECT 1
+				FROM erp.production_resource pr
+				WHERE pr.company_id = p.company_id
+				  AND pr.id = p.production_resource_id
+			)
+		  )
+		RETURNING r.company_id, r.id
+	),
+	ready AS (
+		SELECT p.*
+		FROM picked p
+		WHERE p.type = ANY(enum_range(NULL::erp.order_report_type)::text[])
 		  AND EXISTS (
 			SELECT 1
 			FROM erp.order_operation op
-			WHERE op.company_id = r.company_id
-			  AND op.id = r.order_operation_id
+			WHERE op.company_id = p.company_id
+			  AND op.id = p.order_operation_id
 		  )
 		  AND EXISTS (
 			SELECT 1
 			FROM erp.production_resource pr
-			WHERE pr.company_id = r.company_id
-			  AND pr.id = r.production_resource_id
+			WHERE pr.company_id = p.company_id
+			  AND pr.id = p.production_resource_id
 		  )
-		ORDER BY received_at
-		LIMIT $1
-		FOR UPDATE SKIP LOCKED
 	),
 	upserted AS (
 		INSERT INTO erp.order_report (
@@ -244,7 +370,7 @@ const (
 			reporting_timestamp,
 			actual_reported_date,
 			received_at
-		FROM picked
+		FROM ready
 		ON CONFLICT (company_id, id) DO UPDATE SET
 			order_operation_id = EXCLUDED.order_operation_id,
 			production_resource_id = EXCLUDED.production_resource_id,
@@ -259,6 +385,8 @@ const (
 	UPDATE erp_raw.order_report r
 	SET sync_status = 'synced',
 		sync_error = NULL,
+		retry_count = 0,
+		next_retry_at = NULL,
 		last_synced_at = now()
 	WHERE EXISTS (
 		SELECT 1 FROM upserted u
