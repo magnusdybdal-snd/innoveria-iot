@@ -3,6 +3,7 @@ package services
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
 	"strconv"
@@ -156,16 +157,18 @@ func (s *ContextServiceImpl) GetOrderContext(ctx context.Context, companyID stri
 
 	for i, op := range found.Operations {
 		g.Go(func() error {
-			// TODO: verify — device-service stores ERPProductionResource.ID (int64) as a
-			// string in the production_resource field. Double-check this when the real
-			// device-service integration is live.
 			productionResourceID := strconv.FormatInt(op.ProductionResource.ID, 10)
 
 			sensors, err := s.deviceClient.GetSensorsByProductionResourceID(gctx, productionResourceID)
 			if err != nil {
-				// No sensors linked yet or device-service rejected the ID — skip gracefully.
-				slog.Warn("could not fetch sensors for production resource, skipping", "production_resource_id", productionResourceID, "error", err)
-				ops[i] = domain.OperationContext{Operation: op, Sensors: []domain.SensorContext{}}
+				if errors.Is(err, domain.ErrNotFound) {
+					// No sensors mapped to this production resource — expected, not an error.
+					ops[i] = domain.OperationContext{Operation: op, Sensors: []domain.SensorContext{}, Degraded: false}
+					return nil
+				}
+				// Technical failure (timeout, 5xx) — return partial data but mark as degraded.
+				slog.Warn("failed to fetch sensors for production resource, returning degraded operation", "production_resource_id", productionResourceID, "error", err)
+				ops[i] = domain.OperationContext{Operation: op, Sensors: []domain.SensorContext{}, Degraded: true}
 				return nil
 			}
 

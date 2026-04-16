@@ -33,6 +33,9 @@ type SensorContextResponse struct {
 type OperationContextResponse struct {
 	Operation OrderOperationResponse  `json:"operation"`
 	Sensors   []SensorContextResponse `json:"sensors"`
+	// Degraded is true when sensor data could not be loaded due to a technical error.
+	// A false value with an empty sensors array means no sensors are mapped (expected state).
+	Degraded bool `json:"degraded"`
 }
 
 // OrderContextResponse is the top-level API response for GET /orders/{id}/context.
@@ -97,6 +100,7 @@ func MapOrderContextDomainToDTO(oc *domain.OrderContext) OrderContextResponse {
 		ops[i] = OperationContextResponse{
 			Operation: mapOperation(opCtx.Operation),
 			Sensors:   sensors,
+			Degraded:  opCtx.Degraded,
 		}
 	}
 

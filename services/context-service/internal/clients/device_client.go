@@ -2,6 +2,7 @@ package clients
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -34,6 +35,10 @@ func (c *DeviceClient) GetSensorsByProductionResourceID(ctx context.Context, pro
 		c.client, ctx, url, http.MethodGet, nil, nil,
 	)
 	if err != nil {
+		var httpErr *httpclient.HTTPError
+		if errors.As(err, &httpErr) && httpErr.StatusCode == http.StatusNotFound {
+			return nil, domain.ErrNotFound
+		}
 		return nil, err
 	}
 

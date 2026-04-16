@@ -41,6 +41,10 @@ type OrderContext struct {
 type OperationContext struct {
 	Operation ERPOrderOperation
 	Sensors   []SensorContext
+	// Degraded is true when sensor data could not be loaded due to a technical
+	// error (e.g. device-service timeout or 5xx). It is false when the operation
+	// simply has no sensors mapped, which is a valid expected state.
+	Degraded bool
 }
 
 // SensorContext holds a sensor, its metric definitions, and its raw measurements
