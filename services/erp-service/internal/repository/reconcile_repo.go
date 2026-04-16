@@ -185,10 +185,19 @@ const (
 	),
 	deferred_dependency AS (
 		UPDATE erp_raw.order_operation r
-		SET sync_status = 'deferred',
-			sync_error = 'deferred: missing order or production_resource dependency',
+		SET sync_status = CASE
+				WHEN r.retry_count + 1 >= 24 THEN 'failed'
+				ELSE 'deferred'
+			END,
+			sync_error = CASE
+				WHEN r.retry_count + 1 >= 24 THEN 'failed: missing order or production_resource dependency after max retries'
+				ELSE 'deferred: missing order or production_resource dependency'
+			END,
 			retry_count = r.retry_count + 1,
-			next_retry_at = now() + make_interval(secs => LEAST(300, 5 * (2 ^ LEAST(r.retry_count, 6))))
+			next_retry_at = CASE
+				WHEN r.retry_count + 1 >= 24 THEN NULL
+				ELSE now() + make_interval(secs => LEAST(300, 5 * (2 ^ LEAST(r.retry_count, 6))))
+			END
 		FROM picked p
 		WHERE r.company_id = p.company_id
 		  AND r.id = p.id
@@ -305,10 +314,19 @@ const (
 	),
 	deferred_dependency AS (
 		UPDATE erp_raw.order_report r
-		SET sync_status = 'deferred',
-			sync_error = 'deferred: missing order_operation or production_resource dependency',
+		SET sync_status = CASE
+				WHEN r.retry_count + 1 >= 24 THEN 'failed'
+				ELSE 'deferred'
+			END,
+			sync_error = CASE
+				WHEN r.retry_count + 1 >= 24 THEN 'failed: missing order_operation or production_resource dependency after max retries'
+				ELSE 'deferred: missing order_operation or production_resource dependency'
+			END,
 			retry_count = r.retry_count + 1,
-			next_retry_at = now() + make_interval(secs => LEAST(300, 5 * (2 ^ LEAST(r.retry_count, 6))))
+			next_retry_at = CASE
+				WHEN r.retry_count + 1 >= 24 THEN NULL
+				ELSE now() + make_interval(secs => LEAST(300, 5 * (2 ^ LEAST(r.retry_count, 6))))
+			END
 		FROM picked p
 		WHERE r.company_id = p.company_id
 		  AND r.id = p.id
