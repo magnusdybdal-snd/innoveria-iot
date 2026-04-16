@@ -101,7 +101,7 @@ export default function Sensors() {
     deviceEui: string;
     factory: string;
     factoryArea: string;
-    productionResource: number;
+    productionResource: number | null;
     appKey: string;
     senProf: string;
   }): Promise<void> => {
