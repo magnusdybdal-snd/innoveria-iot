@@ -186,7 +186,7 @@ func (r *SensorRepository) FindAllByCompanyID(ctx context.Context, companyID str
 }
 
 // FindByProductionResourceID retrieves sensor by their production resource id. returns an empty slice if no sensors found on that resource.
-func (r *SensorRepository) FindByProductionResourceID(ctx context.Context, productionResourceID string) ([]domain.Sensor, error) {
+func (r *SensorRepository) FindByProductionResourceID(ctx context.Context, productionResourceID int64) ([]domain.Sensor, error) {
 
 	rows, err := r.db.Pool.Query(ctx, findByProductionResourceIDQuery, productionResourceID)
 	if err != nil {

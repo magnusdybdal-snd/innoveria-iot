@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"innoveria-iot/device-service/internal/domain"
@@ -32,11 +33,12 @@ func GetSensors(svc domain.SensorService) http.HandlerFunc {
 		productionResourceID := r.URL.Query().Get("production_resource_id")
 
 		if productionResourceID != "" {
-			if _, parseErr := uuid.Parse(productionResourceID); parseErr != nil {
+			parsedID, parseErr := strconv.ParseInt(productionResourceID, 10, 64)
+			if parseErr != nil {
 				json.HandleError(w, http.StatusBadRequest, parseErr, "bad request")
 				return
 			}
-			data, err = svc.GetByProductionResourceID(ctx, productionResourceID)
+			data, err = svc.GetByProductionResourceID(ctx, parsedID)
 		} else {
 			data, err = svc.GetAll(ctx)
 		}
