@@ -21,7 +21,7 @@ export interface AddDeviceProps {
     deviceEui: string;
     factory: string;
     factoryArea: string;
-    machine: string;
+    productionResource: number;
     appKey: string;
     senProf: string;
   }) => Promise<void>;
@@ -98,7 +98,7 @@ export function AddDevice(props: AddDeviceProps) {
         deviceEui: values["DeviceEUI"],
         factory: values["Factory"],
         factoryArea: values["Factory area"],
-        machine: values["Machine"],
+        productionResource: parseInt(values["Machine"], 10),
         appKey: values["Application key"],
         senProf: values["Sensor profile"],
       })

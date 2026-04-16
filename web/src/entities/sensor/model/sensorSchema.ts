@@ -30,6 +30,7 @@ export interface CreateSensorRequest {
   factoryId: string;
   factoryAreaId: string;
   deviceEui: string;
+  productionResource: number;
   appKey: string;
   sensorProfileId: string;
   name: string;
