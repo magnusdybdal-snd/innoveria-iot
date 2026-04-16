@@ -11,12 +11,14 @@ export const postSensor = async (
 ): Promise<void> => {
   await apiRequest(serviceClient, API_ROUTES.sensors, "POST", {
     company_id: sensorData.companyId,
+    electricity_sensor: sensorData.electricitySensor,
     factory_id: sensorData.factoryId,
     factory_area_id: sensorData.factoryAreaId,
     device_eui: sensorData.deviceEui,
     device_profile_id: sensorData.sensorProfileId,
     app_key: sensorData.appKey,
     name: sensorData.name,
+    voltage: sensorData.voltage,
     description: "hardcoded description", //TODO: remove hardcoded when description is added to form"
   });
 };
