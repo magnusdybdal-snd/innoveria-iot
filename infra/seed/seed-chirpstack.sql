@@ -23,10 +23,9 @@ INSERT INTO device_profile (
     rx1_delay, firmware_version, vendor_profile_id,
     supported_uplink_data_rates, tags, measurements, app_layer_params
 )
--- Updated to NULL to display sensor profile globally for dev-environemnt
 VALUES (
     'f0000000-0000-0000-0000-000000000001',
-    NULL,
+    'd0000000-0000-0000-0000-000000000001',
     NOW(), NOW(),
     'Dev Sensor Profile', '', 'EU868', '1.0.3', 'A',
     'default', 'NONE', '',
