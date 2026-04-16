@@ -58,3 +58,8 @@ docker-compose.override.yml
 # Claude
 .claude/
 CLAUDE.md
+
+# Opencode
+.ocr/
+.opencode/
+AGENTS.md

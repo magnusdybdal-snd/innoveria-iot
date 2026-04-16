@@ -125,24 +125,26 @@ const (
 		SELECT company_id, id, production_resource_id, order_id, planned_start_date,
 			planned_finish_date, actual_start_date, actual_finish_date, status,
 			production_resource_status, received_at
-		FROM erp_raw.order_operation
+		FROM erp_raw.order_operation r
 		WHERE sync_status = 'pending'
 		  AND (next_retry_at IS NULL OR next_retry_at <= now())
 		  AND status = ANY(enum_range(NULL::erp.operation_status)::text[])
 		  AND production_resource_status = ANY(enum_range(NULL::erp.operation_status)::text[])
+		  AND EXISTS (
+			SELECT 1
+			FROM erp."order" o
+			WHERE o.company_id = r.company_id
+			  AND o.id = r.order_id
+		  )
+		  AND EXISTS (
+			SELECT 1
+			FROM erp.production_resource pr
+			WHERE pr.company_id = r.company_id
+			  AND pr.id = r.production_resource_id
+		  )
 		ORDER BY received_at
 		LIMIT $1
 		FOR UPDATE SKIP LOCKED
-	),
-	ready AS (
-		SELECT p.*
-		FROM picked p
-		JOIN erp."order" o
-		  ON o.company_id = p.company_id
-		 AND o.id = p.order_id
-		JOIN erp.production_resource pr
-		  ON pr.company_id = p.company_id
-		 AND pr.id = p.production_resource_id
 	),
 	upserted AS (
 		INSERT INTO erp.order_operation (
@@ -170,7 +172,7 @@ const (
 			status::erp.operation_status,
 			production_resource_status::erp.operation_status,
 			received_at
-		FROM ready
+		FROM picked
 		ON CONFLICT (company_id, id) DO UPDATE SET
 			production_resource_id = EXCLUDED.production_resource_id,
 			order_id = EXCLUDED.order_id,
@@ -198,23 +200,25 @@ const (
 	WITH picked AS (
 		SELECT company_id, id, order_operation_id, production_resource_id, quantity,
 			rest_quantity, type, reporting_timestamp, actual_reported_date, received_at
-		FROM erp_raw.order_report
+		FROM erp_raw.order_report r
 		WHERE sync_status = 'pending'
 		  AND (next_retry_at IS NULL OR next_retry_at <= now())
 		  AND type = ANY(enum_range(NULL::erp.order_report_type)::text[])
+		  AND EXISTS (
+			SELECT 1
+			FROM erp.order_operation op
+			WHERE op.company_id = r.company_id
+			  AND op.id = r.order_operation_id
+		  )
+		  AND EXISTS (
+			SELECT 1
+			FROM erp.production_resource pr
+			WHERE pr.company_id = r.company_id
+			  AND pr.id = r.production_resource_id
+		  )
 		ORDER BY received_at
 		LIMIT $1
 		FOR UPDATE SKIP LOCKED
-	),
-	ready AS (
-		SELECT p.*
-		FROM picked p
-		JOIN erp.order_operation op
-		  ON op.company_id = p.company_id
-		 AND op.id = p.order_operation_id
-		JOIN erp.production_resource pr
-		  ON pr.company_id = p.company_id
-		 AND pr.id = p.production_resource_id
 	),
 	upserted AS (
 		INSERT INTO erp.order_report (
@@ -240,7 +244,7 @@ const (
 			reporting_timestamp,
 			actual_reported_date,
 			received_at
-		FROM ready
+		FROM picked
 		ON CONFLICT (company_id, id) DO UPDATE SET
 			order_operation_id = EXCLUDED.order_operation_id,
 			production_resource_id = EXCLUDED.production_resource_id,
