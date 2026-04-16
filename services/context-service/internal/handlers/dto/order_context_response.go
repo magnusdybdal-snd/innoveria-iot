@@ -40,9 +40,8 @@ type OperationContextResponse struct {
 
 // OrderContextResponse is the top-level API response for GET /orders/{id}/context.
 type OrderContextResponse struct {
-	Order           OrderResponse              `json:"order"`
-	Operations      []OperationContextResponse `json:"operations"`
-	HasMeasurements bool                       `json:"has_measurements"`
+	Order      OrderResponse              `json:"order"`
+	Operations []OperationContextResponse `json:"operations"`
 }
 
 // mapOperation converts a domain ERPOrderOperation to its API response shape.
@@ -105,8 +104,7 @@ func MapOrderContextDomainToDTO(oc *domain.OrderContext) OrderContextResponse {
 	}
 
 	return OrderContextResponse{
-		Order:           MapOrderDomainToDTO(oc.Order),
-		Operations:      ops,
-		HasMeasurements: oc.HasMeasurements,
+		Order:      MapOrderDomainToDTO(oc.Order),
+		Operations: ops,
 	}
 }

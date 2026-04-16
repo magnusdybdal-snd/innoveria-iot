@@ -31,9 +31,8 @@ type ContextData struct {
 // OrderContext is the aggregated result for a single ERP order, enriched with
 // sensor data for each of its operations.
 type OrderContext struct {
-	Order           ERPOrder
-	Operations      []OperationContext
-	HasMeasurements bool // false when the order has no actual start/finish dates
+	Order      ERPOrder
+	Operations []OperationContext
 }
 
 // OperationContext pairs a single manufacturing operation with the sensors

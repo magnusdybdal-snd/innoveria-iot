@@ -144,9 +144,8 @@ func (s *ContextServiceImpl) GetOrderContext(ctx context.Context, companyID stri
 			}
 		}
 		return &domain.OrderContext{
-			Order:           *found,
-			Operations:      ops,
-			HasMeasurements: false,
+			Order:      *found,
+			Operations: ops,
 		}, nil
 	}
 
@@ -213,8 +212,7 @@ func (s *ContextServiceImpl) GetOrderContext(ctx context.Context, companyID stri
 	}
 
 	return &domain.OrderContext{
-		Order:           *found,
-		Operations:      ops,
-		HasMeasurements: true,
+		Order:      *found,
+		Operations: ops,
 	}, nil
 }
