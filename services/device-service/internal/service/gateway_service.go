@@ -90,7 +90,7 @@ func (g *GatewayServiceImpl) Update(ctx context.Context, gatewayId string, paylo
 	if gateway.Name != oldGateway.Name {
 
 		// check database for chirpstack tenant ID
-		companycfg, err := g.companycfgRepo.FindByCompanyID(ctx, gateway.CompanyId)
+		companycfg, err := g.companycfgRepo.FindByCompanyID(ctx, payload.CompanyId)
 		if err != nil {
 			return fmt.Errorf("update gateway: finding company tenant ID: %w", err)
 		}
@@ -124,10 +124,10 @@ func (g *GatewayServiceImpl) Update(ctx context.Context, gatewayId string, paylo
 
 // GetAll retrieves all gateways belonging to a companyID from the database and merges
 // it with the status from Chirpstack (status and last seen).
-func (g *GatewayServiceImpl) GetAll(ctx context.Context) ([]domain.Gateway, error) {
+func (g *GatewayServiceImpl) GetAll(ctx context.Context, companyID string) ([]domain.Gateway, error) {
 
 	// Fetch all gateways belonging to the company in DB
-	gateways, err := g.gatewayRepo.FindAllByCompanyID(ctx, "a0000000-0000-0000-0000-000000000001") // TODO: REPLACE HARDCODED COMPANYID WITH PROPER AUTH
+	gateways, err := g.gatewayRepo.FindAllByCompanyID(ctx, companyID)
 	if err != nil {
 		return nil, fmt.Errorf("get all gateways: getting gateways from db: %w", err)
 	}

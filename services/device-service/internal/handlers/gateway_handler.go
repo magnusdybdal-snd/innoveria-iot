@@ -8,6 +8,7 @@ import (
 
 	"innoveria-iot/device-service/internal/domain"
 	"innoveria-iot/device-service/internal/handlers/dto"
+	"innoveria-iot/pkg/authctx"
 	"innoveria-iot/pkg/json"
 
 	"github.com/google/uuid"
@@ -24,9 +25,14 @@ import (
 func GetGateways(svc domain.GatewayService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
+		auth, err := authctx.FromRequest(r)
+		if err != nil {
+			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			return
+		}
 
 		// Get the domain data from service layer
-		data, err := svc.GetAll(ctx)
+		data, err := svc.GetAll(ctx, auth.CompanyID)
 		if err != nil {
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
 			return
@@ -56,6 +62,11 @@ func GetGateways(svc domain.GatewayService) http.HandlerFunc {
 func PostGateway(svc domain.GatewayService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
+		auth, err := authctx.FromRequest(r)
+		if err != nil {
+			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			return
+		}
 
 		payload, err := json.Decode[dto.CreateGatewayRequest](r)
 		if err != nil {
@@ -63,7 +74,7 @@ func PostGateway(svc domain.GatewayService) http.HandlerFunc {
 			return
 		}
 
-		payload.CompanyId = strings.TrimSpace(payload.CompanyId)
+		payload.CompanyId = auth.CompanyID
 		payload.GatewayEUI = strings.TrimSpace(payload.GatewayEUI)
 		payload.Name = strings.TrimSpace(payload.Name)
 		payload.FactoryID = strings.TrimSpace(payload.FactoryID)
@@ -99,6 +110,16 @@ func PostGateway(svc domain.GatewayService) http.HandlerFunc {
 func PatchGateway(svc domain.GatewayService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
+		auth, err := authctx.FromRequest(r)
+		if err != nil {
+			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			return
+		}
+
+		// TODO: Remove, compile error
+		if auth.CompanyID == "" {
+			return
+		}
 
 		id := r.PathValue("id")
 		if id == "" {
