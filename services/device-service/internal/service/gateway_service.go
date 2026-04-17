@@ -90,7 +90,7 @@ func (g *GatewayServiceImpl) Update(ctx context.Context, gatewayId string, paylo
 	if gateway.Name != oldGateway.Name {
 
 		// check database for chirpstack tenant ID
-		companycfg, err := g.companycfgRepo.FindByCompanyID(ctx, payload.CompanyId)
+		companycfg, err := g.companycfgRepo.FindByCompanyID(ctx, gateway.CompanyId)
 		if err != nil {
 			return fmt.Errorf("update gateway: finding company tenant ID: %w", err)
 		}
@@ -148,6 +148,16 @@ func (g *GatewayServiceImpl) GetAll(ctx context.Context, companyID string) ([]do
 	}
 
 	return result, nil
+}
+
+// GetByID retrieves a single gateway by its ID.
+func (g *GatewayServiceImpl) GetByID(ctx context.Context, gatewayID string) (domain.Gateway, error) {
+	gateway, err := g.gatewayRepo.FindByID(ctx, gatewayID)
+	if err != nil {
+		return domain.Gateway{}, fmt.Errorf("get gateway by id: %w", err)
+	}
+
+	return gateway, nil
 }
 
 // Delete deletes a gateway from both Chirpstack and from the database. Deletion in

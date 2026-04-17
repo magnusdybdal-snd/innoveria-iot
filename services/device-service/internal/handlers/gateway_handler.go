@@ -80,8 +80,8 @@ func PostGateway(svc domain.GatewayService) http.HandlerFunc {
 		payload.FactoryID = strings.TrimSpace(payload.FactoryID)
 		payload.FactoryAreaID = strings.TrimSpace(payload.FactoryAreaID)
 
-		if payload.CompanyId == "" || payload.GatewayEUI == "" || payload.Name == "" || payload.FactoryID == "" || payload.FactoryAreaID == "" {
-			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("company_id, gateway_eui, name, factory_id and factory_area_id are required"), "bad request")
+		if payload.GatewayEUI == "" || payload.Name == "" || payload.FactoryID == "" || payload.FactoryAreaID == "" {
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("gateway_eui, name, factory_id and factory_area_id are required"), "bad request")
 			return
 		}
 
@@ -116,11 +116,6 @@ func PatchGateway(svc domain.GatewayService) http.HandlerFunc {
 			return
 		}
 
-		// TODO: Remove, compile error
-		if auth.CompanyID == "" {
-			return
-		}
-
 		id := r.PathValue("id")
 		if id == "" {
 			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("no gateway id found"), "bad request")
@@ -129,6 +124,16 @@ func PatchGateway(svc domain.GatewayService) http.HandlerFunc {
 
 		if _, err := uuid.Parse(id); err != nil {
 			json.HandleError(w, http.StatusBadRequest, err, "bad request")
+			return
+		}
+
+		gateway, err := svc.GetByID(ctx, id)
+		if err != nil {
+			json.HandleError(w, http.StatusNotFound, err, "gateway not found")
+			return
+		}
+		if gateway.CompanyId != auth.CompanyID {
+			json.HandleError(w, http.StatusForbidden, fmt.Errorf("gateway does not belong to your company"), "forbidden")
 			return
 		}
 
@@ -173,6 +178,11 @@ func PatchGateway(svc domain.GatewayService) http.HandlerFunc {
 func DeleteGateway(svc domain.GatewayService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
+		auth, err := authctx.FromRequest(r)
+		if err != nil {
+			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			return
+		}
 
 		id := r.PathValue("id")
 		if id == "" {
@@ -182,6 +192,16 @@ func DeleteGateway(svc domain.GatewayService) http.HandlerFunc {
 
 		if _, err := uuid.Parse(id); err != nil {
 			json.HandleError(w, http.StatusBadRequest, err, "bad request")
+			return
+		}
+
+		gateway, err := svc.GetByID(ctx, id)
+		if err != nil {
+			json.HandleError(w, http.StatusNotFound, err, "gateway not found")
+			return
+		}
+		if gateway.CompanyId != auth.CompanyID {
+			json.HandleError(w, http.StatusForbidden, fmt.Errorf("gateway does not belong to your company"), "forbidden")
 			return
 		}
 
