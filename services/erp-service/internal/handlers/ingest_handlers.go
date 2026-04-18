@@ -25,6 +25,12 @@ func PostIngestOrder(svc domain.Ingest) http.HandlerFunc {
 			json.HandleError(w, status, cause, message)
 			return
 		}
+		if err := json.Encode(w, http.StatusOK, map[string]int{
+			"count": len(payload),
+		}); err != nil {
+			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			return
+		}
 	}
 }
 
@@ -42,6 +48,12 @@ func PostIngestOrderOperations(svc domain.Ingest) http.HandlerFunc {
 		if err := svc.CreateOrderOperation(ctx, result); err != nil {
 			status, message, cause := mapIngestDomainError(err)
 			json.HandleError(w, status, cause, message)
+			return
+		}
+		if err := json.Encode(w, http.StatusOK, map[string]int{
+			"count": len(payload),
+		}); err != nil {
+			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
 			return
 		}
 	}
@@ -63,6 +75,12 @@ func PostIngestOrderReports(svc domain.Ingest) http.HandlerFunc {
 			json.HandleError(w, status, cause, message)
 			return
 		}
+		if err := json.Encode(w, http.StatusOK, map[string]int{
+			"count": len(payload),
+		}); err != nil {
+			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			return
+		}
 	}
 }
 
@@ -80,6 +98,12 @@ func PostIngestWorkCenters(svc domain.Ingest) http.HandlerFunc {
 		if err := svc.CreateProductionResource(ctx, result); err != nil {
 			status, message, cause := mapIngestDomainError(err)
 			json.HandleError(w, status, cause, message)
+			return
+		}
+		if err := json.Encode(w, http.StatusOK, map[string]int{
+			"count": len(payload),
+		}); err != nil {
+			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
 			return
 		}
 	}
