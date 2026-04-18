@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"embed"
+	"errors"
 	"fmt"
 
 	"innoveria-iot/erp-service/internal/domain"
@@ -40,7 +41,7 @@ func NewReconcileRepo(db *dbutil.DB) *ReconcileRepoImpl {
 func (r *ReconcileRepoImpl) execSync(ctx context.Context, query, op string, batchSize int) (int64, error) {
 	res, err := r.db.Pool.Exec(ctx, query, batchSize)
 	if err != nil {
-		return 0, fmt.Errorf("%s: %w: %w", op, domain.ErrDatabase, err)
+		return 0, fmt.Errorf("%s: %w", op, errors.Join(domain.ErrDatabase, err))
 	}
 	return res.RowsAffected(), nil
 }
