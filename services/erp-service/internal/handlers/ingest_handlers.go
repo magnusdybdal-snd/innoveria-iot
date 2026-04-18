@@ -25,7 +25,7 @@ func PostIngestOrder(svc domain.Ingest) http.HandlerFunc {
 			json.HandleError(w, status, cause, message)
 			return
 		}
-		if err := json.Encode(w, http.StatusOK, map[string]int{
+		if err := json.Encode(w, http.StatusAccepted, map[string]int{
 			"count": len(payload),
 		}); err != nil {
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
@@ -50,7 +50,7 @@ func PostIngestOrderOperations(svc domain.Ingest) http.HandlerFunc {
 			json.HandleError(w, status, cause, message)
 			return
 		}
-		if err := json.Encode(w, http.StatusOK, map[string]int{
+		if err := json.Encode(w, http.StatusAccepted, map[string]int{
 			"count": len(payload),
 		}); err != nil {
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
@@ -75,7 +75,7 @@ func PostIngestOrderReports(svc domain.Ingest) http.HandlerFunc {
 			json.HandleError(w, status, cause, message)
 			return
 		}
-		if err := json.Encode(w, http.StatusOK, map[string]int{
+		if err := json.Encode(w, http.StatusAccepted, map[string]int{
 			"count": len(payload),
 		}); err != nil {
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
@@ -100,7 +100,7 @@ func PostIngestWorkCenters(svc domain.Ingest) http.HandlerFunc {
 			json.HandleError(w, status, cause, message)
 			return
 		}
-		if err := json.Encode(w, http.StatusOK, map[string]int{
+		if err := json.Encode(w, http.StatusAccepted, map[string]int{
 			"count": len(payload),
 		}); err != nil {
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
