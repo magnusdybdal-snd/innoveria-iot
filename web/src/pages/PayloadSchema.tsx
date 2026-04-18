@@ -10,6 +10,8 @@ import {
   type MeasurementTypeSortKey,
   type SortDirection,
 } from "@entities/measurementType";
+import { getSensorProfiles } from "@entities/sensor";
+import type { SensorProfileApiResponse } from "@entities/sensor/model/sensorSchema.ts";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import { AddEntityDialog } from "@shared/ui/AddEntityDialog";
@@ -47,12 +49,14 @@ export default function PayloadSchema() {
   const [measurementTypes, setMeasurementTypes] = useState<
     MeasurementTypeApiResponse[]
   >([]);
+  const [sensorProfiles, setSensorProfiles] = useState<
+    SensorProfileApiResponse[]
+  >([]);
   const [isLoading, setIsLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState<{
     key: MeasurementTypeSortKey | null;
     direction: SortDirection;
   }>({ key: null, direction: "asc" });
-  const [options, setOptions] = useState<string[]>([]);
   const [selected, setSelected] = useState<string>("");
 
   // Adding a new measure type
@@ -117,8 +121,6 @@ export default function PayloadSchema() {
     getMeasurementTypesAll().then((data) => {
       const mapped = data.map((item) => item.slug);
 
-      setOptions(mapped);
-
       const preferred = "humidity";
 
       if (mapped.includes(preferred)) {
@@ -143,6 +145,10 @@ export default function PayloadSchema() {
 
   useEffect(() => {
     fetchMeasurementTypes();
+  }, []);
+
+  useEffect(() => {
+    getSensorProfiles().then(setSensorProfiles);
   }, []);
 
   function handleSort(column: string) {
@@ -171,9 +177,20 @@ export default function PayloadSchema() {
           onChange={(e) => setSelected(e.target.value)}
           displayEmpty
         >
-          {options.map((option) => (
-            <MenuItem key={option} value={option}>
-              {option}
+          {sensorProfiles.map((option) => (
+            <MenuItem key={option.id} value={option.id}>
+              {option.name}
+            </MenuItem>
+          ))}
+        </Select>
+        <Select
+          value={selected}
+          onChange={(e) => setSelected(e.target.value)}
+          displayEmpty
+        >
+          {sensorProfiles.map((option) => (
+            <MenuItem key={option.id} value={option.id}>
+              {option.name}
             </MenuItem>
           ))}
         </Select>
