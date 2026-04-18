@@ -171,10 +171,15 @@ func (r *IngestRepoImpl) CreateOrder(ctx context.Context, payload []domain.Order
 	// Inner loop builds up the SQL placeholders, and insert after the loop
 	rowsPerChunk := chunkSizeForColumns(orderColsPerRow)
 	for start := 0; start < len(payload); start += rowsPerChunk {
-		end := minInt(start+rowsPerChunk, len(payload))
+		end := min(start+rowsPerChunk, len(payload))
 		chunk := payload[start:end]
 
 		args := make([]any, 0, len(chunk)*orderColsPerRow)
+
+		chunkNo := (start / rowsPerChunk) + 1
+		totalChunks := (len(payload) + rowsPerChunk - 1) / rowsPerChunk
+		rowFrom := start + 1
+		rowTo := end
 
 		var values strings.Builder
 		for i, order := range chunk {
@@ -218,7 +223,9 @@ func (r *IngestRepoImpl) CreateOrder(ctx context.Context, payload []domain.Order
 
 		_, err := r.db.Pool.Exec(ctx, query, args...)
 		if err != nil {
-			return fmt.Errorf("upsert raw order batch: %w", errors.Join(mapPgError(err), err))
+			return fmt.Errorf("upsert to erp_raw.\"order\" failed (chunk %d/%d, rows %d-%d of %d): %w",
+				chunkNo, totalChunks, rowFrom, rowTo, len(payload),
+				errors.Join(mapPgError(err), err))
 		}
 	}
 
@@ -233,10 +240,15 @@ func (r *IngestRepoImpl) CreateOrderOperation(ctx context.Context, payload []dom
 
 	rowsPerChunk := chunkSizeForColumns(orderOperationColsPerRow)
 	for start := 0; start < len(payload); start += rowsPerChunk {
-		end := minInt(start+rowsPerChunk, len(payload))
+		end := min(start+rowsPerChunk, len(payload))
 		chunk := payload[start:end]
 
 		args := make([]any, 0, len(chunk)*orderOperationColsPerRow)
+
+		chunkNo := (start / rowsPerChunk) + 1
+		totalChunks := (len(payload) + rowsPerChunk - 1) / rowsPerChunk
+		rowFrom := start + 1
+		rowTo := end
 
 		var values strings.Builder
 		for i, operation := range chunk {
@@ -278,7 +290,9 @@ func (r *IngestRepoImpl) CreateOrderOperation(ctx context.Context, payload []dom
 
 		_, err := r.db.Pool.Exec(ctx, query, args...)
 		if err != nil {
-			return fmt.Errorf("upsert raw order operation batch: %w", errors.Join(mapPgError(err), err))
+			return fmt.Errorf("upsert to erp_raw.order_operation failed (chunk %d/%d, rows %d-%d of %d): %w",
+				chunkNo, totalChunks, rowFrom, rowTo, len(payload),
+				errors.Join(mapPgError(err), err))
 		}
 	}
 
@@ -293,10 +307,15 @@ func (r *IngestRepoImpl) CreateOrderReport(ctx context.Context, payload []domain
 
 	rowsPerChunk := chunkSizeForColumns(orderReportColsPerRow)
 	for start := 0; start < len(payload); start += rowsPerChunk {
-		end := minInt(start+rowsPerChunk, len(payload))
+		end := min(start+rowsPerChunk, len(payload))
 		chunk := payload[start:end]
 
 		args := make([]any, 0, len(chunk)*orderReportColsPerRow)
+
+		chunkNo := (start / rowsPerChunk) + 1
+		totalChunks := (len(payload) + rowsPerChunk - 1) / rowsPerChunk
+		rowFrom := start + 1
+		rowTo := end
 
 		var values strings.Builder
 		for i, report := range chunk {
@@ -336,7 +355,9 @@ func (r *IngestRepoImpl) CreateOrderReport(ctx context.Context, payload []domain
 
 		_, err := r.db.Pool.Exec(ctx, query, args...)
 		if err != nil {
-			return fmt.Errorf("upsert raw order report batch: %w", errors.Join(mapPgError(err), err))
+			return fmt.Errorf("upsert to erp_raw.order_report failed (chunk %d/%d, rows %d-%d of %d): %w",
+				chunkNo, totalChunks, rowFrom, rowTo, len(payload),
+				errors.Join(mapPgError(err), err))
 		}
 	}
 
@@ -351,10 +372,15 @@ func (r *IngestRepoImpl) CreateProductionResource(ctx context.Context, payload [
 
 	rowsPerChunk := chunkSizeForColumns(productionResourceColsPerRow)
 	for start := 0; start < len(payload); start += rowsPerChunk {
-		end := minInt(start+rowsPerChunk, len(payload))
+		end := min(start+rowsPerChunk, len(payload))
 		chunk := payload[start:end]
 
 		args := make([]any, 0, len(chunk)*productionResourceColsPerRow)
+
+		chunkNo := (start / rowsPerChunk) + 1
+		totalChunks := (len(payload) + rowsPerChunk - 1) / rowsPerChunk
+		rowFrom := start + 1
+		rowTo := end
 
 		var values strings.Builder
 		for i, resource := range chunk {
@@ -386,7 +412,9 @@ func (r *IngestRepoImpl) CreateProductionResource(ctx context.Context, payload [
 
 		_, err := r.db.Pool.Exec(ctx, query, args...)
 		if err != nil {
-			return fmt.Errorf("upsert raw production resource batch: %w", errors.Join(mapPgError(err), err))
+			return fmt.Errorf("upsert to erp_raw.production_resource failed (chunk %d/%d, rows %d-%d of %d): %w",
+				chunkNo, totalChunks, rowFrom, rowTo, len(payload),
+				errors.Join(mapPgError(err), err))
 		}
 	}
 
@@ -422,12 +450,5 @@ func mapPgError(err error) error {
 
 func chunkSizeForColumns(columnsPerRow int) int {
 	maxRowsByBindLimit := maxBindParametersPerStmt / columnsPerRow
-	return minInt(maxRowsByBindLimit, defaultMaxRowsPerChunk)
-}
-
-func minInt(a int, b int) int {
-	if a < b {
-		return a
-	}
-	return b
+	return min(maxRowsByBindLimit, defaultMaxRowsPerChunk)
 }
