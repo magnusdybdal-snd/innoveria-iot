@@ -3,8 +3,10 @@ package config
 
 import (
 	"fmt"
-	"innoveria-iot/pkg/env"
+	"log/slog"
 	"time"
+
+	"innoveria-iot/pkg/env"
 )
 
 const defaultReconcileInterval = 30 * time.Second
@@ -29,7 +31,15 @@ func Load() *Config {
 
 	reconcileIntervalRaw := env.Get("ERP_RECONCILE_INTERVAL", "30s")
 	reconcileInterval, err := time.ParseDuration(reconcileIntervalRaw)
-	if err != nil || reconcileInterval <= 0 {
+	if err != nil {
+		slog.Warn("ERP_RECONCILE_INTERVAL is not a valid duration, using default",
+			"raw_value", reconcileIntervalRaw,
+			"default", defaultReconcileInterval)
+		reconcileInterval = defaultReconcileInterval
+	} else if reconcileInterval <= 0 {
+		slog.Warn("ERP_RECONCILE_INTERVAL must be positive, using default",
+			"parsed_value", reconcileInterval,
+			"default", defaultReconcileInterval)
 		reconcileInterval = defaultReconcileInterval
 	}
 
