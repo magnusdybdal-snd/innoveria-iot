@@ -27,8 +27,10 @@ type MonitorERPEndpoint = domain.MonitorERPEndpoint
 const (
 	// Base is the endpoint prefix for manufacturing resources.
 	Base MonitorERPEndpoint = "Manufacturing/"
+	// Order fetches manufacturing orders
+	Order MonitorERPEndpoint = Base + "ManufacturingOrders"
 	// OrderOperations fetches manufacturing orders operations.
-	OrderOperations MonitorERPEndpoint = Base + "ManufacturingOrders"
+	OrderOperations MonitorERPEndpoint = Base + "ManufacturingOrderOperations"
 	// OrderReportings fetches manufacturing order operation reportings.
 	OrderReportings MonitorERPEndpoint = Base + "ManufacturingOrderOperationReportings"
 	// Workcenters fetches available work centers.

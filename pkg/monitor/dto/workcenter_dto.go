@@ -8,10 +8,10 @@ package dto
 // Work centers define capacity, availability, and staffing, and are referenced
 // by manufacturing operations to indicate where the work is executed.
 type WorkCenter struct {
-	ID                   int64  `json:"Id"`
-	Number               string `json:"Number"`               // Unique identifier / code
-	Description          string `json:"Description"`          // Name of the work center
-	OperationDescription string `json:"OperationDescription"` // Description used in operations
+	ID          int64  `json:"Id"`
+	Number      string `json:"Number"`      // Unique identifier / code
+	Description string `json:"Description"` // Name of the work center
+	// OperationDescription string `json:"OperationDescription"` // Description used in operations
 
 	// See documentation for enum mapping, (handled in erp service)
 	Type int `json:"Type"` // Type of work center (machine, labor, etc.)

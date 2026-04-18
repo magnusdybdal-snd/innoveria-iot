@@ -785,8 +785,8 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "production_resource": {
-                    "description": "Optional — UUID, omit if service not yet available",
-                    "type": "string"
+                    "description": "Optional — int64 ERP production resource ID",
+                    "type": "integer"
                 }
             }
         },
@@ -1111,7 +1111,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "production_resource": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "state": {
                     "type": "string"
@@ -1161,8 +1161,8 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "production_resource": {
-                    "description": "Optional — UUID, omit if service not yet available",
-                    "type": "string"
+                    "description": "Optional — int64 ERP production resource ID",
+                    "type": "integer"
                 }
             }
         },
