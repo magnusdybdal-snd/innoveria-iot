@@ -42,6 +42,12 @@ deferred_dependency AS (
 	FROM picked p
 	WHERE r.company_id = p.company_id
 	  AND r.id = p.id
+      AND NOT EXISTS (
+        SELECT 1
+        FROM failed_enum fe
+        WHERE fe.company_id = p.company_id
+            AND fe.id = p.id
+      )
 	  AND p.status = ANY(enum_range(NULL::erp.operation_status)::text[])
 	  AND p.production_resource_status = ANY(enum_range(NULL::erp.operation_status)::text[])
 	  AND (
