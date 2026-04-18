@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
+import axios from "axios";
 
 import { useFactories } from "@entities/factory";
 import { useFactoryAreas } from "@entities/factoryArea";
@@ -39,7 +40,7 @@ const addSensorDetails: string[] = [
   "DeviceEUI",
   "Factory",
   "Factory area",
-  "Machine",
+  "Production resource",
   "Application key",
   "Sensor profile",
 ];
@@ -122,7 +123,11 @@ export default function Sensors() {
         show("Sensor added successfully", SNACKBAR_SEVERITY.SUCCESS);
       })
       .catch((err: unknown) => {
-        setAddError("Something went wrong adding sensor"); // TODO: improve error handling with specific messages based on error type
+        const message =
+          axios.isAxiosError(err) && err.response?.data?.message
+            ? (err.response.data.message as string)
+            : "Something went wrong adding sensor.";
+        setAddError(message);
         show("Failed to add sensor.", SNACKBAR_SEVERITY.ERROR);
         throw err;
       });
