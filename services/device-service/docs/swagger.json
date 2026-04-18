@@ -779,8 +779,8 @@
                     "type": "string"
                 },
                 "production_resource": {
-                    "description": "Optional — UUID, omit if service not yet available",
-                    "type": "string"
+                    "description": "Optional — int64 ERP production resource ID",
+                    "type": "integer"
                 }
             }
         },
@@ -1105,7 +1105,7 @@
                     "type": "string"
                 },
                 "production_resource": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "state": {
                     "type": "string"
@@ -1155,8 +1155,8 @@
                     "type": "string"
                 },
                 "production_resource": {
-                    "description": "Optional — UUID, omit if service not yet available",
-                    "type": "string"
+                    "description": "Optional — int64 ERP production resource ID",
+                    "type": "integer"
                 }
             }
         },

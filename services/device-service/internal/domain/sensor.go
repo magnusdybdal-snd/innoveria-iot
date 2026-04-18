@@ -18,7 +18,7 @@ type Sensor struct {
 	State               DeviceState // administrative state: ACTIVE / INACTIVE
 	FactoryID           string      // loose cross-service ref
 	FactoryAreaID       string      // loose cross-service ref
-	ProductionResource  *string     // loose cross-service ref
+	ProductionResource  *int64      // loose cross-service ref
 	ChirpstackProfileID string      // LoRaWAN template that describes device model, chosen on registration
 	CreatedAt           time.Time
 	UpdatedAt           time.Time
@@ -33,7 +33,7 @@ type SensorService interface {
 	Create(ctx context.Context, payload Sensor) error
 	Update(ctx context.Context, deviceID string, payload Sensor) error
 	GetAll(ctx context.Context) ([]Sensor, error)
-	GetByProductionResourceID(ctx context.Context, productionResourceID string) ([]Sensor, error)
+	GetByProductionResourceID(ctx context.Context, productionResourceID int64) ([]Sensor, error)
 	Delete(ctx context.Context, deviceID string) error
 }
 
@@ -42,7 +42,7 @@ type SensorService interface {
 type SensorRepository interface {
 	Create(ctx context.Context, sensor Sensor) (Sensor, error)
 	FindByID(ctx context.Context, sensorID string) (Sensor, error)
-	FindByProductionResourceID(ctx context.Context, productionResourceID string) ([]Sensor, error)
+	FindByProductionResourceID(ctx context.Context, productionResourceID int64) ([]Sensor, error)
 	FindAllByCompanyID(ctx context.Context, companyID string) ([]Sensor, error)
 	FindByEUI(ctx context.Context, deviceEUI string) (Sensor, error)
 	UpdateState(ctx context.Context, sensorID string, state DeviceState) error
