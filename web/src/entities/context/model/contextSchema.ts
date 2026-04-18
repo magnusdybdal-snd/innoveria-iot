@@ -31,6 +31,37 @@ export interface Order {
   operations: OrderOperation[];
 }
 
+export interface SensorMetric {
+  payloadKey: string;
+  measurementType: string;
+  unit: string | null;
+}
+
+export interface Measurement {
+  deviceEui: string;
+  timestamp: string;
+  payload: Record<string, unknown>;
+}
+
+export interface SensorContext {
+  id: string;
+  name: string;
+  deviceEui: string;
+  metrics: SensorMetric[];
+  measurements: Measurement[];
+}
+
+export interface OperationContext {
+  operation: OrderOperation;
+  sensors: SensorContext[];
+  degraded: boolean;
+}
+
+export interface OrderContext {
+  order: Order;
+  operations: OperationContext[];
+}
+
 export interface CreateRuleRequest {
   companyId: string;
   name: string;
