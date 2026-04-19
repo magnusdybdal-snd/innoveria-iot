@@ -21,7 +21,7 @@ export interface AddDeviceProps {
     deviceEui: string;
     factory: string;
     factoryArea: string;
-    machine: string;
+    productionResource: number | null;
     appKey: string;
     senProf: string;
   }) => Promise<void>;
@@ -38,6 +38,7 @@ const inputHints: Record<string, string> = {
 const inputLengthError: Record<string, string> = {
   DeviceEUI: "DeviceEUI must be 16 characters",
   "Application key": "Application key must be 32 characters",
+  Machine: "Machine ID must be a positive number",
 };
 
 /**
@@ -70,13 +71,19 @@ export function AddDevice(props: AddDeviceProps) {
   };
 
   const handleSafeClose = () => {
-    const allFilled = addOptions.every(
-      (option) => (values[option] ?? "").trim() !== "",
-    );
+    const allFilled = addOptions
+      .filter((option) => option !== "Machine")
+      .every((option) => (values[option] ?? "").trim() !== "");
+
+    const machineRaw = (values["Machine"] ?? "").trim();
+    const machineParsed = parseInt(machineRaw, 10);
+    const machineInvalid =
+      machineRaw !== "" && (isNaN(machineParsed) || machineParsed <= 0);
 
     const newLengthErrors = {
       DeviceEUI: (values["DeviceEUI"] ?? "").length !== 16,
       "Application key": (values["Application key"] ?? "").length !== 32,
+      Machine: machineInvalid,
     };
 
     if (!allFilled) {
@@ -85,7 +92,8 @@ export function AddDevice(props: AddDeviceProps) {
     } else if (
       (addOptions.includes("DeviceEUI") && newLengthErrors.DeviceEUI) ||
       (addOptions.includes("Application key") &&
-        newLengthErrors["Application key"])
+        newLengthErrors["Application key"]) ||
+      (addOptions.includes("Machine") && newLengthErrors.Machine)
     ) {
       setFillError(false);
       setLengthErrors(newLengthErrors);
@@ -98,7 +106,7 @@ export function AddDevice(props: AddDeviceProps) {
         deviceEui: values["DeviceEUI"],
         factory: values["Factory"],
         factoryArea: values["Factory area"],
-        machine: values["Machine"],
+        productionResource: machineRaw !== "" ? machineParsed : null,
         appKey: values["Application key"],
         senProf: values["Sensor profile"],
       })
