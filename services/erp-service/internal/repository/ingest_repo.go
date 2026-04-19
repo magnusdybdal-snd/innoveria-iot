@@ -223,9 +223,9 @@ func (r *IngestRepoImpl) CreateOrder(ctx context.Context, payload []domain.Order
 
 		_, err := r.db.Pool.Exec(ctx, query, args...)
 		if err != nil {
-			return fmt.Errorf("upsert to erp_raw.\"order\" failed (chunk %d/%d, rows %d-%d of %d): %w",
-				chunkNo, totalChunks, rowFrom, rowTo, len(payload),
-				errors.Join(mapPgError(err), err))
+			op := fmt.Sprintf("upsert to erp_raw.order failed (chunk %d/%d, rows %d-%d of %d)",
+				chunkNo, totalChunks, rowFrom, rowTo, len(payload))
+			return wrapMappedDBError(op, err)
 		}
 	}
 
@@ -290,9 +290,9 @@ func (r *IngestRepoImpl) CreateOrderOperation(ctx context.Context, payload []dom
 
 		_, err := r.db.Pool.Exec(ctx, query, args...)
 		if err != nil {
-			return fmt.Errorf("upsert to erp_raw.order_operation failed (chunk %d/%d, rows %d-%d of %d): %w",
-				chunkNo, totalChunks, rowFrom, rowTo, len(payload),
-				errors.Join(mapPgError(err), err))
+			op := fmt.Sprintf("upsert to erp_raw.order_operation failed (chunk %d/%d, rows %d-%d of %d)",
+				chunkNo, totalChunks, rowFrom, rowTo, len(payload))
+			return wrapMappedDBError(op, err)
 		}
 	}
 
@@ -355,9 +355,9 @@ func (r *IngestRepoImpl) CreateOrderReport(ctx context.Context, payload []domain
 
 		_, err := r.db.Pool.Exec(ctx, query, args...)
 		if err != nil {
-			return fmt.Errorf("upsert to erp_raw.order_report failed (chunk %d/%d, rows %d-%d of %d): %w",
-				chunkNo, totalChunks, rowFrom, rowTo, len(payload),
-				errors.Join(mapPgError(err), err))
+			op := fmt.Sprintf("upsert to erp_raw.order_report failed (chunk %d/%d, rows %d-%d of %d)",
+				chunkNo, totalChunks, rowFrom, rowTo, len(payload))
+			return wrapMappedDBError(op, err)
 		}
 	}
 
@@ -412,16 +412,31 @@ func (r *IngestRepoImpl) CreateProductionResource(ctx context.Context, payload [
 
 		_, err := r.db.Pool.Exec(ctx, query, args...)
 		if err != nil {
-			return fmt.Errorf("upsert to erp_raw.production_resource failed (chunk %d/%d, rows %d-%d of %d): %w",
-				chunkNo, totalChunks, rowFrom, rowTo, len(payload),
-				errors.Join(mapPgError(err), err))
+			op := fmt.Sprintf("upsert to erp_raw.production_resource failed (chunk %d/%d, rows %d-%d of %d)",
+				chunkNo, totalChunks, rowFrom, rowTo, len(payload))
+			return wrapMappedDBError(op, err)
 		}
 	}
 
 	return nil
 }
 
+// wrapMappedDBError maps database errors and avoids duplicate joined errors.
+func wrapMappedDBError(op string, err error) error {
+	mapped := mapPgError(err)
+
+	if errors.Is(mapped, context.Canceled) || errors.Is(mapped, context.DeadlineExceeded) {
+		return fmt.Errorf("%s: %w", op, mapped)
+	}
+
+	return fmt.Errorf("%s: %w", op, errors.Join(mapped, err))
+}
+
 func mapPgError(err error) error {
+	if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
+		return err
+	}
+
 	var pgErr *pgconn.PgError
 	if !errors.As(err, &pgErr) {
 		return domain.ErrDatabase

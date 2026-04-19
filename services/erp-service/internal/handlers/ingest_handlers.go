@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"errors"
 	"net/http"
 
@@ -116,6 +117,10 @@ func mapIngestDomainError(err error) (int, string, error) {
 
 	if errors.Is(err, domain.ErrConflict) {
 		return http.StatusConflict, "conflict", err
+	}
+
+	if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
+		return http.StatusServiceUnavailable, "request canceled", err
 	}
 
 	return http.StatusInternalServerError, "internal server error", err
