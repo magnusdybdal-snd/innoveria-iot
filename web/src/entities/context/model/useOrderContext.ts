@@ -27,7 +27,8 @@ export function useOrderContext(orderId: number | null): UseOrderContextResult {
   const [error, setError] = useState<Error | null>(null);
   const [refetchIndex, setRefetchIndex] = useState(0);
 
-  const isLoading = orderId !== null && orderContext?.order.id !== orderId;
+  const isLoading =
+    orderId !== null && error === null && orderContext?.order.id !== orderId;
 
   // Clears stale data so isLoading becomes true for same-order refetches.
   const refetch = useCallback(() => {

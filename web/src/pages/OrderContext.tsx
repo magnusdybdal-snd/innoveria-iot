@@ -28,9 +28,11 @@ export default function OrderContext() {
     (o) => String(o.id) === selectedOrderId,
   );
 
-  const { orderContext, isLoading: isContextLoading } = useOrderContext(
-    selectedOrder ? selectedOrder.id : null,
-  );
+  const {
+    orderContext,
+    isLoading: isContextLoading,
+    error: contextError,
+  } = useOrderContext(selectedOrder ? selectedOrder.id : null);
 
   const orderOptions = orders.map((o) => ({
     id: String(o.id),
@@ -98,6 +100,10 @@ export default function OrderContext() {
 
               {isContextLoading ? (
                 <LoadingIndicator message="Loading sensor data…" />
+              ) : contextError ? (
+                <Typography variant="body2" sx={{ mt: 3, color: "error.main" }}>
+                  Failed to load sensor data. Please try again.
+                </Typography>
               ) : (
                 <Box sx={{ mt: 3, display: "flex", flexWrap: "wrap", gap: 2 }}>
                   {orderContext?.operations.map((opCtx) => (
