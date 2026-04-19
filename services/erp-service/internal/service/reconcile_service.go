@@ -99,6 +99,9 @@ func (s *ReconcileImpl) Start(ctx context.Context, interval time.Duration) {
 			// Run one reconcile cycle per tick.
 			case <-ticker.C:
 				if err := s.RunOnce(runCtx); err != nil {
+					if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
+						return
+					}
 					slog.Error("reconcile cycle failed", "err", err)
 				}
 			}
