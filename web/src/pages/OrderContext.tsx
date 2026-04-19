@@ -4,8 +4,14 @@ import { InfoWidget } from "@/widgets/infoWidget";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 
-import { useOrders, type Order } from "@entities/context";
+import {
+  MachineCard,
+  useOrderContext,
+  useOrders,
+  type Order,
+} from "@entities/context";
 import { DropDownSelect } from "@shared/ui/DropDownSelect";
+import { LoadingIndicator } from "@shared/ui/LoadingIndicator";
 import { PageContent } from "@shared/ui/PageContent";
 import { PageDivider } from "@shared/ui/PageDivider";
 import { SubPageHeader } from "@shared/ui/SubPageHeader";
@@ -18,14 +24,18 @@ export default function OrderContext() {
   const { orders, isLoading } = useOrders();
   const [selectedOrderId, setSelectedOrderId] = useState<string>("");
 
+  const selectedOrder: Order | undefined = orders.find(
+    (o) => String(o.id) === selectedOrderId,
+  );
+
+  const { orderContext, isLoading: isContextLoading } = useOrderContext(
+    selectedOrder ? selectedOrder.id : null,
+  );
+
   const orderOptions = orders.map((o) => ({
     id: String(o.id),
     name: `${o.orderNumber} — ${o.partDescription}`,
   }));
-
-  const selectedOrder: Order | undefined = orders.find(
-    (o) => String(o.id) === selectedOrderId,
-  );
 
   return (
     <div className="flex h-screen">
@@ -46,10 +56,8 @@ export default function OrderContext() {
             )}
           </Box>
 
-          {/* Displays the operations of the selected order as InfoWidgets */}
           {selectedOrder && (
             <>
-              {" "}
               <PageDivider />
               <Typography
                 variant="h3"
@@ -67,31 +75,40 @@ export default function OrderContext() {
                 {selectedOrder.operations.map((op) => (
                   <InfoWidget
                     key={op.id}
-                    label={op.productionResource.number} // TODO display workcenter name instead of number
-                    value={op.productionResourceStatus} // TODO: display sensor value
-                    unit={op.productionResource.description ?? undefined} // TODO: display sensor unit instead of workcenter description
+                    label={op.productionResource.number}
+                    value={op.productionResourceStatus}
+                    unit={op.productionResource.description ?? undefined}
                   />
                 ))}
               </Box>
+
+              <PageDivider />
+              <Typography
+                variant="h3"
+                sx={{ color: "primary.main", fontWeight: 500 }}
+              >
+                Sensor Data
+              </Typography>
+              <Typography
+                variant="subtitle1"
+                sx={{ mb: 2, color: "primary.main" }}
+              >
+                Live sensor readings per work center
+              </Typography>
+
+              {isContextLoading ? (
+                <LoadingIndicator message="Loading sensor data…" />
+              ) : (
+                <Box sx={{ mt: 3, display: "flex", flexWrap: "wrap", gap: 2 }}>
+                  {orderContext?.operations.map((opCtx) => (
+                    <MachineCard
+                      key={opCtx.operation.id}
+                      operationContext={opCtx}
+                    />
+                  ))}
+                </Box>
+              )}
             </>
-          )}
-          <PageDivider />
-          {/* DEBUG: Display selected order details in a formatted JSON block */}
-          {selectedOrder && (
-            <Box
-              component="pre"
-              sx={{
-                mt: 3,
-                p: 2,
-                backgroundColor: "primary.dark",
-                color: "primary.main",
-                borderRadius: 1,
-                fontSize: "0.8rem",
-                overflowX: "auto",
-              }}
-            >
-              {JSON.stringify(selectedOrder, null, 2)}
-            </Box>
           )}
         </Box>
       </PageContent>
