@@ -48,6 +48,7 @@ func Run() error {
 
 	reconcileWorker := service.NewReconcileService(reconcileRepo)
 	reconcileWorker.Start(workerCtx, cfg.ReconcileInterval)
+	defer reconcileWorker.Stop()
 
 	// Setting up mux and http server
 	mux := NewRouter(ingestSvc)
