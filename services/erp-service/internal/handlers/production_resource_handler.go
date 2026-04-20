@@ -31,3 +31,9 @@ func GetAllProductionResources(svc domain.ProductionResourceSvc) http.HandlerFun
 		}
 	}
 }
+
+// GetOneProductionResource returns a handler for retrieving a single production resource.
+func GetOneProductionResource(svc domain.ProductionResourceSvc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+	}
+}
