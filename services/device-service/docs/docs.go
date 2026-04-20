@@ -699,16 +699,12 @@ const docTemplate = `{
         "dto.CreateGatewayRequest": {
             "type": "object",
             "required": [
-                "company_id",
                 "factory_area_id",
                 "factory_id",
                 "gateway_eui",
                 "name"
             ],
             "properties": {
-                "company_id": {
-                    "type": "string"
-                },
                 "description": {
                     "type": "string"
                 },
@@ -751,7 +747,6 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "app_key",
-                "company_id",
                 "device_eui",
                 "device_profile_id",
                 "factory_area_id",
@@ -760,10 +755,6 @@ const docTemplate = `{
             ],
             "properties": {
                 "app_key": {
-                    "type": "string"
-                },
-                "company_id": {
-                    "description": "TODO: CompanyID should be extracted from auth",
                     "type": "string"
                 },
                 "description": {

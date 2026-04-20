@@ -14,8 +14,6 @@ definitions:
     type: object
   dto.CreateGatewayRequest:
     properties:
-      company_id:
-        type: string
       description:
         type: string
       factory_area_id:
@@ -27,7 +25,6 @@ definitions:
       name:
         type: string
     required:
-    - company_id
     - factory_area_id
     - factory_id
     - gateway_eui
@@ -51,9 +48,6 @@ definitions:
     properties:
       app_key:
         type: string
-      company_id:
-        description: 'TODO: CompanyID should be extracted from auth'
-        type: string
       description:
         type: string
       device_eui:
@@ -71,7 +65,6 @@ definitions:
         type: string
     required:
     - app_key
-    - company_id
     - device_eui
     - device_profile_id
     - factory_area_id
