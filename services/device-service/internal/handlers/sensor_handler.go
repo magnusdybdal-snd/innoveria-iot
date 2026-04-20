@@ -7,6 +7,7 @@ import (
 
 	"innoveria-iot/device-service/internal/domain"
 	"innoveria-iot/device-service/internal/handlers/dto"
+	"innoveria-iot/pkg/authctx"
 	"innoveria-iot/pkg/json"
 
 	"github.com/google/uuid"
@@ -25,9 +26,13 @@ import (
 func GetSensors(svc domain.SensorService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
+		auth, err := authctx.FromRequest(r)
+		if err != nil {
+			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			return
+		}
 
 		var data []domain.Sensor
-		var err error
 
 		productionResourceID := r.URL.Query().Get("production_resource_id")
 
@@ -36,9 +41,9 @@ func GetSensors(svc domain.SensorService) http.HandlerFunc {
 				json.HandleError(w, http.StatusBadRequest, parseErr, "bad request")
 				return
 			}
-			data, err = svc.GetByProductionResourceID(ctx, productionResourceID)
+			data, err = svc.GetByProductionResourceID(ctx, auth.CompanyID, productionResourceID)
 		} else {
-			data, err = svc.GetAll(ctx)
+			data, err = svc.GetAll(ctx, auth.CompanyID)
 		}
 
 		// error check for both paths above in if/else
@@ -71,6 +76,11 @@ func GetSensors(svc domain.SensorService) http.HandlerFunc {
 func PostSensor(svc domain.SensorService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
+		auth, err := authctx.FromRequest(r)
+		if err != nil {
+			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			return
+		}
 
 		payload, err := json.Decode[dto.CreateSensorRequest](r)
 		if err != nil {
@@ -78,7 +88,7 @@ func PostSensor(svc domain.SensorService) http.HandlerFunc {
 			return
 		}
 
-		payload.CompanyID = strings.TrimSpace(payload.CompanyID)
+		payload.CompanyID = auth.CompanyID
 		payload.Name = strings.TrimSpace(payload.Name)
 		payload.DeviceEUI = strings.TrimSpace(payload.DeviceEUI)
 		payload.AppKey = strings.TrimSpace(payload.AppKey)
@@ -86,8 +96,8 @@ func PostSensor(svc domain.SensorService) http.HandlerFunc {
 		payload.FactoryID = strings.TrimSpace(payload.FactoryID)
 		payload.FactoryAreaID = strings.TrimSpace(payload.FactoryAreaID)
 
-		if payload.CompanyID == "" || payload.Name == "" || payload.DeviceEUI == "" || payload.AppKey == "" || payload.ChirpstackProfileID == "" || payload.FactoryID == "" || payload.FactoryAreaID == "" {
-			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("company_id, name, device_eui, app_key, device_profile_id, factory_id and factory_area_id are required"), "bad request")
+		if payload.Name == "" || payload.DeviceEUI == "" || payload.AppKey == "" || payload.ChirpstackProfileID == "" || payload.FactoryID == "" || payload.FactoryAreaID == "" {
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("name, device_eui, app_key, device_profile_id, factory_id and factory_area_id are required"), "bad request")
 			return
 		}
 
@@ -117,6 +127,11 @@ func PostSensor(svc domain.SensorService) http.HandlerFunc {
 func PatchSensor(svc domain.SensorService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
+		auth, err := authctx.FromRequest(r)
+		if err != nil {
+			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			return
+		}
 
 		id := r.PathValue("id")
 		if id == "" {
@@ -126,6 +141,16 @@ func PatchSensor(svc domain.SensorService) http.HandlerFunc {
 
 		if _, err := uuid.Parse(id); err != nil {
 			json.HandleError(w, http.StatusBadRequest, err, "bad request")
+			return
+		}
+
+		sensor, err := svc.GetByID(ctx, id)
+		if err != nil {
+			json.HandleError(w, http.StatusNotFound, err, "sensor not found")
+			return
+		}
+		if sensor.CompanyID != auth.CompanyID {
+			json.HandleError(w, http.StatusForbidden, fmt.Errorf("sensor does not belong to your company"), "forbidden")
 			return
 		}
 
@@ -172,6 +197,11 @@ func PatchSensor(svc domain.SensorService) http.HandlerFunc {
 func DeleteSensor(svc domain.SensorService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
+		auth, err := authctx.FromRequest(r)
+		if err != nil {
+			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			return
+		}
 
 		id := r.PathValue("id")
 		if id == "" {
@@ -181,6 +211,16 @@ func DeleteSensor(svc domain.SensorService) http.HandlerFunc {
 
 		if _, err := uuid.Parse(id); err != nil {
 			json.HandleError(w, http.StatusBadRequest, err, "bad request")
+			return
+		}
+
+		sensor, err := svc.GetByID(ctx, id)
+		if err != nil {
+			json.HandleError(w, http.StatusNotFound, err, "sensor not found")
+			return
+		}
+		if sensor.CompanyID != auth.CompanyID {
+			json.HandleError(w, http.StatusForbidden, fmt.Errorf("sensor does not belong to your company"), "forbidden")
 			return
 		}
 
