@@ -24,7 +24,7 @@ const (
 	FindProductionResourceByIDQuery = `
 		SELECT company_id, id, number, description, type, received_at
 		FROM erp.production_resource
-		WHERE company_id = $1 AND id = $2
+		WHERE id = $1 AND company_id = $2
 	`
 )
 
