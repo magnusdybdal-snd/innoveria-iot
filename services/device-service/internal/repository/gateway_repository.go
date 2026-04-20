@@ -17,7 +17,7 @@ const (
 	findGatewayByIDQuery = `
 		SELECT gateway_id, company_id, gateway_eui, name, description, state, factory_id, factory_area_id, created_at, updated_at
 		FROM device.gateway
-		WHERE gateway_id = $1
+		WHERE company_id = $1 AND gateway_id = $2
 	`
 
 	findAllGatewaysByCompanyIDQuery = `
@@ -35,19 +35,19 @@ const (
 
 	updateGatewayStateQuery = `
 		UPDATE device.gateway
-		SET state = $1, updated_at = now()
-		WHERE gateway_id = $2
+		SET state = $3, updated_at = now()
+		WHERE company_id = $1 AND gateway_id = $2
 	`
 
 	updateGatewayQuery = `
 		UPDATE device.gateway
-		SET name = $1, description = $2, factory_id = $3, factory_area_id = $4, updated_at = now()
-		WHERE gateway_id = $5
+		SET name = $3, description = $4, factory_id = $5, factory_area_id = $6, updated_at = now()
+		WHERE company_id = $1 AND gateway_id = $2
 	`
 
 	deleteGatewayQuery = `
-		DELETE FROM device.gateway 
-		WHERE gateway_id = $1
+		DELETE FROM device.gateway
+		WHERE company_id = $1 AND gateway_id = $2
 	`
 )
 
@@ -94,10 +94,10 @@ func (r *GatewayRepository) Create(ctx context.Context, gateway domain.Gateway) 
 }
 
 // FindByID retrieves a gateway by its internal UUID.
-func (r *GatewayRepository) FindByID(ctx context.Context, gatewayID string) (domain.Gateway, error) {
+func (r *GatewayRepository) FindByID(ctx context.Context, companyID string, gatewayID string) (domain.Gateway, error) {
 
 	var out domain.Gateway
-	err := r.db.Pool.QueryRow(ctx, findGatewayByIDQuery, gatewayID).Scan(
+	err := r.db.Pool.QueryRow(ctx, findGatewayByIDQuery, companyID, gatewayID).Scan(
 		&out.Id,
 		&out.CompanyId,
 		&out.GatewayEUI,
@@ -186,9 +186,9 @@ func (r *GatewayRepository) FindByEUI(ctx context.Context, gatewayEUI string) (d
 
 // UpdateState sets the administrative state of a gateway and updates the updated at timestamp.
 // Returns an error if no gateway with the given ID exists.
-func (r *GatewayRepository) UpdateState(ctx context.Context, gatewayID string, state domain.DeviceState) error {
+func (r *GatewayRepository) UpdateState(ctx context.Context, companyID string, gatewayID string, state domain.DeviceState) error {
 
-	tag, err := r.db.Pool.Exec(ctx, updateGatewayStateQuery, state, gatewayID)
+	tag, err := r.db.Pool.Exec(ctx, updateGatewayStateQuery, companyID, gatewayID, state)
 	if err != nil {
 		return fmt.Errorf("update gateway state: %w", err)
 	}
@@ -202,9 +202,9 @@ func (r *GatewayRepository) UpdateState(ctx context.Context, gatewayID string, s
 
 // Update updates the user editable db fields of a gateway and updates the updated at timestamp.
 // Returns an error if no gateway with the given ID exists.
-func (r *GatewayRepository) Update(ctx context.Context, gatewayID string, payload domain.Gateway) error {
+func (r *GatewayRepository) Update(ctx context.Context, companyID string, gatewayID string, payload domain.Gateway) error {
 
-	tag, err := r.db.Pool.Exec(ctx, updateGatewayQuery, payload.Name, payload.Description, payload.FactoryID, payload.FactoryAreaID, gatewayID)
+	tag, err := r.db.Pool.Exec(ctx, updateGatewayQuery, companyID, gatewayID, payload.Name, payload.Description, payload.FactoryID, payload.FactoryAreaID)
 	if err != nil {
 		return fmt.Errorf("update gateway: %w", err)
 	}
@@ -218,9 +218,9 @@ func (r *GatewayRepository) Update(ctx context.Context, gatewayID string, payloa
 
 // Delete tries to delete a gateway from the database.
 // Returns an error if deletion fails or no gateway is found.
-func (r *GatewayRepository) Delete(ctx context.Context, gatewayID string) error {
+func (r *GatewayRepository) Delete(ctx context.Context, companyID string, gatewayID string) error {
 
-	tag, err := r.db.Pool.Exec(ctx, deleteGatewayQuery, gatewayID)
+	tag, err := r.db.Pool.Exec(ctx, deleteGatewayQuery, companyID, gatewayID)
 	if err != nil {
 		return fmt.Errorf("delete gateway %s: %w", gatewayID, err)
 	}
