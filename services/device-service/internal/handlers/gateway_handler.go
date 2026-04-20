@@ -105,6 +105,7 @@ func PostGateway(svc domain.GatewayService) http.HandlerFunc {
 // @Param		body	body	dto.UpdateGatewayRequest	true	"Update payload"
 // @Success		204
 // @Failure		400
+// @Failure		404
 // @Failure		500
 // @Router		/gateways/{id} [patch]
 func PatchGateway(svc domain.GatewayService) http.HandlerFunc {
@@ -133,15 +134,17 @@ func PatchGateway(svc domain.GatewayService) http.HandlerFunc {
 			return
 		}
 
-		if payload.Name == nil && payload.Description == nil && payload.FactoryAreaID == nil {
+		if payload.Name == nil && payload.Description == nil && payload.FactoryID == nil && payload.FactoryAreaID == nil {
 			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("no fields provided"), "bad request")
 			return
 		}
 
-		if payload.FactoryAreaID != nil {
-			if _, err := uuid.Parse(*payload.FactoryAreaID); err != nil {
-				json.HandleError(w, http.StatusBadRequest, err, "bad request")
-				return
+		for _, field := range []*string{payload.FactoryID, payload.FactoryAreaID} {
+			if field != nil {
+				if _, err := uuid.Parse(*field); err != nil {
+					json.HandleError(w, http.StatusBadRequest, err, "bad request")
+					return
+				}
 			}
 		}
 
@@ -167,6 +170,7 @@ func PatchGateway(svc domain.GatewayService) http.HandlerFunc {
 // @Param		id	path	string	true	"Gateway ID"
 // @Success		204
 // @Failure		400
+// @Failure		404
 // @Failure		500
 // @Router		/gateways/{id} [delete]
 func DeleteGateway(svc domain.GatewayService) http.HandlerFunc {

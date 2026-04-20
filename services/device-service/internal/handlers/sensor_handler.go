@@ -122,6 +122,7 @@ func PostSensor(svc domain.SensorService) http.HandlerFunc {
 // @Param		body   body   dto.UpdateSensorRequest   true   "Update payload"
 // @Success		204
 // @Failure		400
+// @Failure		404
 // @Failure		500
 // @Router		/sensors/{id} [patch]
 func PatchSensor(svc domain.SensorService) http.HandlerFunc {
@@ -186,6 +187,7 @@ func PatchSensor(svc domain.SensorService) http.HandlerFunc {
 // @Param		id		path	string		true	"SensorID"
 // @Success		204
 // @Failure		400
+// @Failure		404
 // @Failure		500
 // @Router		/sensors/{id} [delete]
 func DeleteSensor(svc domain.SensorService) http.HandlerFunc {
