@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"innoveria-iot/erp-service/internal/domain"
+	erpdto "innoveria-iot/pkg/erp/dto"
 	"innoveria-iot/pkg/monitor/dto"
 )
 
@@ -97,6 +98,23 @@ func MapMonitorWorkcenterToDomain(from []dto.WorkCenter) []domain.ProductionReso
 			Type:        mapWorkCenterType(item.Type),
 			ReceivedAt:  receivedAt,
 		})
+	}
+
+	return to
+}
+
+// MapProductionResourceDomainToDTO maps domain production resources into shared ERP DTOs.
+func MapProductionResourceDomainToDTO(from []domain.ProductionResource) []erpdto.ProductionResource {
+	to := make([]erpdto.ProductionResource, len(from))
+	for i, item := range from {
+		to[i] = erpdto.ProductionResource{
+			ID:          item.ID,
+			CompanyID:   item.CompanyID,
+			Number:      item.Number,
+			Description: item.Description,
+			Type:        erpdto.WorkCenterType(item.Type),
+			ReceivedAt:  item.ReceivedAt,
+		}
 	}
 
 	return to

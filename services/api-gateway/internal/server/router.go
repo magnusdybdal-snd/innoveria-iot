@@ -58,6 +58,10 @@ func NewRouter(cfg *config.Config) *http.ServeMux {
 		"/data",
 	})
 
+	handlers.RegisterProxyService(mux, ERP_ROUTE, "erp-service", cfg.ErpSvcURL, []string{
+		"/production-resources",
+	})
+
 	// Swagger — merged spec from all services, served via the gateway
 	if cfg.EnableSwagger {
 		mux.HandleFunc("GET /swagger/doc.json", handlers.MergedSwaggerSpec(cfg.DeviceSvcURL, cfg.CollSvcURL, cfg.AuthSvcURL, cfg.OnboardingSvcURL, cfg.ContextSvcURL))

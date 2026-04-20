@@ -8,7 +8,10 @@ import (
 )
 
 // NewRouter builds and returns the service HTTP router.
-func NewRouter(ingestSvc domain.Ingest) *http.ServeMux {
+func NewRouter(
+	ingestSvc domain.Ingest,
+	prodResSvc domain.ProductionResourceSvc,
+) *http.ServeMux {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /", handlers.Root)
@@ -18,6 +21,9 @@ func NewRouter(ingestSvc domain.Ingest) *http.ServeMux {
 	mux.HandleFunc("POST "+ORDER_OPERATIONS_ROUTE, handlers.PostIngestOrderOperations(ingestSvc))
 	mux.HandleFunc("POST "+ORDER_REPORTINGS_ROUTE, handlers.PostIngestOrderReports(ingestSvc))
 	mux.HandleFunc("POST "+WORKCENTERS_ROUTE, handlers.PostIngestWorkCenters(ingestSvc))
+
+	// Extracting monitor erp data
+	mux.HandleFunc("GET "+PRODUCTION_RESOURCE_ROUTE, handlers.GetAllProductionResources(prodResSvc))
 
 	// Swagger docs
 	// mux.HandleFunc("GET /swagger/", httpSwagger.WrapHandler)

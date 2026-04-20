@@ -10,8 +10,12 @@ const (
 	ERP_ROUTE    = API_ROUTE + "/erp"
 	INGEST_ROUTE = ERP_ROUTE + "/ingest"
 
+	// Ingest routes
 	ORDER_ROUTE            = INGEST_ROUTE + "/orders"
 	ORDER_OPERATIONS_ROUTE = INGEST_ROUTE + "/order-operations"
 	ORDER_REPORTINGS_ROUTE = INGEST_ROUTE + "/order-reportings"
 	WORKCENTERS_ROUTE      = INGEST_ROUTE + "/workcenters"
+
+	// Extracting erp data
+	PRODUCTION_RESOURCE_ROUTE = ERP_ROUTE + "/production-resources"
 )

@@ -35,3 +35,8 @@ type ProductionResource struct {
 type ProductionResourceRepo interface {
 	FindAllProductionResource(ctx context.Context, companyID string) ([]ProductionResource, error)
 }
+
+// ProductionResourceSvc defines the business logic for a production resource
+type ProductionResourceSvc interface {
+	GetAll(ctx context.Context, companyID string) ([]ProductionResource, error)
+}
