@@ -30,5 +30,9 @@ func (s *ProductionResourceSvcImpl) GetAll(ctx context.Context, companyID string
 
 // GetOne retrieves a single production resource by its ID and company ID.
 func (s *ProductionResourceSvcImpl) GetOne(ctx context.Context, productionResourceID, companyID string) (domain.ProductionResource, error) {
-	return domain.ProductionResource{}, nil
+	data, err := s.repo.FindByID(ctx, productionResourceID, companyID)
+	if err != nil {
+		return domain.ProductionResource{}, err
+	}
+	return data, nil
 }
