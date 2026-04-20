@@ -32,8 +32,9 @@ type Sensor struct {
 type SensorService interface {
 	Create(ctx context.Context, payload Sensor) error
 	Update(ctx context.Context, deviceID string, payload Sensor) error
-	GetAll(ctx context.Context) ([]Sensor, error)
-	GetByProductionResourceID(ctx context.Context, productionResourceID string) ([]Sensor, error)
+	GetAll(ctx context.Context, companyID string) ([]Sensor, error)
+	GetByID(ctx context.Context, companyID string) (Sensor, error)
+	GetByProductionResourceID(ctx context.Context, companyID string, productionResourceID string) ([]Sensor, error)
 	Delete(ctx context.Context, deviceID string) error
 }
 
