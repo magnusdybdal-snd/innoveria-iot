@@ -2,9 +2,12 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"innoveria-iot/device-service/internal/domain"
 	"innoveria-iot/pkg/dbutil"
+
+	"github.com/jackc/pgx/v5"
 )
 
 const (
@@ -110,6 +113,9 @@ func (r *GatewayRepository) FindByID(ctx context.Context, companyID string, gate
 		&out.UpdatedAt,
 	)
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return domain.Gateway{}, domain.ErrNotFound
+		}
 		return domain.Gateway{}, fmt.Errorf("find gateway by gateway id: %w", err)
 	}
 

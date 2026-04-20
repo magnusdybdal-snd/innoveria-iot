@@ -2,6 +2,7 @@
 package handlers
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -126,16 +127,6 @@ func PatchGateway(svc domain.GatewayService) http.HandlerFunc {
 			return
 		}
 
-		gateway, err := svc.GetByID(ctx, id)
-		if err != nil {
-			json.HandleError(w, http.StatusNotFound, err, "gateway not found")
-			return
-		}
-		if gateway.CompanyId != auth.CompanyID {
-			json.HandleError(w, http.StatusForbidden, fmt.Errorf("gateway does not belong to your company"), "forbidden")
-			return
-		}
-
 		payload, err := json.Decode[dto.UpdateGatewayRequest](r)
 		if err != nil {
 			json.HandleError(w, http.StatusBadRequest, err, "bad request")
@@ -156,7 +147,11 @@ func PatchGateway(svc domain.GatewayService) http.HandlerFunc {
 
 		data := dto.MapUpdateGatewayDTOToDomain(payload)
 
-		if err := svc.Update(ctx, id, data); err != nil {
+		if err := svc.Update(ctx, auth.CompanyID, id, data); err != nil {
+			if errors.Is(err, domain.ErrNotFound) {
+				json.HandleError(w, http.StatusNotFound, err, "gateway not found")
+				return
+			}
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
 			return
 		}
@@ -194,17 +189,11 @@ func DeleteGateway(svc domain.GatewayService) http.HandlerFunc {
 			return
 		}
 
-		gateway, err := svc.GetByID(ctx, id)
-		if err != nil {
-			json.HandleError(w, http.StatusNotFound, err, "gateway not found")
-			return
-		}
-		if gateway.CompanyId != auth.CompanyID {
-			json.HandleError(w, http.StatusForbidden, fmt.Errorf("gateway does not belong to your company"), "forbidden")
-			return
-		}
-
-		if err := svc.Delete(ctx, id); err != nil {
+		if err := svc.Delete(ctx, auth.CompanyID, id); err != nil {
+			if errors.Is(err, domain.ErrNotFound) {
+				json.HandleError(w, http.StatusNotFound, err, "gateway not found")
+				return
+			}
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
 			return
 		}

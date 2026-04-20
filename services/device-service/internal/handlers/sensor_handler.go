@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -143,16 +144,6 @@ func PatchSensor(svc domain.SensorService) http.HandlerFunc {
 			return
 		}
 
-		sensor, err := svc.GetByID(ctx, id)
-		if err != nil {
-			json.HandleError(w, http.StatusNotFound, err, "sensor not found")
-			return
-		}
-		if sensor.CompanyID != auth.CompanyID {
-			json.HandleError(w, http.StatusForbidden, fmt.Errorf("sensor does not belong to your company"), "forbidden")
-			return
-		}
-
 		payload, err := json.Decode[dto.UpdateSensorRequest](r)
 		if err != nil {
 			json.HandleError(w, http.StatusBadRequest, err, "bad request")
@@ -175,7 +166,11 @@ func PatchSensor(svc domain.SensorService) http.HandlerFunc {
 
 		data := dto.MapUpdateSensorDTOToDomain(payload)
 
-		if err := svc.Update(ctx, id, data); err != nil {
+		if err := svc.Update(ctx, auth.CompanyID, id, data); err != nil {
+			if errors.Is(err, domain.ErrNotFound) {
+				json.HandleError(w, http.StatusNotFound, err, "sensor not found")
+				return
+			}
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
 			return
 		}
@@ -213,17 +208,11 @@ func DeleteSensor(svc domain.SensorService) http.HandlerFunc {
 			return
 		}
 
-		sensor, err := svc.GetByID(ctx, id)
-		if err != nil {
-			json.HandleError(w, http.StatusNotFound, err, "sensor not found")
-			return
-		}
-		if sensor.CompanyID != auth.CompanyID {
-			json.HandleError(w, http.StatusForbidden, fmt.Errorf("sensor does not belong to your company"), "forbidden")
-			return
-		}
-
-		if err := svc.Delete(ctx, id); err != nil {
+		if err := svc.Delete(ctx, auth.CompanyID, id); err != nil {
+			if errors.Is(err, domain.ErrNotFound) {
+				json.HandleError(w, http.StatusNotFound, err, "sensor not found")
+				return
+			}
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
 			return
 		}

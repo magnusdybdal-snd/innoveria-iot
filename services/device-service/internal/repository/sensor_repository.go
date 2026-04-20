@@ -129,6 +129,9 @@ func (r *SensorRepository) FindByID(ctx context.Context, companyID string, senso
 		&out.UpdatedAt,
 	)
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return domain.Sensor{}, domain.ErrNotFound
+		}
 		return domain.Sensor{}, fmt.Errorf("find sensor by sensor id: %w", err)
 	}
 
