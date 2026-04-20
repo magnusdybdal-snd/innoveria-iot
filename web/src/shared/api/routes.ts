@@ -6,6 +6,7 @@ export const API_ROUTES = {
   sensors: `/v1/device/sensors`,
   collection: `/v1/collection`,
   sensorProfile: `/v1/device/sensor-profiles`,
+  deviceEUI: `/v1/device/sensors/sample-eui?chirpstack_profile_id=`,
   sensorLatest: `/v1/collection/latest?device_eui=`,
   companies: `/v1/auth/companies`,
   factories: `/v1/auth/factories`,

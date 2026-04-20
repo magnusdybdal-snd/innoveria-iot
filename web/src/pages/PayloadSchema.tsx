@@ -28,18 +28,7 @@ import {
 } from "@shared/ui/snackbar";
 import { SubPageHeader } from "@shared/ui/SubPageHeader";
 
-const measurementTypeDetails: string[] = [
-  "Slug",
-  "Display name",
-  "Description",
-  "Default unit",
-];
-
-const sortableColumns: MeasurementTypeSortKey[] = [
-  "Slug",
-  "Display name",
-  "Description",
-];
+const payloadDetails: string[] = ["Payload key", "Measurement type", "Unit"];
 
 /**
  * Full-page view listing all measure types registered on the site.
@@ -188,16 +177,15 @@ export default function PayloadSchema() {
           onChange={(e) => setSelected(e.target.value)}
           displayEmpty
         >
-          {sensorProfiles.map((option) => (
-            <MenuItem key={option.id} value={option.id}>
-              {option.name}
+          {measurementTypes.map((option) => (
+            <MenuItem key={option.slug} value={option.slug}>
+              {option.displayName}
             </MenuItem>
           ))}
         </Select>
         <CategoryHeader
-          categories={measurementTypeDetails}
-          columns={measurementTypeDetails.length + 1}
-          sortableColumns={sortableColumns}
+          categories={payloadDetails}
+          columns={payloadDetails.length}
           sortConfig={sortConfig}
           onSort={handleSort}
         >
