@@ -1,6 +1,9 @@
 package domain
 
-import "time"
+import (
+	"context"
+	"time"
+)
 
 // WorkCenterType describes the category of a production resource.
 type WorkCenterType string
@@ -26,4 +29,9 @@ type ProductionResource struct {
 	Description string // Monitor erp description
 	Type        WorkCenterType
 	ReceivedAt  time.Time
+}
+
+// ProductionResourceRepo defines the retrive operation
+type ProductionResourceRepo interface {
+	FindAllProductionResource(ctx context.Context, companyID string) ([]ProductionResource, error)
 }
