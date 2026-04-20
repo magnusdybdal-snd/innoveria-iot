@@ -118,7 +118,26 @@ definitions:
         $ref: '#/definitions/dto.ProductionResourceResponse'
       production_resource_status:
         type: string
+      reports:
+        items:
+          $ref: '#/definitions/dto.OrderReportResponse'
+        type: array
       status:
+        type: string
+    type: object
+  dto.OrderReportResponse:
+    properties:
+      actual_reported_date:
+        type: string
+      id:
+        type: integer
+      quantity:
+        type: number
+      reporting_timestamp:
+        type: string
+      rest_quantity:
+        type: number
+      type:
         type: string
     type: object
   dto.OrderResponse:
@@ -137,12 +156,16 @@ definitions:
         type: string
       part_description:
         type: string
+      part_id:
+        type: string
       planned_finish_date:
         type: string
       planned_start_date:
         type: string
       priority:
         type: integer
+      received_at:
+        type: string
       status:
         type: string
     type: object
@@ -267,6 +290,30 @@ paths:
         "500":
           description: Internal Server Error
       summary: Get Orders
+      tags:
+      - orders
+  /orders/{id}:
+    get:
+      parameters:
+      - description: ERP Order ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.OrderResponse'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get Order By ID
       tags:
       - orders
   /orders/{id}/context:

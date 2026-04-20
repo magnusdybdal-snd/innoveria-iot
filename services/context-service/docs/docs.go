@@ -118,6 +118,43 @@ const docTemplate = `{
                 }
             }
         },
+        "/orders/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "orders"
+                ],
+                "summary": "Get Order By ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ERP Order ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.OrderResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/orders/{id}/context": {
             "get": {
                 "produces": [
@@ -436,7 +473,36 @@ const docTemplate = `{
                 "production_resource_status": {
                     "type": "string"
                 },
+                "reports": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.OrderReportResponse"
+                    }
+                },
                 "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.OrderReportResponse": {
+            "type": "object",
+            "properties": {
+                "actual_reported_date": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "quantity": {
+                    "type": "number"
+                },
+                "reporting_timestamp": {
+                    "type": "string"
+                },
+                "rest_quantity": {
+                    "type": "number"
+                },
+                "type": {
                     "type": "string"
                 }
             }
@@ -465,6 +531,9 @@ const docTemplate = `{
                 "part_description": {
                     "type": "string"
                 },
+                "part_id": {
+                    "type": "string"
+                },
                 "planned_finish_date": {
                     "type": "string"
                 },
@@ -473,6 +542,9 @@ const docTemplate = `{
                 },
                 "priority": {
                     "type": "integer"
+                },
+                "received_at": {
+                    "type": "string"
                 },
                 "status": {
                     "type": "string"
