@@ -78,7 +78,7 @@ func GetOrders(svc domain.ContextService) http.HandlerFunc {
 			return
 		}
 
-		if err := json.Encode(w, http.StatusOK, dto.MapOrdersDomainToDTO(orders)); err != nil {
+		if err := json.Encode(w, http.StatusOK, dto.MapOrdersSummaryToDTO(orders)); err != nil {
 			json.HandleError(w, http.StatusInternalServerError, err, "failed to encode response")
 		}
 	}

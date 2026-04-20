@@ -8,10 +8,10 @@ import (
 
 // ProductionResourceResponse represents a work center in the API response.
 type ProductionResourceResponse struct {
-	ID          int64   `json:"id"`
-	Number      string  `json:"number"`
-	Description *string `json:"description"`
-	Type        string  `json:"type"`
+	ID          int64  `json:"id"`
+	Number      string `json:"number"`
+	Description string `json:"description"`
+	Type        string `json:"type"`
 }
 
 // OrderOperationResponse represents a single manufacturing operation in the API response.
@@ -24,6 +24,26 @@ type OrderOperationResponse struct {
 	ActualFinishDate         *time.Time                 `json:"actual_finish_date"`
 	Status                   string                     `json:"status"`
 	ProductionResourceStatus string                     `json:"production_resource_status"`
+}
+
+// OrderSummaryResponse is the slim API response for GET /orders, used to populate the order picker.
+type OrderSummaryResponse struct {
+	ID   int64  `json:"id"`
+	Name string `json:"name"`
+}
+
+// MapOrderSummaryDomainToDTO converts a slim domain ERPOrderSummary to its API response shape.
+func MapOrderSummaryDomainToDTO(o domain.ERPOrderSummary) OrderSummaryResponse {
+	return OrderSummaryResponse{ID: o.ID, Name: o.Name}
+}
+
+// MapOrdersSummaryToDTO converts a slice of domain ERPOrderSummary to its API response shape.
+func MapOrdersSummaryToDTO(orders []domain.ERPOrderSummary) []OrderSummaryResponse {
+	result := make([]OrderSummaryResponse, len(orders))
+	for i, o := range orders {
+		result[i] = MapOrderSummaryDomainToDTO(o)
+	}
+	return result
 }
 
 // OrderResponse is the API response shape for a single ERP order.
