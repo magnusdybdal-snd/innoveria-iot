@@ -74,7 +74,6 @@ func PostGateway(svc domain.GatewayService) http.HandlerFunc {
 			return
 		}
 
-		payload.CompanyId = auth.CompanyID
 		payload.GatewayEUI = strings.TrimSpace(payload.GatewayEUI)
 		payload.Name = strings.TrimSpace(payload.Name)
 		payload.FactoryID = strings.TrimSpace(payload.FactoryID)
@@ -85,7 +84,7 @@ func PostGateway(svc domain.GatewayService) http.HandlerFunc {
 			return
 		}
 
-		data := dto.MapGatewayDTOToDomain(payload)
+		data := dto.MapGatewayDTOToDomain(payload, auth.CompanyID)
 
 		if err := svc.Create(ctx, data); err != nil {
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")

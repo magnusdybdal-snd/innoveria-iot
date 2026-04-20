@@ -25,7 +25,6 @@ type GatewayListResponse struct {
 
 // CreateGatewayRequest contains the fields required to register a new gateway.
 type CreateGatewayRequest struct {
-	CompanyId     string  `json:"company_id" binding:"required"`
 	GatewayEUI    string  `json:"gateway_eui" binding:"required"`
 	Name          string  `json:"name" binding:"required"`
 	Description   *string `json:"description"`

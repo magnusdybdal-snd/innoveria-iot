@@ -88,7 +88,6 @@ func PostSensor(svc domain.SensorService) http.HandlerFunc {
 			return
 		}
 
-		payload.CompanyID = auth.CompanyID
 		payload.Name = strings.TrimSpace(payload.Name)
 		payload.DeviceEUI = strings.TrimSpace(payload.DeviceEUI)
 		payload.AppKey = strings.TrimSpace(payload.AppKey)
@@ -101,7 +100,7 @@ func PostSensor(svc domain.SensorService) http.HandlerFunc {
 			return
 		}
 
-		data := dto.MapCreateSensorDTOToDomain(payload)
+		data := dto.MapCreateSensorDTOToDomain(payload, auth.CompanyID)
 
 		if err := svc.Create(ctx, data); err != nil {
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
