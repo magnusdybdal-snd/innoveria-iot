@@ -14,9 +14,10 @@ import (
 )
 
 type mockContextService struct {
-	t               *testing.T
-	getOrdersFunc   func(ctx context.Context, companyID string) ([]domain.ERPOrderSummary, error)
-	getOrderCtxFunc func(ctx context.Context, companyID string, orderID int64) (*domain.OrderContext, error)
+	t                *testing.T
+	getOrdersFunc    func(ctx context.Context, companyID string) ([]domain.ERPOrderSummary, error)
+	getOrderByIDFunc func(ctx context.Context, companyID string, orderID int64) (*domain.ERPOrder, error)
+	getOrderCtxFunc  func(ctx context.Context, companyID string, orderID int64) (*domain.OrderContext, error)
 }
 
 func (m *mockContextService) GetOrders(ctx context.Context, companyID string) ([]domain.ERPOrderSummary, error) {
@@ -24,6 +25,13 @@ func (m *mockContextService) GetOrders(ctx context.Context, companyID string) ([
 		m.t.Fatal("unexpected call to GetOrders")
 	}
 	return m.getOrdersFunc(ctx, companyID)
+}
+
+func (m *mockContextService) GetOrderByID(ctx context.Context, companyID string, orderID int64) (*domain.ERPOrder, error) {
+	if m.getOrderByIDFunc == nil {
+		m.t.Fatal("unexpected call to GetOrderByID")
+	}
+	return m.getOrderByIDFunc(ctx, companyID, orderID)
 }
 
 func (m *mockContextService) GetOrderContext(ctx context.Context, companyID string, orderID int64) (*domain.OrderContext, error) {
