@@ -17,5 +17,6 @@ const (
 	WORKCENTERS_ROUTE      = INGEST_ROUTE + "/workcenters"
 
 	// Extracting erp data
-	PRODUCTION_RESOURCE_ROUTE = ERP_ROUTE + "/production-resources"
+	PRODUCTION_RESOURCE_ROUTE    = ERP_ROUTE + "/production-resources"
+	PRODUCTION_RESOURCE_ID_ROUTE = PRODUCTION_RESOURCE_ROUTE + "/{id}"
 )

@@ -34,10 +34,11 @@ type ProductionResource struct {
 // ProductionResourceRepo defines the retrive operation
 type ProductionResourceRepo interface {
 	FindAllByCompanyID(ctx context.Context, companyID string) ([]ProductionResource, error)
-	FindByID(ctx context.Context, productionResourceID, companyID string) (ProductionResource, error)
+	FindByID(ctx context.Context, productionResourceID int64, companyID string) (ProductionResource, error)
 }
 
 // ProductionResourceSvc defines the business logic for a production resource
 type ProductionResourceSvc interface {
 	GetAll(ctx context.Context, companyID string) ([]ProductionResource, error)
+	GetOne(ctx context.Context, productionResourceID int64, companyID string) (ProductionResource, error)
 }

@@ -70,7 +70,7 @@ func (r *ProductionResourceRepoImpl) FindAllByCompanyID(ctx context.Context, com
 }
 
 // FindByID retrieves one production resource based on ID belonging to the given company.
-func (r *ProductionResourceRepoImpl) FindByID(ctx context.Context, productionResourceID, companyID string) (domain.ProductionResource, error) {
+func (r *ProductionResourceRepoImpl) FindByID(ctx context.Context, productionResourceID int64, companyID string) (domain.ProductionResource, error) {
 	var out domain.ProductionResource
 	err := r.db.Pool.QueryRow(ctx, FindProductionResourceByIDQuery, productionResourceID, companyID).Scan(
 		&out.CompanyID,
