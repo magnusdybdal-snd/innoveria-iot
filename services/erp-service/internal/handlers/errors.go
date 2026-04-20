@@ -15,6 +15,10 @@ func MapIngestDomainError(err error) (int, string, error) {
 		return http.StatusBadRequest, "bad request", err
 	}
 
+	if errors.Is(err, domain.ErrNotFound) {
+		return http.StatusNotFound, "resource not found", err
+	}
+
 	if errors.Is(err, domain.ErrConflict) {
 		return http.StatusConflict, "conflict", err
 	}

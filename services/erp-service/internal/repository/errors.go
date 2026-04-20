@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/jackc/pgerrcode"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 )
 
@@ -25,6 +26,10 @@ func WrapMappedDBError(op string, err error) error {
 func mapPgError(err error) error {
 	if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
 		return err
+	}
+
+	if errors.Is(err, pgx.ErrNoRows) {
+		return domain.ErrNotFound
 	}
 
 	var pgErr *pgconn.PgError

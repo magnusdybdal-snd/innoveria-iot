@@ -41,7 +41,7 @@ func GetOneProductionResource(svc domain.ProductionResourceSvc) http.HandlerFunc
 		companyID := "a0000000-0000-0000-0000-000000000001" // TODO: use real company id
 
 		idStr := r.PathValue("id")
-		idInt, err := strconv.ParseInt(idStr, 10, 64)
+		idInt, err := strconv.ParseInt(idStr, 10, 64) // converts to int64
 		if err != nil {
 			json.HandleError(w, http.StatusBadRequest, err, "invalid production resource id")
 			return

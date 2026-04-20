@@ -40,7 +40,7 @@ func NewProductionResourceRepo(db *dbutil.DB) *ProductionResourceRepoImpl {
 func (r *ProductionResourceRepoImpl) FindAllByCompanyID(ctx context.Context, companyID string) ([]domain.ProductionResource, error) {
 	rows, err := r.db.Pool.Query(ctx, FindAllProductionResourceByCompanyIDQuery, companyID)
 	if err != nil {
-		return nil, fmt.Errorf("find all production resource by company id: %w", err)
+		return nil, WrapMappedDBError("find all production resource by company id", err)
 	}
 	defer rows.Close()
 
@@ -56,14 +56,14 @@ func (r *ProductionResourceRepoImpl) FindAllByCompanyID(ctx context.Context, com
 			&prodRes.ReceivedAt,
 		)
 		if err != nil {
-			return nil, fmt.Errorf("scan production resource: %w", err)
+			return nil, WrapMappedDBError("scan production resource", err)
 		}
 
 		out = append(out, prodRes)
 	}
 
 	if err != nil {
-		return nil, fmt.Errorf("find all production resource by id: %w", err)
+		return nil, fmt.Errorf("find all production resources: %w", err)
 	}
 
 	return out, nil
@@ -81,7 +81,7 @@ func (r *ProductionResourceRepoImpl) FindByID(ctx context.Context, productionRes
 		&out.ReceivedAt,
 	)
 	if err != nil {
-		return domain.ProductionResource{}, fmt.Errorf("scan production resource: %w", err)
+		return domain.ProductionResource{}, WrapMappedDBError("find production resource by id", err)
 	}
 	return out, nil
 }
