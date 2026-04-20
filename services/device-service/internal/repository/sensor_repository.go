@@ -30,11 +30,10 @@ const (
 		ORDER BY created_at ASC
 	`
 
-	// TODO: Add AND company_id = $2 when auth is wired
 	findByProductionResourceIDQuery = `
 		SELECT sensor_id, company_id, device_eui, app_key, name, description, state, factory_id, factory_area_id, production_resource_id, chirpstack_profile_id, created_at, updated_at
 		FROM device.sensor
-		WHERE production_resource_id = $1
+		WHERE production_resource_id = $1 AND company_id = $2
 		ORDER BY created_at ASC
 	`
 
@@ -186,9 +185,9 @@ func (r *SensorRepository) FindAllByCompanyID(ctx context.Context, companyID str
 }
 
 // FindByProductionResourceID retrieves sensor by their production resource id. returns an empty slice if no sensors found on that resource.
-func (r *SensorRepository) FindByProductionResourceID(ctx context.Context, productionResourceID string) ([]domain.Sensor, error) {
+func (r *SensorRepository) FindByProductionResourceID(ctx context.Context, companyID string, productionResourceID string) ([]domain.Sensor, error) {
 
-	rows, err := r.db.Pool.Query(ctx, findByProductionResourceIDQuery, productionResourceID)
+	rows, err := r.db.Pool.Query(ctx, findByProductionResourceIDQuery, productionResourceID, companyID)
 	if err != nil {
 		return nil, fmt.Errorf("find sensors by production resource id: %w", err)
 	}

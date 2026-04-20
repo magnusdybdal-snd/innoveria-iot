@@ -164,10 +164,10 @@ func (s *SensorServiceImpl) Update(ctx context.Context, sensorID string, payload
 
 // GetAll retrieves all sensors belonging to a companyID from the database and merges the
 // response with the status from Chirpstack (status and last seen).
-func (s *SensorServiceImpl) GetAll(ctx context.Context) ([]domain.Sensor, error) {
+func (s *SensorServiceImpl) GetAll(ctx context.Context, companyID string) ([]domain.Sensor, error) {
 
 	// fetch all sensor belonging to the company in db
-	sensors, err := s.sensorRepo.FindAllByCompanyID(ctx, "a0000000-0000-0000-0000-000000000001") // TODO: replace with AUTH
+	sensors, err := s.sensorRepo.FindAllByCompanyID(ctx, companyID)
 	if err != nil {
 		return nil, fmt.Errorf("get all sensors: getting sensors from db: %w", err)
 	}
@@ -192,9 +192,9 @@ func (s *SensorServiceImpl) GetAll(ctx context.Context) ([]domain.Sensor, error)
 
 // GetByProductionResourceID  retrieves all sensors attatched to one production resource ID from the database and merges the
 // response with the status from Chirpstack (status and last seen).
-func (s *SensorServiceImpl) GetByProductionResourceID(ctx context.Context, productionResourceID string) ([]domain.Sensor, error) {
+func (s *SensorServiceImpl) GetByProductionResourceID(ctx context.Context, companyID string, productionResourceID string) ([]domain.Sensor, error) {
 
-	sensors, err := s.sensorRepo.FindByProductionResourceID(ctx, productionResourceID)
+	sensors, err := s.sensorRepo.FindByProductionResourceID(ctx, companyID, productionResourceID)
 	if err != nil {
 		return nil, fmt.Errorf("get sensors by production resource: %w", err)
 	}
@@ -214,6 +214,16 @@ func (s *SensorServiceImpl) GetByProductionResourceID(ctx context.Context, produ
 	}
 
 	return result, nil
+}
+
+// GetByID retreives a single sensor byt its ID.
+func (s *SensorServiceImpl) GetByID(ctx context.Context, sensorID string) (domain.Sensor, error) {
+	sensor, err := s.sensorRepo.FindByID(ctx, sensorID)
+	if err != nil {
+		return domain.Sensor{}, fmt.Errorf("get sensor by id: %w", err)
+	}
+
+	return sensor, nil
 }
 
 // Delete removes a sensor from Chirpstack and then from the database.
