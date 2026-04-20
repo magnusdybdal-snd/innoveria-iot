@@ -424,6 +424,8 @@ paths:
           description: No Content
         "400":
           description: Bad Request
+        "404":
+          description: Not Found
         "500":
           description: Internal Server Error
       summary: Delete a gateway
@@ -449,6 +451,8 @@ paths:
           description: No Content
         "400":
           description: Bad Request
+        "404":
+          description: Not Found
         "500":
           description: Internal Server Error
       summary: Update a gateway
@@ -731,6 +735,8 @@ paths:
           description: No Content
         "400":
           description: Bad Request
+        "404":
+          description: Not Found
         "500":
           description: Internal Server Error
       summary: Delete a sensor
@@ -756,6 +762,8 @@ paths:
           description: No Content
         "400":
           description: Bad Request
+        "404":
+          description: Not Found
         "500":
           description: Internal Server Error
       summary: Update a sensor
