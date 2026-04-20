@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"context"
+	"errors"
 	"net/http"
 
 	"innoveria-iot/erp-service/internal/domain"
@@ -20,6 +22,13 @@ func PostIngestOrder(svc domain.Ingest) http.HandlerFunc {
 		}
 		result := dto.MapMonitorOrderToDomain(payload)
 		if err := svc.CreateOrder(ctx, result); err != nil {
+			status, message, cause := mapIngestDomainError(err)
+			json.HandleError(w, status, cause, message)
+			return
+		}
+		if err := json.Encode(w, http.StatusAccepted, map[string]int{
+			"count": len(payload),
+		}); err != nil {
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
 			return
 		}
@@ -38,6 +47,13 @@ func PostIngestOrderOperations(svc domain.Ingest) http.HandlerFunc {
 		}
 		result := dto.MapMonitorOrderOperationToDomain(payload)
 		if err := svc.CreateOrderOperation(ctx, result); err != nil {
+			status, message, cause := mapIngestDomainError(err)
+			json.HandleError(w, status, cause, message)
+			return
+		}
+		if err := json.Encode(w, http.StatusAccepted, map[string]int{
+			"count": len(payload),
+		}); err != nil {
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
 			return
 		}
@@ -56,6 +72,13 @@ func PostIngestOrderReports(svc domain.Ingest) http.HandlerFunc {
 		}
 		result := dto.MapMonitorOrderReportToDomain(payload)
 		if err := svc.CreateOrderReport(ctx, result); err != nil {
+			status, message, cause := mapIngestDomainError(err)
+			json.HandleError(w, status, cause, message)
+			return
+		}
+		if err := json.Encode(w, http.StatusAccepted, map[string]int{
+			"count": len(payload),
+		}); err != nil {
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
 			return
 		}
@@ -74,8 +97,31 @@ func PostIngestWorkCenters(svc domain.Ingest) http.HandlerFunc {
 		}
 		result := dto.MapMonitorWorkcenterToDomain(payload)
 		if err := svc.CreateProductionResource(ctx, result); err != nil {
+			status, message, cause := mapIngestDomainError(err)
+			json.HandleError(w, status, cause, message)
+			return
+		}
+		if err := json.Encode(w, http.StatusAccepted, map[string]int{
+			"count": len(payload),
+		}); err != nil {
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
 			return
 		}
 	}
+}
+
+func mapIngestDomainError(err error) (int, string, error) {
+	if errors.Is(err, domain.ErrInvalidInput) {
+		return http.StatusBadRequest, "bad request", err
+	}
+
+	if errors.Is(err, domain.ErrConflict) {
+		return http.StatusConflict, "conflict", err
+	}
+
+	if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
+		return http.StatusServiceUnavailable, "request canceled", err
+	}
+
+	return http.StatusInternalServerError, "internal server error", err
 }
