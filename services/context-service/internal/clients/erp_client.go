@@ -25,24 +25,23 @@ func NewERPClient(baseURL string) *ERPClient {
 	}
 }
 
-// GetOrders fetches all orders for the given company from the ERP service,
-// each enriched with their operations and production resources.
+// GetOrders fetches the slim order list for the given company from the ERP service.
 //
 // TODO: the route /api/v1/erp/orders does not exist on the erp-service yet.
 // Update the URL and query parameters once the GET endpoint is implemented.
-func (c *ERPClient) GetOrders(ctx context.Context, companyID string) ([]domain.ERPOrder, error) {
+func (c *ERPClient) GetOrders(ctx context.Context, companyID string) ([]domain.ERPOrderSummary, error) {
 	url := fmt.Sprintf("%s/api/v1/erp/orders?company_id=%s", c.baseURL, companyID)
 
-	resp, err := httpclient.DoRequest[[]dto.ERPOrderResponse](
+	resp, err := httpclient.DoRequest[[]dto.ERPOrderSummaryResponse](
 		c.client, ctx, url, http.MethodGet, nil, nil,
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	orders := make([]domain.ERPOrder, len(resp))
+	orders := make([]domain.ERPOrderSummary, len(resp))
 	for i, o := range resp {
-		orders[i] = mappers.ToERPOrder(o)
+		orders[i] = mappers.ToERPOrderSummary(o)
 	}
 	return orders, nil
 }

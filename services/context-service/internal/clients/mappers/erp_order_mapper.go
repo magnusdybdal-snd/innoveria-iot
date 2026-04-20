@@ -5,6 +5,14 @@ import (
 	"innoveria-iot/context-service/internal/domain"
 )
 
+// ToERPOrderSummary converts a slim order summary DTO to its domain representation.
+func ToERPOrderSummary(r dto.ERPOrderSummaryResponse) domain.ERPOrderSummary {
+	return domain.ERPOrderSummary{
+		ID:   r.ID,
+		Name: r.Name,
+	}
+}
+
 // ToERPProductionResource converts a production resource DTO to its domain representation.
 func ToERPProductionResource(r dto.ERPProductionResourceResponse) domain.ERPProductionResource {
 	return domain.ERPProductionResource{

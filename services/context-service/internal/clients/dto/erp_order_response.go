@@ -2,15 +2,21 @@ package dto
 
 import "time"
 
+// ERPOrderSummaryResponse is the slim JSON shape returned by GET /api/v1/erp/orders.
+type ERPOrderSummaryResponse struct {
+	ID   int64  `json:"id"`
+	Name string `json:"name"`
+}
+
 // ERPProductionResourceResponse is the JSON shape for a work center returned
-// by the erp-service GET orders endpoint.
+// by the erp-service GET orders/{id} endpoint.
 //
 // TODO: adjust field names to match the real erp-service GET endpoint once it is implemented.
 type ERPProductionResourceResponse struct {
-	ID          int64   `json:"id"`
-	Number      string  `json:"number"`
-	Description *string `json:"description"`
-	Type        string  `json:"type"`
+	ID          int64  `json:"id"`
+	Number      string `json:"number"`
+	Description string `json:"description"`
+	Type        string `json:"type"`
 }
 
 // ERPOrderOperationResponse is the JSON shape for a single manufacturing
