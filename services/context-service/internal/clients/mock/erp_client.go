@@ -30,6 +30,7 @@ var mockOrders = []domain.ERPOrder{
 	{
 		ID:                1,
 		OrderNumber:       "MO-2026-001",
+		PartID:            "PART-001",
 		PartDescription:   "Steel Frame A",
 		PlannedStartDate:  time.Date(2026, 4, 14, 6, 0, 0, 0, time.UTC),
 		PlannedFinishDate: time.Date(2026, 4, 14, 14, 0, 0, 0, time.UTC),
@@ -37,6 +38,7 @@ var mockOrders = []domain.ERPOrder{
 		ActualFinishDate:  ptr(time.Date(2026, 4, 14, 13, 55, 0, 0, time.UTC)),
 		Status:            "finished",
 		Priority:          1,
+		ReceivedAt:        time.Date(2026, 4, 14, 5, 0, 0, 0, time.UTC),
 		Operations: []domain.ERPOrderOperation{
 			{
 				ID: 10,
@@ -52,12 +54,23 @@ var mockOrders = []domain.ERPOrder{
 				ActualFinishDate:         ptr(time.Date(2026, 4, 14, 13, 55, 0, 0, time.UTC)),
 				Status:                   "finished",
 				ProductionResourceStatus: "finished",
+				Reports: []domain.ERPOrderReport{
+					{
+						ID:                 100,
+						Quantity:           8.0,
+						RestQuantity:       0.0,
+						Type:               "regular",
+						ReportingTimestamp: time.Date(2026, 4, 14, 13, 55, 0, 0, time.UTC),
+						ActualReportedDate: ptr(time.Date(2026, 4, 14, 14, 0, 0, 0, time.UTC)),
+					},
+				},
 			},
 		},
 	},
 	{
 		ID:                2,
 		OrderNumber:       "MO-2026-002",
+		PartID:            "PART-002",
 		PartDescription:   "Aluminium Panel B",
 		PlannedStartDate:  time.Date(2026, 4, 14, 14, 0, 0, 0, time.UTC),
 		PlannedFinishDate: time.Date(2026, 4, 14, 22, 0, 0, 0, time.UTC),
@@ -65,6 +78,7 @@ var mockOrders = []domain.ERPOrder{
 		ActualFinishDate:  ptr(time.Date(2026, 4, 14, 21, 50, 0, 0, time.UTC)),
 		Status:            "finished",
 		Priority:          2,
+		ReceivedAt:        time.Date(2026, 4, 14, 13, 0, 0, 0, time.UTC),
 		Operations: []domain.ERPOrderOperation{
 			{
 				ID: 20,
@@ -80,6 +94,16 @@ var mockOrders = []domain.ERPOrder{
 				ActualFinishDate:         ptr(time.Date(2026, 4, 14, 21, 50, 0, 0, time.UTC)),
 				Status:                   "finished",
 				ProductionResourceStatus: "finished",
+				Reports: []domain.ERPOrderReport{
+					{
+						ID:                 200,
+						Quantity:           12.5,
+						RestQuantity:       0.0,
+						Type:               "regular",
+						ReportingTimestamp: time.Date(2026, 4, 14, 21, 50, 0, 0, time.UTC),
+						ActualReportedDate: ptr(time.Date(2026, 4, 14, 22, 0, 0, 0, time.UTC)),
+					},
+				},
 			},
 		},
 	},
@@ -90,6 +114,7 @@ var mockOrders = []domain.ERPOrder{
 	{
 		ID:                3,
 		OrderNumber:       "MO-2026-003",
+		PartID:            "PART-003",
 		PartDescription:   "Live Sensor Demo",
 		PlannedStartDate:  mockWindowStart,
 		PlannedFinishDate: mockWindowEnd,
@@ -97,6 +122,7 @@ var mockOrders = []domain.ERPOrder{
 		ActualFinishDate:  ptr(mockWindowEnd),
 		Status:            "finished",
 		Priority:          1,
+		ReceivedAt:        mockWindowStart,
 		Operations: []domain.ERPOrderOperation{
 			{
 				ID: 30,
@@ -112,6 +138,7 @@ var mockOrders = []domain.ERPOrder{
 				ActualFinishDate:         ptr(mockWindowEnd),
 				Status:                   "finished",
 				ProductionResourceStatus: "finished",
+				Reports:                  []domain.ERPOrderReport{},
 			},
 			{
 				ID: 31,
@@ -127,6 +154,7 @@ var mockOrders = []domain.ERPOrder{
 				ActualFinishDate:         ptr(mockWindowEnd),
 				Status:                   "finished",
 				ProductionResourceStatus: "finished",
+				Reports:                  []domain.ERPOrderReport{},
 			},
 		},
 	},

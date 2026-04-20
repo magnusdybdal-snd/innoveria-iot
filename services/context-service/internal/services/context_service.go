@@ -122,6 +122,15 @@ func (s *ContextServiceImpl) GetOrders(ctx context.Context, companyID string) ([
 	return orders, nil
 }
 
+// GetOrderByID retrieves a single ERP order with full detail.
+func (s *ContextServiceImpl) GetOrderByID(ctx context.Context, companyID string, orderID int64) (*domain.ERPOrder, error) {
+	order, err := s.erpClient.GetOrderByID(ctx, companyID, orderID)
+	if err != nil {
+		return nil, fmt.Errorf("fetching order from ERP: %w", err)
+	}
+	return order, nil
+}
+
 // GetOrderContext aggregates ERP order data with sensor and measurement context
 // for a single order identified by orderID.
 func (s *ContextServiceImpl) GetOrderContext(ctx context.Context, companyID string, orderID int64) (*domain.OrderContext, error) {
