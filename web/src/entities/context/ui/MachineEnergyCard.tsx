@@ -4,7 +4,6 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
-import Chip from "@mui/material/Chip";
 import Collapse from "@mui/material/Collapse";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
@@ -16,7 +15,6 @@ import type {
   OperationContext,
   SensorMetric,
 } from "@entities/context/model/contextSchema";
-import { OPERATION_STATUS_COLOR } from "@entities/context/model/statusColors";
 import { BucketLineChart } from "@entities/context/ui/BucketLineChart";
 import { resolveSensorState } from "@entities/context/ui/sensorState";
 import { SensorStateIndicator } from "@entities/context/ui/SensorStateIndicator";
@@ -164,15 +162,9 @@ export function MachineEnergyCard({
       )}
 
       {/* Operation status chip */}
-      <Box sx={{ mb: 1.5 }}>
-        <Chip
-          label={formatStatus(operation.status)}
-          color={OPERATION_STATUS_COLOR[operation.status] ?? "default"}
-          size="small"
-        />
-      </Box>
+      <Box sx={{ mb: 1.5 }}></Box>
 
-      {/* Energy placeholder — TODO: wire up kWh once backend returns energy totals (see issue #___) */}
+      {/* Energy placeholder — TODO: wire up kWh once backend returns energy totals (see issue #293) */}
       <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1.5 }}>
         <Typography variant="body2" sx={{ opacity: 0.7 }}>
           Energy:
