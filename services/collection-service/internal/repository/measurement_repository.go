@@ -21,7 +21,7 @@ const (
 	findLatestQuery = `
 		SELECT device_eui, timestamp, payload, company_id
 		FROM collection.sensor_measurement
-		WHERE device_eui = $1
+		WHERE company_id = $1 AND device_eui = $2
 		ORDER BY timestamp DESC
 		LIMIT 1
 	`
@@ -29,9 +29,9 @@ const (
 	findByTimeRangeQuery = `
 		SELECT device_eui, timestamp, payload, company_id
 		FROM collection.sensor_measurement
-		WHERE device_eui = $1
-		  AND timestamp >= $2
-		  AND timestamp <= $3
+		WHERE company_id = $1 AND device_eui = $2
+		  AND timestamp >= $3
+		  AND timestamp <= $4
 		ORDER BY timestamp ASC
 	`
 
@@ -84,14 +84,14 @@ func (r *MeasurementRepository) Insert(ctx context.Context, measurement domain.S
 	return nil
 }
 
-// FindLatest returns the most recent measurement for the given device.
-func (r *MeasurementRepository) FindLatest(ctx context.Context, deviceEUI string) (domain.SensorMeasurement, error) {
+// FindLatest returns the most recent measurement for the given device, scoped to the caller's company.
+func (r *MeasurementRepository) FindLatest(ctx context.Context, companyID string, deviceEUI string) (domain.SensorMeasurement, error) {
 
 	var measurement domain.SensorMeasurement
 	// pgx cannot scan JSONB directly into our map structure, so it needs to be unmarshaled first.
 	var payloadBytes []byte
 
-	err := r.db.Pool.QueryRow(ctx, findLatestQuery, deviceEUI).Scan(
+	err := r.db.Pool.QueryRow(ctx, findLatestQuery, companyID, deviceEUI).Scan(
 		&measurement.DeviceEUI,
 		&measurement.Timestamp,
 		&payloadBytes,
@@ -111,9 +111,9 @@ func (r *MeasurementRepository) FindLatest(ctx context.Context, deviceEUI string
 }
 
 // FindByTimeRange returns all measurements for a device within the given time window, ordered oldest first.
-func (r *MeasurementRepository) FindByTimeRange(ctx context.Context, deviceEUI string, from, to time.Time) ([]domain.SensorMeasurement, error) {
+func (r *MeasurementRepository) FindByTimeRange(ctx context.Context, companyID string, deviceEUI string, from, to time.Time) ([]domain.SensorMeasurement, error) {
 
-	rows, err := r.db.Pool.Query(ctx, findByTimeRangeQuery, deviceEUI, from, to)
+	rows, err := r.db.Pool.Query(ctx, findByTimeRangeQuery, companyID, deviceEUI, from, to)
 	if err != nil {
 		return nil, fmt.Errorf("find by time range: %w", err)
 	}
