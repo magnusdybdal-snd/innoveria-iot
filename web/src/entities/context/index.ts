@@ -23,6 +23,10 @@ export {
   postRule,
   deleteRule,
 } from "./api";
+export {
+  ORDER_STATUS_COLOR,
+  OPERATION_STATUS_COLOR,
+} from "./model/statusColors";
 export { useRules } from "./model/useRules";
 export { useOrders } from "./model/useOrders";
 export { useOrderContext } from "./model/useOrderContext";

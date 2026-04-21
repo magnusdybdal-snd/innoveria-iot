@@ -16,20 +16,11 @@ import type {
   OperationContext,
   SensorMetric,
 } from "@entities/context/model/contextSchema";
+import { OPERATION_STATUS_COLOR } from "@entities/context/model/statusColors";
 import { BucketLineChart } from "@entities/context/ui/BucketLineChart";
-import {
-  resolveSensorState,
-  SensorStateIndicator,
-} from "@entities/context/ui/SensorStateIndicator";
+import { resolveSensorState } from "@entities/context/ui/sensorState";
+import { SensorStateIndicator } from "@entities/context/ui/SensorStateIndicator";
 import { formatStatus } from "@shared/lib";
-
-/** Maps ERP operation status strings to MUI Chip color variants. */
-const STATUS_COLOR: Record<string, "default" | "warning" | "info" | "success"> =
-  {
-    pending: "warning",
-    in_progress: "info",
-    completed: "success",
-  };
 
 /**
  * Converts raw measurements for a single payload key into the `BucketResponse`
@@ -176,7 +167,7 @@ export function MachineEnergyCard({
       <Box sx={{ mb: 1.5 }}>
         <Chip
           label={formatStatus(operation.status)}
-          color={STATUS_COLOR[operation.status] ?? "default"}
+          color={OPERATION_STATUS_COLOR[operation.status] ?? "default"}
           size="small"
         />
       </Box>

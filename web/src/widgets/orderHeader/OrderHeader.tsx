@@ -4,15 +4,8 @@ import Chip from "@mui/material/Chip";
 import Typography from "@mui/material/Typography";
 
 import type { Order } from "@entities/context/model/contextSchema";
+import { ORDER_STATUS_COLOR } from "@entities/context/model/statusColors";
 import { formatStatus, formatTimestamp } from "@shared/lib";
-
-/** Maps ERP order status strings to MUI Chip color variants. */
-const STATUS_COLOR: Record<string, "default" | "warning" | "info" | "success"> =
-  {
-    pending: "warning",
-    in_progress: "info",
-    completed: "success",
-  };
 
 /** Props for the `OrderHeader` component. */
 interface OrderHeaderProps {
@@ -58,7 +51,7 @@ export function OrderHeader({ order }: OrderHeaderProps) {
         </Box>
         <Chip
           label={formatStatus(order.status)}
-          color={STATUS_COLOR[order.status] ?? "default"}
+          color={ORDER_STATUS_COLOR[order.status] ?? "default"}
         />
       </Box>
 
