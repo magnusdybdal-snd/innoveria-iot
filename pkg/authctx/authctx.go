@@ -14,7 +14,7 @@ const (
 	// RolePlatformAdmin is the platform administrator role.
 	RolePlatformAdmin = "PLATFORM_ADMIN"
 	// RoleUser is the standard user role.
-	RoleUser = "USER"
+	RoleUser = "FACTORY_WORKER"
 )
 
 // Auth holds the authenticated user's identity extracted from request headers.
