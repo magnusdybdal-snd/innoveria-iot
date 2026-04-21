@@ -119,7 +119,7 @@ func (r *MeasurementRepository) FindByTimeRange(ctx context.Context, companyID s
 	}
 	defer rows.Close()
 
-	var measurements []domain.SensorMeasurement
+	measurements := []domain.SensorMeasurement{}
 
 	for rows.Next() {
 		var measurement domain.SensorMeasurement
