@@ -73,6 +73,24 @@ export function OrderHeader({ order }: OrderHeaderProps) {
           </Typography>
         </Box>
       </Box>
+      <Box sx={{ display: "flex", gap: 4, mt: 2, flexWrap: "wrap" }}>
+        <Box>
+          <Typography variant="caption" sx={{ opacity: 0.6 }}>
+            Actual start
+          </Typography>
+          <Typography variant="body2">
+            {formatTimestamp(order.actualStartDate || "undefined")}
+          </Typography>
+        </Box>
+        <Box>
+          <Typography variant="caption" sx={{ opacity: 0.6 }}>
+            Actual finish
+          </Typography>
+          <Typography variant="body2">
+            {formatTimestamp(order.actualFinishDate || "undefined")}
+          </Typography>
+        </Box>
+      </Box>
     </Card>
   );
 }
