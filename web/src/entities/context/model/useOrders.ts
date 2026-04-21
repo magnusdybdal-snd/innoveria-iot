@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
 
 import { getOrders } from "@entities/context/api";
-import type { Order } from "@entities/context/model/contextSchema";
+import type { OrderSummary } from "@entities/context/model/contextSchema";
 
 /** Return type of the `useOrders` hook. */
 export interface UseOrdersResult {
-  /** The fetched orders, empty until the request resolves. */
-  orders: Order[];
+  /** The fetched order summaries, empty until the request resolves. */
+  orders: OrderSummary[];
   /** True while the request is in-flight. */
   isLoading: boolean;
   /** Set to an `Error` if the request failed, otherwise `null`. */
@@ -20,7 +20,7 @@ export interface UseOrdersResult {
  * @returns Orders array, loading flag, error state, and a stable refetch callback.
  */
 export function useOrders(): UseOrdersResult {
-  const [orders, setOrders] = useState<Order[]>([]);
+  const [orders, setOrders] = useState<OrderSummary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [refetchIndex, setRefetchIndex] = useState(0);

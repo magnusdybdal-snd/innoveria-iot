@@ -18,6 +18,12 @@ export interface OrderOperation {
   productionResourceStatus: string;
 }
 
+/** Slim order representation returned by GET /orders (id + display name only). */
+export interface OrderSummary {
+  id: number;
+  name: string;
+}
+
 export interface Order {
   id: number;
   orderNumber: string;

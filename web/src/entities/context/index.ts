@@ -6,6 +6,7 @@ export type {
   AggregationRule,
   CreateRuleRequest,
   Order,
+  OrderSummary,
   OrderOperation,
   ProductionResource,
   SensorMetric,
@@ -26,5 +27,13 @@ export { useRules } from "./model/useRules";
 export { useOrders } from "./model/useOrders";
 export { useOrderContext } from "./model/useOrderContext";
 export { RuleRow } from "./ui";
-export { BucketBarChart, BucketLineChart, MachineCard } from "./ui";
+export {
+  BucketBarChart,
+  BucketLineChart,
+  MachineCard,
+  MachineEnergyCard,
+  SensorStateIndicator,
+  resolveSensorState,
+} from "./ui";
+export type { SensorState } from "./ui";
 export { toMinutes, BUCKET_UNIT_OPTIONS } from "./lib";
