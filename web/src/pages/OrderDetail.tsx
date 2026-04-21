@@ -1,13 +1,12 @@
-import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { useParams } from "react-router";
 
 import { useOrderContext } from "@entities/context";
-import { MachineEnergyCard } from "@entities/context/ui/MachineEnergyCard";
 import { LoadingIndicator } from "@shared/ui/LoadingIndicator";
 import { PageContent } from "@shared/ui/PageContent";
 import { SubPageHeader } from "@shared/ui/SubPageHeader";
 import { OrderHeader } from "@widgets/orderHeader";
+import { WorkCenterGrid } from "@widgets/workCenterGrid";
 
 /**
  * Page displaying a single ERP order with its operations and sensor data.
@@ -36,19 +35,7 @@ export default function OrderDetail() {
         {!isLoading && !error && orderContext && (
           <>
             <OrderHeader order={orderContext.order} />
-
-            <Typography variant="h6" sx={{ mb: 2 }}>
-              Work Centers
-            </Typography>
-
-            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
-              {orderContext.operations.map((opCtx) => (
-                <MachineEnergyCard
-                  key={opCtx.operation.id}
-                  operationContext={opCtx}
-                />
-              ))}
-            </Box>
+            <WorkCenterGrid operations={orderContext.operations} />
           </>
         )}
       </PageContent>
