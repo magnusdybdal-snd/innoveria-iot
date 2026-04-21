@@ -1,11 +1,11 @@
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
-import Chip from "@mui/material/Chip";
 import Typography from "@mui/material/Typography";
 
 import type { Order } from "@entities/context/model/contextSchema";
-import { ORDER_STATUS_COLOR } from "@entities/context/model/statusColors";
-import { formatStatus, formatTimestamp } from "@shared/lib";
+
+import { OrderDates } from "./OrderDates";
+import { OrderStatusChip } from "./OrderStatusChip";
 
 /** Props for the `OrderHeader` component. */
 interface OrderHeaderProps {
@@ -15,7 +15,7 @@ interface OrderHeaderProps {
 
 /**
  * Card displaying the key metadata for an ERP order: order number, part description,
- * status badge, and planned start/finish dates.
+ * status badge, and planned/actual start and finish dates.
  * @param props - Component props
  * @param props.order - The order to render
  * @returns The rendered order header card
@@ -39,6 +39,7 @@ export function OrderHeader({ order }: OrderHeaderProps) {
           justifyContent: "space-between",
           flexWrap: "wrap",
           gap: 1,
+          mb: 2,
         }}
       >
         <Box>
@@ -49,47 +50,22 @@ export function OrderHeader({ order }: OrderHeaderProps) {
             {order.partDescription}
           </Typography>
         </Box>
-        <Chip
-          label={formatStatus(order.status)}
-          color={ORDER_STATUS_COLOR[order.status] ?? "default"}
-        />
+        <OrderStatusChip status={order.status} />
       </Box>
 
-      <Box sx={{ display: "flex", gap: 4, mt: 2, flexWrap: "wrap" }}>
-        <Box>
-          <Typography variant="caption" sx={{ opacity: 0.6 }}>
-            Planned start
-          </Typography>
-          <Typography variant="body2">
-            {formatTimestamp(order.plannedStartDate)}
-          </Typography>
-        </Box>
-        <Box>
-          <Typography variant="caption" sx={{ opacity: 0.6 }}>
-            Planned finish
-          </Typography>
-          <Typography variant="body2">
-            {formatTimestamp(order.plannedFinishDate)}
-          </Typography>
-        </Box>
-      </Box>
-      <Box sx={{ display: "flex", gap: 4, mt: 2, flexWrap: "wrap" }}>
-        <Box>
-          <Typography variant="caption" sx={{ opacity: 0.6 }}>
-            Actual start
-          </Typography>
-          <Typography variant="body2">
-            {formatTimestamp(order.actualStartDate || "undefined")}
-          </Typography>
-        </Box>
-        <Box>
-          <Typography variant="caption" sx={{ opacity: 0.6 }}>
-            Actual finish
-          </Typography>
-          <Typography variant="body2">
-            {formatTimestamp(order.actualFinishDate || "undefined")}
-          </Typography>
-        </Box>
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+        <OrderDates
+          plannedLabel="Planned start"
+          plannedDate={order.plannedStartDate}
+          actualLabel="Actual start"
+          actualDate={order.actualStartDate}
+        />
+        <OrderDates
+          plannedLabel="Planned finish"
+          plannedDate={order.plannedFinishDate}
+          actualLabel="Actual finish"
+          actualDate={order.actualFinishDate}
+        />
       </Box>
     </Card>
   );
