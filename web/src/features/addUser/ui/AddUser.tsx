@@ -56,6 +56,10 @@ export function AddUser({
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("FACTORY_WORKER");
   const [fillError, setFillError] = useState(false);
+  const [emailError, setEmailError] = useState(false);
+
+  const isValidEmail = (value: string) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
   const handleClose = () => {
     setName("");
@@ -63,6 +67,7 @@ export function AddUser({
     setPassword("");
     setRole("FACTORY_WORKER");
     setFillError(false);
+    setEmailError(false);
     onClose();
   };
 
@@ -71,7 +76,13 @@ export function AddUser({
       setFillError(true);
       return;
     }
+    if (!isValidEmail(email)) {
+      setFillError(false);
+      setEmailError(true);
+      return;
+    }
     setFillError(false);
+    setEmailError(false);
     onAdd({
       companyId,
       name: name.trim(),
@@ -107,7 +118,10 @@ export function AddUser({
           label="Email"
           type="email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => {
+            setEmail(e.target.value.toLowerCase());
+            setEmailError(false);
+          }}
           fullWidth
           sx={inputSx}
         />
@@ -137,6 +151,9 @@ export function AddUser({
           <div style={{ color: "red" }}>
             Name, email and password are required
           </div>
+        )}
+        {emailError && (
+          <div style={{ color: "red" }}>Please enter a valid email address</div>
         )}
         {submitError && <div style={{ color: "red" }}>{submitError}</div>}
       </DialogContent>
