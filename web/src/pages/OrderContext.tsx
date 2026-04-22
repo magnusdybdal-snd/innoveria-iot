@@ -88,23 +88,6 @@ export default function OrderContext() {
               </Box>
             </>
           )}
-          {/* DEBUG: Display selected order details in a formatted JSON block */}
-          {selectedOrder && (
-            <Box
-              component="pre"
-              sx={{
-                mt: 3,
-                p: 2,
-                backgroundColor: "primary.dark",
-                color: "primary.main",
-                borderRadius: 1,
-                fontSize: "0.8rem",
-                overflowX: "auto",
-              }}
-            >
-              {JSON.stringify(selectedOrder, null, 2)}
-            </Box>
-          )}
         </Box>
       </PageContent>
     </div>
