@@ -39,26 +39,26 @@ func NewOrderRepo(db *dbutil.DB) *OrderRepoImpl {
 
 // FindAllByCompanyID retrieves all orders belonging to the given company.
 // Returns only id and order number for summary/list views.
-func (r *OrderRepoImpl) FindAllByCompanyID(ctx context.Context, companyID string) ([]domain.Order, error) {
+func (r *OrderRepoImpl) FindAllByCompanyID(ctx context.Context, companyID string) ([]domain.OrderSummary, error) {
 	rows, err := r.db.Pool.Query(ctx, FindAllOrderByCompanyIDQuery, companyID)
 	if err != nil {
 		return nil, WrapMappedDBError("find all orders by company id", err)
 	}
 	defer rows.Close()
 
-	out := make([]domain.Order, 0)
+	out := make([]domain.OrderSummary, 0)
 
 	for rows.Next() {
-		var order domain.Order
+		var orderSummary domain.OrderSummary
 		err := rows.Scan(
-			&order.ID,
-			&order.OrderNumber,
+			&orderSummary.ID,
+			&orderSummary.OrderNumber,
 		)
 		if err != nil {
 			return nil, WrapMappedDBError("scan order summary", err)
 		}
 
-		out = append(out, order)
+		out = append(out, orderSummary)
 	}
 
 	if err := rows.Err(); err != nil {

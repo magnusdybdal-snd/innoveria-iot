@@ -28,6 +28,13 @@ const (
 	OrderStatusHistorical OrderStatus = "historical"
 )
 
+// OrderSummary represent all available orders from Monitor ERP
+// its used for showcasing all available orderIDs, so the orderID can be reused for aggregated result
+type OrderSummary struct {
+	ID          int64
+	OrderNumber string
+}
+
 // Order represents a manufacturing order ingested from Monitor ERP.
 type Order struct {
 	ID                int64
@@ -46,6 +53,12 @@ type Order struct {
 
 // OrderRepo defines the repository interface for orders.
 type OrderRepo interface {
-	FindAllByCompanyID(ctx context.Context, companyID string) ([]Order, error)
+	FindAllByCompanyID(ctx context.Context, companyID string) ([]OrderSummary, error)
 	FindByID(ctx context.Context, orderID int64, companyID string) (Order, error)
+}
+
+// OrderService defines the business logic interface for orders
+type OrderService interface {
+	GetAll(ctx context.Context, companyID string) ([]OrderSummary, error)
+	GetOneBy(ctx context.Context, orderID, companyID string) (Order, error)
 }
