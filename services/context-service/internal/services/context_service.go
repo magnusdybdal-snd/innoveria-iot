@@ -9,6 +9,8 @@ import (
 	"strconv"
 	"time"
 
+	"sync"
+
 	"golang.org/x/sync/errgroup"
 
 	"innoveria-iot/context-service/internal/calculators"
@@ -144,18 +146,15 @@ func (s *ContextServiceImpl) GetOrderContext(ctx context.Context, companyID stri
 	from := *found.ActualStartDate
 	to := *found.ActualFinishDate
 
-	g, gctx := errgroup.WithContext(ctx)
-
+	var wg sync.WaitGroup
 	for i, op := range found.Operations {
-		g.Go(func() error {
-			ops[i] = s.buildOperationContext(gctx, op, from, to)
-			return nil
-		})
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			ops[i] = s.buildOperationContext(ctx, op, from, to)
+		}()
 	}
-
-	if err := g.Wait(); err != nil {
-		return nil, err
-	}
+	wg.Wait()
 
 	return &domain.OrderContext{Order: *found, Operations: ops}, nil
 }
