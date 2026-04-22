@@ -51,7 +51,7 @@ func (s *UserServiceImpl) GetAll(ctx context.Context, companyID string) ([]domai
 		return nil, err
 	}
 
-	slog.Info("successfully fetched users", "count", len(users))
+	slog.Debug("successfully fetched users", "count", len(users))
 	return users, nil
 }
 
