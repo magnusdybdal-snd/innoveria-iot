@@ -27,7 +27,7 @@ export default function AppRoutes() {
         <Route path="/" element={<Home />} />
         <Route path="/Dashboard" element={<Dashboard />} />
         <Route path="/Dashboard/Context" element={<Context />} />
-        <Route path="/Admin/Rules" element={<Rules />} />
+        <Route path="/Dashboard/Rules" element={<Rules />} />
         <Route path="/Devices/Sensors" element={<Sensors />} />
         <Route path="/Devices/Gateways" element={<Gateways />} />
         <Route path="/Reports" element={<Home />} />
