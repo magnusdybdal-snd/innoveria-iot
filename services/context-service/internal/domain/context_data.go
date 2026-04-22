@@ -64,11 +64,15 @@ type ContextService interface {
 		from, to time.Time,
 		bucketMins int,
 	) ([]ContextData, error)
-	// GetOrders retrieves all ERP orders, each enriched with their operations
-	// and associated production resources (work centers).
+	// GetOrders retrieves a slim list of ERP orders for populating the order picker.
 	//
 	// TODO: replace with AUTH — companyID should be read from the gateway-injected X-Auth-Company-Id header once auth middleware propagation is wired up.
-	GetOrders(ctx context.Context, companyID string) ([]ERPOrder, error)
+	GetOrders(ctx context.Context, companyID string) ([]ERPOrderSummary, error)
+	// GetOrderByID retrieves a single ERP order with full detail (operations, production resources, reports).
+	// Returns ErrNotFound if no order matches.
+	//
+	// TODO: replace with AUTH — companyID should be read from the gateway-injected X-Auth-Company-Id header once auth middleware propagation is wired up.
+	GetOrderByID(ctx context.Context, companyID string, orderID int64) (*ERPOrder, error)
 	// GetOrderContext aggregates ERP order data with sensor readings for a single order.
 	//
 	// TODO: replace with AUTH — companyID should be read from the gateway-injected X-Auth-Company-Id header once auth middleware propagation is wired up.

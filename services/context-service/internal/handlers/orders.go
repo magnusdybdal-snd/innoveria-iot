@@ -16,6 +16,45 @@ import (
 // TODO: replace with AUTH — read company ID from r.Header.Get("X-Auth-Company-Id") once the gateway injects trusted headers into this service.
 const hardcodedCompanyID = "a0000000-0000-0000-0000-000000000001"
 
+// GetOrderByID returns a single ERP order with full detail (operations, production resources, reports).
+// @Summary		Get Order By ID
+// @Tags		orders
+// @Produce		json
+// @Param		id	path	int	true	"ERP Order ID"
+// @Success		200	{object}	dto.OrderResponse
+// @Failure		400
+// @Failure		404
+// @Failure		500
+// @Router		/orders/{id} [get]
+func GetOrderByID(svc domain.ContextService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+
+		idStr := r.PathValue("id")
+		orderID, err := strconv.ParseInt(idStr, 10, 64)
+		if err != nil {
+			json.HandleError(w, http.StatusBadRequest, err, "invalid order ID, expected an integer")
+			return
+		}
+
+		companyID := hardcodedCompanyID
+
+		order, err := svc.GetOrderByID(ctx, companyID, orderID)
+		if err != nil {
+			if errors.Is(err, domain.ErrNotFound) {
+				json.HandleError(w, http.StatusNotFound, err, "order not found")
+				return
+			}
+			json.HandleError(w, http.StatusInternalServerError, err, "failed to fetch order")
+			return
+		}
+
+		if err := json.Encode(w, http.StatusOK, dto.MapOrderDomainToDTO(*order)); err != nil {
+			json.HandleError(w, http.StatusInternalServerError, err, "failed to encode response")
+		}
+	}
+}
+
 // GetOrderContext aggregates ERP, sensor, and measurement data for a single order.
 // @Summary		Get Order Context
 // @Tags		orders
@@ -61,7 +100,7 @@ func GetOrderContext(svc domain.ContextService) http.HandlerFunc {
 // @Summary		Get Orders
 // @Tags		orders
 // @Produce		json
-// @Success		200	{array}		dto.OrderResponse
+// @Success		200	{array}		dto.OrderSummaryResponse
 // @Failure		500
 // @Router		/orders [get]
 func GetOrders(svc domain.ContextService) http.HandlerFunc {
@@ -78,7 +117,7 @@ func GetOrders(svc domain.ContextService) http.HandlerFunc {
 			return
 		}
 
-		if err := json.Encode(w, http.StatusOK, dto.MapOrdersDomainToDTO(orders)); err != nil {
+		if err := json.Encode(w, http.StatusOK, dto.MapOrdersSummaryToDTO(orders)); err != nil {
 			json.HandleError(w, http.StatusInternalServerError, err, "failed to encode response")
 		}
 	}

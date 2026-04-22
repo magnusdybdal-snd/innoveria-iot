@@ -111,16 +111,24 @@ func (s *ContextServiceImpl) GetContextData(
 	return results, nil
 }
 
-// GetOrders retrieves all ERP orders enriched with their operations and
-// production resources. The companyID is used to scope the query.
+// GetOrders retrieves a slim list of ERP orders for populating the order picker.
 //
 // TODO: replace with AUTH — use X-Auth-Company-Id header once auth middleware propagation is wired up end-to-end.
-func (s *ContextServiceImpl) GetOrders(ctx context.Context, companyID string) ([]domain.ERPOrder, error) {
+func (s *ContextServiceImpl) GetOrders(ctx context.Context, companyID string) ([]domain.ERPOrderSummary, error) {
 	orders, err := s.erpClient.GetOrders(ctx, companyID)
 	if err != nil {
 		return nil, fmt.Errorf("fetching orders from ERP: %w", err)
 	}
 	return orders, nil
+}
+
+// GetOrderByID retrieves a single ERP order with full detail.
+func (s *ContextServiceImpl) GetOrderByID(ctx context.Context, companyID string, orderID int64) (*domain.ERPOrder, error) {
+	order, err := s.erpClient.GetOrderByID(ctx, companyID, orderID)
+	if err != nil {
+		return nil, fmt.Errorf("fetching order from ERP: %w", err)
+	}
+	return order, nil
 }
 
 // GetOrderContext aggregates ERP order data with sensor and measurement context

@@ -18,15 +18,10 @@ func NewERPClient() *ERPClient {
 	return &ERPClient{}
 }
 
+// mockWindowStart/End are evaluated once at service startup.
+// The window covers the 30 days before startup, capturing all measurements
+// already in the collection DB. This models a completed order.
 var (
-	desc1 = "Welding Station 1"
-	desc2 = "Press Station 2"
-	desc3 = "Assembly Line A"
-	desc4 = "Cutting Station 3"
-
-	// mockWindowStart/End are evaluated once at service startup.
-	// The window covers the 30 days before startup, capturing all measurements
-	// already in the collection DB. This models a completed order.
 	mockWindowStart = time.Now().Add(-30 * 24 * time.Hour)
 	mockWindowEnd   = time.Now()
 )
@@ -35,6 +30,7 @@ var mockOrders = []domain.ERPOrder{
 	{
 		ID:                1,
 		OrderNumber:       "MO-2026-001",
+		PartID:            "PART-001",
 		PartDescription:   "Steel Frame A",
 		PlannedStartDate:  time.Date(2026, 4, 14, 6, 0, 0, 0, time.UTC),
 		PlannedFinishDate: time.Date(2026, 4, 14, 14, 0, 0, 0, time.UTC),
@@ -42,13 +38,14 @@ var mockOrders = []domain.ERPOrder{
 		ActualFinishDate:  ptr(time.Date(2026, 4, 14, 13, 55, 0, 0, time.UTC)),
 		Status:            "finished",
 		Priority:          1,
+		ReceivedAt:        time.Date(2026, 4, 14, 5, 0, 0, 0, time.UTC),
 		Operations: []domain.ERPOrderOperation{
 			{
 				ID: 10,
 				ProductionResource: domain.ERPProductionResource{
 					ID:          1,
 					Number:      "WC-101",
-					Description: &desc1,
+					Description: "Welding Station 1",
 					Type:        "machine",
 				},
 				PlannedStartDate:         time.Date(2026, 4, 14, 6, 0, 0, 0, time.UTC),
@@ -57,12 +54,23 @@ var mockOrders = []domain.ERPOrder{
 				ActualFinishDate:         ptr(time.Date(2026, 4, 14, 13, 55, 0, 0, time.UTC)),
 				Status:                   "finished",
 				ProductionResourceStatus: "finished",
+				Reports: []domain.ERPOrderReport{
+					{
+						ID:                 100,
+						Quantity:           8.0,
+						RestQuantity:       0.0,
+						Type:               "regular",
+						ReportingTimestamp: time.Date(2026, 4, 14, 13, 55, 0, 0, time.UTC),
+						ActualReportedDate: ptr(time.Date(2026, 4, 14, 14, 0, 0, 0, time.UTC)),
+					},
+				},
 			},
 		},
 	},
 	{
 		ID:                2,
 		OrderNumber:       "MO-2026-002",
+		PartID:            "PART-002",
 		PartDescription:   "Aluminium Panel B",
 		PlannedStartDate:  time.Date(2026, 4, 14, 14, 0, 0, 0, time.UTC),
 		PlannedFinishDate: time.Date(2026, 4, 14, 22, 0, 0, 0, time.UTC),
@@ -70,13 +78,14 @@ var mockOrders = []domain.ERPOrder{
 		ActualFinishDate:  ptr(time.Date(2026, 4, 14, 21, 50, 0, 0, time.UTC)),
 		Status:            "finished",
 		Priority:          2,
+		ReceivedAt:        time.Date(2026, 4, 14, 13, 0, 0, 0, time.UTC),
 		Operations: []domain.ERPOrderOperation{
 			{
 				ID: 20,
 				ProductionResource: domain.ERPProductionResource{
 					ID:          2,
 					Number:      "WC-102",
-					Description: &desc2,
+					Description: "Press Station 2",
 					Type:        "machine",
 				},
 				PlannedStartDate:         time.Date(2026, 4, 14, 14, 0, 0, 0, time.UTC),
@@ -85,91 +94,27 @@ var mockOrders = []domain.ERPOrder{
 				ActualFinishDate:         ptr(time.Date(2026, 4, 14, 21, 50, 0, 0, time.UTC)),
 				Status:                   "finished",
 				ProductionResourceStatus: "finished",
+				Reports: []domain.ERPOrderReport{
+					{
+						ID:                 200,
+						Quantity:           12.5,
+						RestQuantity:       0.0,
+						Type:               "regular",
+						ReportingTimestamp: time.Date(2026, 4, 14, 21, 50, 0, 0, time.UTC),
+						ActualReportedDate: ptr(time.Date(2026, 4, 14, 22, 0, 0, 0, time.UTC)),
+					},
+				},
 			},
 		},
 	},
+	// MO-2026-003: time window covers the 30 days before service startup so any
+	// recently collected measurements are included. Production resource ID 1
+	// matches sensors 1 & 2 in the device-service seed (device EUIs b000000000000001
+	// and b000000000000002). Resource ID 6 has no mapped sensors → demos the degraded state.
 	{
 		ID:                3,
 		OrderNumber:       "MO-2026-003",
-		PartDescription:   "Copper Coil C",
-		PlannedStartDate:  time.Date(2026, 4, 13, 6, 0, 0, 0, time.UTC),
-		PlannedFinishDate: time.Date(2026, 4, 13, 14, 0, 0, 0, time.UTC),
-		ActualStartDate:   ptr(time.Date(2026, 4, 13, 6, 5, 0, 0, time.UTC)),
-		ActualFinishDate:  ptr(time.Date(2026, 4, 13, 13, 50, 0, 0, time.UTC)),
-		Status:            "finished",
-		Priority:          1,
-		Operations: []domain.ERPOrderOperation{
-			{
-				ID: 30,
-				ProductionResource: domain.ERPProductionResource{
-					ID:          1,
-					Number:      "WC-101",
-					Description: &desc1,
-					Type:        "machine",
-				},
-				PlannedStartDate:         time.Date(2026, 4, 13, 6, 0, 0, 0, time.UTC),
-				PlannedFinishDate:        time.Date(2026, 4, 13, 10, 0, 0, 0, time.UTC),
-				ActualStartDate:          ptr(time.Date(2026, 4, 13, 6, 5, 0, 0, time.UTC)),
-				ActualFinishDate:         ptr(time.Date(2026, 4, 13, 9, 55, 0, 0, time.UTC)),
-				Status:                   "finished",
-				ProductionResourceStatus: "finished",
-			},
-			{
-				ID: 31,
-				ProductionResource: domain.ERPProductionResource{
-					ID:          3,
-					Number:      "WC-103",
-					Description: &desc3,
-					Type:        "manual_work",
-				},
-				PlannedStartDate:         time.Date(2026, 4, 13, 10, 0, 0, 0, time.UTC),
-				PlannedFinishDate:        time.Date(2026, 4, 13, 14, 0, 0, 0, time.UTC),
-				ActualStartDate:          ptr(time.Date(2026, 4, 13, 10, 10, 0, 0, time.UTC)),
-				ActualFinishDate:         ptr(time.Date(2026, 4, 13, 13, 50, 0, 0, time.UTC)),
-				Status:                   "finished",
-				ProductionResourceStatus: "finished",
-			},
-			{
-				// Edge case: numeric-looking status (2-digit number)
-				ID: 32,
-				ProductionResource: domain.ERPProductionResource{
-					ID:          4,
-					Number:      "WC-104",
-					Description: nil,
-					Type:        "machine",
-				},
-				PlannedStartDate:         time.Date(2026, 4, 13, 14, 0, 0, 0, time.UTC),
-				PlannedFinishDate:        time.Date(2026, 4, 13, 16, 0, 0, 0, time.UTC),
-				ActualStartDate:          ptr(time.Date(2026, 4, 13, 14, 5, 0, 0, time.UTC)),
-				ActualFinishDate:         ptr(time.Date(2026, 4, 13, 15, 58, 0, 0, time.UTC)),
-				Status:                   "finished",
-				ProductionResourceStatus: "42",
-			},
-			{
-				// Edge case: long string status with a space
-				ID: 33,
-				ProductionResource: domain.ERPProductionResource{
-					ID:          5,
-					Number:      "WC-105",
-					Description: nil,
-					Type:        "machine",
-				},
-				PlannedStartDate:         time.Date(2026, 4, 13, 16, 0, 0, 0, time.UTC),
-				PlannedFinishDate:        time.Date(2026, 4, 13, 18, 0, 0, 0, time.UTC),
-				ActualStartDate:          ptr(time.Date(2026, 4, 13, 16, 10, 0, 0, time.UTC)),
-				ActualFinishDate:         ptr(time.Date(2026, 4, 13, 17, 55, 0, 0, time.UTC)),
-				Status:                   "finished",
-				ProductionResourceStatus: "thisisalongstringfortesting andthisisanewline",
-			},
-		},
-	},
-	// MO-2026-004: time window is the 30 days before service startup so any
-	// recently collected measurements are included. Production resource ID 1
-	// matches sensors 1 & 2 in the device-service seed (device EUIs b000000000000001
-	// and b000000000000002). Resource ID 6 has no mapped sensors → demos the red card.
-	{
-		ID:                4,
-		OrderNumber:       "MO-2026-004",
+		PartID:            "PART-003",
 		PartDescription:   "Live Sensor Demo",
 		PlannedStartDate:  mockWindowStart,
 		PlannedFinishDate: mockWindowEnd,
@@ -177,13 +122,14 @@ var mockOrders = []domain.ERPOrder{
 		ActualFinishDate:  ptr(mockWindowEnd),
 		Status:            "finished",
 		Priority:          1,
+		ReceivedAt:        mockWindowStart,
 		Operations: []domain.ERPOrderOperation{
 			{
-				ID: 40,
+				ID: 30,
 				ProductionResource: domain.ERPProductionResource{
 					ID:          1,
 					Number:      "WC-101",
-					Description: &desc1,
+					Description: "Welding Station 1",
 					Type:        "machine",
 				},
 				PlannedStartDate:         mockWindowStart,
@@ -192,13 +138,14 @@ var mockOrders = []domain.ERPOrder{
 				ActualFinishDate:         ptr(mockWindowEnd),
 				Status:                   "finished",
 				ProductionResourceStatus: "finished",
+				Reports:                  []domain.ERPOrderReport{},
 			},
 			{
-				ID: 41,
+				ID: 31,
 				ProductionResource: domain.ERPProductionResource{
 					ID:          6,
 					Number:      "WC-106",
-					Description: &desc4,
+					Description: "Cutting Station 3",
 					Type:        "machine",
 				},
 				PlannedStartDate:         mockWindowStart,
@@ -207,14 +154,19 @@ var mockOrders = []domain.ERPOrder{
 				ActualFinishDate:         ptr(mockWindowEnd),
 				Status:                   "finished",
 				ProductionResourceStatus: "finished",
+				Reports:                  []domain.ERPOrderReport{},
 			},
 		},
 	},
 }
 
-// GetOrders returns the mock order list. companyID is accepted but not used.
-func (c *ERPClient) GetOrders(_ context.Context, _ string) ([]domain.ERPOrder, error) {
-	return mockOrders, nil
+// GetOrders returns a slim summary list derived from the mock orders.
+func (c *ERPClient) GetOrders(_ context.Context, _ string) ([]domain.ERPOrderSummary, error) {
+	summaries := make([]domain.ERPOrderSummary, len(mockOrders))
+	for i, o := range mockOrders {
+		summaries[i] = domain.ERPOrderSummary{ID: o.ID, Name: o.OrderNumber}
+	}
+	return summaries, nil
 }
 
 // GetOrderByID returns a single mock order by ID. companyID is accepted but not used.

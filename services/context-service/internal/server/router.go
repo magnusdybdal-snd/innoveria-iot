@@ -24,6 +24,7 @@ func NewRouter(contextSvc domain.ContextService, ruleSvc domain.RuleService) *ht
 	mux.HandleFunc("GET "+CONTEXT_DATA_ROUTE, handlers.GetContextData(contextSvc))
 	// Orders endpoints
 	mux.HandleFunc("GET "+ORDERS_ROUTE, handlers.GetOrders(contextSvc))
+	mux.HandleFunc("GET "+ORDER_BY_ID_ROUTE, handlers.GetOrderByID(contextSvc))
 	mux.HandleFunc("GET "+ORDER_CONTEXT_ROUTE, handlers.GetOrderContext(contextSvc))
 
 	// Swagger docs
