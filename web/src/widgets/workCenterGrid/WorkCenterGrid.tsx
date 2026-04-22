@@ -11,11 +11,11 @@ interface WorkCenterGridProps {
 }
 
 /**
- * Renders the work centers section for an order: a heading and a responsive
+ * Renders the machines (work centers) section for an order: a heading and a responsive
  * card grid where each card represents one operation context.
  * @param props - Component props
  * @param props.operations - Operation contexts to display
- * @returns The rendered work center grid, or null when the list is empty
+ * @returns The rendered machine grid, or null when the list is empty
  */
 export function WorkCenterGrid({ operations }: WorkCenterGridProps) {
   if (operations.length === 0) return null;
@@ -23,7 +23,7 @@ export function WorkCenterGrid({ operations }: WorkCenterGridProps) {
   return (
     <Box>
       <Typography variant="h6" sx={{ mb: 2 }}>
-        Work Centers
+        Machines
       </Typography>
       <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
         {operations.map((opCtx) => (

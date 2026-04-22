@@ -46,10 +46,19 @@ function measurementsToBuckets(
 
 /** A resolved metric with its chart data ready to render. */
 interface MetricChartData {
+  id: string;
   payloadKey: string;
   unit: string | null;
   label: string;
   buckets: BucketResponse[];
+}
+
+/** Chart data grouped by sensor. */
+interface SensorChartGroup {
+  sensorId: string;
+  deviceEui: string;
+  powerCharts: MetricChartData[];
+  secondaryCharts: MetricChartData[];
 }
 
 /**
@@ -64,42 +73,130 @@ function isPowerMetric(metric: SensorMetric): boolean {
 }
 
 /**
- * Builds chart data arrays for an operation context, split into
- * power-related metrics and all other secondary metrics.
+ * Builds chart data grouped per sensor for an operation context.
+ * Each sensor produces its own group with power and secondary chart arrays.
+ * Groups with no chart data are omitted.
  * @param operationContext - The operation context containing sensors and measurements
- * @returns Object with `powerCharts` and `secondaryCharts` arrays
+ * @returns Array of per-sensor chart groups
  */
-function buildChartData(operationContext: OperationContext): {
-  powerCharts: MetricChartData[];
-  secondaryCharts: MetricChartData[];
-} {
-  const powerCharts: MetricChartData[] = [];
-  const secondaryCharts: MetricChartData[] = [];
+function buildChartData(
+  operationContext: OperationContext,
+): SensorChartGroup[] {
+  return operationContext.sensors
+    .map((sensor) => {
+      const powerCharts: MetricChartData[] = [];
+      const secondaryCharts: MetricChartData[] = [];
 
-  for (const sensor of operationContext.sensors) {
-    for (const metric of sensor.metrics) {
-      const buckets = measurementsToBuckets(
-        sensor.measurements,
-        metric.payloadKey,
-      );
-      if (buckets.length === 0) continue;
+      for (const metric of sensor.metrics) {
+        const buckets = measurementsToBuckets(
+          sensor.measurements,
+          metric.payloadKey,
+        );
+        if (buckets.length === 0) continue;
 
-      const entry: MetricChartData = {
-        payloadKey: metric.payloadKey,
-        unit: metric.unit,
-        label: formatStatus(metric.payloadKey),
-        buckets,
-      };
+        const entry: MetricChartData = {
+          id: `${sensor.id}:${metric.payloadKey}`,
+          payloadKey: metric.payloadKey,
+          unit: metric.unit,
+          label: formatStatus(metric.payloadKey),
+          buckets,
+        };
 
-      if (isPowerMetric(metric)) {
-        powerCharts.push(entry);
-      } else {
-        secondaryCharts.push(entry);
+        if (isPowerMetric(metric)) {
+          powerCharts.push(entry);
+        } else {
+          secondaryCharts.push(entry);
+        }
       }
-    }
-  }
 
-  return { powerCharts, secondaryCharts };
+      return {
+        sensorId: sensor.id,
+        deviceEui: sensor.deviceEui,
+        powerCharts,
+        secondaryCharts,
+      };
+    })
+    .filter((g) => g.powerCharts.length > 0 || g.secondaryCharts.length > 0);
+}
+
+/** Props for the `SensorChartSection` component. */
+interface SensorChartSectionProps {
+  /** Chart group for a single sensor. */
+  group: SensorChartGroup;
+  /** Whether to show the sensor EUI label (only needed when multiple sensors exist). */
+  showLabel: boolean;
+}
+
+/**
+ * Collapsible section showing all charts for a single sensor.
+ * Uses the same expand/collapse toggle pattern as `MachineEnergyCard`.
+ * @param props - Component props
+ * @param props.group - The sensor chart group to render
+ * @param props.showLabel - Whether to display the sensor EUI as a section label
+ * @returns The rendered sensor chart section
+ */
+function SensorChartSection({ group, showLabel }: SensorChartSectionProps) {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <Box>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          cursor: "pointer",
+          userSelect: "none",
+          mt: 1,
+        }}
+        onClick={() => setExpanded((v) => !v)}
+      >
+        <IconButton size="small" sx={{ color: "primary.main", p: 0, mr: 0.5 }}>
+          {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+        </IconButton>
+        <Typography variant="body2">
+          {expanded ? "Hide graphs" : "Show graphs"}
+          {showLabel && (
+            <Typography
+              component="span"
+              variant="caption"
+              sx={{ ml: 1, opacity: 0.6 }}
+            >
+              {group.deviceEui}
+            </Typography>
+          )}
+        </Typography>
+      </Box>
+
+      <Collapse in={expanded} unmountOnExit>
+        <Box sx={{ mt: 2 }}>
+          {group.powerCharts.map((chart) => (
+            <Box key={chart.id} sx={{ mb: 2 }}>
+              <Typography variant="caption" sx={{ opacity: 0.7 }}>
+                {chart.label}
+                {chart.unit ? ` (${chart.unit})` : ""}
+              </Typography>
+              <BucketLineChart
+                buckets={chart.buckets}
+                unit={chart.unit ?? undefined}
+              />
+            </Box>
+          ))}
+          {group.secondaryCharts.map((chart) => (
+            <Box key={chart.id} sx={{ mb: 2 }}>
+              <Typography variant="caption" sx={{ opacity: 0.7 }}>
+                {chart.label}
+                {chart.unit ? ` (${chart.unit})` : ""}
+              </Typography>
+              <BucketLineChart
+                buckets={chart.buckets}
+                unit={chart.unit ?? undefined}
+              />
+            </Box>
+          ))}
+        </Box>
+      </Collapse>
+    </Box>
+  );
 }
 
 /** Props for the `MachineEnergyCard` component. */
@@ -123,10 +220,8 @@ export function MachineEnergyCard({
 }: MachineEnergyCardProps) {
   const { operation, sensors, degraded } = operationContext;
   const sensorState = resolveSensorState(sensors, degraded);
-  const { powerCharts, secondaryCharts } = buildChartData(operationContext);
-  const hasCharts = powerCharts.length > 0 || secondaryCharts.length > 0;
-
-  const [expanded, setExpanded] = useState(false);
+  const sensorGroups = buildChartData(operationContext);
+  const hasCharts = sensorGroups.length > 0;
 
   return (
     <Card
@@ -179,59 +274,15 @@ export function MachineEnergyCard({
         </Typography>
       </Box>
 
-      {/* Graph toggle — only shown when there is chart data to display */}
-      {hasCharts && (
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            cursor: "pointer",
-            userSelect: "none",
-            mt: 1,
-          }}
-          onClick={() => setExpanded((v) => !v)}
-        >
-          <IconButton
-            size="small"
-            sx={{ color: "primary.main", p: 0, mr: 0.5 }}
-          >
-            {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-          </IconButton>
-          <Typography variant="body2">
-            {expanded ? "Hide graphs" : "Show graphs"}
-          </Typography>
-        </Box>
-      )}
-
-      {/* Charts — only mounted when expanded to avoid rendering cost upfront */}
-      <Collapse in={expanded} unmountOnExit>
-        <Box sx={{ mt: 2 }}>
-          {powerCharts.map((chart) => (
-            <Box key={chart.payloadKey} sx={{ mb: 2 }}>
-              <Typography variant="caption" sx={{ opacity: 0.7 }}>
-                {chart.label}
-                {chart.unit ? ` (${chart.unit})` : ""}
-              </Typography>
-              <BucketLineChart
-                buckets={chart.buckets}
-                unit={chart.unit ?? undefined}
-              />
-            </Box>
-          ))}
-          {secondaryCharts.map((chart) => (
-            <Box key={chart.payloadKey} sx={{ mb: 2 }}>
-              <Typography variant="caption" sx={{ opacity: 0.7 }}>
-                {chart.label}
-                {chart.unit ? ` (${chart.unit})` : ""}
-              </Typography>
-              <BucketLineChart
-                buckets={chart.buckets}
-                unit={chart.unit ?? undefined}
-              />
-            </Box>
-          ))}
-        </Box>
-      </Collapse>
+      {/* One collapsible section per sensor — label shown only when multiple sensors exist */}
+      {hasCharts &&
+        sensorGroups.map((group) => (
+          <SensorChartSection
+            key={group.sensorId}
+            group={group}
+            showLabel={sensorGroups.length > 1}
+          />
+        ))}
     </Card>
   );
 }
