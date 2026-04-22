@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import { InfoWidget } from "@/widgets/infoWidget";
 import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 
 import { useOrders, type Order } from "@entities/context";
@@ -15,7 +16,7 @@ import { SubPageHeader } from "@shared/ui/SubPageHeader";
  * @returns The rendered OrderContext page
  */
 export default function OrderContext() {
-  const { orders, isLoading } = useOrders();
+  const { orders, isLoading, error, refetch } = useOrders();
   const [selectedOrderId, setSelectedOrderId] = useState<string>("");
 
   const orderOptions = orders.map((o) => ({
@@ -37,12 +38,23 @@ export default function OrderContext() {
             Orders
           </Typography>
           <Box sx={{ maxWidth: 400 }}>
-            {!isLoading && (
-              <DropDownSelect
-                options={orderOptions}
-                value={selectedOrderId}
-                onChange={setSelectedOrderId}
-              />
+            {error ? (
+              <Box>
+                <Typography variant="body2" sx={{ color: "error.main", mb: 1 }}>
+                  Failed to load orders. {error.message}
+                </Typography>
+                <Button variant="outlined" size="small" onClick={refetch}>
+                  Retry
+                </Button>
+              </Box>
+            ) : (
+              !isLoading && (
+                <DropDownSelect
+                  options={orderOptions}
+                  value={selectedOrderId}
+                  onChange={setSelectedOrderId}
+                />
+              )
             )}
           </Box>
 
