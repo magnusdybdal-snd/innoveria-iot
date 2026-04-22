@@ -10,6 +10,7 @@ import Gateways from "@pages/Gateways";
 import Home from "@pages/Home.tsx";
 import Login from "@pages/Login.tsx";
 import Sensors from "@pages/Sensors.tsx";
+import Users from "@pages/Users.tsx";
 
 import Layout from "./Layout";
 
@@ -31,7 +32,7 @@ export default function AppRoutes() {
         <Route path="/Reports" element={<Home />} />
         <Route path="/Admin/Companies" element={<Companies />} />
         <Route path="/Admin/Factories" element={<Factories />} />
-        <Route path="/Admin/Users" element={<Home />} />
+        <Route path="/Admin/Users" element={<Users />} />
         <Route
           path="*"
           element={<StatusPage code="404" message="Page not found" />}
