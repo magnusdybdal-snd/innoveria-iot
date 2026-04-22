@@ -65,7 +65,7 @@ func PostUser(svc domain.UserService) http.HandlerFunc {
 		if payload.Role == "" {
 			payload.Role = authctx.RoleUser
 		} else if payload.Role != authctx.RolePlatformAdmin && payload.Role != authctx.RoleUser {
-			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("invalid role %q", payload.Role), "role must be PLATFORM_ADMIN or USER")
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("invalid role %q", payload.Role), "role must be PLATFORM_ADMIN or FACTORY_WORKER")
 			return
 		}
 
