@@ -1,28 +1,49 @@
+import DeleteIcon from "@mui/icons-material/Delete";
+import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 
 type InfoProps = {
-  company_id: string;
-  email: string;
+  id: string;
   name: string;
+  email: string;
   role: string;
+  createdAt: string;
+  onDelete: (id: string) => void;
 };
 
 /**
- * Displays a single user row's data: company id, email, name, role, and user id.
+ * Displays a single user row: name, email, role, created date, and a delete action.
  * @param props - Component props
- * @param props.company_id - Company user is part of
- * @param props.email - Email of user
- * @param props.name - Name of user
- * @param props.role - Functional role in the company
- * @returns A set of grid-aligned cells with an action menu and rename dialog
+ * @param props.id - User ID used for delete
+ * @param props.name - Display name of the user
+ * @param props.email - Email address of the user
+ * @param props.role - Role assigned to the user
+ * @param props.createdAt - Formatted creation timestamp
+ * @param props.onDelete - Called with the user ID when the delete button is clicked
+ * @returns A set of grid-aligned cells with a delete action
  */
-export function UserInfo({ company_id, email, name, role }: InfoProps) {
+export function UserInfo({
+  id,
+  name,
+  email,
+  role,
+  createdAt,
+  onDelete,
+}: InfoProps) {
   return (
     <>
-      <Typography>{company_id}</Typography>
-      <Typography>{email}</Typography>
       <Typography>{name}</Typography>
+      <Typography>{email}</Typography>
       <Typography>{role}</Typography>
+      <Typography>{createdAt}</Typography>
+      <IconButton
+        size="small"
+        onClick={() => onDelete(id)}
+        aria-label="delete user"
+        sx={{ color: "primary.main" }}
+      >
+        <DeleteIcon fontSize="small" />
+      </IconButton>
     </>
   );
 }
