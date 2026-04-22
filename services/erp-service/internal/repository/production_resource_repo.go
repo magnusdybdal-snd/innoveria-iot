@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"fmt"
 
 	"innoveria-iot/erp-service/internal/domain"
 	"innoveria-iot/pkg/dbutil"
@@ -63,8 +62,8 @@ func (r *ProductionResourceRepoImpl) FindAllByCompanyID(ctx context.Context, com
 		out = append(out, prodRes)
 	}
 
-	if err != nil {
-		return nil, fmt.Errorf("find all production resources: %w", err)
+	if err := rows.Err(); err != nil {
+		return nil, WrapMappedDBError("iterate production resources", err)
 	}
 
 	return out, nil
