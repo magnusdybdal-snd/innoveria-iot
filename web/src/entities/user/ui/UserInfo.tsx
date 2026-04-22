@@ -18,12 +18,7 @@ type InfoProps = {
   role: string;
   createdAt: string;
   onDelete: (id: string) => void;
-  onEdit: (user: {
-    id: string;
-    name: string;
-    email: string;
-    role: string;
-  }) => void;
+  onEdit: (user: { id: string; name: string; email: string }) => void;
 };
 
 /**
@@ -50,7 +45,7 @@ export function UserInfo({
   const [deleteOpen, setDeleteOpen] = useState(false);
 
   const menuItems = [
-    { label: "Edit", onClick: () => onEdit({ id, name, email, role }) },
+    { label: "Edit", onClick: () => onEdit({ id, name, email }) },
     { label: "Delete", onClick: () => setDeleteOpen(true) },
   ];
 

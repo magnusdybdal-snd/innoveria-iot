@@ -6,17 +6,11 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import MenuItem from "@mui/material/MenuItem";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 
 import type { UpdateUserRequest } from "@entities/user";
 import { validatePassword, type PasswordErrors } from "@shared/lib";
-
-const ROLES = [
-  { label: "User", value: "FACTORY_WORKER" },
-  { label: "Admin", value: "PLATFORM_ADMIN" },
-];
 
 const fieldSx = {
   "& .MuiOutlinedInput-root": {
@@ -30,7 +24,7 @@ const fieldSx = {
 
 export interface EditUserProps {
   open: boolean;
-  user: { id: string; name: string; email: string; role: string };
+  user: { id: string; name: string; email: string };
   onClose: () => void;
   onEdit: (userId: string, payload: UpdateUserRequest) => void;
   submitError?: string | null;
@@ -58,7 +52,6 @@ export function EditUser({
   const [name, setName] = useState(user.name);
   const [email, setEmail] = useState(user.email);
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState(user.role);
   const [emailError, setEmailError] = useState(false);
   const [passwordErrors, setPasswordErrors] = useState<PasswordErrors>({
     length: false,
@@ -83,7 +76,6 @@ export function EditUser({
     setName(user.name);
     setEmail(user.email);
     setPassword("");
-    setRole(user.role);
     setEmailError(false);
     setPasswordErrors(noPasswordErrors);
     onClose();
@@ -107,7 +99,6 @@ export function EditUser({
     const payload: UpdateUserRequest = {};
     if (name.trim() !== user.name) payload.name = name.trim();
     if (email !== user.email) payload.email = email;
-    if (role !== user.role) payload.role = role;
     if (password) payload.password = password;
 
     onEdit(user.id, payload);
@@ -179,24 +170,6 @@ export function EditUser({
               fullWidth
               sx={fieldSx}
             />
-          </Box>
-          <Box>
-            <Typography variant="body2" color="primary.main" mb={0.5}>
-              Role
-            </Typography>
-            <TextField
-              select
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              fullWidth
-              sx={fieldSx}
-            >
-              {ROLES.map((r) => (
-                <MenuItem key={r.value} value={r.value}>
-                  {r.label}
-                </MenuItem>
-              ))}
-            </TextField>
           </Box>
           {emailError && (
             <Typography color="error">

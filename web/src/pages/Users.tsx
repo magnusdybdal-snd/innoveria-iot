@@ -79,7 +79,6 @@ export default function Users() {
     id: string;
     name: string;
     email: string;
-    role: string;
   } | null>(null);
   const [editError, setEditError] = useState<string | null>(null);
   const [companySortConfig, setCompanySortConfig] = useState<{
