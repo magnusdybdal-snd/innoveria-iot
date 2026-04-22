@@ -1,6 +1,9 @@
 package domain
 
-import "time"
+import (
+	"context"
+	"time"
+)
 
 // OperationStatus describes operation progress at plan or resource level.
 type OperationStatus string
@@ -40,4 +43,11 @@ type OrderOperation struct {
 	ProductionResourceStatus OperationStatus // What the Machine is doing right now
 	// Description              *string         // Monitor erp description
 	ReceivedAt time.Time
+}
+
+// OrderOperationRepo defines the repository interface for order operations.
+type OrderOperationRepo interface {
+	FindAllByCompanyID(ctx context.Context, companyID string) ([]OrderOperation, error)
+	FindAllByOrderID(ctx context.Context, orderID int64, companyID string) ([]OrderOperation, error)
+	FindByID(ctx context.Context, orderOperationID int64, companyID string) (OrderOperation, error)
 }
