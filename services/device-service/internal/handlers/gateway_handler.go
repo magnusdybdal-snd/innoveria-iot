@@ -2,12 +2,14 @@
 package handlers
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
 
 	"innoveria-iot/device-service/internal/domain"
 	"innoveria-iot/device-service/internal/handlers/dto"
+	"innoveria-iot/pkg/authctx"
 	"innoveria-iot/pkg/json"
 
 	"github.com/google/uuid"
@@ -24,9 +26,14 @@ import (
 func GetGateways(svc domain.GatewayService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
+		auth, err := authctx.FromRequest(r)
+		if err != nil {
+			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			return
+		}
 
 		// Get the domain data from service layer
-		data, err := svc.GetAll(ctx)
+		data, err := svc.GetAll(ctx, auth.CompanyID)
 		if err != nil {
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
 			return
@@ -56,6 +63,11 @@ func GetGateways(svc domain.GatewayService) http.HandlerFunc {
 func PostGateway(svc domain.GatewayService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
+		auth, err := authctx.FromRequest(r)
+		if err != nil {
+			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			return
+		}
 
 		payload, err := json.Decode[dto.CreateGatewayRequest](r)
 		if err != nil {
@@ -63,18 +75,17 @@ func PostGateway(svc domain.GatewayService) http.HandlerFunc {
 			return
 		}
 
-		payload.CompanyId = strings.TrimSpace(payload.CompanyId)
 		payload.GatewayEUI = strings.TrimSpace(payload.GatewayEUI)
 		payload.Name = strings.TrimSpace(payload.Name)
 		payload.FactoryID = strings.TrimSpace(payload.FactoryID)
 		payload.FactoryAreaID = strings.TrimSpace(payload.FactoryAreaID)
 
-		if payload.CompanyId == "" || payload.GatewayEUI == "" || payload.Name == "" || payload.FactoryID == "" || payload.FactoryAreaID == "" {
-			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("company_id, gateway_eui, name, factory_id and factory_area_id are required"), "bad request")
+		if payload.GatewayEUI == "" || payload.Name == "" || payload.FactoryID == "" || payload.FactoryAreaID == "" {
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("gateway_eui, name, factory_id and factory_area_id are required"), "bad request")
 			return
 		}
 
-		data := dto.MapGatewayDTOToDomain(payload)
+		data := dto.MapGatewayDTOToDomain(payload, auth.CompanyID)
 
 		if err := svc.Create(ctx, data); err != nil {
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
@@ -94,11 +105,17 @@ func PostGateway(svc domain.GatewayService) http.HandlerFunc {
 // @Param		body	body	dto.UpdateGatewayRequest	true	"Update payload"
 // @Success		204
 // @Failure		400
+// @Failure		404
 // @Failure		500
 // @Router		/gateways/{id} [patch]
 func PatchGateway(svc domain.GatewayService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
+		auth, err := authctx.FromRequest(r)
+		if err != nil {
+			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			return
+		}
 
 		id := r.PathValue("id")
 		if id == "" {
@@ -117,21 +134,27 @@ func PatchGateway(svc domain.GatewayService) http.HandlerFunc {
 			return
 		}
 
-		if payload.Name == nil && payload.Description == nil && payload.FactoryAreaID == nil {
+		if payload.Name == nil && payload.Description == nil && payload.FactoryID == nil && payload.FactoryAreaID == nil {
 			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("no fields provided"), "bad request")
 			return
 		}
 
-		if payload.FactoryAreaID != nil {
-			if _, err := uuid.Parse(*payload.FactoryAreaID); err != nil {
-				json.HandleError(w, http.StatusBadRequest, err, "bad request")
-				return
+		for _, field := range []*string{payload.FactoryID, payload.FactoryAreaID} {
+			if field != nil {
+				if _, err := uuid.Parse(*field); err != nil {
+					json.HandleError(w, http.StatusBadRequest, err, "bad request")
+					return
+				}
 			}
 		}
 
 		data := dto.MapUpdateGatewayDTOToDomain(payload)
 
-		if err := svc.Update(ctx, id, data); err != nil {
+		if err := svc.Update(ctx, auth.CompanyID, id, data); err != nil {
+			if errors.Is(err, domain.ErrNotFound) {
+				json.HandleError(w, http.StatusNotFound, err, "gateway not found")
+				return
+			}
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
 			return
 		}
@@ -147,11 +170,17 @@ func PatchGateway(svc domain.GatewayService) http.HandlerFunc {
 // @Param		id	path	string	true	"Gateway ID"
 // @Success		204
 // @Failure		400
+// @Failure		404
 // @Failure		500
 // @Router		/gateways/{id} [delete]
 func DeleteGateway(svc domain.GatewayService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
+		auth, err := authctx.FromRequest(r)
+		if err != nil {
+			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			return
+		}
 
 		id := r.PathValue("id")
 		if id == "" {
@@ -164,7 +193,11 @@ func DeleteGateway(svc domain.GatewayService) http.HandlerFunc {
 			return
 		}
 
-		if err := svc.Delete(ctx, id); err != nil {
+		if err := svc.Delete(ctx, auth.CompanyID, id); err != nil {
+			if errors.Is(err, domain.ErrNotFound) {
+				json.HandleError(w, http.StatusNotFound, err, "gateway not found")
+				return
+			}
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
 			return
 		}

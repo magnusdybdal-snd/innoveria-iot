@@ -37,8 +37,6 @@ type UpdateSensorRequest struct {
 
 // CreateSensorRequest represents the fields required to register a new sensor.
 type CreateSensorRequest struct {
-	// TODO: CompanyID should be extracted from auth
-	CompanyID           string  `json:"company_id"            binding:"required"`
 	Name                string  `json:"name"                  binding:"required"`
 	DeviceEUI           string  `json:"device_eui"            binding:"required"`
 	AppKey              string  `json:"app_key"               binding:"required"`

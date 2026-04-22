@@ -20,7 +20,7 @@ const (
 	findSensorByIDQuery = `
 		SELECT sensor_id, company_id, device_eui, app_key, name, description, state, factory_id, factory_area_id, production_resource_id, chirpstack_profile_id, created_at, updated_at
 		FROM device.sensor
-		WHERE sensor_id = $1
+		WHERE company_id = $1 AND sensor_id = $2
 	`
 
 	findAllSensorsByCompanyIDQuery = `
@@ -30,11 +30,10 @@ const (
 		ORDER BY created_at ASC
 	`
 
-	// TODO: Add AND company_id = $2 when auth is wired
 	findByProductionResourceIDQuery = `
 		SELECT sensor_id, company_id, device_eui, app_key, name, description, state, factory_id, factory_area_id, production_resource_id, chirpstack_profile_id, created_at, updated_at
 		FROM device.sensor
-		WHERE production_resource_id = $1
+		WHERE company_id = $1 AND production_resource_id = $2
 		ORDER BY created_at ASC
 	`
 
@@ -46,19 +45,19 @@ const (
 
 	updateSensorStateQuery = `
 		UPDATE device.sensor
-		SET state = $1, updated_at = now()
-		WHERE sensor_id = $2
+		SET state = $3, updated_at = now()
+		WHERE company_id = $1 AND sensor_id = $2
 	`
 
 	updateSensorQuery = `
 		UPDATE device.sensor
-		SET name = $1, description = $2, factory_id = $3, factory_area_id = $4, chirpstack_profile_id = $5, updated_at = now()
-		WHERE sensor_id = $6
+		SET name = $3, description = $4, factory_id = $5, factory_area_id = $6, chirpstack_profile_id = $7, updated_at = now()
+		WHERE company_id = $1 AND sensor_id = $2
 	`
 
 	deleteSensorQuery = `
 		DELETE FROM device.sensor
-		WHERE sensor_id = $1
+		WHERE company_id = $1 AND sensor_id = $2
 	`
 )
 
@@ -111,10 +110,10 @@ func (r *SensorRepository) Create(ctx context.Context, sensor domain.Sensor) (do
 }
 
 // FindByID retrieves a sensor by its internal UUID.
-func (r *SensorRepository) FindByID(ctx context.Context, sensorID string) (domain.Sensor, error) {
+func (r *SensorRepository) FindByID(ctx context.Context, companyID string, sensorID string) (domain.Sensor, error) {
 
 	var out domain.Sensor
-	err := r.db.Pool.QueryRow(ctx, findSensorByIDQuery, sensorID).Scan(
+	err := r.db.Pool.QueryRow(ctx, findSensorByIDQuery, companyID, sensorID).Scan(
 		&out.Id,
 		&out.CompanyID,
 		&out.DeviceEUI,
@@ -130,6 +129,9 @@ func (r *SensorRepository) FindByID(ctx context.Context, sensorID string) (domai
 		&out.UpdatedAt,
 	)
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return domain.Sensor{}, domain.ErrNotFound
+		}
 		return domain.Sensor{}, fmt.Errorf("find sensor by sensor id: %w", err)
 	}
 
@@ -186,9 +188,9 @@ func (r *SensorRepository) FindAllByCompanyID(ctx context.Context, companyID str
 }
 
 // FindByProductionResourceID retrieves sensor by their production resource id. returns an empty slice if no sensors found on that resource.
-func (r *SensorRepository) FindByProductionResourceID(ctx context.Context, productionResourceID string) ([]domain.Sensor, error) {
+func (r *SensorRepository) FindByProductionResourceID(ctx context.Context, companyID string, productionResourceID string) ([]domain.Sensor, error) {
 
-	rows, err := r.db.Pool.Query(ctx, findByProductionResourceIDQuery, productionResourceID)
+	rows, err := r.db.Pool.Query(ctx, findByProductionResourceIDQuery, companyID, productionResourceID)
 	if err != nil {
 		return nil, fmt.Errorf("find sensors by production resource id: %w", err)
 	}
@@ -261,9 +263,9 @@ func (r *SensorRepository) FindByEUI(ctx context.Context, deviceEUI string) (dom
 
 // UpdateState sets the administrative state of a sensor and updates the updated at timestamp.
 // Returns an error if no sensor with the given ID exists.
-func (r *SensorRepository) UpdateState(ctx context.Context, sensorID string, state domain.DeviceState) error {
+func (r *SensorRepository) UpdateState(ctx context.Context, companyID string, sensorID string, state domain.DeviceState) error {
 
-	tag, err := r.db.Pool.Exec(ctx, updateSensorStateQuery, state, sensorID)
+	tag, err := r.db.Pool.Exec(ctx, updateSensorStateQuery, companyID, sensorID, state)
 	if err != nil {
 		return fmt.Errorf("update sensor state: %w", err)
 	}
@@ -277,15 +279,16 @@ func (r *SensorRepository) UpdateState(ctx context.Context, sensorID string, sta
 
 // Update updates the editable fields of a sensor (name, description, factory area, Chirpstack profile) and refreshes the updated at timestamp.
 // Returns an error if no sensor with the given ID exists.
-func (r *SensorRepository) Update(ctx context.Context, sensorID string, payload domain.Sensor) error {
+func (r *SensorRepository) Update(ctx context.Context, companyID string, sensorID string, payload domain.Sensor) error {
 
 	tag, err := r.db.Pool.Exec(ctx, updateSensorQuery,
+		companyID,
+		sensorID,
 		payload.Name,
 		payload.Description,
 		payload.FactoryID,
 		payload.FactoryAreaID,
 		payload.ChirpstackProfileID,
-		sensorID,
 	)
 
 	if err != nil {
@@ -293,7 +296,7 @@ func (r *SensorRepository) Update(ctx context.Context, sensorID string, payload 
 	}
 
 	if tag.RowsAffected() == 0 {
-		return fmt.Errorf("sensor not found: %s", sensorID)
+		return fmt.Errorf("update sensor: %w", domain.ErrNotFound)
 	}
 
 	return nil
@@ -301,15 +304,15 @@ func (r *SensorRepository) Update(ctx context.Context, sensorID string, payload 
 
 // Delete tries to delete a sensor from the database.
 // Returns an error if deletion fails or no sensor is found.
-func (r *SensorRepository) Delete(ctx context.Context, deviceID string) error {
+func (r *SensorRepository) Delete(ctx context.Context, companyID string, deviceID string) error {
 
-	tag, err := r.db.Pool.Exec(ctx, deleteSensorQuery, deviceID)
+	tag, err := r.db.Pool.Exec(ctx, deleteSensorQuery, companyID, deviceID)
 	if err != nil {
 		return fmt.Errorf("delete sensor %s: %w", deviceID, err)
 	}
 
 	if tag.RowsAffected() == 0 {
-		return fmt.Errorf("sensor not found: %s", deviceID)
+		return fmt.Errorf("delete sensor: %w", domain.ErrNotFound)
 	}
 
 	return nil
