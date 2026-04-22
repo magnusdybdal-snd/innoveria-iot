@@ -8,9 +8,9 @@ import (
 	"innoveria-iot/erp-service/internal/domain"
 )
 
-// MapIngestDomainError maps domain ingestion errors to an HTTP status code,
+// MapDomainError maps domain errors to an HTTP status code,
 // public message, and wrapped error for handler responses.
-func MapIngestDomainError(err error) (int, string, error) {
+func MapDomainError(err error) (int, string, error) {
 	if errors.Is(err, domain.ErrInvalidInput) {
 		return http.StatusBadRequest, "bad request", err
 	}

@@ -20,7 +20,7 @@ func PostIngestOrder(svc domain.Ingest) http.HandlerFunc {
 		}
 		result := dto.MapMonitorOrderToDomain(payload)
 		if err := svc.CreateOrder(ctx, result); err != nil {
-			status, message, cause := MapIngestDomainError(err)
+			status, message, cause := MapDomainError(err)
 			json.HandleError(w, status, cause, message)
 			return
 		}
@@ -45,7 +45,7 @@ func PostIngestOrderOperations(svc domain.Ingest) http.HandlerFunc {
 		}
 		result := dto.MapMonitorOrderOperationToDomain(payload)
 		if err := svc.CreateOrderOperation(ctx, result); err != nil {
-			status, message, cause := MapIngestDomainError(err)
+			status, message, cause := MapDomainError(err)
 			json.HandleError(w, status, cause, message)
 			return
 		}
@@ -70,7 +70,7 @@ func PostIngestOrderReports(svc domain.Ingest) http.HandlerFunc {
 		}
 		result := dto.MapMonitorOrderReportToDomain(payload)
 		if err := svc.CreateOrderReport(ctx, result); err != nil {
-			status, message, cause := MapIngestDomainError(err)
+			status, message, cause := MapDomainError(err)
 			json.HandleError(w, status, cause, message)
 			return
 		}
@@ -95,7 +95,7 @@ func PostIngestWorkCenters(svc domain.Ingest) http.HandlerFunc {
 		}
 		result := dto.MapMonitorWorkcenterToDomain(payload)
 		if err := svc.CreateProductionResource(ctx, result); err != nil {
-			status, message, cause := MapIngestDomainError(err)
+			status, message, cause := MapDomainError(err)
 			json.HandleError(w, status, cause, message)
 			return
 		}

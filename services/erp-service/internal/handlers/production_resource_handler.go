@@ -19,7 +19,7 @@ func GetAllProductionResources(svc domain.ProductionResourceSvc) http.HandlerFun
 
 		result, err := svc.GetAll(ctx, companyID)
 		if err != nil {
-			status, message, cause := MapIngestDomainError(err)
+			status, message, cause := MapDomainError(err)
 			json.HandleError(w, status, cause, message)
 			return
 		}
@@ -49,7 +49,7 @@ func GetOneProductionResource(svc domain.ProductionResourceSvc) http.HandlerFunc
 
 		result, err := svc.GetOne(ctx, idInt, companyID)
 		if err != nil {
-			status, message, cause := MapIngestDomainError(err)
+			status, message, cause := MapDomainError(err)
 			json.HandleError(w, status, cause, message)
 			return
 		}
