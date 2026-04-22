@@ -9,14 +9,14 @@ import { API_ROUTES } from "@shared/api/routes";
  */
 export const getDeviceEUI = async (
   profileId: string,
-): Promise<DeviceEUIApiResponse | null> => {
+): Promise<string | null> => {
   try {
     const data = await apiRequest<DeviceEUIApiResponse>(
       serviceClient,
       `${API_ROUTES.deviceEUI}${encodeURIComponent(profileId)}`,
       "GET",
     );
-    return data;
+    return data.deviceEui ?? null;
   } catch (error) {
     console.error("Failed to fetch device EUI:", error);
     return null;

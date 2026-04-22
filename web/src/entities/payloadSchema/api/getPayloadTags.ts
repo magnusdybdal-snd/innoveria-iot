@@ -5,14 +5,19 @@ import { API_ROUTES } from "@shared/api/routes";
 /**
  * Fetches all payload tags from the collection-service via the API gateway.
  * Maps snake_case API response keys to camelCase.
+ * @param deviceEUI - Device EUI used to identify the tags
  * @returns Array of PayloadTagsApiResponse objects, or an empty array if the request fails
  */
-export const getPayloadTags = async (): Promise<string[]> => {
-  const data = await apiRequest<RawPayloadTagsApiResponse>(
-    serviceClient,
-    API_ROUTES.payloadTags,
-    "GET",
-  );
-
-  return data.keys ?? [];
+export const getPayloadTags = async (deviceEUI: string): Promise<string[]> => {
+  try {
+    const data = await apiRequest<RawPayloadTagsApiResponse>(
+      serviceClient,
+      `${API_ROUTES.payloadTags}${encodeURIComponent(deviceEUI)}`,
+      "GET",
+    );
+    return data.keys ?? [];
+  } catch (error) {
+    console.error("Failed to get payload tags:", error);
+    return [];
+  }
 };

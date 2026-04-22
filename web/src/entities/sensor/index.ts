@@ -1,5 +1,6 @@
 export type {
   SensorApiResponse,
+  DeviceEUIApiResponse,
   SensorListApiResponse,
   SensorReadingApiResponse,
   CreateSensorRequest,
@@ -7,6 +8,7 @@ export type {
 } from "./model/sensorSchema";
 export {
   getSensors,
+  getDeviceEUI,
   getSensorProfiles,
   fetchSensorReading,
   postSensor,

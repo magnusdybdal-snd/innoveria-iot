@@ -10,7 +10,9 @@ import {
   type MeasurementTypeSortKey,
   type SortDirection,
 } from "@entities/measurementType";
+import { getPayloadTags } from "@entities/payloadSchema";
 import { getSensorProfiles } from "@entities/sensor";
+import { getDeviceEUI } from "@entities/sensor/api/getDeviceEUI.ts";
 import type { SensorProfileApiResponse } from "@entities/sensor/model/sensorSchema.ts";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
@@ -35,18 +37,22 @@ const payloadDetails: string[] = ["Payload key", "Measurement type", "Unit"];
  * @returns The rendered MeasurementTypes page
  */
 export default function PayloadSchema() {
-  const [measurementTypes, setMeasurementTypes] = useState<
-    MeasurementTypeApiResponse[]
-  >([]);
   const [sensorProfiles, setSensorProfiles] = useState<
     SensorProfileApiResponse[]
   >([]);
+  const [measurementTypes, setMeasurementTypes] = useState<
+    MeasurementTypeApiResponse[]
+  >([]);
+  const [deviceEui, setDeviceEui] = useState<string | null>(null);
+  const [payloadKeys, setPayloadKeys] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState<{
     key: MeasurementTypeSortKey | null;
     direction: SortDirection;
   }>({ key: null, direction: "asc" });
-  const [selected, setSelected] = useState<string>("");
+  const [profile, setProfile] = useState<string>("");
+  const [type, setType] = useState<string>("");
+  const [payloadKey, setPayloadKey] = useState<string>("");
 
   // Adding a new measure type
   const [openAdd, setOpenAdd] = useState(false);
@@ -113,9 +119,9 @@ export default function PayloadSchema() {
       const preferred = "humidity";
 
       if (mapped.includes(preferred)) {
-        setSelected(preferred);
+        setProfile(preferred);
       } else if (mapped.length > 0) {
-        setSelected(mapped[0]); // fallback
+        setProfile(mapped[0]); // fallback
       }
     });
   }, []);
@@ -162,8 +168,16 @@ export default function PayloadSchema() {
         <PageDivider />
 
         <Select
-          value={selected}
-          onChange={(e) => setSelected(e.target.value)}
+          value={profile}
+          onChange={(e) => {
+            const newProfile = e.target.value;
+            setProfile(newProfile);
+            getDeviceEUI(profile).then(setDeviceEui);
+
+            if (deviceEui) {
+              getPayloadTags(deviceEui).then(setPayloadKeys);
+            }
+          }}
           displayEmpty
         >
           {sensorProfiles.map((option) => (
@@ -173,13 +187,29 @@ export default function PayloadSchema() {
           ))}
         </Select>
         <Select
-          value={selected}
-          onChange={(e) => setSelected(e.target.value)}
+          value={type}
+          onChange={(e) => setType(e.target.value)}
           displayEmpty
         >
           {measurementTypes.map((option) => (
             <MenuItem key={option.slug} value={option.slug}>
               {option.displayName}
+            </MenuItem>
+          ))}
+        </Select>
+        <Select
+          value={payloadKey}
+          onChange={(e) => {
+            const newValue = e.target.value;
+            if (payloadKeys.includes(newValue)) {
+              setPayloadKey(newValue);
+            }
+          }}
+          displayEmpty
+        >
+          {payloadKeys.map((option) => (
+            <MenuItem key={option} value={option}>
+              {option}
             </MenuItem>
           ))}
         </Select>

@@ -1,14 +1,11 @@
 export type {
-  MeasurementTypeApiResponse,
-  MeasurementTypeListApiResponse,
-  CreateMeasurementTypeRequest,
+  PayloadSchemaApiResponse,
+  PayloadSchemaListApiResponse,
+  SavePayloadSchemaRequest,
+  SavePayloadSchemaListRequest,
+  RawPayloadTagsApiResponse,
 } from "./model/payloadSchemaSchema.ts";
-export {
-  getPayloadTags,
-  getMeasurementTypesAll,
-  putPayloadSchema,
-  deprecateMeasurementType,
-} from "./api";
+export { getPayloadTags, putPayloadSchema } from "./api";
 export { MeasurementTypeInfo } from "./ui";
 export { sortMeasurementTypes } from "./lib/sortMeasurementTypes.ts";
 export type {
