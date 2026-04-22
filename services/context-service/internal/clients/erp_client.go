@@ -11,15 +11,15 @@ import (
 	"innoveria-iot/pkg/httpclient"
 )
 
-// ERPClient is an HTTP client for the ERP service.
-type ERPClient struct {
+// erpClientImpl is the HTTP implementation of domain.ERPClient.
+type erpClientImpl struct {
 	baseURL string
 	client  *httpclient.Client
 }
 
-// NewERPClient creates a new ERPClient targeting the given base URL.
-func NewERPClient(baseURL string) *ERPClient {
-	return &ERPClient{
+// NewERPClient creates a new erpClientImpl targeting the given base URL.
+func NewERPClient(baseURL string) domain.ERPClient {
+	return &erpClientImpl{
 		baseURL: baseURL,
 		client:  httpclient.New(),
 	}
@@ -29,7 +29,7 @@ func NewERPClient(baseURL string) *ERPClient {
 //
 // TODO: the route /api/v1/erp/orders does not exist on the erp-service yet.
 // Update the URL and query parameters once the GET endpoint is implemented.
-func (c *ERPClient) GetOrders(ctx context.Context, companyID string) ([]domain.ERPOrderSummary, error) {
+func (c *erpClientImpl) GetOrders(ctx context.Context, companyID string) ([]domain.ERPOrderSummary, error) {
 	url := fmt.Sprintf("%s/api/v1/erp/orders", c.baseURL)
 	headers := map[string]string{"X-Auth-Company-Id": companyID}
 
@@ -52,7 +52,7 @@ func (c *ERPClient) GetOrders(ctx context.Context, companyID string) ([]domain.E
 //
 // TODO: the route /api/v1/erp/orders/{id} does not exist on the erp-service yet.
 // Update the URL once the GET endpoint is implemented.
-func (c *ERPClient) GetOrderByID(ctx context.Context, companyID string, orderID int64) (*domain.ERPOrder, error) {
+func (c *erpClientImpl) GetOrderByID(ctx context.Context, companyID string, orderID int64) (*domain.ERPOrder, error) {
 	url := fmt.Sprintf("%s/api/v1/erp/orders/%d", c.baseURL, orderID)
 	headers := map[string]string{"X-Auth-Company-Id": companyID}
 
