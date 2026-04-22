@@ -100,7 +100,7 @@ func GetOrderContext(svc domain.ContextService) http.HandlerFunc {
 // @Summary		Get Orders
 // @Tags		orders
 // @Produce		json
-// @Success		200	{array}		dto.OrderResponse
+// @Success		200	{array}		dto.OrderSummaryResponse
 // @Failure		500
 // @Router		/orders [get]
 func GetOrders(svc domain.ContextService) http.HandlerFunc {
