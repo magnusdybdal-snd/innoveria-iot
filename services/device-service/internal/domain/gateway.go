@@ -30,6 +30,8 @@ type GatewayService interface {
 	Create(ctx context.Context, payload Gateway) error
 	Update(ctx context.Context, companyID string, gatewayId string, payload Gateway) error
 	GetAll(ctx context.Context, companyID string) ([]Gateway, error)
+	// GetByID retrieves a single gateway by ID scoped to the caller's company.
+	// Not yet wired to a handler or route.
 	GetByID(ctx context.Context, companyID string, gatewayID string) (Gateway, error)
 	Delete(ctx context.Context, companyID string, gatewayID string) error
 }

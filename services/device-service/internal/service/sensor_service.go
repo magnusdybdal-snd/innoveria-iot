@@ -217,6 +217,7 @@ func (s *SensorServiceImpl) GetByProductionResourceID(ctx context.Context, compa
 }
 
 // GetByID retrieves a single sensor by its ID, scoped to the caller's company.
+// Not yet wired to a handler or route.
 func (s *SensorServiceImpl) GetByID(ctx context.Context, companyID string, sensorID string) (domain.Sensor, error) {
 	sensor, err := s.sensorRepo.FindByID(ctx, companyID, sensorID)
 	if err != nil {

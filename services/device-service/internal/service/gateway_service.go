@@ -151,6 +151,7 @@ func (g *GatewayServiceImpl) GetAll(ctx context.Context, companyID string) ([]do
 }
 
 // GetByID retrieves a single gateway by its ID, scoped to the caller's company.
+// Not yet wired to a handler or route.
 func (g *GatewayServiceImpl) GetByID(ctx context.Context, companyID string, gatewayID string) (domain.Gateway, error) {
 	gateway, err := g.gatewayRepo.FindByID(ctx, companyID, gatewayID)
 	if err != nil {

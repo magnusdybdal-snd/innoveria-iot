@@ -33,6 +33,8 @@ type SensorService interface {
 	Create(ctx context.Context, payload Sensor) error
 	Update(ctx context.Context, companyID string, deviceID string, payload Sensor) error
 	GetAll(ctx context.Context, companyID string) ([]Sensor, error)
+	// GetByID retrieves a single sensor by ID scoped to the caller's company.
+	// Not yet wired to a handler or route.
 	GetByID(ctx context.Context, companyID string, sensorID string) (Sensor, error)
 	GetByProductionResourceID(ctx context.Context, companyID string, productionResourceID string) ([]Sensor, error)
 	Delete(ctx context.Context, companyID string, deviceID string) error
