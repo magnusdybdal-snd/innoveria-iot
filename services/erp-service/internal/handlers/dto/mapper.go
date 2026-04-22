@@ -107,17 +107,22 @@ func MapMonitorWorkcenterToDomain(from []dto.WorkCenter) []domain.ProductionReso
 func MapProductionResourceDomainToDTO(from []domain.ProductionResource) []erpdto.ProductionResource {
 	to := make([]erpdto.ProductionResource, len(from))
 	for i, item := range from {
-		to[i] = erpdto.ProductionResource{
-			ID:          item.ID,
-			CompanyID:   item.CompanyID,
-			Number:      item.Number,
-			Description: item.Description,
-			Type:        erpdto.WorkCenterType(item.Type),
-			ReceivedAt:  item.ReceivedAt,
-		}
+		to[i] = MapProductionResourceDomainToDTOSingle(item)
 	}
 
 	return to
+}
+
+// MapProductionResourceDomainToDTOSingle maps domain production resource into a shared ERP DTO (single instance)
+func MapProductionResourceDomainToDTOSingle(from domain.ProductionResource) erpdto.ProductionResource {
+	return erpdto.ProductionResource{
+		ID:          from.ID,
+		CompanyID:   from.CompanyID,
+		Number:      from.Number,
+		Description: from.Description,
+		Type:        erpdto.WorkCenterType(from.Type),
+		ReceivedAt:  from.ReceivedAt,
+	}
 }
 
 // mapOrderStatus converts Monitor order status values to domain order statuses.

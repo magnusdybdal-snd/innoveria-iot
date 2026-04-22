@@ -54,7 +54,8 @@ func GetOneProductionResource(svc domain.ProductionResourceSvc) http.HandlerFunc
 			return
 		}
 
-		if err := json.Encode(w, http.StatusOK, result); err != nil {
+		response := handlerdto.MapProductionResourceDomainToDTOSingle(result)
+		if err := json.Encode(w, http.StatusOK, response); err != nil {
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
 			return
 		}
