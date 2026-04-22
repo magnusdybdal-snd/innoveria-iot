@@ -31,6 +31,9 @@ export function OrderOverview({ operations }: OrderOverviewProps) {
   );
 
   const allMachinesHaveSensors = machinesWithSensors === totalOperations;
+  const totalQuantity = operations
+    .flatMap((op) => op.operation.reports ?? [])
+    .reduce((sum, r) => sum + r.quantity, 0);
 
   return (
     <>
@@ -54,6 +57,10 @@ export function OrderOverview({ operations }: OrderOverviewProps) {
           valueColor={degradedCount > 0 ? "warning.main" : undefined}
         />
         <OrderOverviewStat label="Total sensors" value={String(totalSensors)} />
+        <OrderOverviewStat
+          label="Parts produced"
+          value={String(totalQuantity)}
+        />
         {/* Power totals placeholder — TODO: wire up once backend aggregation is available */}
         <OrderOverviewStat
           label="Total power"
