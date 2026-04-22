@@ -169,6 +169,13 @@ definitions:
       status:
         type: string
     type: object
+  dto.OrderSummaryResponse:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
   dto.ProductionResourceResponse:
     properties:
       description:
@@ -285,7 +292,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/dto.OrderResponse'
+              $ref: '#/definitions/dto.OrderSummaryResponse'
             type: array
         "500":
           description: Internal Server Error

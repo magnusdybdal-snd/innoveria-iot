@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"time"
 
-	"golang.org/x/sync/errgroup"
+	"sync"
 
 	"innoveria-iot/context-service/internal/calculators"
 	"innoveria-iot/context-service/internal/domain"
@@ -152,18 +152,13 @@ func (s *ContextServiceImpl) GetOrderContext(ctx context.Context, companyID stri
 	from := *found.ActualStartDate
 	to := *found.ActualFinishDate
 
-	g, gctx := errgroup.WithContext(ctx)
-
+	var wg sync.WaitGroup
 	for i, op := range found.Operations {
-		g.Go(func() error {
-			ops[i] = s.buildOperationContext(gctx, op, from, to)
-			return nil
+		wg.Go(func() {
+			ops[i] = s.buildOperationContext(ctx, op, from, to)
 		})
 	}
-
-	if err := g.Wait(); err != nil {
-		return nil, err
-	}
+	wg.Wait()
 
 	return &domain.OrderContext{Order: *found, Operations: ops}, nil
 }
@@ -180,26 +175,35 @@ func (s *ContextServiceImpl) buildOperationContext(ctx context.Context, op domai
 			return domain.OperationContext{Operation: op, Sensors: []domain.SensorContext{}}
 		}
 		// Technical failure (timeout, 5xx) — return partial data but mark as degraded.
-		slog.Warn("failed to fetch sensors for production resource, returning degraded operation", "production_resource_id", productionResourceID, "error", err)
+		slog.Error("failed to fetch sensors for production resource, returning degraded operation", "production_resource_id", productionResourceID, "error", err)
 		return domain.OperationContext{Operation: op, Sensors: []domain.SensorContext{}, Degraded: true}
 	}
 
 	sensorContexts := make([]domain.SensorContext, len(sensors))
-	g, gctx := errgroup.WithContext(ctx)
+	var (
+		wg     sync.WaitGroup
+		mu     sync.Mutex
+		svcErr error
+	)
 
 	for j, sensor := range sensors {
-		g.Go(func() error {
-			sc, err := s.buildSensorContext(gctx, sensor, from, to)
+		wg.Go(func() {
+			sc, err := s.buildSensorContext(ctx, sensor, from, to)
 			if err != nil {
-				return err
+				mu.Lock()
+				if svcErr == nil {
+					svcErr = err
+				}
+				mu.Unlock()
+				return
 			}
 			sensorContexts[j] = sc
-			return nil
 		})
 	}
+	wg.Wait()
 
-	if err := g.Wait(); err != nil {
-		slog.Warn("failed to build sensor context for operation, returning degraded operation", "production_resource_id", productionResourceID, "error", err)
+	if svcErr != nil {
+		slog.Error("failed to build sensor context for operation, returning degraded operation", "production_resource_id", productionResourceID, "error", svcErr)
 		return domain.OperationContext{Operation: op, Sensors: []domain.SensorContext{}, Degraded: true}
 	}
 
