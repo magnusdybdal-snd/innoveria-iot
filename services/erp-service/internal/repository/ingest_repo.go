@@ -3,15 +3,11 @@ package repository
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"strings"
 
 	"innoveria-iot/erp-service/internal/domain"
 	"innoveria-iot/pkg/dbutil"
-
-	"github.com/jackc/pgerrcode"
-	"github.com/jackc/pgx/v5/pgconn"
 )
 
 // Postgres error prefixes
@@ -225,7 +221,7 @@ func (r *IngestRepoImpl) CreateOrder(ctx context.Context, payload []domain.Order
 		if err != nil {
 			op := fmt.Sprintf("upsert to erp_raw.order failed (chunk %d/%d, rows %d-%d of %d)",
 				chunkNo, totalChunks, rowFrom, rowTo, len(payload))
-			return wrapMappedDBError(op, err)
+			return WrapMappedDBError(op, err)
 		}
 	}
 
@@ -292,7 +288,7 @@ func (r *IngestRepoImpl) CreateOrderOperation(ctx context.Context, payload []dom
 		if err != nil {
 			op := fmt.Sprintf("upsert to erp_raw.order_operation failed (chunk %d/%d, rows %d-%d of %d)",
 				chunkNo, totalChunks, rowFrom, rowTo, len(payload))
-			return wrapMappedDBError(op, err)
+			return WrapMappedDBError(op, err)
 		}
 	}
 
@@ -357,7 +353,7 @@ func (r *IngestRepoImpl) CreateOrderReport(ctx context.Context, payload []domain
 		if err != nil {
 			op := fmt.Sprintf("upsert to erp_raw.order_report failed (chunk %d/%d, rows %d-%d of %d)",
 				chunkNo, totalChunks, rowFrom, rowTo, len(payload))
-			return wrapMappedDBError(op, err)
+			return WrapMappedDBError(op, err)
 		}
 	}
 
@@ -414,53 +410,11 @@ func (r *IngestRepoImpl) CreateProductionResource(ctx context.Context, payload [
 		if err != nil {
 			op := fmt.Sprintf("upsert to erp_raw.production_resource failed (chunk %d/%d, rows %d-%d of %d)",
 				chunkNo, totalChunks, rowFrom, rowTo, len(payload))
-			return wrapMappedDBError(op, err)
+			return WrapMappedDBError(op, err)
 		}
 	}
 
 	return nil
-}
-
-// wrapMappedDBError maps database errors and avoids duplicate joined errors.
-func wrapMappedDBError(op string, err error) error {
-	mapped := mapPgError(err)
-
-	if errors.Is(mapped, context.Canceled) || errors.Is(mapped, context.DeadlineExceeded) {
-		return fmt.Errorf("%s: %w", op, mapped)
-	}
-
-	return fmt.Errorf("%s: %w", op, errors.Join(mapped, err))
-}
-
-func mapPgError(err error) error {
-	if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
-		return err
-	}
-
-	var pgErr *pgconn.PgError
-	if !errors.As(err, &pgErr) {
-		return domain.ErrDatabase
-	}
-
-	switch pgErr.Code {
-	case pgerrcode.UniqueViolation, pgerrcode.ExclusionViolation:
-		return domain.ErrConflict
-	case pgerrcode.NotNullViolation,
-		pgerrcode.ForeignKeyViolation,
-		pgerrcode.CheckViolation,
-		pgerrcode.InvalidTextRepresentation,
-		pgerrcode.InvalidDatetimeFormat,
-		pgerrcode.NumericValueOutOfRange:
-		return domain.ErrInvalidInput
-	default:
-		if strings.HasPrefix(pgErr.Code, pgClassDataException) {
-			return domain.ErrInvalidInput
-		}
-		if strings.HasPrefix(pgErr.Code, pgClassIntegrityConstraint) {
-			return domain.ErrConflict
-		}
-		return domain.ErrDatabase
-	}
 }
 
 func chunkSizeForColumns(columnsPerRow int) int {

@@ -9,4 +9,6 @@ var (
 	ErrConflict = errors.New("conflict")
 	// ErrInvalidInput is returned when data cannot be persisted due to invalid values.
 	ErrInvalidInput = errors.New("invalid input")
+	// ErrNotFound is returned when no data was found
+	ErrNotFound = errors.New("not found")
 )
