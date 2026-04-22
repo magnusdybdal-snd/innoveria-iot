@@ -5,20 +5,33 @@ import { BrowserRouter } from "react-router";
 
 import "@/app/providers/styles/index.css";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Box from "@mui/material/Box";
 
+import { UserContext } from "@app/providers/UserContext";
 import AppRoutes from "@app/routes/index.tsx";
+import { getUser, type UserApiResponse } from "@entities/user";
 import { DarkMode } from "@shared/config/theme/darkMode";
 import { LightMode } from "@shared/config/theme/lightMode";
 import { ThemeContext } from "@shared/config/theme/themeContext";
 
 /**
- * Application root that wires up theme persistence, MUI ThemeProvider, and the React Router route tree.
+ * Application root that wires up current user, theme persistence, MUI ThemeProvider, and the React Router route tree.
  * @returns The rendered application root with all providers and routes
  */
 export default function Root() {
+  // Fetch the current user once on mount and share via UserContext
+  const [user, setUser] = useState<UserApiResponse | null>(null);
+  const [userLoading, setUserLoading] = useState(true);
+
+  useEffect(() => {
+    getUser()
+      .then(setUser)
+      .catch(() => setUser(null))
+      .finally(() => setUserLoading(false));
+  }, []);
+
   // read saved theme on first load
   const [mode, setDark] = useState(() => {
     const saved = localStorage.getItem("theme");
@@ -35,27 +48,29 @@ export default function Root() {
   };
 
   return (
-    <ThemeContext.Provider value={{ mode, toggle }}>
-      <BrowserRouter>
-        <StyledEngineProvider injectFirst>
-          <ThemeProvider theme={mode ? DarkMode : LightMode}>
-            <CssBaseline />
-            <Box // Hide scrollbar for whole page
-              sx={{
-                height: "100vh",
-                overflowY: "auto",
-                "&::-webkit-scrollbar": {
-                  display: "none",
-                },
-                scrollbarWidth: "none",
-              }}
-            >
-              <AppRoutes />
-            </Box>
-          </ThemeProvider>
-        </StyledEngineProvider>
-      </BrowserRouter>
-    </ThemeContext.Provider>
+    <UserContext.Provider value={{ user, isLoading: userLoading }}>
+      <ThemeContext.Provider value={{ mode, toggle }}>
+        <BrowserRouter>
+          <StyledEngineProvider injectFirst>
+            <ThemeProvider theme={mode ? DarkMode : LightMode}>
+              <CssBaseline />
+              <Box // Hide scrollbar for whole page
+                sx={{
+                  height: "100vh",
+                  overflowY: "auto",
+                  "&::-webkit-scrollbar": {
+                    display: "none",
+                  },
+                  scrollbarWidth: "none",
+                }}
+              >
+                <AppRoutes />
+              </Box>
+            </ThemeProvider>
+          </StyledEngineProvider>
+        </BrowserRouter>
+      </ThemeContext.Provider>
+    </UserContext.Provider>
   );
 }
 
