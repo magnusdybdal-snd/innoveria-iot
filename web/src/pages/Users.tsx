@@ -6,8 +6,10 @@ import Typography from "@mui/material/Typography";
 
 import {
   CompanyInfo,
+  sortCompanies,
   useCompanies,
   type CompanyApiResponse,
+  type CompanySortKey,
 } from "@entities/company";
 import {
   deleteUser,
@@ -35,6 +37,13 @@ import {
 import { SubPageHeader } from "@shared/ui/SubPageHeader";
 
 const companyColumns = ["Name", "Address", "Created at", "Updated at"];
+const sortableCompanyColumns: CompanySortKey[] = [
+  "Name",
+  "Address",
+  "Created at",
+  "Updated at",
+];
+
 const userColumns = ["Name", "Email", "Role", "Created at"];
 const sortableUserColumns: UserSortKey[] = [
   "Name",
@@ -63,6 +72,10 @@ export default function Users() {
 
   const [openAdd, setOpenAdd] = useState(false);
   const [addError, setAddError] = useState<string | null>(null);
+  const [companySortConfig, setCompanySortConfig] = useState<{
+    key: CompanySortKey | null;
+    direction: SortDirection;
+  }>({ key: null, direction: "asc" });
   const [sortConfig, setSortConfig] = useState<{
     key: UserSortKey | null;
     direction: SortDirection;
@@ -77,6 +90,15 @@ export default function Users() {
 
   const handleBack = () => {
     setSelectedCompany(null);
+  };
+
+  const handleCompanySort = (column: string) => {
+    const col = column as CompanySortKey;
+    setCompanySortConfig((prev) => {
+      if (prev.key !== col) return { key: col, direction: "asc" };
+      if (prev.direction === "asc") return { key: col, direction: "desc" };
+      return { key: null, direction: "asc" };
+    });
   };
 
   const handleSort = (column: string) => {
@@ -113,6 +135,11 @@ export default function Users() {
       });
   };
 
+  const sortedCompanies = sortCompanies(
+    companies,
+    companySortConfig.key,
+    companySortConfig.direction,
+  );
   const sorted = sortUsers(users, sortConfig.key, sortConfig.direction);
 
   // — Companies view —
@@ -125,9 +152,12 @@ export default function Users() {
           <CategoryHeader
             categories={companyColumns}
             columns={companyColumns.length}
+            sortableColumns={sortableCompanyColumns}
+            sortConfig={companySortConfig}
+            onSort={handleCompanySort}
           >
             {companiesLoading && <p>Loading...</p>}
-            {companies.map((company) => (
+            {sortedCompanies.map((company) => (
               <DeviceRow
                 key={company.companyId}
                 onClick={() => handleSelectCompany(company)}
@@ -137,12 +167,11 @@ export default function Users() {
                   address={company.address}
                   created_at={formatTimestamp(company.createdAt)}
                   updated_at={formatTimestamp(company.updatedAt)}
-                  addUser={() => {}}
                 />
               </DeviceRow>
             ))}
           </CategoryHeader>
-          {!companiesLoading && companies.length === 0 && (
+          {!companiesLoading && sortedCompanies.length === 0 && (
             <NotFoundCard page="companies" isEmpty={true} />
           )}
         </PageContent>
