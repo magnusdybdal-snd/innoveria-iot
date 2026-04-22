@@ -16,7 +16,7 @@ type OrderRepoImpl struct {
 const (
 	FindAllOrderByCompanyIDQuery = `
 		SELECT id, order_number
-		FROM erp.order
+		FROM erp."order"
 		WHERE company_id = $1
 		ORDER BY received_at ASC
 	`
@@ -25,7 +25,7 @@ const (
 			planned_start_date, planned_finish_date,
 			actual_start_date, actual_finish_date,
 			status, priority, received_at
-		FROM erp.order
+		FROM erp."order"
 		WHERE id = $1 AND company_id = $2
 	`
 )
