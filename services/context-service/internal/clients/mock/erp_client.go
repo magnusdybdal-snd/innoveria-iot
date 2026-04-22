@@ -22,6 +22,13 @@ var (
 	desc1 = "Welding Station 1"
 	desc2 = "Press Station 2"
 	desc3 = "Assembly Line A"
+	desc4 = "Cutting Station 3"
+
+	// mockWindowStart/End are evaluated once at service startup.
+	// The window covers the 30 days before startup, capturing all measurements
+	// already in the collection DB. This models a completed order.
+	mockWindowStart = time.Now().Add(-30 * 24 * time.Hour)
+	mockWindowEnd   = time.Now()
 )
 
 var mockOrders = []domain.ERPOrder{
@@ -153,6 +160,53 @@ var mockOrders = []domain.ERPOrder{
 				ActualFinishDate:         ptr(time.Date(2026, 4, 13, 17, 55, 0, 0, time.UTC)),
 				Status:                   "finished",
 				ProductionResourceStatus: "thisisalongstringfortesting andthisisanewline",
+			},
+		},
+	},
+	// MO-2026-004: time window is the 30 days before service startup so any
+	// recently collected measurements are included. Production resource ID 1
+	// matches sensors 1 & 2 in the device-service seed (device EUIs b000000000000001
+	// and b000000000000002). Resource ID 6 has no mapped sensors → demos the red card.
+	{
+		ID:                4,
+		OrderNumber:       "MO-2026-004",
+		PartDescription:   "Live Sensor Demo",
+		PlannedStartDate:  mockWindowStart,
+		PlannedFinishDate: mockWindowEnd,
+		ActualStartDate:   ptr(mockWindowStart),
+		ActualFinishDate:  ptr(mockWindowEnd),
+		Status:            "finished",
+		Priority:          1,
+		Operations: []domain.ERPOrderOperation{
+			{
+				ID: 40,
+				ProductionResource: domain.ERPProductionResource{
+					ID:          1,
+					Number:      "WC-101",
+					Description: &desc1,
+					Type:        "machine",
+				},
+				PlannedStartDate:         mockWindowStart,
+				PlannedFinishDate:        mockWindowEnd,
+				ActualStartDate:          ptr(mockWindowStart),
+				ActualFinishDate:         ptr(mockWindowEnd),
+				Status:                   "finished",
+				ProductionResourceStatus: "finished",
+			},
+			{
+				ID: 41,
+				ProductionResource: domain.ERPProductionResource{
+					ID:          6,
+					Number:      "WC-106",
+					Description: &desc4,
+					Type:        "machine",
+				},
+				PlannedStartDate:         mockWindowStart,
+				PlannedFinishDate:        mockWindowEnd,
+				ActualStartDate:          ptr(mockWindowStart),
+				ActualFinishDate:         ptr(mockWindowEnd),
+				Status:                   "finished",
+				ProductionResourceStatus: "finished",
 			},
 		},
 	},

@@ -23,7 +23,7 @@ type DeviceSensor struct {
 	ID                 string
 	Name               string
 	DeviceEUI          string
-	ProductionResource *string // cross-service ref to ERPProductionResource.ID stored as string
+	ProductionResource *int64
 }
 
 // SensorMetric maps a sensor payload key to its measurement type and unit.

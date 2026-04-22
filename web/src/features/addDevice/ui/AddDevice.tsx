@@ -31,14 +31,14 @@ export interface AddDeviceProps {
 const inputHints: Record<string, string> = {
   Name: "Enter device name",
   DeviceEUI: "16 characters (hex)",
-  Machine: "Enter machine name",
+  ProductionResource: "Enter production resource",
   "Application key": "32 characters (hex)",
 };
 
 const inputLengthError: Record<string, string> = {
   DeviceEUI: "DeviceEUI must be 16 characters",
   "Application key": "Application key must be 32 characters",
-  Machine: "Machine ID must be a positive number",
+  ProductionResource: "Production resource must be a positive number",
 };
 
 /**
@@ -72,18 +72,19 @@ export function AddDevice(props: AddDeviceProps) {
 
   const handleSafeClose = () => {
     const allFilled = addOptions
-      .filter((option) => option !== "Machine")
+      .filter((option) => option !== "Production resource")
       .every((option) => (values[option] ?? "").trim() !== "");
 
-    const machineRaw = (values["Machine"] ?? "").trim();
-    const machineParsed = parseInt(machineRaw, 10);
-    const machineInvalid =
-      machineRaw !== "" && (isNaN(machineParsed) || machineParsed <= 0);
+    const productionResourceRaw = (values["Production resource"] ?? "").trim();
+    const productionResourceParsed = parseInt(productionResourceRaw, 10);
+    const productionResourceInvalid =
+      productionResourceRaw !== "" &&
+      (isNaN(productionResourceParsed) || productionResourceParsed <= 0);
 
     const newLengthErrors = {
       DeviceEUI: (values["DeviceEUI"] ?? "").length !== 16,
       "Application key": (values["Application key"] ?? "").length !== 32,
-      Machine: machineInvalid,
+      ProductionResource: productionResourceInvalid,
     };
 
     if (!allFilled) {
@@ -93,7 +94,8 @@ export function AddDevice(props: AddDeviceProps) {
       (addOptions.includes("DeviceEUI") && newLengthErrors.DeviceEUI) ||
       (addOptions.includes("Application key") &&
         newLengthErrors["Application key"]) ||
-      (addOptions.includes("Machine") && newLengthErrors.Machine)
+      (addOptions.includes("Production resource") &&
+        newLengthErrors.ProductionResource)
     ) {
       setFillError(false);
       setLengthErrors(newLengthErrors);
@@ -106,7 +108,8 @@ export function AddDevice(props: AddDeviceProps) {
         deviceEui: values["DeviceEUI"],
         factory: values["Factory"],
         factoryArea: values["Factory area"],
-        productionResource: machineRaw !== "" ? machineParsed : null,
+        productionResource:
+          productionResourceRaw !== "" ? productionResourceParsed : null,
         appKey: values["Application key"],
         senProf: values["Sensor profile"],
       })

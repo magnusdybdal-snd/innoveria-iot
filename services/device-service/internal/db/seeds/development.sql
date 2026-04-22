@@ -47,9 +47,9 @@ VALUES
 ON CONFLICT DO NOTHING;
 
 -- Sensor metrics for sensor 1 only (override path)
--- payload_key maps to the raw JSON field name the UC300 actually sends
+-- payload_key maps to the raw JSON field names sent by the simulator
 INSERT INTO "device"."sensor_metric" ("sensor_id", "payload_key", "measurement_type", "unit")
 VALUES
-('c0000000-0000-0000-0000-000000000001', 'channel_1', 'electric_current', 'A'),
-('c0000000-0000-0000-0000-000000000001', 'channel_2', 'voltage',          'V')
+('c0000000-0000-0000-0000-000000000001', 'temperature', 'temperature', '°C'),
+('c0000000-0000-0000-0000-000000000001', 'humidity',    'humidity',    '%')
 ON CONFLICT DO NOTHING;

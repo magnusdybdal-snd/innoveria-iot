@@ -2,10 +2,10 @@ package dto
 
 // DeviceSensorResponse mirrors the device-service SensorResponse shape.
 type DeviceSensorResponse struct {
-	ID                 string  `json:"id"`
-	Name               string  `json:"name"`
-	DeviceEUI          string  `json:"device_eui"`
-	ProductionResource *string `json:"production_resource"`
+	ID                 string `json:"id"`
+	Name               string `json:"name"`
+	DeviceEUI          string `json:"device_eui"`
+	ProductionResource *int64 `json:"production_resource"`
 }
 
 // DeviceSensorListResponse mirrors the device-service SensorListResponse shape.
