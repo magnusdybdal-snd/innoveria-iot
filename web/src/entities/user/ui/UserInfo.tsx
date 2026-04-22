@@ -9,17 +9,24 @@ type InfoProps = {
   role: string;
   createdAt: string;
   onDelete: (id: string) => void;
+  onEdit: (user: {
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+  }) => void;
 };
 
 /**
  * Displays a single user row: name, email, role, created date, and an action menu.
  * @param props - Component props
- * @param props.id - User ID used for delete
+ * @param props.id - User ID used for delete and edit
  * @param props.name - Display name of the user
  * @param props.email - Email address of the user
  * @param props.role - Role assigned to the user
  * @param props.createdAt - Formatted creation timestamp
  * @param props.onDelete - Called with the user ID when delete is selected
+ * @param props.onEdit - Called with the user data when edit is selected
  * @returns A set of grid-aligned cells with an action menu
  */
 export function UserInfo({
@@ -29,9 +36,10 @@ export function UserInfo({
   role,
   createdAt,
   onDelete,
+  onEdit,
 }: InfoProps) {
   const menuItems = [
-    { label: "Edit", disabled: true },
+    { label: "Edit", onClick: () => onEdit({ id, name, email, role }) },
     { label: "Delete", onClick: () => onDelete(id) },
   ];
 
