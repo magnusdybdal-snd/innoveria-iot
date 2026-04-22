@@ -13,7 +13,7 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 )
 
-// WrapMappedDBError maps database errors and avoids duplicate joined errors.
+// WrapMappedDBError maps database errors to domain errors.
 func WrapMappedDBError(op string, err error) error {
 	mapped := mapPgError(err)
 
@@ -21,7 +21,7 @@ func WrapMappedDBError(op string, err error) error {
 		return fmt.Errorf("%s: %w", op, mapped)
 	}
 
-	return fmt.Errorf("%s: %w", op, errors.Join(mapped, err))
+	return fmt.Errorf("%s: %w", op, mapped)
 }
 
 func mapPgError(err error) error {
