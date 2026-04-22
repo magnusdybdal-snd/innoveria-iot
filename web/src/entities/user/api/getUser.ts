@@ -27,7 +27,10 @@ export const getUser = async (): Promise<UserApiResponse> => {
       email: data.email,
       name: data.name,
       role: data.role,
-      userId: data.user_id,
+      id: data.user_id,
+      lastLoggedIn: null,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
   } catch (error) {
     if (error instanceof Error) {
