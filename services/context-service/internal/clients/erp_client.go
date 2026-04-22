@@ -2,6 +2,7 @@ package clients
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -60,6 +61,10 @@ func (c *erpClientImpl) GetOrderByID(ctx context.Context, companyID string, orde
 		c.client, ctx, url, http.MethodGet, nil, headers,
 	)
 	if err != nil {
+		var httpErr *httpclient.HTTPError
+		if errors.As(err, &httpErr) && httpErr.StatusCode == http.StatusNotFound {
+			return nil, domain.ErrNotFound
+		}
 		return nil, err
 	}
 
