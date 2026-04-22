@@ -5,6 +5,12 @@ import Typography from "@mui/material/Typography";
 import { ActionMenu } from "@shared/ui/actionMenu";
 import { DeleteConfirmation } from "@shared/ui/DeleteConfirmation";
 
+const ROLE_LABELS: Record<string, string> = {
+  FACTORY_WORKER: "User",
+  FACTORY_SUPERUSER: "Superuser",
+  PLATFORM_ADMIN: "Admin",
+};
+
 type InfoProps = {
   id: string;
   name: string;
@@ -52,7 +58,7 @@ export function UserInfo({
     <>
       <Typography>{name}</Typography>
       <Typography>{email}</Typography>
-      <Typography>{role}</Typography>
+      <Typography>{ROLE_LABELS[role] ?? role}</Typography>
       <Typography>{createdAt}</Typography>
       <ActionMenu items={menuItems} />
       <DeleteConfirmation
