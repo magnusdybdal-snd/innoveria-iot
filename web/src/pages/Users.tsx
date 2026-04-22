@@ -13,15 +13,18 @@ import {
 } from "@entities/company";
 import {
   deleteUser,
+  patchUser,
   postUser,
   sortUsers,
   UserInfo,
   useUsers,
   type CreateUserRequest,
   type SortDirection,
+  type UpdateUserRequest,
   type UserSortKey,
 } from "@entities/user";
 import { AddUser } from "@features/addUser";
+import { EditUser } from "@features/editUser";
 import { formatTimestamp } from "@shared/lib";
 import { CustomButton } from "@shared/ui/Button";
 import { CategoryHeader } from "@shared/ui/CategoryHeader";
@@ -72,6 +75,13 @@ export default function Users() {
 
   const [openAdd, setOpenAdd] = useState(false);
   const [addError, setAddError] = useState<string | null>(null);
+  const [editingUser, setEditingUser] = useState<{
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+  } | null>(null);
+  const [editError, setEditError] = useState<string | null>(null);
   const [companySortConfig, setCompanySortConfig] = useState<{
     key: CompanySortKey | null;
     direction: SortDirection;
@@ -121,6 +131,20 @@ export default function Users() {
       .catch(() => {
         setAddError("Failed to add user. The email may already be registered.");
         show("Failed to add user", SNACKBAR_SEVERITY.ERROR);
+      });
+  };
+
+  const handleEditUser = (userId: string, payload: UpdateUserRequest) => {
+    setEditError(null);
+    patchUser(userId, payload)
+      .then(() => {
+        refetch();
+        setEditingUser(null);
+        show("User updated successfully", SNACKBAR_SEVERITY.SUCCESS);
+      })
+      .catch(() => {
+        setEditError("Failed to update user.");
+        show("Failed to update user", SNACKBAR_SEVERITY.ERROR);
       });
   };
 
@@ -228,6 +252,7 @@ export default function Users() {
                 role={user.role}
                 createdAt={formatTimestamp(user.createdAt)}
                 onDelete={handleDeleteUser}
+                onEdit={setEditingUser}
               />
             </DeviceRow>
           ))}
@@ -246,6 +271,18 @@ export default function Users() {
         onAdd={handleAddUser}
         submitError={addError}
       />
+      {editingUser && (
+        <EditUser
+          open={true}
+          user={editingUser}
+          onClose={() => {
+            setEditingUser(null);
+            setEditError(null);
+          }}
+          onEdit={handleEditUser}
+          submitError={editError}
+        />
+      )}
       <AppSnackbar
         open={snackbar?.open ?? false}
         message={snackbar?.message ?? ""}
