@@ -44,7 +44,8 @@ func (r *ProductionResourceRepoImpl) FindAllByCompanyID(ctx context.Context, com
 	}
 	defer rows.Close()
 
-	var out []domain.ProductionResource
+	out := make([]domain.ProductionResource, 0) // return a empty slice and not nil
+
 	for rows.Next() {
 		var prodRes domain.ProductionResource
 		err := rows.Scan(
