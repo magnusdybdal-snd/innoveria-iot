@@ -1,4 +1,5 @@
 import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
 
 import type { OperationContext } from "@entities/context/model/contextSchema";
 
@@ -32,37 +33,42 @@ export function OrderOverview({ operations }: OrderOverviewProps) {
   const allMachinesHaveSensors = machinesWithSensors === totalOperations;
 
   return (
-    <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", mb: 3 }}>
-      <OrderOverviewStat label="Operations" value={String(totalOperations)} />
-      <OrderOverviewStat
-        label="Machines with sensors"
-        value={`${machinesWithSensors}/${totalOperations}`}
-        warningTooltip={
-          !allMachinesHaveSensors
-            ? "Not all machines on this order have sensors mapped"
-            : undefined
-        }
-      />
-      <OrderOverviewStat
-        label="Degraded sensors"
-        value={String(degradedCount)}
-        valueColor={degradedCount > 0 ? "warning.main" : undefined}
-      />
-      <OrderOverviewStat label="Total sensors" value={String(totalSensors)} />
-      {/* Power totals placeholder — TODO: wire up once backend aggregation is available */}
-      <OrderOverviewStat
-        label="Total power"
-        value="—"
-        unit="kWh"
-        tooltip="Power totals will be available in a future update"
-      />
-      {/* Per-part consumption placeholder — TODO: wire up once context-service exposes parts produced */}
-      <OrderOverviewStat
-        label="Per part"
-        value="—"
-        unit="kWh/part"
-        tooltip="Per-part consumption will be available in a future update"
-      />
-    </Box>
+    <>
+      <Typography variant="h5" fontWeight={500} sx={{ mb: 2 }}>
+        Order overview
+      </Typography>
+      <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", mb: 3 }}>
+        <OrderOverviewStat label="Operations" value={String(totalOperations)} />
+        <OrderOverviewStat
+          label="Machines with sensors"
+          value={`${machinesWithSensors}/${totalOperations}`}
+          warningTooltip={
+            !allMachinesHaveSensors
+              ? "Not all machines on this order have sensors mapped"
+              : undefined
+          }
+        />
+        <OrderOverviewStat
+          label="Degraded sensors"
+          value={String(degradedCount)}
+          valueColor={degradedCount > 0 ? "warning.main" : undefined}
+        />
+        <OrderOverviewStat label="Total sensors" value={String(totalSensors)} />
+        {/* Power totals placeholder — TODO: wire up once backend aggregation is available */}
+        <OrderOverviewStat
+          label="Total power"
+          value="—"
+          unit="kWh"
+          tooltip="Power totals will be available in a future update"
+        />
+        {/* Per-part consumption placeholder — TODO: wire up once context-service exposes parts produced */}
+        <OrderOverviewStat
+          label="Per part"
+          value="—"
+          unit="kWh/part"
+          tooltip="Per-part consumption will be available in a future update"
+        />
+      </Box>
+    </>
   );
 }
