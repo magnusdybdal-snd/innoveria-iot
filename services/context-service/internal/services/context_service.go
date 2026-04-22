@@ -167,7 +167,7 @@ func (s *ContextServiceImpl) buildOperationContext(ctx context.Context, op domai
 			return domain.OperationContext{Operation: op, Sensors: []domain.SensorContext{}}
 		}
 		// Technical failure (timeout, 5xx) — return partial data but mark as degraded.
-		slog.Warn("failed to fetch sensors for production resource, returning degraded operation", "production_resource_id", productionResourceID, "error", err)
+		slog.Error("failed to fetch sensors for production resource, returning degraded operation", "production_resource_id", productionResourceID, "error", err)
 		return domain.OperationContext{Operation: op, Sensors: []domain.SensorContext{}, Degraded: true}
 	}
 
@@ -195,7 +195,7 @@ func (s *ContextServiceImpl) buildOperationContext(ctx context.Context, op domai
 	wg.Wait()
 
 	if svcErr != nil {
-		slog.Warn("failed to build sensor context for operation, returning degraded operation", "production_resource_id", productionResourceID, "error", svcErr)
+		slog.Error("failed to build sensor context for operation, returning degraded operation", "production_resource_id", productionResourceID, "error", svcErr)
 		return domain.OperationContext{Operation: op, Sensors: []domain.SensorContext{}, Degraded: true}
 	}
 
