@@ -2,6 +2,7 @@
 package domain
 
 import (
+	"context"
 	"time"
 )
 
@@ -41,4 +42,10 @@ type Order struct {
 	Status            OrderStatus
 	Priority          int
 	ReceivedAt        time.Time
+}
+
+// OrderRepo defines the repository interface for orders.
+type OrderRepo interface {
+	FindAllByCompanyID(ctx context.Context, companyID string) ([]Order, error)
+	FindByID(ctx context.Context, orderID int64, companyID string) (Order, error)
 }
