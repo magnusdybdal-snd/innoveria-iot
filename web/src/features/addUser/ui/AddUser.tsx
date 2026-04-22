@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -7,6 +8,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import MenuItem from "@mui/material/MenuItem";
 import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
 
 import type { CreateUserRequest } from "@entities/user";
 import { validatePassword, type PasswordErrors } from "@shared/lib";
@@ -16,14 +18,13 @@ const ROLES = [
   { label: "Admin", value: "PLATFORM_ADMIN" },
 ];
 
-const inputSx = {
+const fieldSx = {
   "& .MuiOutlinedInput-root": {
     color: "primary.main",
     "& fieldset": { borderColor: "primary.main" },
     "&:hover fieldset": { borderColor: "primary.main" },
     "&.Mui-focused fieldset": { borderColor: "primary.main" },
   },
-  "& .MuiInputLabel-root": { color: "primary.main" },
   "& .MuiSelect-icon": { color: "primary.main" },
 };
 
@@ -131,82 +132,107 @@ export function AddUser({
       }}
     >
       <DialogTitle sx={{ color: "primary.main" }}>Add user</DialogTitle>
-      <DialogContent className="flex flex-col gap-4 pt-2">
-        <TextField
-          label="Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          fullWidth
-          sx={inputSx}
-        />
-        <TextField
-          label="Email"
-          type="email"
-          value={email}
-          onChange={(e) => {
-            setEmail(e.target.value.toLowerCase());
-            setEmailError(false);
-          }}
-          fullWidth
-          sx={inputSx}
-        />
-        <TextField
-          label="Password"
-          type="password"
-          value={password}
-          onChange={(e) => {
-            setPassword(e.target.value);
-            setPasswordErrors(noPasswordErrors);
-          }}
-          fullWidth
-          sx={inputSx}
-        />
-        <TextField
-          label="Role"
-          select
-          value={role}
-          onChange={(e) => setRole(e.target.value)}
-          fullWidth
-          sx={inputSx}
-        >
-          {ROLES.map((r) => (
-            <MenuItem key={r.value} value={r.value}>
-              {r.label}
-            </MenuItem>
-          ))}
-        </TextField>
-        {fillError && (
-          <div style={{ color: "red" }}>
-            Name, email and password are required
-          </div>
-        )}
-        {emailError && (
-          <div style={{ color: "red" }}>Please enter a valid email address</div>
-        )}
-        {passwordErrors.length && (
-          <div style={{ color: "red" }}>
-            Password must be at least 8 characters
-          </div>
-        )}
-        {passwordErrors.lowercase && (
-          <div style={{ color: "red" }}>
-            Password must contain a lowercase letter
-          </div>
-        )}
-        {passwordErrors.uppercase && (
-          <div style={{ color: "red" }}>
-            Password must contain an uppercase letter
-          </div>
-        )}
-        {passwordErrors.number && (
-          <div style={{ color: "red" }}>Password must contain a number</div>
-        )}
-        {passwordErrors.symbol && (
-          <div style={{ color: "red" }}>
-            Password must contain a symbol (!@#$...)
-          </div>
-        )}
-        {submitError && <div style={{ color: "red" }}>{submitError}</div>}
+      <DialogContent>
+        <Box display="flex" flexDirection="column" gap={2}>
+          <Box>
+            <Typography variant="body2" color="primary.main" mb={0.5}>
+              Name
+            </Typography>
+            <TextField
+              placeholder="Enter name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              fullWidth
+              sx={fieldSx}
+            />
+          </Box>
+          <Box>
+            <Typography variant="body2" color="primary.main" mb={0.5}>
+              Email
+            </Typography>
+            <TextField
+              placeholder="Enter email"
+              type="email"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value.toLowerCase());
+                setEmailError(false);
+              }}
+              fullWidth
+              sx={fieldSx}
+            />
+          </Box>
+          <Box>
+            <Typography variant="body2" color="primary.main" mb={0.5}>
+              Password
+            </Typography>
+            <TextField
+              placeholder="Enter password"
+              type="password"
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setPasswordErrors(noPasswordErrors);
+              }}
+              fullWidth
+              sx={fieldSx}
+            />
+          </Box>
+          <Box>
+            <Typography variant="body2" color="primary.main" mb={0.5}>
+              Role
+            </Typography>
+            <TextField
+              select
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              fullWidth
+              sx={fieldSx}
+            >
+              {ROLES.map((r) => (
+                <MenuItem key={r.value} value={r.value}>
+                  {r.label}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Box>
+          {fillError && (
+            <Typography color="error">
+              Name, email and password are required
+            </Typography>
+          )}
+          {emailError && (
+            <Typography color="error">
+              Please enter a valid email address
+            </Typography>
+          )}
+          {passwordErrors.length && (
+            <Typography color="error">
+              Password must be at least 8 characters
+            </Typography>
+          )}
+          {passwordErrors.lowercase && (
+            <Typography color="error">
+              Password must contain a lowercase letter
+            </Typography>
+          )}
+          {passwordErrors.uppercase && (
+            <Typography color="error">
+              Password must contain an uppercase letter
+            </Typography>
+          )}
+          {passwordErrors.number && (
+            <Typography color="error">
+              Password must contain a number
+            </Typography>
+          )}
+          {passwordErrors.symbol && (
+            <Typography color="error">
+              Password must contain a symbol (!@#$...)
+            </Typography>
+          )}
+          {submitError && <Typography color="error">{submitError}</Typography>}
+        </Box>
       </DialogContent>
       <DialogActions>
         <Button
