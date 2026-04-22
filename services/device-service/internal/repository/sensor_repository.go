@@ -296,7 +296,7 @@ func (r *SensorRepository) Update(ctx context.Context, companyID string, sensorI
 	}
 
 	if tag.RowsAffected() == 0 {
-		return fmt.Errorf("sensor not found: %s", sensorID)
+		return fmt.Errorf("update sensor: %w", domain.ErrNotFound)
 	}
 
 	return nil
@@ -312,7 +312,7 @@ func (r *SensorRepository) Delete(ctx context.Context, companyID string, deviceI
 	}
 
 	if tag.RowsAffected() == 0 {
-		return fmt.Errorf("sensor not found: %s", deviceID)
+		return fmt.Errorf("delete sensor: %w", domain.ErrNotFound)
 	}
 
 	return nil

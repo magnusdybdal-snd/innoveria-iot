@@ -216,7 +216,7 @@ func (r *GatewayRepository) Update(ctx context.Context, companyID string, gatewa
 	}
 
 	if tag.RowsAffected() == 0 {
-		return fmt.Errorf("gateway not found: %s", gatewayID)
+		return fmt.Errorf("update gateway: %w", domain.ErrNotFound)
 	}
 
 	return nil
@@ -232,7 +232,7 @@ func (r *GatewayRepository) Delete(ctx context.Context, companyID string, gatewa
 	}
 
 	if tag.RowsAffected() == 0 {
-		return fmt.Errorf("gateway not found: %s", gatewayID)
+		return fmt.Errorf("delete gateway: %w", domain.ErrNotFound)
 	}
 
 	return nil
