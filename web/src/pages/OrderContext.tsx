@@ -84,10 +84,10 @@ export default function OrderContext() {
                     unit={op.productionResource.description ?? undefined} // TODO: display sensor unit instead of workcenter description
                   />
                 ))}
+                <PageDivider />
               </Box>
             </>
           )}
-          <PageDivider />
           {/* DEBUG: Display selected order details in a formatted JSON block */}
           {selectedOrder && (
             <Box
