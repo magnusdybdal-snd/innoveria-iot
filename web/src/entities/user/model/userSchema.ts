@@ -1,13 +1,24 @@
 /**
- * This file contains the types for the Company entity, as well as the API response types.
- * It defines the structure of the data returned by the API when fetching company information.
+ * This file contains the types for the User entity, as well as the API response types.
+ * It defines the structure of the data returned by the API when fetching user information.
  */
 export interface UserApiResponse {
+  id: string;
   companyId: string;
-  email: string;
   name: string;
+  email: string;
   role: string;
-  userId: string;
+  lastLoggedIn: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateUserRequest {
+  companyId: string;
+  name: string;
+  email: string;
+  password: string;
+  role: string;
 }
 
 export interface LoginRequest {
