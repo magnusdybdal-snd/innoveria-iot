@@ -29,6 +29,7 @@ func NewRouter(cfg *config.Config) *http.ServeMux {
 		"/login",
 		"/refresh",
 		"/me",
+		"/users",
 	})
 
 	// Device service
