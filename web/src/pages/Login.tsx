@@ -9,7 +9,6 @@ import IconButton from "@mui/material/IconButton";
 import InputAdornment from "@mui/material/InputAdornment";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { useNavigate } from "react-router";
 
 import innLogoDark from "@assets/innoveriaDark.png";
 import innLogoLight from "@assets/innoveriaLight.png";
@@ -47,7 +46,6 @@ export default function Base() {
   const [loginError, setLoginError] = useState(false);
 
   const [firstLogin, setFirstLogin] = useState(false);
-  const navigate = useNavigate();
 
   // Show password
   const [showPassword, setShowPassword] = useState({
@@ -144,7 +142,7 @@ export default function Base() {
 
       localStorage.setItem("access_token", data.accessToken);
 
-      navigate("/");
+      window.location.href = "/";
     } catch (err) {
       setLoginError(true);
       console.error(err);
