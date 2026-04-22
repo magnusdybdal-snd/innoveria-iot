@@ -1,6 +1,9 @@
+import { useState } from "react";
+
 import Typography from "@mui/material/Typography";
 
 import { ActionMenu } from "@shared/ui/actionMenu";
+import { DeleteConfirmation } from "@shared/ui/DeleteConfirmation";
 
 type InfoProps = {
   id: string;
@@ -38,9 +41,11 @@ export function UserInfo({
   onDelete,
   onEdit,
 }: InfoProps) {
+  const [deleteOpen, setDeleteOpen] = useState(false);
+
   const menuItems = [
     { label: "Edit", onClick: () => onEdit({ id, name, email, role }) },
-    { label: "Delete", onClick: () => onDelete(id) },
+    { label: "Delete", onClick: () => setDeleteOpen(true) },
   ];
 
   return (
@@ -50,6 +55,14 @@ export function UserInfo({
       <Typography>{role}</Typography>
       <Typography>{createdAt}</Typography>
       <ActionMenu items={menuItems} />
+      <DeleteConfirmation
+        open={deleteOpen}
+        onClose={() => setDeleteOpen(false)}
+        onConfirm={() => {
+          onDelete(id);
+          setDeleteOpen(false);
+        }}
+      />
     </>
   );
 }
