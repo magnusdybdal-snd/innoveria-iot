@@ -90,7 +90,7 @@ export default function Users() {
 
   const handleAddUser = (userData: CreateUserRequest) => {
     setAddError(null);
-    postUser(userData)
+    postUser({ ...userData, companyId: selectedCompany!.companyId })
       .then(() => {
         refetch();
         setOpenAdd(false);
