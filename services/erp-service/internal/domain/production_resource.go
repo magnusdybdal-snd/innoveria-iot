@@ -31,7 +31,7 @@ type ProductionResource struct {
 	ReceivedAt  time.Time
 }
 
-// ProductionResourceRepo defines the retrive operation
+// ProductionResourceRepo defines the retrieve operation
 type ProductionResourceRepo interface {
 	FindAllByCompanyID(ctx context.Context, companyID string) ([]ProductionResource, error)
 	FindByID(ctx context.Context, productionResourceID int64, companyID string) (ProductionResource, error)
