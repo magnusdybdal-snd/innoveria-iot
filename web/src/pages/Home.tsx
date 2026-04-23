@@ -1,5 +1,5 @@
-import BarChartIcon from "@mui/icons-material/BarChart";
-import DeviceHubIcon from "@mui/icons-material/DeviceHub";
+import MemoryIcon from "@mui/icons-material/Memory";
+import SpaceDashboardIcon from "@mui/icons-material/SpaceDashboard";
 import Box from "@mui/material/Box";
 
 import { PageContent } from "@shared/ui/PageContent";
@@ -11,7 +11,7 @@ const NAV_SECTIONS: NavCardProps[] = [
   {
     label: "Dashboard",
     description: "Monitor live sensor context and production order status.",
-    icon: <BarChartIcon fontSize="small" />,
+    icon: <SpaceDashboardIcon fontSize="small" />,
     pages: [
       { name: "Context Dashboard", path: "/Dashboard/Context" },
       { name: "Order Context", path: "/Dashboard/Context/Orders" },
@@ -21,7 +21,7 @@ const NAV_SECTIONS: NavCardProps[] = [
     label: "Devices",
     description:
       "Manage connected LoRaWAN gateways and sensors on the factory floor.",
-    icon: <DeviceHubIcon fontSize="small" />,
+    icon: <MemoryIcon fontSize="small" />,
     pages: [
       { name: "Gateways", path: "/Devices/Gateways" },
       { name: "Sensors", path: "/Devices/Sensors" },

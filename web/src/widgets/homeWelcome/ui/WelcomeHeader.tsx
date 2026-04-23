@@ -71,7 +71,7 @@ export function WelcomeHeader() {
             mb: 0.5,
           }}
         >
-          Fabrikkpuls
+          Factory pulse
         </Typography>
         <Typography
           variant="h4"
