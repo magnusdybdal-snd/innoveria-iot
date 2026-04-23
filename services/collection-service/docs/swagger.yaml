@@ -95,6 +95,8 @@ paths:
           description: Bad Request
         "404":
           description: Not Found
+        "500":
+          description: Internal Server Error
       summary: Get latest measurement
       tags:
       - measurements
