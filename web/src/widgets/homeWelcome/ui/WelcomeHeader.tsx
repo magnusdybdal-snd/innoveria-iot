@@ -27,7 +27,7 @@ function Clock() {
     return () => clearInterval(timer);
   }, []);
 
-  const timeStr = time.toLocaleTimeString("no-NO", {
+  const timeStr = time.toLocaleTimeString(undefined, {
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",

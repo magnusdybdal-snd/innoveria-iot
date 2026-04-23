@@ -46,8 +46,8 @@ export function NavCard({ label, description, icon, pages }: NavCardProps) {
   return (
     <Box
       sx={{
-        border: `4px solid ${borderColor}`,
-        borderRadius: 3,
+        border: `2px solid ${borderColor}`,
+        borderRadius: 4,
         p: 3,
         transition: "border-color 0.15s ease",
         "&:hover": { borderColor: "text.primary" },
