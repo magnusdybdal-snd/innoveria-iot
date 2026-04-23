@@ -6,6 +6,15 @@ export type PasswordErrors = {
   symbol: boolean;
 };
 
+/** All-false PasswordErrors value representing a password with no validation violations. Use as initial state or reset value. */
+export const emptyPasswordErrors: PasswordErrors = {
+  length: false,
+  lowercase: false,
+  uppercase: false,
+  number: false,
+  symbol: false,
+};
+
 /**
  * Validates a password against the application's strength requirements.
  * @param value - The password string to validate

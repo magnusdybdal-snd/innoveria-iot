@@ -11,7 +11,11 @@ import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 
 import type { CreateUserRequest } from "@entities/user";
-import { validatePassword, type PasswordErrors } from "@shared/lib";
+import {
+  emptyPasswordErrors,
+  validatePassword,
+  type PasswordErrors,
+} from "@shared/lib";
 
 const ROLES = [
   { label: "User", value: "FACTORY_WORKER" },
@@ -59,24 +63,11 @@ export function AddUser({
   const [role, setRole] = useState("FACTORY_WORKER");
   const [fillError, setFillError] = useState(false);
   const [emailError, setEmailError] = useState(false);
-  const [passwordErrors, setPasswordErrors] = useState<PasswordErrors>({
-    length: false,
-    lowercase: false,
-    uppercase: false,
-    number: false,
-    symbol: false,
-  });
+  const [passwordErrors, setPasswordErrors] =
+    useState<PasswordErrors>(emptyPasswordErrors);
 
   const isValidEmail = (value: string) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-
-  const noPasswordErrors = {
-    length: false,
-    lowercase: false,
-    uppercase: false,
-    number: false,
-    symbol: false,
-  };
 
   const handleClose = () => {
     setName("");
@@ -85,7 +76,7 @@ export function AddUser({
     setRole("FACTORY_WORKER");
     setFillError(false);
     setEmailError(false);
-    setPasswordErrors(noPasswordErrors);
+    setPasswordErrors(emptyPasswordErrors);
     onClose();
   };
 
@@ -108,7 +99,7 @@ export function AddUser({
     }
     setFillError(false);
     setEmailError(false);
-    setPasswordErrors(noPasswordErrors);
+    setPasswordErrors(emptyPasswordErrors);
     onAdd({
       companyId,
       name: name.trim(),
@@ -172,7 +163,7 @@ export function AddUser({
               value={password}
               onChange={(e) => {
                 setPassword(e.target.value);
-                setPasswordErrors(noPasswordErrors);
+                setPasswordErrors(emptyPasswordErrors);
               }}
               fullWidth
               sx={fieldSx}

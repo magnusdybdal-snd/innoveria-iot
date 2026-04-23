@@ -10,7 +10,11 @@ import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 
 import type { UpdateUserRequest } from "@entities/user";
-import { validatePassword, type PasswordErrors } from "@shared/lib";
+import {
+  emptyPasswordErrors,
+  validatePassword,
+  type PasswordErrors,
+} from "@shared/lib";
 
 const fieldSx = {
   "& .MuiOutlinedInput-root": {
@@ -53,31 +57,18 @@ export function EditUser({
   const [email, setEmail] = useState(user.email);
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState(false);
-  const [passwordErrors, setPasswordErrors] = useState<PasswordErrors>({
-    length: false,
-    lowercase: false,
-    uppercase: false,
-    number: false,
-    symbol: false,
-  });
+  const [passwordErrors, setPasswordErrors] =
+    useState<PasswordErrors>(emptyPasswordErrors);
 
   const isValidEmail = (value: string) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-
-  const noPasswordErrors = {
-    length: false,
-    lowercase: false,
-    uppercase: false,
-    number: false,
-    symbol: false,
-  };
 
   const handleClose = () => {
     setName(user.name);
     setEmail(user.email);
     setPassword("");
     setEmailError(false);
-    setPasswordErrors(noPasswordErrors);
+    setPasswordErrors(emptyPasswordErrors);
     onClose();
   };
 
@@ -94,7 +85,7 @@ export function EditUser({
       }
     }
     setEmailError(false);
-    setPasswordErrors(noPasswordErrors);
+    setPasswordErrors(emptyPasswordErrors);
 
     const payload: UpdateUserRequest = {};
     if (name.trim() !== user.name) payload.name = name.trim();
@@ -170,7 +161,7 @@ export function EditUser({
               value={password}
               onChange={(e) => {
                 setPassword(e.target.value);
-                setPasswordErrors(noPasswordErrors);
+                setPasswordErrors(emptyPasswordErrors);
               }}
               fullWidth
               sx={fieldSx}
