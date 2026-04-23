@@ -43,7 +43,7 @@ export default function Home() {
         <Box
           sx={{
             display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
+            gridTemplateColumns: `repeat(${NAV_SECTIONS.length}, 1fr)`,
             gap: 2,
           }}
         >
