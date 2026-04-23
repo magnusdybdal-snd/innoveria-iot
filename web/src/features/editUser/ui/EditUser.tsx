@@ -12,6 +12,7 @@ import Typography from "@mui/material/Typography";
 import type { UpdateUserRequest } from "@entities/user";
 import {
   emptyPasswordErrors,
+  isValidEmail,
   validatePassword,
   type PasswordErrors,
 } from "@shared/lib";
@@ -59,9 +60,6 @@ export function EditUser({
   const [emailError, setEmailError] = useState(false);
   const [passwordErrors, setPasswordErrors] =
     useState<PasswordErrors>(emptyPasswordErrors);
-
-  const isValidEmail = (value: string) =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
   const handleClose = () => {
     setName(user.name);
