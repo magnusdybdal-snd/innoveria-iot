@@ -50,9 +50,10 @@ func Run() error {
 	factorySvc := services.NewFactoryService(factoryRepo)
 	factoryAreaSvc := services.NewFactoryAreaService(factoryAreaRepo)
 	authSvc := services.NewAuthServiceImpl(userRepo, refreshTokenRepo, cfg.JWT_SECRET, cfg.JWTIssuer, cfg.JWTAccessTTL, cfg.JWTRefreshTokenTTL, cfg.RefreshPepper)
+	userSvc := services.NewUserService(userRepo)
 
 	// Setting up mux and http server
-	mux := NewRouter(companySvc, factorySvc, factoryAreaSvc, authSvc, cfg.JWTRefreshTokenTTL, cfg.EnableSwagger)
+	mux := NewRouter(companySvc, factorySvc, factoryAreaSvc, authSvc, userSvc, cfg.JWTRefreshTokenTTL, cfg.EnableSwagger)
 	server := &http.Server{
 		Addr:              cfg.Addr,
 		Handler:           mux,
