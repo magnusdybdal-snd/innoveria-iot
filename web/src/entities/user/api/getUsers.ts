@@ -1,4 +1,7 @@
-import type { UserApiResponse } from "@entities/user/model/userSchema.ts";
+import type {
+  UserApiResponse,
+  UserRole,
+} from "@entities/user/model/userSchema.ts";
 import { apiRequest, serviceClient } from "@shared/api";
 import { API_ROUTES } from "@shared/api/routes";
 
@@ -41,7 +44,7 @@ export const getUsers = async (
     companyId: u.company_id,
     name: u.name,
     email: u.email,
-    role: u.role,
+    role: u.role as UserRole,
     lastLoggedIn: u.last_logged_in,
     createdAt: u.created_at,
     updatedAt: u.updated_at,

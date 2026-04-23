@@ -1,4 +1,7 @@
-import type { CurrentUserApiResponse } from "@entities/user/model/userSchema.ts";
+import type {
+  CurrentUserApiResponse,
+  UserRole,
+} from "@entities/user/model/userSchema.ts";
 import { apiRequest, serviceClient } from "@shared/api";
 import { API_ROUTES } from "@shared/api/routes";
 
@@ -27,7 +30,7 @@ export const getUser = async (): Promise<CurrentUserApiResponse> => {
       companyId: data.company_id,
       email: data.email,
       name: data.name,
-      role: data.role,
+      role: data.role as UserRole,
       id: data.user_id,
     };
   } catch (error) {

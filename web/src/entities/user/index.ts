@@ -1,4 +1,5 @@
 export type {
+  UserRole,
   CurrentUserApiResponse,
   UserApiResponse,
   CreateUserRequest,

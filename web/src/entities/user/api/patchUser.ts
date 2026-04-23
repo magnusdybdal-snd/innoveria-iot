@@ -1,10 +1,11 @@
+import type { UserRole } from "@entities/user/model/userSchema";
 import { apiRequest, serviceClient } from "@shared/api";
 import { API_ROUTES } from "@shared/api/routes";
 
 export interface UpdateUserRequest {
   name?: string;
   email?: string;
-  role?: string;
+  role?: UserRole;
   password?: string;
 }
 

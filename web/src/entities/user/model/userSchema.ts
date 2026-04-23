@@ -3,13 +3,18 @@
  * It defines the structure of the data returned by the API when fetching user information.
  */
 
+export type UserRole =
+  | "PLATFORM_ADMIN"
+  | "FACTORY_WORKER"
+  | "FACTORY_SUPERUSER";
+
 // Returned by GET /me — minimal profile used to identify and authorize the current session.
 export interface CurrentUserApiResponse {
   id: string;
   companyId: string;
   name: string;
   email: string;
-  role: string;
+  role: UserRole;
 }
 
 // Returned by GET /users — full record used in the admin user management table.
@@ -18,7 +23,7 @@ export interface UserApiResponse {
   companyId: string;
   name: string;
   email: string;
-  role: string;
+  role: UserRole;
   lastLoggedIn: string | null;
   createdAt: string;
   updatedAt: string;
@@ -29,7 +34,7 @@ export interface CreateUserRequest {
   name: string;
   email: string;
   password: string;
-  role: string;
+  role: UserRole;
 }
 
 export interface LoginRequest {
