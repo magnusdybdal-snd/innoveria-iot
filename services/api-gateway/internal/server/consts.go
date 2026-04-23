@@ -14,4 +14,5 @@ const (
 	AUTHENTICATION_ROUTE = API_ROUTE + "/auth"
 	CONTEXT_ROUTE        = API_ROUTE + "/context"
 	ONBOARDING_ROUTE     = API_ROUTE + "/onboarding"
+	ERP_ROUTE            = API_ROUTE + "/erp"
 )

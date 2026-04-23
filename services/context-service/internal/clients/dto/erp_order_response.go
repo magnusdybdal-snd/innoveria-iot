@@ -2,6 +2,11 @@ package dto
 
 import "time"
 
+/**
+	This file will be omited if/when'pkg' will take over
+	contract responsibilities between services.
+**/
+
 // ERPOrderSummaryResponse is the slim JSON shape returned by GET /api/v1/erp/orders.
 type ERPOrderSummaryResponse struct {
 	ID   int64  `json:"id"`

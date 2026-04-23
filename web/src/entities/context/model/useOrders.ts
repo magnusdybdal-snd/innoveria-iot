@@ -26,6 +26,7 @@ export function useOrders(): UseOrdersResult {
   const [refetchIndex, setRefetchIndex] = useState(0);
 
   const refetch = useCallback(() => {
+    setError(null);
     setIsLoading(true);
     setRefetchIndex((i) => i + 1);
   }, []);

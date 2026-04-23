@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"innoveria-iot/erp-service/internal/domain"
+	erpdto "innoveria-iot/pkg/erp/dto"
 	"innoveria-iot/pkg/monitor/dto"
 )
 
@@ -100,6 +101,28 @@ func MapMonitorWorkcenterToDomain(from []dto.WorkCenter) []domain.ProductionReso
 	}
 
 	return to
+}
+
+// MapProductionResourceDomainToDTO maps domain production resources into shared ERP DTOs.
+func MapProductionResourceDomainToDTO(from []domain.ProductionResource) []erpdto.ProductionResource {
+	to := make([]erpdto.ProductionResource, len(from))
+	for i, item := range from {
+		to[i] = MapProductionResourceDomainToDTOSingle(item)
+	}
+
+	return to
+}
+
+// MapProductionResourceDomainToDTOSingle maps domain production resource into a shared ERP DTO (single instance)
+func MapProductionResourceDomainToDTOSingle(from domain.ProductionResource) erpdto.ProductionResource {
+	return erpdto.ProductionResource{
+		ID:          from.ID,
+		CompanyID:   from.CompanyID,
+		Number:      from.Number,
+		Description: from.Description,
+		Type:        erpdto.WorkCenterType(from.Type),
+		ReceivedAt:  from.ReceivedAt,
+	}
 }
 
 // mapOrderStatus converts Monitor order status values to domain order statuses.
