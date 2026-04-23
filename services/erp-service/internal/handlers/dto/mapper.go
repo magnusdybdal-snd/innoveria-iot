@@ -125,6 +125,87 @@ func MapProductionResourceDomainToDTOSingle(from domain.ProductionResource) erpd
 	}
 }
 
+// MapOrderSummaryDomainToDTO maps domain order summaries into shared ERP DTOs.
+func MapOrderSummaryDomainToDTO(from []domain.OrderSummary) []erpdto.OrderSummary {
+	to := make([]erpdto.OrderSummary, len(from))
+	for i, item := range from {
+		to[i] = erpdto.OrderSummary{
+			ID:          item.ID,
+			OrderNumber: item.OrderNumber,
+		}
+	}
+
+	return to
+}
+
+// MapOrderAggregateDomainToDTO maps a domain order aggregate into shared ERP DTO.
+func MapOrderAggregateDomainToDTO(from domain.OrderAggregate) erpdto.OrderAggregate {
+	orders := make([]erpdto.Order, len(from.Order))
+	for i, item := range from.Order {
+		orders[i] = erpdto.Order{
+			ID:                item.ID,
+			CompanyID:         item.CompanyID,
+			OrderNumber:       item.OrderNumber,
+			PartID:            item.PartID,
+			PartDescription:   item.PartDescription,
+			PlannedStartDate:  item.PlannedStartDate,
+			PlannedFinishDate: item.PlannedFinishDate,
+			ActualStartDate:   item.ActualStartDate,
+			ActualFinishDate:  item.ActualFinishDate,
+			Status:            erpdto.OrderStatus(item.Status),
+			Priority:          item.Priority,
+			ReceivedAt:        item.ReceivedAt,
+		}
+	}
+
+	operations := make([]erpdto.OrderOperationWithReports, len(from.Operations))
+	resources := make([]erpdto.ProductionResource, 0, len(from.Operations))
+	resourceSeen := make(map[int64]struct{}, len(from.Operations))
+	for i, item := range from.Operations {
+		reports := make([]erpdto.OrderReport, len(item.Reports))
+		for j, report := range item.Reports {
+			reports[j] = erpdto.OrderReport{
+				ID:                   report.ID,
+				CompanyID:            report.CompanyID,
+				OrderOperationID:     report.OrderOperationID,
+				ProductionResourceID: report.ProductionResourceID,
+				Quantity:             report.Quantity,
+				RestQuantity:         report.RestQuantity,
+				Type:                 erpdto.OrderReportType(report.Type),
+				ReportingTimestamp:   report.ReportingTimestamp,
+				ActualReportedDate:   report.ActualReportedDate,
+				ReceivedAt:           report.ReceivedAt,
+			}
+		}
+
+		operations[i] = erpdto.OrderOperationWithReports{
+			ID:                       item.Operation.ID,
+			CompanyID:                item.Operation.CompanyID,
+			ProductionResourceID:     item.Operation.ProductionResourceID,
+			OrderID:                  item.Operation.OrderID,
+			PlannedStartDate:         item.Operation.PlannedStartDate,
+			PlannedFinishDate:        item.Operation.PlannedFinishDate,
+			ActualStartDate:          item.Operation.ActualStartDate,
+			ActualFinishDate:         item.Operation.ActualFinishDate,
+			Status:                   erpdto.OperationStatus(item.Operation.Status),
+			ProductionResourceStatus: erpdto.OperationStatus(item.Operation.ProductionResourceStatus),
+			ReceivedAt:               item.Operation.ReceivedAt,
+			Reports:                  reports,
+		}
+
+		if _, exists := resourceSeen[item.Resource.ID]; !exists {
+			resources = append(resources, MapProductionResourceDomainToDTOSingle(item.Resource))
+			resourceSeen[item.Resource.ID] = struct{}{}
+		}
+	}
+
+	return erpdto.OrderAggregate{
+		Order:               orders,
+		Operations:          operations,
+		ProductionResources: resources,
+	}
+}
+
 // mapOrderStatus converts Monitor order status values to domain order statuses.
 func mapOrderStatus(status int) domain.OrderStatus {
 	switch status {

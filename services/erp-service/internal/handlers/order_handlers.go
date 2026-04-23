@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"innoveria-iot/erp-service/internal/domain"
+	handlerdto "innoveria-iot/erp-service/internal/handlers/dto"
 	"innoveria-iot/pkg/json"
 )
 
@@ -22,7 +23,9 @@ func GetOrderSummaryHandler(svc domain.OrderService) http.HandlerFunc {
 			return
 		}
 
-		if err := json.Encode(w, http.StatusOK, result); err != nil {
+		response := handlerdto.MapOrderSummaryDomainToDTO(result)
+
+		if err := json.Encode(w, http.StatusOK, response); err != nil {
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
 		}
 	}
@@ -49,7 +52,9 @@ func GetOneOrderHandler(svc domain.OrderService) http.HandlerFunc {
 			return
 		}
 
-		if err := json.Encode(w, http.StatusOK, result); err != nil {
+		response := handlerdto.MapOrderAggregateDomainToDTO(result)
+
+		if err := json.Encode(w, http.StatusOK, response); err != nil {
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
 		}
 	}
