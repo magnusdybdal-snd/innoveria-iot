@@ -18,7 +18,6 @@ const subPages: Map<string, SubPage[]> = new Map([
       { name: "Sensors", path: "/Devices/Sensors" },
     ],
   ],
-  ["Reports", []],
   [
     "Admin",
     [

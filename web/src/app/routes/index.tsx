@@ -30,7 +30,6 @@ export default function AppRoutes() {
         <Route path="/Admin/Rules" element={<Rules />} />
         <Route path="/Devices/Sensors" element={<Sensors />} />
         <Route path="/Devices/Gateways" element={<Gateways />} />
-        <Route path="/Reports" element={<Home />} />
         <Route path="/Admin/Companies" element={<Companies />} />
         <Route path="/Admin/Factories" element={<Factories />} />
         <Route path="/Admin/Users" element={<Home />} />
