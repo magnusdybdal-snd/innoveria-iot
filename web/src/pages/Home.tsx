@@ -1,11 +1,37 @@
-import Typography from "@mui/material/Typography";
+import BarChartIcon from "@mui/icons-material/BarChart";
+import DeviceHubIcon from "@mui/icons-material/DeviceHub";
+import Box from "@mui/material/Box";
 
 import { PageContent } from "@shared/ui/PageContent";
 import { SubPageHeader } from "@shared/ui/SubPageHeader";
+import { NavCard, type NavCardProps } from "@widgets/homeNavCard";
+import { WelcomeHeader } from "@widgets/homeWelcome";
+
+const NAV_SECTIONS: NavCardProps[] = [
+  {
+    label: "Dashboard",
+    description: "Monitor live sensor context and production order status.",
+    icon: <BarChartIcon fontSize="small" />,
+    pages: [
+      { name: "Context Dashboard", path: "/Dashboard/Context" },
+      { name: "Order Context", path: "/Dashboard/Context/Orders" },
+    ],
+  },
+  {
+    label: "Devices",
+    description:
+      "Manage connected LoRaWAN gateways and sensors on the factory floor.",
+    icon: <DeviceHubIcon fontSize="small" />,
+    pages: [
+      { name: "Gateways", path: "/Devices/Gateways" },
+      { name: "Sensors", path: "/Devices/Sensors" },
+    ],
+  },
+];
 
 /**
- * Home page that displays a placholder text, wrapped in the main Menu layout.
- * This is the default landing page after login.
+ * Home page displaying a live clock, welcome message, and navigation cards
+ * to all main sections of the application (Admin excluded).
  * @returns The rendered Home page
  */
 export default function Home() {
@@ -13,9 +39,18 @@ export default function Home() {
     <div className="flex h-screen">
       <PageContent>
         <SubPageHeader />
-        <Typography variant="h5" sx={{ mt: 2 }}>
-          Home Page content placeholder
-        </Typography>
+        <WelcomeHeader />
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: "repeat(3, 1fr)",
+            gap: 2,
+          }}
+        >
+          {NAV_SECTIONS.map((section) => (
+            <NavCard key={section.label} {...section} />
+          ))}
+        </Box>
       </PageContent>
     </div>
   );
