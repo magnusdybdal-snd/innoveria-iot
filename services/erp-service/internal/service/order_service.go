@@ -10,7 +10,7 @@ import (
 type OrderServiceImpl struct {
 	orderRepo              domain.OrderRepo
 	orderOperationRepo     domain.OrderOperationRepo
-	orderReportRepo        domain.OrderOperationRepo
+	orderReportRepo        domain.OrderReportRepo
 	productionResourceRepo domain.ProductionResourceRepo
 }
 
@@ -18,7 +18,7 @@ type OrderServiceImpl struct {
 func NewOrderService(
 	orderRepo domain.OrderRepo,
 	orderOperationRepo domain.OrderOperationRepo,
-	orderReportRepo domain.OrderOperationRepo,
+	orderReportRepo domain.OrderReportRepo,
 	productionResourceRepo domain.ProductionResourceRepo,
 ) *OrderServiceImpl {
 	return &OrderServiceImpl{
@@ -36,4 +36,9 @@ func (s *OrderServiceImpl) GetOrderSummary(ctx context.Context, companyID string
 		return nil, err
 	}
 	return data, nil
+}
+
+// GetOne returns a aggregated result for all erp data
+func (s *OrderServiceImpl) GetOne(ctx context.Context, orderID, companyID string) (domain.Order, error) {
+	return domain.Order{}, nil
 }

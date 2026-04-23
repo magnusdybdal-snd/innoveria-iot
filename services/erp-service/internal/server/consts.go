@@ -19,4 +19,6 @@ const (
 	// Extracting erp data
 	PRODUCTION_RESOURCE_ROUTE    = ERP_ROUTE + "/production-resources"
 	PRODUCTION_RESOURCE_ID_ROUTE = PRODUCTION_RESOURCE_ROUTE + "/{id}"
+
+	ORDER_SUMMARY_ROUTE = ERP_ROUTE + "/order"
 )

@@ -59,6 +59,6 @@ type OrderRepo interface {
 
 // OrderService defines the business logic interface for orders
 type OrderService interface {
-	GetAll(ctx context.Context, companyID string) ([]OrderSummary, error)
-	GetOneBy(ctx context.Context, orderID, companyID string) (Order, error)
+	GetOrderSummary(ctx context.Context, companyID string) ([]OrderSummary, error)
+	GetOne(ctx context.Context, orderID, companyID string) (Order, error)
 }

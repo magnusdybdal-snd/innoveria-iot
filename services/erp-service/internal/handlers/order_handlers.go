@@ -13,7 +13,7 @@ func GetOrderSummaryHandler(svc domain.OrderService) http.HandlerFunc {
 
 		companyID := "a0000000-0000-0000-0000-000000000001"
 
-		result, err := svc.GetAll(ctx, companyID)
+		result, err := svc.GetOrderSummary(ctx, companyID)
 		if err != nil {
 			status, message, cause := MapDomainError(err)
 			json.HandleError(w, status, cause, message)
