@@ -16,7 +16,7 @@ type InfoProps = {
   id: string;
   name: string;
   email: string;
-  role: string;
+  role: UserRole;
   createdAt: string;
   onDelete: (id: string) => void;
   onEdit: (user: { id: string; name: string; email: string }) => void;
