@@ -32,7 +32,7 @@ export interface EditUserProps {
 
 /**
  * Modal dialog for editing an existing user's details.
- * Pre-filled with the user's current name, email, and role.
+ * Pre-filled with the user's current name and email.
  * Password is optional — leave blank to keep the existing password.
  * @param props - Component props
  * @param props.open - Whether the dialog is visible

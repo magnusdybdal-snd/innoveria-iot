@@ -13,7 +13,7 @@ type RawUserApiResponse = {
 /**
  * Fetches the currently authenticated user's profile from the auth service (/me).
  * Throws if the request fails — callers are responsible for error handling.
- * @returns The current user's profile
+ * @returns The current user's minimal profile
  */
 export const getUser = async (): Promise<CurrentUserApiResponse> => {
   try {

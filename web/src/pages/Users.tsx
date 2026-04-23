@@ -59,7 +59,7 @@ const sortableUserColumns: UserSortKey[] = [
  * Admin user management page.
  *
  * Default view lists all companies. Clicking a company drills down into
- * that company's users where admins can add or delete users.
+ * that company's users where admins can add, edit, or delete users.
  * @returns The rendered Users page
  */
 export default function Users() {
@@ -169,8 +169,8 @@ export default function Users() {
   const handleDeleteUser = (userId: string) => {
     deleteUser(userId)
       .then(() => {
-        refetch();
         show("User deleted successfully", SNACKBAR_SEVERITY.SUCCESS);
+        refetch();
       })
       .catch(() => {
         show("Failed to delete user", SNACKBAR_SEVERITY.ERROR);
