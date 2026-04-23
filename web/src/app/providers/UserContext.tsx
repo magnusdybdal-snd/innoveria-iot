@@ -1,9 +1,9 @@
 import { createContext } from "react";
 
-import type { UserApiResponse } from "@entities/user";
+import type { CurrentUserApiResponse } from "@entities/user";
 
 export type UserContextValue = {
-  user: UserApiResponse | null;
+  user: CurrentUserApiResponse | null;
   isLoading: boolean;
   error: Error | null;
 };

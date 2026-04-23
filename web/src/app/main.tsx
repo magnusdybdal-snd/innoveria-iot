@@ -11,7 +11,7 @@ import Box from "@mui/material/Box";
 
 import { UserContext } from "@app/providers/UserContext";
 import AppRoutes from "@app/routes/index.tsx";
-import { getUser, type UserApiResponse } from "@entities/user";
+import { getUser, type CurrentUserApiResponse } from "@entities/user";
 import { DarkMode } from "@shared/config/theme/darkMode";
 import { LightMode } from "@shared/config/theme/lightMode";
 import { ThemeContext } from "@shared/config/theme/themeContext";
@@ -22,7 +22,7 @@ import { ThemeContext } from "@shared/config/theme/themeContext";
  */
 export default function Root() {
   // Fetch the current user once on mount and share via UserContext
-  const [user, setUser] = useState<UserApiResponse | null>(null);
+  const [user, setUser] = useState<CurrentUserApiResponse | null>(null);
   const [userLoading, setUserLoading] = useState(true);
   const [userError, setUserError] = useState<Error | null>(null);
 

@@ -1,4 +1,5 @@
 export type {
+  CurrentUserApiResponse,
   UserApiResponse,
   CreateUserRequest,
   LoginRequest,
