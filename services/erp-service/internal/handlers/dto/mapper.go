@@ -159,8 +159,6 @@ func MapOrderAggregateDomainToDTO(from domain.OrderAggregate) erpdto.OrderAggreg
 	}
 
 	operations := make([]erpdto.OrderOperationWithReports, len(from.Operations))
-	resources := make([]erpdto.ProductionResource, 0, len(from.Operations))
-	resourceSeen := make(map[int64]struct{}, len(from.Operations))
 	for i, item := range from.Operations {
 		reports := make([]erpdto.OrderReport, len(item.Reports))
 		for j, report := range item.Reports {
@@ -192,12 +190,9 @@ func MapOrderAggregateDomainToDTO(from domain.OrderAggregate) erpdto.OrderAggreg
 			ReceivedAt:               item.Operation.ReceivedAt,
 			Reports:                  reports,
 		}
-
-		if _, exists := resourceSeen[item.Resource.ID]; !exists {
-			resources = append(resources, MapProductionResourceDomainToDTOSingle(item.Resource))
-			resourceSeen[item.Resource.ID] = struct{}{}
-		}
 	}
+
+	resources := MapProductionResourceDomainToDTO(from.ProductionResources)
 
 	return erpdto.OrderAggregate{
 		Order:               orders,

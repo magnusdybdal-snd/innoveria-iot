@@ -39,8 +39,9 @@ type OrderSummary struct {
 // associated operations. It is typically used as a composite structure
 // to group multiple orders together with all related operational data.
 type OrderAggregate struct {
-	Order      []Order
-	Operations []OrderOperationWithReports
+	Order               []Order
+	Operations          []OrderOperationWithReports
+	ProductionResources []ProductionResource
 }
 
 // OrderOperationWithReports represents a single operation within an order,
@@ -50,7 +51,6 @@ type OrderAggregate struct {
 type OrderOperationWithReports struct {
 	Operation OrderOperation
 	Reports   []OrderReport
-	Resource  ProductionResource
 }
 
 // Order represents a manufacturing order ingested from Monitor ERP.
