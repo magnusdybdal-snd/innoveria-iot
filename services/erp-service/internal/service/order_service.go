@@ -38,7 +38,39 @@ func (s *OrderServiceImpl) GetOrderSummary(ctx context.Context, companyID string
 	return data, nil
 }
 
-// GetOne returns a aggregated result for all erp data
-func (s *OrderServiceImpl) GetOne(ctx context.Context, orderID, companyID string) (domain.Order, error) {
-	return domain.Order{}, nil
+// GetOne returns an aggregated view for one order.
+func (s *OrderServiceImpl) GetOne(ctx context.Context, orderID int64, companyID string) (domain.OrderAggregate, error) {
+	orderData, err := s.orderRepo.FindByID(ctx, orderID, companyID)
+	if err != nil {
+		return domain.OrderAggregate{}, err
+	}
+
+	orderOperations, err := s.orderOperationRepo.FindAllByOrderID(ctx, orderID, companyID)
+	if err != nil {
+		return domain.OrderAggregate{}, err
+	}
+
+	operationsWithReports := make([]domain.OrderOperationWithReports, 0, len(orderOperations))
+	for _, operation := range orderOperations {
+		reports, err := s.orderReportRepo.FindAllByOrderOperationID(ctx, operation.ID, companyID)
+		if err != nil {
+			return domain.OrderAggregate{}, err
+		}
+
+		resource, err := s.productionResourceRepo.FindByID(ctx, operation.ProductionResourceID, companyID)
+		if err != nil {
+			return domain.OrderAggregate{}, err
+		}
+
+		operationsWithReports = append(operationsWithReports, domain.OrderOperationWithReports{
+			Operation: operation,
+			Reports:   reports,
+			Resource:  resource,
+		})
+	}
+
+	return domain.OrderAggregate{
+		Order:      []domain.Order{orderData},
+		Operations: operationsWithReports,
+	}, nil
 }

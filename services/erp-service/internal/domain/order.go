@@ -35,6 +35,24 @@ type OrderSummary struct {
 	OrderNumber string
 }
 
+// OrderAggregate represents a high-level aggregation of orders and their
+// associated operations. It is typically used as a composite structure
+// to group multiple orders together with all related operational data.
+type OrderAggregate struct {
+	Order      []Order
+	Operations []OrderOperationWithReports
+}
+
+// OrderOperationWithReports represents a single operation within an order,
+// enriched with its execution reports and the production resource used.
+// It is useful for tracking both the planned operation and its actual
+// execution details in one structure.
+type OrderOperationWithReports struct {
+	Operation OrderOperation
+	Reports   []OrderReport
+	Resource  ProductionResource
+}
+
 // Order represents a manufacturing order ingested from Monitor ERP.
 type Order struct {
 	ID                int64
@@ -60,5 +78,5 @@ type OrderRepo interface {
 // OrderService defines the business logic interface for orders
 type OrderService interface {
 	GetOrderSummary(ctx context.Context, companyID string) ([]OrderSummary, error)
-	GetOne(ctx context.Context, orderID, companyID string) (Order, error)
+	GetOne(ctx context.Context, orderID int64, companyID string) (OrderAggregate, error)
 }
