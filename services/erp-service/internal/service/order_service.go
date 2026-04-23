@@ -52,7 +52,7 @@ func (s *OrderServiceImpl) GetOne(ctx context.Context, orderID int64, companyID 
 
 	operationsWithReports := make([]domain.OrderOperationWithReports, 0, len(orderOperations))
 	resources := make([]domain.ProductionResource, 0, len(orderOperations))
-	resourceSeen := make(map[int64]struct{}, len(orderOperations))
+	resourceSeen := make(map[int64]struct{}, len(orderOperations)) // struct carries no data. So only 8bytes from the int (+ map overhead), better than bool check
 	for _, operation := range orderOperations {
 		reports, err := s.orderReportRepo.FindAllByOrderOperationID(ctx, operation.ID, companyID)
 		if err != nil {
@@ -71,7 +71,7 @@ func (s *OrderServiceImpl) GetOne(ctx context.Context, orderID int64, companyID 
 
 		if _, exists := resourceSeen[resource.ID]; !exists {
 			resources = append(resources, resource)
-			resourceSeen[resource.ID] = struct{}{}
+			resourceSeen[resource.ID] = struct{}{} // apply empty body
 		}
 	}
 
