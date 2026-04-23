@@ -5,7 +5,7 @@ import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
 import { useTheme } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
-import { useNavigate } from "react-router";
+import { Link as RouterLink } from "react-router";
 
 /** A navigable sub-page entry within a nav card. */
 export type NavPage = {
@@ -37,7 +37,6 @@ export type NavCardProps = {
  */
 export function NavCard({ label, description, icon, pages }: NavCardProps) {
   const theme = useTheme();
-  const navigate = useNavigate();
 
   const isDark = theme.palette.mode === "dark";
   const borderColor = theme.palette.secondary.light;
@@ -96,14 +95,16 @@ export function NavCard({ label, description, icon, pages }: NavCardProps) {
         {pages.map((page) => (
           <Box
             key={page.path}
-            onClick={() => navigate(page.path)}
+            component={RouterLink}
+            to={page.path}
             sx={{
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
               py: 1,
               px: 1.5,
-              cursor: "pointer",
+              textDecoration: "none",
+              color: "inherit",
               transition: "background-color 0.15s ease",
               "&:hover": { backgroundColor: hoverBg },
               "&:hover .arrow-icon": { transform: "translateX(3px)" },
