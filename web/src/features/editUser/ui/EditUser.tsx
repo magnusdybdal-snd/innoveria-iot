@@ -101,6 +101,11 @@ export function EditUser({
     if (email !== user.email) payload.email = email;
     if (password) payload.password = password;
 
+    if (Object.keys(payload).length === 0) {
+      onClose();
+      return;
+    }
+
     onEdit(user.id, payload);
   };
 
