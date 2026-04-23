@@ -70,6 +70,7 @@ export default function Users() {
   const {
     users,
     isLoading: usersLoading,
+    error: usersError,
     refetch,
   } = useUsers(selectedCompany?.companyId);
 
@@ -256,7 +257,12 @@ export default function Users() {
             </DeviceRow>
           ))}
         </CategoryHeader>
-        {!usersLoading && sorted.length === 0 && (
+        {usersError && !usersLoading && (
+          <Typography color="error" sx={{ p: 2 }}>
+            Failed to load users. Please try again.
+          </Typography>
+        )}
+        {!usersError && !usersLoading && sorted.length === 0 && (
           <NotFoundCard page="users" isEmpty={true} />
         )}
       </PageContent>
