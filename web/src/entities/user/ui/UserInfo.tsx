@@ -2,10 +2,11 @@ import { useState } from "react";
 
 import Typography from "@mui/material/Typography";
 
+import type { UserRole } from "@entities/user";
 import { ActionMenu } from "@shared/ui/actionMenu";
 import { DeleteConfirmation } from "@shared/ui/DeleteConfirmation";
 
-const ROLE_LABELS: Record<string, string> = {
+const ROLE_LABELS: Record<UserRole, string> = {
   FACTORY_WORKER: "User",
   FACTORY_SUPERUSER: "Superuser",
   PLATFORM_ADMIN: "Admin",

@@ -10,7 +10,7 @@ import MenuItem from "@mui/material/MenuItem";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 
-import type { CreateUserRequest } from "@entities/user";
+import type { CreateUserRequest, UserRole } from "@entities/user";
 import {
   emptyPasswordErrors,
   isValidEmail,
@@ -61,7 +61,7 @@ export function AddUser({
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("FACTORY_WORKER");
+  const [role, setRole] = useState<UserRole>("FACTORY_WORKER");
   const [fillError, setFillError] = useState(false);
   const [emailError, setEmailError] = useState(false);
   const [passwordErrors, setPasswordErrors] =
@@ -174,7 +174,7 @@ export function AddUser({
             <TextField
               select
               value={role}
-              onChange={(e) => setRole(e.target.value)}
+              onChange={(e) => setRole(e.target.value as UserRole)}
               fullWidth
               sx={fieldSx}
             >
