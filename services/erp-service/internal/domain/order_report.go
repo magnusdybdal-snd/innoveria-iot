@@ -1,6 +1,9 @@
 package domain
 
-import "time"
+import (
+	"context"
+	"time"
+)
 
 // OrderReportType describes the semantic type of an operation reporting event.
 type OrderReportType string
@@ -48,4 +51,11 @@ type OrderReport struct {
 	ReportingTimestamp   time.Time
 	ActualReportedDate   *time.Time
 	ReceivedAt           time.Time
+}
+
+// OrderReportRepo defines the repository interface for order reports.
+type OrderReportRepo interface {
+	FindAllByCompanyID(ctx context.Context, companyID string) ([]OrderReport, error)
+	FindAllByOrderOperationID(ctx context.Context, orderOperationID int64, companyID string) ([]OrderReport, error)
+	FindByID(ctx context.Context, orderReportID int64, companyID string) (OrderReport, error)
 }
