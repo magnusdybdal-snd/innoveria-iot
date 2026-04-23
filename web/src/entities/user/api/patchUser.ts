@@ -1,4 +1,4 @@
-import { serviceClient } from "@shared/api";
+import { apiRequest, serviceClient } from "@shared/api";
 import { API_ROUTES } from "@shared/api/routes";
 
 export interface UpdateUserRequest {
@@ -12,14 +12,15 @@ export interface UpdateUserRequest {
  * Updates a user's fields by ID. Only provided fields are updated.
  * @param userId - The ID of the user to update
  * @param payload - The fields to update
- * @returns void
  */
 export const patchUser = async (
   userId: string,
   payload: UpdateUserRequest,
 ): Promise<void> => {
-  await serviceClient.patch(
+  await apiRequest<void>(
+    serviceClient,
     `${API_ROUTES.users}/${encodeURIComponent(userId)}`,
+    "PATCH",
     payload,
   );
 };

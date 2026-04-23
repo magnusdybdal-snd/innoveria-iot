@@ -100,7 +100,7 @@ serviceClient.interceptors.response.use(
 export const apiRequest = async <T,>(
   client: AxiosInstance,
   url: string,
-  method: "GET" | "POST" | "PUT" | "DELETE",
+  method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
   data?: unknown,
 ): Promise<T> => {
   const response: AxiosResponse<T> = await client({
