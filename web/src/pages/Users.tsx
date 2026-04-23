@@ -128,8 +128,17 @@ export default function Users() {
         setOpenAdd(false);
         show("User added successfully", SNACKBAR_SEVERITY.SUCCESS);
       })
-      .catch(() => {
-        setAddError("Failed to add user. The email may already be registered.");
+      .catch((err: unknown) => {
+        console.error("Failed to add user:", err);
+        const status = (err as { response?: { status?: number } })?.response
+          ?.status;
+        const message =
+          status === 409
+            ? "Failed to add user: that email is already registered."
+            : status === 403
+              ? "Failed to add user: you do not have permission."
+              : "Failed to add user. Please try again.";
+        setAddError(message);
         show("Failed to add user", SNACKBAR_SEVERITY.ERROR);
       });
   };
@@ -142,8 +151,17 @@ export default function Users() {
         setEditingUser(null);
         show("User updated successfully", SNACKBAR_SEVERITY.SUCCESS);
       })
-      .catch(() => {
-        setEditError("Failed to update user.");
+      .catch((err: unknown) => {
+        console.error("Failed to update user:", err);
+        const status = (err as { response?: { status?: number } })?.response
+          ?.status;
+        const message =
+          status === 409
+            ? "Failed to update user: that email is already registered."
+            : status === 403
+              ? "Failed to update user: you do not have permission."
+              : "Failed to update user. Please try again.";
+        setEditError(message);
         show("Failed to update user", SNACKBAR_SEVERITY.ERROR);
       });
   };
