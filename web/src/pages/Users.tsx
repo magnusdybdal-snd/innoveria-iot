@@ -296,6 +296,7 @@ export default function Users() {
       />
       {editingUser && (
         <EditUser
+          key={editingUser.id}
           open={true}
           user={editingUser}
           onClose={() => {
