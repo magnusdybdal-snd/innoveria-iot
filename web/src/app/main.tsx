@@ -24,11 +24,14 @@ export default function Root() {
   // Fetch the current user once on mount and share via UserContext
   const [user, setUser] = useState<UserApiResponse | null>(null);
   const [userLoading, setUserLoading] = useState(true);
+  const [userError, setUserError] = useState<Error | null>(null);
 
   useEffect(() => {
     getUser()
       .then(setUser)
-      .catch(() => setUser(null))
+      .catch((err: unknown) => {
+        setUserError(err instanceof Error ? err : new Error(String(err)));
+      })
       .finally(() => setUserLoading(false));
   }, []);
 
@@ -48,7 +51,9 @@ export default function Root() {
   };
 
   return (
-    <UserContext.Provider value={{ user, isLoading: userLoading }}>
+    <UserContext.Provider
+      value={{ user, isLoading: userLoading, error: userError }}
+    >
       <ThemeContext.Provider value={{ mode, toggle }}>
         <BrowserRouter>
           <StyledEngineProvider injectFirst>
