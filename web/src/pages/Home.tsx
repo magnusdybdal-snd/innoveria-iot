@@ -45,6 +45,7 @@ export default function Home() {
             display: "grid",
             gridTemplateColumns: `repeat(${NAV_SECTIONS.length}, 1fr)`,
             gap: 2,
+            maxWidth: 800,
           }}
         >
           {NAV_SECTIONS.map((section) => (
