@@ -16,20 +16,16 @@ function getGreeting(hour: number): string {
 }
 
 /**
- * Displays a live updating clock alongside a contextual greeting and today's date.
- * Intended as the top welcome strip on the Home page.
- * @returns The rendered WelcomeHeader widget
+ * Live clock that re-renders every second in isolation.
+ * @returns The rendered Clock component
  */
-export function WelcomeHeader() {
-  const theme = useTheme();
+function Clock() {
   const [time, setTime] = useState(new Date());
 
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
-
-  const greeting = getGreeting(time.getHours());
 
   const timeStr = time.toLocaleTimeString("no-NO", {
     hour: "2-digit",
@@ -38,7 +34,32 @@ export function WelcomeHeader() {
     hour12: false,
   });
 
-  const dateStr = time.toLocaleDateString("no-NO", {
+  return (
+    <Typography
+      sx={{
+        fontFamily: "monospace",
+        fontSize: "3rem",
+        fontWeight: 200,
+        letterSpacing: "0.04em",
+        lineHeight: 1,
+        color: "text.primary",
+      }}
+    >
+      {timeStr}
+    </Typography>
+  );
+}
+
+/**
+ * Displays a live clock alongside a contextual greeting and today's date.
+ * Intended as the top welcome strip on the Home page.
+ * @returns The rendered WelcomeHeader widget
+ */
+export function WelcomeHeader() {
+  const theme = useTheme();
+  const now = new Date();
+  const greeting = getGreeting(now.getHours());
+  const dateStr = now.toLocaleDateString("no-NO", {
     weekday: "long",
     year: "numeric",
     month: "long",
@@ -87,18 +108,7 @@ export function WelcomeHeader() {
         </Typography>
       </Box>
 
-      <Typography
-        sx={{
-          fontFamily: "monospace",
-          fontSize: "3rem",
-          fontWeight: 200,
-          letterSpacing: "0.04em",
-          lineHeight: 1,
-          color: "text.primary",
-        }}
-      >
-        {timeStr}
-      </Typography>
+      <Clock />
     </Box>
   );
 }
