@@ -2,13 +2,12 @@ import { serviceClient } from "@shared/api";
 import { API_ROUTES } from "@shared/api/routes";
 
 /**
- * Deletes a user by ID.
+ * Deletes a user by ID. Throws if the server does not respond with 204.
  * @param userId - The ID of the user to delete
- * @returns True if deletion was successful
  */
-export const deleteUser = async (userId: string): Promise<boolean> => {
-  const response = await serviceClient.delete(
+export const deleteUser = async (userId: string): Promise<void> => {
+  await serviceClient.delete(
     `${API_ROUTES.users}/${encodeURIComponent(userId)}`,
+    { validateStatus: (status) => status === 204 },
   );
-  return response.status === 204;
 };
