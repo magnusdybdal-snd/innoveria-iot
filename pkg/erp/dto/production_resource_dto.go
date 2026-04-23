@@ -17,7 +17,6 @@ const (
 // ProductionResource is the shared API contract for production resources.
 type ProductionResource struct {
 	ID          int64          `json:"ID"`
-	CompanyID   string         `json:"CompanyID"`
 	Number      string         `json:"Number"`
 	Description string         `json:"Description"`
 	Type        WorkCenterType `json:"Type"`

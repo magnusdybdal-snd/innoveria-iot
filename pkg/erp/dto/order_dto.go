@@ -76,7 +76,6 @@ type Order struct {
 // OrderReport is the shared API contract for one operation report event.
 type OrderReport struct {
 	ID                   int64           `json:"ID"`
-	CompanyID            string          `json:"CompanyID"`
 	OrderOperationID     int64           `json:"OrderOperationID"`
 	ProductionResourceID int64           `json:"ProductionResourceID"`
 	Quantity             float64         `json:"Quantity"`
@@ -90,7 +89,6 @@ type OrderReport struct {
 // OrderOperationWithReports is one operation plus related reports/resource.
 type OrderOperationWithReports struct {
 	ID                       int64           `json:"ID"`
-	CompanyID                string          `json:"CompanyID"`
 	ProductionResourceID     int64           `json:"ProductionResourceID"`
 	OrderID                  int64           `json:"OrderID"`
 	PlannedStartDate         time.Time       `json:"PlannedStartDate"`

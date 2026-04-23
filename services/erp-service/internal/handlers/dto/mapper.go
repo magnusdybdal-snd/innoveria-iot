@@ -117,7 +117,6 @@ func MapProductionResourceDomainToDTO(from []domain.ProductionResource) []erpdto
 func MapProductionResourceDomainToDTOSingle(from domain.ProductionResource) erpdto.ProductionResource {
 	return erpdto.ProductionResource{
 		ID:          from.ID,
-		CompanyID:   from.CompanyID,
 		Number:      from.Number,
 		Description: from.Description,
 		Type:        erpdto.WorkCenterType(from.Type),
@@ -164,7 +163,6 @@ func MapOrderAggregateDomainToDTO(from domain.OrderAggregate) erpdto.OrderAggreg
 		for j, report := range item.Reports {
 			reports[j] = erpdto.OrderReport{
 				ID:                   report.ID,
-				CompanyID:            report.CompanyID,
 				OrderOperationID:     report.OrderOperationID,
 				ProductionResourceID: report.ProductionResourceID,
 				Quantity:             report.Quantity,
@@ -178,7 +176,6 @@ func MapOrderAggregateDomainToDTO(from domain.OrderAggregate) erpdto.OrderAggreg
 
 		operations[i] = erpdto.OrderOperationWithReports{
 			ID:                       item.Operation.ID,
-			CompanyID:                item.Operation.CompanyID,
 			ProductionResourceID:     item.Operation.ProductionResourceID,
 			OrderID:                  item.Operation.OrderID,
 			PlannedStartDate:         item.Operation.PlannedStartDate,
