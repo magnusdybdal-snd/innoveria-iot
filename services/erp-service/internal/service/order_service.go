@@ -54,6 +54,9 @@ func (s *OrderServiceImpl) GetOne(ctx context.Context, orderID int64, companyID 
 	resources := make([]domain.ProductionResource, 0, len(orderOperations))
 	resourceSeen := make(map[int64]struct{}, len(orderOperations)) // struct carries no data. So only 8bytes from the int (+ map overhead), better than bool check
 	for _, operation := range orderOperations {
+		if err := ctx.Err(); err != nil {
+			return domain.OrderAggregate{}, err
+		}
 		reports, err := s.orderReportRepo.FindAllByOrderOperationID(ctx, operation.ID, companyID)
 		if err != nil {
 			return domain.OrderAggregate{}, err

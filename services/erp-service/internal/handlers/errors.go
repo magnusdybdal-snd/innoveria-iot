@@ -23,8 +23,12 @@ func MapDomainError(err error) (int, string, error) {
 		return http.StatusConflict, "conflict", err
 	}
 
-	if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
+	if errors.Is(err, context.Canceled) {
 		return http.StatusServiceUnavailable, "request canceled", err
+	}
+
+	if errors.Is(err, context.DeadlineExceeded) {
+		return http.StatusGatewayTimeout, "request timeout", err
 	}
 
 	return http.StatusInternalServerError, "internal server error", err
