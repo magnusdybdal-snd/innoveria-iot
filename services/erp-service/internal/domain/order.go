@@ -28,8 +28,10 @@ const (
 	OrderStatusHistorical OrderStatus = "historical"
 )
 
-// OrderSummary represent all available orders from Monitor ERP
-// its used for showcasing all available orderIDs, so the orderID can be reused for aggregated result
+// OrderSummary is a lightweight projection of an order used for list views.
+//
+// It contains only the fields needed to present available orders and let
+// clients select an order ID for fetching a full OrderAggregate.
 type OrderSummary struct {
 	ID          int64
 	OrderNumber string
