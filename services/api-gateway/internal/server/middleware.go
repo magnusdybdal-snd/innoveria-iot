@@ -88,6 +88,10 @@ func authMiddleware(cfg *config.Config, next http.Handler) http.Handler {
 			json.HandleError(w, http.StatusUnauthorized, errors.New("invalid company"), "unauthorized")
 			return
 		}
+		if role == "" {
+			json.HandleError(w, http.StatusUnauthorized, errors.New("invalid role"), "unauthorized")
+			return
+		}
 
 		// Never trust inbound X-Auth-* from clients
 		r.Header.Del("X-Auth-User-Id")
