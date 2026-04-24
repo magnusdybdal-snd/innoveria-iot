@@ -24,7 +24,7 @@ const (
 		SELECT fa.area_id, fa.factory_id, fa.name, fa.description, fa.created_at, fa.updated_at
 		FROM auth.factory_area fa
 		JOIN auth.factory f ON fa.factory_id = f.factory_id
-		WHERE fa.factory_id = $1 AND f.company_id = $2
+		WHERE f.company_id = $1 AND fa.factory_id = $2
 		ORDER BY fa.created_at ASC
 	`
 	findFactoryAreaByIDQuery = `
@@ -82,7 +82,7 @@ func (r *FactoryAreaRepoImpl) Create(ctx context.Context, area domain.FactoryAre
 
 // FindAll retrieves all factory areas belonging to a factory, scoped to the given company.
 func (r *FactoryAreaRepoImpl) FindAll(ctx context.Context, companyID string, factoryID string) ([]domain.FactoryArea, error) {
-	rows, err := r.db.Pool.Query(ctx, findAllFactoryAreaQuery, factoryID, companyID)
+	rows, err := r.db.Pool.Query(ctx, findAllFactoryAreaQuery, companyID, factoryID)
 	if err != nil {
 		return nil, fmt.Errorf("find all factory areas: %w", err)
 	}

@@ -19,7 +19,7 @@ type UserServiceImpl struct {
 }
 
 // NewUserService creates a new UserServiceImpl instance.
-func NewUserService(userRepo domain.UserRepo) domain.UserService {
+func NewUserService(userRepo domain.UserRepo) *UserServiceImpl {
 	return &UserServiceImpl{userRepo: userRepo}
 }
 
