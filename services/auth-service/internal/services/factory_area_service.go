@@ -28,34 +28,34 @@ func (s *FactoryAreaServiceImpl) RegisterFactoryArea(ctx context.Context, payloa
 	return area, nil
 }
 
-// GetAllFactoryAreas retrieves all factory areas.
-func (s *FactoryAreaServiceImpl) GetAllFactoryAreas(ctx context.Context) ([]domain.FactoryArea, error) {
-	areas, err := s.factoryAreaRepo.FindAll(ctx)
+// GetAllFactoryAreas retrieves all factory areas for a factory, scoped to the given company.
+func (s *FactoryAreaServiceImpl) GetAllFactoryAreas(ctx context.Context, companyID string, factoryID string) ([]domain.FactoryArea, error) {
+	areas, err := s.factoryAreaRepo.FindAll(ctx, companyID, factoryID)
 	if err != nil {
 		return nil, err
 	}
 
-	slog.Info("successfully found all factory areas")
+	slog.Debug("successfully found all factory areas")
 	return areas, nil
 }
 
-// GetOneFactoryArea retrieves a single factory area by its ID.
-func (s *FactoryAreaServiceImpl) GetOneFactoryArea(ctx context.Context, areaID string) (domain.FactoryArea, error) {
-	area, err := s.factoryAreaRepo.FindByID(ctx, areaID)
+// GetOneFactoryArea retrieves a single factory area by its ID, scoped to the given company.
+func (s *FactoryAreaServiceImpl) GetOneFactoryArea(ctx context.Context, companyID string, areaID string) (domain.FactoryArea, error) {
+	area, err := s.factoryAreaRepo.FindByID(ctx, companyID, areaID)
 	if err != nil {
 		return domain.FactoryArea{}, err
 	}
 
-	slog.Info("successfully found factory area", "id", area.ID)
+	slog.Debug("successfully found factory area", "id", area.ID)
 	return area, nil
 }
 
-// DeleteFactoryArea deletes a factory area by ID.
-func (s *FactoryAreaServiceImpl) DeleteFactoryArea(ctx context.Context, areaID string) error {
-	if err := s.factoryAreaRepo.Delete(ctx, areaID); err != nil {
+// DeleteFactoryArea deletes a factory area by ID, scoped to the given company.
+func (s *FactoryAreaServiceImpl) DeleteFactoryArea(ctx context.Context, companyID string, areaID string) error {
+	if err := s.factoryAreaRepo.Delete(ctx, companyID, areaID); err != nil {
 		return err
 	}
 
-	slog.Info("successfully deleted factory area", "id", areaID)
+	slog.Debug("successfully deleted factory area", "id", areaID)
 	return nil
 }
