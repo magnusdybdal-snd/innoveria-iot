@@ -19,7 +19,7 @@ type UserServiceImpl struct {
 }
 
 // NewUserService creates a new UserServiceImpl instance.
-func NewUserService(userRepo domain.UserRepo) *UserServiceImpl {
+func NewUserService(userRepo domain.UserRepo) domain.UserService {
 	return &UserServiceImpl{userRepo: userRepo}
 }
 
@@ -51,7 +51,7 @@ func (s *UserServiceImpl) GetAll(ctx context.Context, companyID string) ([]domai
 		return nil, err
 	}
 
-	slog.Info("successfully fetched users", "count", len(users))
+	slog.Debug("successfully fetched users", "count", len(users))
 	return users, nil
 }
 

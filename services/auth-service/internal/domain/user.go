@@ -6,14 +6,8 @@ import (
 )
 
 // RoleType represents the authorization role assigned to a user.
+// Role string values are defined in pkg/authctx as the single source of truth.
 type RoleType string
-
-const (
-	// ROLE_PLATFORM_ADMIN is the platform administrator role.
-	ROLE_PLATFORM_ADMIN RoleType = "PLATFORM_ADMIN"
-	// ROLE_USER is the standard user role.
-	ROLE_USER RoleType = "FACTORY_WORKER"
-)
 
 // User is the domain model for auth users.
 type User struct {

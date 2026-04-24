@@ -1,6 +1,5 @@
 import {
   useContext,
-  useEffect,
   useState,
   type ComponentType,
   type ReactNode,
@@ -37,9 +36,9 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import { Link as RouterLink, useLocation } from "react-router";
 
+import { useCurrentUser } from "@app/providers/useCurrentUser";
 import innLogoDark from "@assets/innoveriaDark.png";
 import innLogoLight from "@assets/innoveriaLight.png";
-import { getUser, type UserApiResponse } from "@entities/user";
 import MainPages from "@shared/config/navigation/mainPageList";
 import SubPages from "@shared/config/navigation/subPageList";
 import { ThemeContext } from "@shared/config/theme/themeContext";
@@ -63,7 +62,6 @@ const pageSymbol: Map<string, ComponentType<SvgIconProps>> = new Map([
 
 const roles: Map<string, string> = new Map([
   ["FACTORY_WORKER", "Factory worker"],
-  ["FACTORY_SUPERUSER", "Factory superuser"],
   ["PLATFORM_ADMIN", "Platform admin"],
 ]);
 
@@ -78,20 +76,8 @@ export default function Menu(menuProps: MenuProps) {
   const { mode, toggle } = useContext(ThemeContext);
   const location = useLocation();
   const [expanded, setExpanded] = useState<string[]>([]);
-  const [user, setUser] = useState<UserApiResponse>();
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const data = await getUser();
-        setUser(data);
-      } catch (error) {
-        console.error("Failed to fetch user:", error);
-      }
-    };
-
-    fetchUser();
-  }, []);
+  const { user } = useCurrentUser();
+  const isAdmin = user?.role === "PLATFORM_ADMIN";
 
   const handleAccordionChange =
     (category: string) =>
@@ -164,6 +150,7 @@ export default function Menu(menuProps: MenuProps) {
           </ListItem>
           {/* Menu navigation */}
           {Array.from(MainPages.entries()).map(([category, page]) => {
+            if (category === "Admin" && !isAdmin) return null;
             const subPagesForCategory = SubPages.get(category) ?? [];
             const isCategoryActive = subPagesForCategory.some(
               (sub) => location.pathname === sub.path,
