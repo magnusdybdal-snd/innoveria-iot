@@ -3,7 +3,7 @@
  * It defines the structure of the data returned by the API when fetching payload schema information.
  */
 export interface PayloadSchemaListApiResponse {
-  totalCount: number;
+  total_count: number;
   schemas: PayloadSchemaApiResponse[];
 }
 

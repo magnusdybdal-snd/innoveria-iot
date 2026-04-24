@@ -16,6 +16,7 @@ import type {
 } from "@entities/sensor/model/sensorSchema.ts";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
+import Typography from "@mui/material/Typography";
 import { CategoryHeader } from "@shared/ui/CategoryHeader";
 import { DeviceRow } from "@shared/ui/DeviceRow";
 import { NotFoundCard } from "@shared/ui/NotFoundCard";
@@ -51,7 +52,6 @@ export default function PayloadSchema() {
     direction: SortDirection;
   }>({ key: null, direction: "asc" });
   const [profile, setProfile] = useState<string>("");
-  const [payloadKey, setPayloadKey] = useState<string>("");
 
   // State for controlling success snackbar
   const { show, hide, snackbar } = useSnackbar();
@@ -106,18 +106,12 @@ export default function PayloadSchema() {
       <PageContent>
         <SubPageHeader title="Payload schema" />
         <PageDivider />
-        {profile ? "full" : "empty"}
-        <br />
         {sensorProfileConfig?.chirpstackProfileId}
         <br />
         {sensorProfileConfig?.configurableSchema ? "true" : "false"}
         <br />
-        {profile}
         <br />
-        {deviceEui.length > 0 ? deviceEui : "null"}
-        <br />
-        {payloadKeys[0] ? "full" : "null"}
-        <br />
+        <Typography>Select sensor profile</Typography>
         <Select
           value={profile}
           onChange={(e) => {
@@ -131,23 +125,7 @@ export default function PayloadSchema() {
             </MenuItem>
           ))}
         </Select>
-
-        <Select
-          value={payloadKey}
-          onChange={(e) => {
-            const newValue = e.target.value;
-            if (payloadKeys.includes(newValue)) {
-              setPayloadKey(newValue);
-            }
-          }}
-          displayEmpty
-        >
-          {payloadKeys.map((option) => (
-            <MenuItem key={option} value={option}>
-              {option}
-            </MenuItem>
-          ))}
-        </Select>
+        <br />
         <CategoryHeader
           categories={payloadDetails}
           columns={payloadDetails.length}
