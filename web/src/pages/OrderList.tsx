@@ -1,3 +1,5 @@
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { useNavigate } from "react-router";
 
@@ -40,7 +42,7 @@ function OrderRow({
  */
 export default function OrderList() {
   const navigate = useNavigate();
-  const { orders, isLoading, error } = useOrders();
+  const { orders, isLoading, error, refetch } = useOrders();
 
   return (
     <div className="flex h-screen">
@@ -50,9 +52,14 @@ export default function OrderList() {
         {isLoading && <LoadingIndicator message="Loading orders…" />}
 
         {!isLoading && error && (
-          <Typography variant="body2" sx={{ mt: 3, color: "error.main" }}>
-            Failed to load orders. Please try again.
-          </Typography>
+          <Box sx={{ mt: 3 }}>
+            <Typography variant="body2" sx={{ color: "error.main", mb: 1 }}>
+              Failed to load orders. Please try again.
+            </Typography>
+            <Button variant="outlined" size="small" onClick={refetch}>
+              Retry
+            </Button>
+          </Box>
         )}
 
         {!isLoading && !error && orders.length === 0 && (
