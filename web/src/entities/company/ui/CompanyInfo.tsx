@@ -6,7 +6,7 @@ type InfoProps = {
   address: string;
   created_at: string;
   updated_at: string;
-  onViewUsers: () => void;
+  onViewUsers?: () => void;
 };
 
 /**
@@ -16,8 +16,8 @@ type InfoProps = {
  * @param props.address - Main address of company office
  * @param props.created_at - Date the company was added
  * @param props.updated_at - Date of most recent change/addition/deletion related to company
- * @param props.onViewUsers - Callback to drill down into the company's users
- * @returns A set of grid-aligned cells with a users button
+ * @param props.onViewUsers - Optional callback to drill down into the company's users; omit to hide the button
+ * @returns A set of grid-aligned cells with an optional users button
  */
 export function CompanyInfo({
   name,
@@ -32,14 +32,16 @@ export function CompanyInfo({
       <Typography>{address}</Typography>
       <Typography>{created_at}</Typography>
       <Typography>{updated_at}</Typography>
-      <OutlinedButton
-        onClick={(e) => {
-          e.stopPropagation();
-          onViewUsers();
-        }}
-      >
-        Users
-      </OutlinedButton>
+      {onViewUsers && (
+        <OutlinedButton
+          onClick={(e) => {
+            e.stopPropagation();
+            onViewUsers();
+          }}
+        >
+          Users
+        </OutlinedButton>
+      )}
     </>
   );
 }
