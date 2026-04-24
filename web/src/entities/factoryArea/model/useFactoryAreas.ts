@@ -12,9 +12,9 @@ export interface UseFactoryAreasResult {
 
 /**
  * Fetches factory areas for the given factory and exposes loading/error state.
- * Skips the fetch when factoryId is empty.
+ * Skips the fetch when factoryId is absent or undefined.
  * @param factoryId - The factory to fetch areas for
- * @returns Factory areas array, loading flag, error state, and a stable refetch callback.
+ * @returns Factory areas array (always [] when factoryId is absent), loading flag, error state, and a stable refetch callback.
  */
 export function useFactoryAreas(factoryId?: string): UseFactoryAreasResult {
   const [factoryAreas, setFactoryAreas] = useState<FactoryAreaApiResponse[]>(

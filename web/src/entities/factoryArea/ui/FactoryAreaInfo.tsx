@@ -11,7 +11,7 @@ type FactoryAreaInfoProps = {
  * Displays a single factory area row: name, description, and a delete action.
  * @param props - Component props
  * @param props.name - Display name of the factory area
- * @param props.description - Optional description of the factory area
+ * @param props.description - Description of the factory area, or null if none has been set
  * @param props.onDelete - Callback to delete the factory area
  * @returns A set of grid-aligned cells with a delete action menu
  */
