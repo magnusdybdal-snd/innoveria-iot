@@ -22,16 +22,17 @@ const (
 	findFactoryByIDQuery = `
 		SELECT factory_id, company_id, name, address, created_at, updated_at
 		FROM auth.factory
-		WHERE factory_id = $1
+		WHERE company_id = $1 AND factory_id = $2
 	`
 	findAllFactoriesQuery = `
 		SELECT factory_id, company_id, name, address, created_at, updated_at
 		FROM auth.factory
+		WHERE company_id = $1
 		ORDER BY created_at ASC
 	`
 	deleteFactoryByIDQuery = `
 		DELETE FROM auth.factory
-		WHERE factory_id = $1
+		WHERE company_id = $1 AND factory_id = $2
 	`
 )
 
@@ -72,9 +73,9 @@ func (r *FactoryRepoImpl) Create(ctx context.Context, factory domain.Factory) (d
 	return out, nil
 }
 
-// FindAll retrieves all factories.
-func (r *FactoryRepoImpl) FindAll(ctx context.Context) ([]domain.Factory, error) {
-	rows, err := r.db.Pool.Query(ctx, findAllFactoriesQuery)
+// FindAll retrieves all factories belonging to a company.
+func (r *FactoryRepoImpl) FindAll(ctx context.Context, companyID string) ([]domain.Factory, error) {
+	rows, err := r.db.Pool.Query(ctx, findAllFactoriesQuery, companyID)
 	if err != nil {
 		return nil, fmt.Errorf("find all factories: %w", err)
 	}
@@ -104,10 +105,10 @@ func (r *FactoryRepoImpl) FindAll(ctx context.Context) ([]domain.Factory, error)
 	return out, nil
 }
 
-// FindByID retrieves a factory by id.
-func (r *FactoryRepoImpl) FindByID(ctx context.Context, factoryID string) (domain.Factory, error) {
+// FindByID retrieves a factory by id, scoped to the given company.
+func (r *FactoryRepoImpl) FindByID(ctx context.Context, companyID string, factoryID string) (domain.Factory, error) {
 	var out domain.Factory
-	err := r.db.Pool.QueryRow(ctx, findFactoryByIDQuery, factoryID).Scan(
+	err := r.db.Pool.QueryRow(ctx, findFactoryByIDQuery, companyID, factoryID).Scan(
 		&out.ID,
 		&out.CompanyID,
 		&out.Name,
@@ -127,9 +128,9 @@ func (r *FactoryRepoImpl) FindByID(ctx context.Context, factoryID string) (domai
 	return out, nil
 }
 
-// Delete deletes a factory by id.
-func (r *FactoryRepoImpl) Delete(ctx context.Context, factoryID string) error {
-	result, err := r.db.Pool.Exec(ctx, deleteFactoryByIDQuery, factoryID)
+// Delete deletes a factory by id, scoped to the given company.
+func (r *FactoryRepoImpl) Delete(ctx context.Context, companyID string, factoryID string) error {
+	result, err := r.db.Pool.Exec(ctx, deleteFactoryByIDQuery, companyID, factoryID)
 
 	// Internal server error, code: 500
 	if err != nil {
