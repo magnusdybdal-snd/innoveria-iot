@@ -12,6 +12,6 @@ export const postFactoryArea = async (
   await apiRequest(serviceClient, API_ROUTES.factoryAreas, "POST", {
     factory_id: data.factoryId,
     name: data.name,
-    description: data.description,
+    description: data.description ?? null,
   });
 };

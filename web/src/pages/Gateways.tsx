@@ -79,7 +79,8 @@ export default function Gateways() {
         refetch();
         show("Gateway deleted successfully", SNACKBAR_SEVERITY.SUCCESS);
       })
-      .catch(() => {
+      .catch((err: unknown) => {
+        console.error("Failed to delete gateway:", err);
         show("Failed to delete gateway.", SNACKBAR_SEVERITY.ERROR);
       });
   };
@@ -121,7 +122,8 @@ export default function Gateways() {
         setOpenAdd(false);
         show("Gateway added successfully", SNACKBAR_SEVERITY.SUCCESS);
       })
-      .catch(() => {
+      .catch((err: unknown) => {
+        console.error("Failed to add gateway:", err);
         setAddError(
           "Failed to add gateway. The EUI may already be registered.", // TODO: throw non-hardcoded error messages - based on actual error
         );

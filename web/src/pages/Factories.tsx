@@ -123,7 +123,8 @@ export default function Factories() {
         setOpenAddFactory(false);
         show("Factory added successfully", SNACKBAR_SEVERITY.SUCCESS);
       })
-      .catch(() => {
+      .catch((err: unknown) => {
+        console.error("Failed to add factory:", err);
         setAddFactoryError("Failed to add factory.");
         show("Failed to add factory", SNACKBAR_SEVERITY.ERROR);
       });
@@ -137,7 +138,8 @@ export default function Factories() {
         setPendingDeleteFactory(null);
         show("Factory deleted successfully", SNACKBAR_SEVERITY.SUCCESS);
       })
-      .catch(() => {
+      .catch((err: unknown) => {
+        console.error("Failed to delete factory:", err);
         show("Failed to delete factory", SNACKBAR_SEVERITY.ERROR);
       });
   };
@@ -155,7 +157,8 @@ export default function Factories() {
         setOpenAddArea(false);
         show("Factory area added successfully", SNACKBAR_SEVERITY.SUCCESS);
       })
-      .catch(() => {
+      .catch((err: unknown) => {
+        console.error("Failed to add factory area:", err);
         setAddAreaError("Failed to add factory area.");
         show("Failed to add factory area", SNACKBAR_SEVERITY.ERROR);
       });
@@ -169,7 +172,8 @@ export default function Factories() {
         setPendingDeleteArea(null);
         show("Factory area deleted successfully", SNACKBAR_SEVERITY.SUCCESS);
       })
-      .catch(() => {
+      .catch((err: unknown) => {
+        console.error("Failed to delete factory area:", err);
         show("Failed to delete factory area", SNACKBAR_SEVERITY.ERROR);
       });
   };
