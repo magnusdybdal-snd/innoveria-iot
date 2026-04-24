@@ -17,13 +17,16 @@ type RawFactoryAreaApiResponse = {
 };
 
 /**
- * Fetches all factory areas from the auth-service via the API gateway.
+ * Fetches factory areas for a given factory from the auth-service via the API gateway.
+ * @param factoryId - The factory to fetch areas for
  * @returns Array of FactoryAreaApiResponse objects
  */
-export const getFactoryAreas = async (): Promise<FactoryAreaApiResponse[]> => {
+export const getFactoryAreas = async (
+  factoryId: string,
+): Promise<FactoryAreaApiResponse[]> => {
   const data = await apiRequest<RawFactoryAreaListApiResponse>(
     serviceClient,
-    API_ROUTES.factoryAreas,
+    `${API_ROUTES.factoryAreas}?factory_id=${factoryId}`,
     "GET",
   );
 
