@@ -111,21 +111,6 @@ export default function PayloadSchema() {
       });
   };
 
-  // Dropdown list
-  useEffect(() => {
-    getMeasurementTypesAll().then((data) => {
-      const mapped = data.map((item) => item.slug);
-
-      const preferred = "humidity";
-
-      if (mapped.includes(preferred)) {
-        setProfile(preferred);
-      } else if (mapped.length > 0) {
-        setProfile(mapped[0]); // fallback
-      }
-    });
-  }, []);
-
   //TODO: use deletion confirmation dialog when it has been implemented.
   const handleDeprecateMeasurementType = (id: string) => {
     deprecateMeasurementType(id)
@@ -145,6 +130,22 @@ export default function PayloadSchema() {
   useEffect(() => {
     getSensorProfiles().then(setSensorProfiles);
   }, []);
+
+  useEffect(() => {
+    if (!profile) return;
+
+    getDeviceEUI(profile).then((eui) => {
+      setDeviceEui(eui);
+    });
+  }, [profile]);
+
+  useEffect(() => {
+    if (!deviceEui) return;
+
+    getPayloadTags(deviceEui).then((keys) => {
+      setPayloadKeys(keys);
+    });
+  }, [deviceEui]);
 
   function handleSort(column: string) {
     const col = column as MeasurementTypeSortKey;
@@ -166,17 +167,16 @@ export default function PayloadSchema() {
       <PageContent>
         <SubPageHeader title="Measurement types" action={addButton} />
         <PageDivider />
-
+        {profile}
+        <br />
+        {deviceEui ? deviceEui : "null"}
+        <br />
+        {payloadKeys[0] ? "full" : "null"}
+        <br />
         <Select
           value={profile}
           onChange={(e) => {
-            const newProfile = e.target.value;
-            setProfile(newProfile);
-            getDeviceEUI(profile).then(setDeviceEui);
-
-            if (deviceEui) {
-              getPayloadTags(deviceEui).then(setPayloadKeys);
-            }
+            setProfile(e.target.value);
           }}
           displayEmpty
         >

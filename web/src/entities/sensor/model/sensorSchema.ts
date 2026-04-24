@@ -26,7 +26,7 @@ export interface SensorReadingApiResponse {
 }
 
 export interface DeviceEUIApiResponse {
-  deviceEui: string;
+  device_eui: string;
 }
 
 export interface CreateSensorRequest {
@@ -53,4 +53,15 @@ export interface SensorProfileApiResponse {
   region: string;
   vendorId: string;
   vendor: string;
+}
+
+// Sensor profile config
+export interface RawSensorProfileConfigApiResponse {
+  chirpstack_profile_id: string;
+  configurable_schema: boolean;
+}
+
+export interface SensorProfileConfigApiResponse {
+  chirpstackProfileId: string;
+  configurableSchema: boolean;
 }
