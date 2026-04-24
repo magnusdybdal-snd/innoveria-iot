@@ -17,7 +17,7 @@ type FactoryArea struct {
 
 // FactoryAreaRepo defines the repository layer for factory area
 type FactoryAreaRepo interface {
-	Create(ctx context.Context, area FactoryArea) (FactoryArea, error)
+	Create(ctx context.Context, companyID string, area FactoryArea) (FactoryArea, error)
 	FindAll(ctx context.Context, companyID string, factoryID string) ([]FactoryArea, error)
 	FindByID(ctx context.Context, companyID string, areaID string) (FactoryArea, error)
 	Delete(ctx context.Context, companyID string, areaID string) error
@@ -25,7 +25,7 @@ type FactoryAreaRepo interface {
 
 // FactoryAreaService defines factory area use-cases exposed by the service layer.
 type FactoryAreaService interface {
-	RegisterFactoryArea(ctx context.Context, payload FactoryArea) (FactoryArea, error)
+	RegisterFactoryArea(ctx context.Context, companyID string, payload FactoryArea) (FactoryArea, error)
 	GetAllFactoryAreas(ctx context.Context, companyID string, factoryID string) ([]FactoryArea, error)
 	GetOneFactoryArea(ctx context.Context, companyID string, areaID string) (FactoryArea, error)
 	DeleteFactoryArea(ctx context.Context, companyID string, areaID string) error

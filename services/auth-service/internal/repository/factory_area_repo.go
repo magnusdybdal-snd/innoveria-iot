@@ -9,15 +9,14 @@ import (
 	"innoveria-iot/auth-service/internal/domain"
 	"innoveria-iot/pkg/dbutil"
 
-	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgconn"
 )
 
 const (
 	createFactoryAreaQuery = `
 		INSERT INTO auth.factory_area (factory_id, name, description)
-		VALUES ($1, $2, $3)
+		SELECT $1, $2, $3 FROM auth.factory
+		WHERE factory_id = $1 AND company_id = $4
 		RETURNING area_id, factory_id, name, description, created_at, updated_at
 	`
 	findAllFactoryAreaQuery = `
@@ -53,14 +52,15 @@ func NewFactoryAreaRepo(db *dbutil.DB) *FactoryAreaRepoImpl {
 	return &FactoryAreaRepoImpl{db: db}
 }
 
-// Create inserts a new factory area.
-func (r *FactoryAreaRepoImpl) Create(ctx context.Context, area domain.FactoryArea) (domain.FactoryArea, error) {
+// Create inserts a new factory area, verifying that the factory belongs to the given company.
+func (r *FactoryAreaRepoImpl) Create(ctx context.Context, companyID string, area domain.FactoryArea) (domain.FactoryArea, error) {
 	var out domain.FactoryArea
 
 	err := r.db.Pool.QueryRow(ctx, createFactoryAreaQuery,
 		area.FactoryID,
 		area.Name,
 		area.Description,
+		companyID,
 	).Scan(
 		&out.ID,
 		&out.FactoryID,
@@ -70,8 +70,7 @@ func (r *FactoryAreaRepoImpl) Create(ctx context.Context, area domain.FactoryAre
 		&out.UpdatedAt,
 	)
 	if err != nil {
-		var pgErr *pgconn.PgError
-		if errors.As(err, &pgErr) && pgErr.Code == pgerrcode.ForeignKeyViolation {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return domain.FactoryArea{}, fmt.Errorf("create factory area: %w", domain.ErrFactoryNotFound)
 		}
 		return domain.FactoryArea{}, fmt.Errorf("create factory area: %w", err)

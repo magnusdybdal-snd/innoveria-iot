@@ -17,14 +17,14 @@ func NewFactoryAreaService(factoryAreaRepo domain.FactoryAreaRepo) *FactoryAreaS
 	return &FactoryAreaServiceImpl{factoryAreaRepo: factoryAreaRepo}
 }
 
-// RegisterFactoryArea creates a new factory area.
-func (s *FactoryAreaServiceImpl) RegisterFactoryArea(ctx context.Context, payload domain.FactoryArea) (domain.FactoryArea, error) {
-	area, err := s.factoryAreaRepo.Create(ctx, payload)
+// RegisterFactoryArea creates a new factory area, scoped to the given company.
+func (s *FactoryAreaServiceImpl) RegisterFactoryArea(ctx context.Context, companyID string, payload domain.FactoryArea) (domain.FactoryArea, error) {
+	area, err := s.factoryAreaRepo.Create(ctx, companyID, payload)
 	if err != nil {
 		return domain.FactoryArea{}, err
 	}
 
-	slog.Info("successfully registered factory area", "id", area.ID)
+	slog.Debug("successfully registered factory area", "id", area.ID)
 	return area, nil
 }
 

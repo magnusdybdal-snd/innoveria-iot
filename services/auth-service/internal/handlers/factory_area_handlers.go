@@ -28,7 +28,7 @@ import (
 // @Failure 404
 // @Failure 500
 // @Router /factory-areas [post]
-func PostFactoryArea(svc domain.FactoryAreaService, factorySvc domain.FactoryService) http.HandlerFunc {
+func PostFactoryArea(svc domain.FactoryAreaService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
@@ -62,16 +62,7 @@ func PostFactoryArea(svc domain.FactoryAreaService, factorySvc domain.FactorySer
 			return
 		}
 
-		if _, err := factorySvc.GetOneFactory(ctx, auth.CompanyID, factoryAreaDomain.FactoryID); err != nil {
-			if errors.Is(err, domain.ErrFactoryNotFound) {
-				json.HandleError(w, http.StatusNotFound, err, "factory not found")
-				return
-			}
-			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
-			return
-		}
-
-		factoryAreaResp, err := svc.RegisterFactoryArea(ctx, factoryAreaDomain)
+		factoryAreaResp, err := svc.RegisterFactoryArea(ctx, auth.CompanyID, factoryAreaDomain)
 		if err != nil {
 			switch {
 			case errors.Is(err, domain.ErrFactoryNotFound):

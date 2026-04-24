@@ -39,7 +39,7 @@ func NewRouter(
 	mux.HandleFunc("DELETE "+FACTORY_ID_ROUTE, handlers.DeleteFactory(factorySvc))
 
 	// Factory Area
-	mux.HandleFunc("POST "+FACTORY_AREA_ROUTE, handlers.PostFactoryArea(factoryAreaSvc, factorySvc))
+	mux.HandleFunc("POST "+FACTORY_AREA_ROUTE, handlers.PostFactoryArea(factoryAreaSvc))
 	mux.HandleFunc("GET "+FACTORY_AREA_ROUTE, handlers.GetAllFactoryAreas(factoryAreaSvc))
 	mux.HandleFunc("GET "+FACTORY_AREA_ID_ROUTE, handlers.GetOneFactoryArea(factoryAreaSvc))
 	mux.HandleFunc("DELETE "+FACTORY_AREA_ID_ROUTE, handlers.DeleteFactoryArea(factoryAreaSvc))
