@@ -56,7 +56,8 @@ export function useFactoryAreas(factoryId?: string): UseFactoryAreasResult {
   const isLoading = !!factoryId && fetchedFactoryId !== factoryId;
 
   return {
-    factoryAreas: factoryId ? factoryAreas : [],
+    factoryAreas:
+      factoryId && fetchedFactoryId === factoryId ? factoryAreas : [],
     isLoading,
     error,
     refetch,
