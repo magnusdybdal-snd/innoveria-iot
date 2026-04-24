@@ -34,7 +34,7 @@ func PostFactoryArea(svc domain.FactoryAreaService, factorySvc domain.FactorySer
 
 		auth, err := authctx.FromRequest(r)
 		if err != nil {
-			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
 			return
 		}
 
@@ -107,7 +107,7 @@ func GetAllFactoryAreas(svc domain.FactoryAreaService) http.HandlerFunc {
 
 		auth, err := authctx.FromRequest(r)
 		if err != nil {
-			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
 			return
 		}
 
@@ -153,7 +153,7 @@ func GetOneFactoryArea(svc domain.FactoryAreaService) http.HandlerFunc {
 
 		auth, err := authctx.FromRequest(r)
 		if err != nil {
-			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
 			return
 		}
 
@@ -204,7 +204,7 @@ func DeleteFactoryArea(svc domain.FactoryAreaService) http.HandlerFunc {
 
 		auth, err := authctx.FromRequest(r)
 		if err != nil {
-			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
 			return
 		}
 

@@ -33,7 +33,7 @@ func PostUser(svc domain.UserService) http.HandlerFunc {
 
 		auth, err := authctx.FromRequest(r)
 		if err != nil {
-			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
 			return
 		}
 		if !auth.IsAdmin() {
@@ -101,7 +101,7 @@ func GetUsers(svc domain.UserService) http.HandlerFunc {
 
 		auth, err := authctx.FromRequest(r)
 		if err != nil {
-			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
 			return
 		}
 		if !auth.IsAdmin() {
@@ -148,7 +148,7 @@ func PatchUser(svc domain.UserService) http.HandlerFunc {
 
 		auth, err := authctx.FromRequest(r)
 		if err != nil {
-			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
 			return
 		}
 		if !auth.IsAdmin() {
@@ -207,7 +207,7 @@ func DeleteUser(svc domain.UserService) http.HandlerFunc {
 
 		auth, err := authctx.FromRequest(r)
 		if err != nil {
-			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
 			return
 		}
 		if !auth.IsAdmin() {
