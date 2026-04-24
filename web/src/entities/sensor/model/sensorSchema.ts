@@ -26,7 +26,7 @@ export interface SensorReadingApiResponse {
 }
 
 export interface DeviceEUIApiResponse {
-  device_eui: string;
+  deviceEui: string;
 }
 
 export interface CreateSensorRequest {

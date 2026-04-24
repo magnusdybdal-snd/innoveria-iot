@@ -22,5 +22,5 @@ export const API_ROUTES = {
   measurementTypes: `/v1/device/measurement-types`,
   measurementTypesAll: `/v1/device/measurement-types/all`,
   payloadSchema: `/v1/device/payload-schema/{profile_id}`,
-  payloadTags: `/v1/collection/collection/payload-tags`,
+  payloadTags: `/v1/collection/payload-tags?device_eui=`,
 };

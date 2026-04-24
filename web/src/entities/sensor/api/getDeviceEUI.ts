@@ -16,7 +16,7 @@ export const getDeviceEUI = async (
       `${API_ROUTES.deviceEUI}${encodeURIComponent(profileId)}`,
       "GET",
     );
-    return data.device_eui ?? null;
+    return data.deviceEui ?? null;
   } catch (error) {
     console.error("Failed to fetch device EUI:", error);
     return null;

@@ -13,7 +13,11 @@ import {
 import { getPayloadTags } from "@entities/payloadSchema";
 import { getSensorProfiles } from "@entities/sensor";
 import { getDeviceEUI } from "@entities/sensor/api/getDeviceEUI.ts";
-import type { SensorProfileApiResponse } from "@entities/sensor/model/sensorSchema.ts";
+import { getSensorProfileConfig } from "@entities/sensor/api/getSensorProfileConfig.ts";
+import type {
+  SensorProfileApiResponse,
+  SensorProfileConfigApiResponse,
+} from "@entities/sensor/model/sensorSchema.ts";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import { AddEntityDialog } from "@shared/ui/AddEntityDialog";
@@ -43,7 +47,9 @@ export default function PayloadSchema() {
   const [measurementTypes, setMeasurementTypes] = useState<
     MeasurementTypeApiResponse[]
   >([]);
-  const [deviceEui, setDeviceEui] = useState<string | null>(null);
+  const [sensorProfileConfig, setSensorProfileConfig] =
+    useState<SensorProfileConfigApiResponse | null>(null);
+  const [deviceEui, setDeviceEui] = useState<string>("");
   const [payloadKeys, setPayloadKeys] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState<{
@@ -133,19 +139,22 @@ export default function PayloadSchema() {
 
   useEffect(() => {
     if (!profile) return;
-
-    getDeviceEUI(profile).then((eui) => {
-      setDeviceEui(eui);
+    getSensorProfileConfig(profile).then((eui) => {
+      setSensorProfileConfig(eui);
     });
   }, [profile]);
 
   useEffect(() => {
-    if (!deviceEui) return;
+    if (!profile) return;
+
+    getDeviceEUI(profile).then((eui) => {
+      setDeviceEui(eui ?? "b000000000000001");
+    });
 
     getPayloadTags(deviceEui).then((keys) => {
       setPayloadKeys(keys);
     });
-  }, [deviceEui]);
+  }, [profile]);
 
   function handleSort(column: string) {
     const col = column as MeasurementTypeSortKey;
@@ -167,9 +176,15 @@ export default function PayloadSchema() {
       <PageContent>
         <SubPageHeader title="Measurement types" action={addButton} />
         <PageDivider />
+        {profile ? "full" : "empty"}
+        <br />
+        {sensorProfileConfig?.chirpstackProfileId}
+        <br />
+        {sensorProfileConfig?.configurableSchema ? "true" : "false"}
+        <br />
         {profile}
         <br />
-        {deviceEui ? deviceEui : "null"}
+        {deviceEui.length > 0 ? deviceEui : "null"}
         <br />
         {payloadKeys[0] ? "full" : "null"}
         <br />
@@ -182,7 +197,7 @@ export default function PayloadSchema() {
         >
           {sensorProfiles.map((option) => (
             <MenuItem key={option.id} value={option.id}>
-              {option.name}
+              {option.id}
             </MenuItem>
           ))}
         </Select>
