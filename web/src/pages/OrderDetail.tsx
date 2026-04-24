@@ -6,6 +6,7 @@ import { LoadingIndicator } from "@shared/ui/LoadingIndicator";
 import { PageContent } from "@shared/ui/PageContent";
 import { SubPageHeader } from "@shared/ui/SubPageHeader";
 import { OrderHeader } from "@widgets/orderHeader";
+import { OrderOverview } from "@widgets/orderOverview";
 import { WorkCenterGrid } from "@widgets/workCenterGrid";
 
 /**
@@ -44,6 +45,7 @@ export default function OrderDetail() {
         {orderId !== null && !isLoading && !error && orderContext && (
           <>
             <OrderHeader order={orderContext.order} />
+            <OrderOverview operations={orderContext.operations} />
             <WorkCenterGrid operations={orderContext.operations} />
           </>
         )}
