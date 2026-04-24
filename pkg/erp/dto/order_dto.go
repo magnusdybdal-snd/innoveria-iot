@@ -53,57 +53,57 @@ const (
 
 // OrderSummary is the list contract for selecting orders by ID/number.
 type OrderSummary struct {
-	ID          int64  `json:"ID"`
-	OrderNumber string `json:"OrderNumber"`
+	ID          int64  `json:"id"`
+	OrderNumber string `json:"order_number"`
 }
 
 // Order is the shared API contract for one manufacturing order.
 type Order struct {
-	ID                int64       `json:"ID"`
-	CompanyID         string      `json:"CompanyID"`
-	OrderNumber       string      `json:"OrderNumber"`
-	PartID            string      `json:"PartID"`
-	PartDescription   string      `json:"PartDescription"`
-	PlannedStartDate  time.Time   `json:"PlannedStartDate"`
-	PlannedFinishDate time.Time   `json:"PlannedFinishDate"`
-	ActualStartDate   *time.Time  `json:"ActualStartDate"`
-	ActualFinishDate  *time.Time  `json:"ActualFinishDate"`
-	Status            OrderStatus `json:"Status"`
-	Priority          int         `json:"Priority"`
-	ReceivedAt        time.Time   `json:"ReceivedAt"`
+	ID                int64       `json:"id"`
+	CompanyID         string      `json:"company_id"`
+	OrderNumber       string      `json:"order_number"`
+	PartID            string      `json:"part_id"`
+	PartDescription   string      `json:"part_description"`
+	PlannedStartDate  time.Time   `json:"planned_start_date"`
+	PlannedFinishDate time.Time   `json:"planned_finish_date"`
+	ActualStartDate   *time.Time  `json:"actual_start_date"`
+	ActualFinishDate  *time.Time  `json:"actual_finish_date"`
+	Status            OrderStatus `json:"status"`
+	Priority          int         `json:"priority"`
+	ReceivedAt        time.Time   `json:"received_at"`
 }
 
 // OrderReport is the shared API contract for one operation report event.
 type OrderReport struct {
-	ID                   int64           `json:"ID"`
-	OrderOperationID     int64           `json:"OrderOperationID"`
-	ProductionResourceID int64           `json:"ProductionResourceID"`
-	Quantity             float64         `json:"Quantity"`
-	RestQuantity         float64         `json:"RestQuantity"`
-	Type                 OrderReportType `json:"Type"`
-	ReportingTimestamp   time.Time       `json:"ReportingTimestamp"`
-	ActualReportedDate   *time.Time      `json:"ActualReportedDate"`
-	ReceivedAt           time.Time       `json:"ReceivedAt"`
+	ID                   int64           `json:"id"`
+	OrderOperationID     int64           `json:"order_operation_id"`
+	ProductionResourceID int64           `json:"production_resource_id"`
+	Quantity             float64         `json:"quantity"`
+	RestQuantity         float64         `json:"rest_quantity"`
+	Type                 OrderReportType `json:"type"`
+	ReportingTimestamp   time.Time       `json:"reporting_timestamp"`
+	ActualReportedDate   *time.Time      `json:"actual_reported_date"`
+	ReceivedAt           time.Time       `json:"received_at"`
 }
 
 // OrderOperationWithReports is one operation plus related reports/resource.
 type OrderOperationWithReports struct {
-	ID                       int64           `json:"ID"`
-	ProductionResourceID     int64           `json:"ProductionResourceID"`
-	OrderID                  int64           `json:"OrderID"`
-	PlannedStartDate         time.Time       `json:"PlannedStartDate"`
-	PlannedFinishDate        time.Time       `json:"PlannedFinishDate"`
-	ActualStartDate          *time.Time      `json:"ActualStartDate"`
-	ActualFinishDate         *time.Time      `json:"ActualFinishDate"`
-	Status                   OperationStatus `json:"Status"`
-	ProductionResourceStatus OperationStatus `json:"ProductionResourceStatus"`
-	ReceivedAt               time.Time       `json:"ReceivedAt"`
-	Reports                  []OrderReport   `json:"Reports"`
+	ID                       int64           `json:"id"`
+	ProductionResourceID     int64           `json:"production_resource_id"`
+	OrderID                  int64           `json:"order_id"`
+	PlannedStartDate         time.Time       `json:"planned_start_date"`
+	PlannedFinishDate        time.Time       `json:"planned_finish_date"`
+	ActualStartDate          *time.Time      `json:"actual_start_date"`
+	ActualFinishDate         *time.Time      `json:"actual_finish_date"`
+	Status                   OperationStatus `json:"status"`
+	ProductionResourceStatus OperationStatus `json:"production_resource_status"`
+	ReceivedAt               time.Time       `json:"received_at"`
+	Reports                  []OrderReport   `json:"reports"`
 }
 
 // OrderAggregate is the shared API contract for one aggregated order view.
 type OrderAggregate struct {
-	Order               []Order                     `json:"Order"`
-	Operations          []OrderOperationWithReports `json:"Operations"`
-	ProductionResources []ProductionResource        `json:"ProductionResources"`
+	Order               []Order                     `json:"order"`
+	Operations          []OrderOperationWithReports `json:"operations"`
+	ProductionResources []ProductionResource        `json:"production_resources"`
 }
