@@ -8,7 +8,6 @@ import { DeleteConfirmation } from "@shared/ui/DeleteConfirmation";
 
 const ROLE_LABELS: Record<UserRole, string> = {
   FACTORY_WORKER: "User",
-  FACTORY_SUPERUSER: "Superuser",
   PLATFORM_ADMIN: "Admin",
 };
 

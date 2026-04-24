@@ -62,7 +62,6 @@ const pageSymbol: Map<string, ComponentType<SvgIconProps>> = new Map([
 
 const roles: Map<string, string> = new Map([
   ["FACTORY_WORKER", "Factory worker"],
-  ["FACTORY_SUPERUSER", "Factory superuser"],
   ["PLATFORM_ADMIN", "Platform admin"],
 ]);
 

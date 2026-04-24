@@ -3,10 +3,7 @@
  * It defines the structure of the data returned by the API when fetching user information.
  */
 
-export type UserRole =
-  | "PLATFORM_ADMIN"
-  | "FACTORY_WORKER"
-  | "FACTORY_SUPERUSER";
+export type UserRole = "PLATFORM_ADMIN" | "FACTORY_WORKER";
 
 // Returned by GET /me — minimal profile used to identify and authorize the current session.
 export interface CurrentUserApiResponse {
