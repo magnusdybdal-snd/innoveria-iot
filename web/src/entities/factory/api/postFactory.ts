@@ -11,7 +11,6 @@ export const postFactory = async (
   factoryData: CreateFactoryRequest,
 ): Promise<void> => {
   await apiRequest(serviceClient, API_ROUTES.factories, "POST", {
-    company_id: factoryData.companyId,
     name: factoryData.name,
     address: factoryData.address,
   });
