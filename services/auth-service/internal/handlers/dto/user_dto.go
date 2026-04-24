@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"innoveria-iot/auth-service/internal/domain"
+	"innoveria-iot/pkg/roles"
 )
 
 // UserResponse is the response payload for a single user.
@@ -49,7 +50,7 @@ func MapCreateUserDTOToDomain(from CreateUserRequest) domain.User {
 		Name:         from.Name,
 		Email:        from.Email,
 		PasswordHash: from.Password,
-		Role:         domain.RoleType(from.Role),
+		Role:         roles.RoleType(from.Role),
 	}
 }
 

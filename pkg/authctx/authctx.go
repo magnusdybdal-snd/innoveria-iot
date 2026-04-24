@@ -4,17 +4,14 @@ package authctx
 import (
 	"fmt"
 	"net/http"
+
+	"innoveria-iot/pkg/roles"
 )
 
 const (
 	headerUserID    = "X-Auth-User-Id"
 	headerCompanyID = "X-Auth-Company-Id"
 	headerRole      = "X-Auth-Role"
-
-	// RolePlatformAdmin is the platform administrator role.
-	RolePlatformAdmin = "PLATFORM_ADMIN"
-	// RoleUser is the standard user role.
-	RoleUser = "FACTORY_WORKER"
 )
 
 // Auth holds the authenticated user's identity extracted from request headers.
@@ -22,12 +19,12 @@ const (
 type Auth struct {
 	UserID    string
 	CompanyID string
-	Role      string
+	Role      roles.RoleType
 }
 
 // IsAdmin returns true if the user has the PLATFORM_ADMIN role.
 func (a Auth) IsAdmin() bool {
-	return a.Role == RolePlatformAdmin
+	return a.Role == roles.PlatformAdmin
 }
 
 // FromRequest extracts the authenticated user's identity from the request headers.
@@ -52,6 +49,6 @@ func FromRequest(r *http.Request) (Auth, error) {
 	return Auth{
 		UserID:    userID,
 		CompanyID: companyID,
-		Role:      role,
+		Role:      roles.RoleType(role),
 	}, nil
 }

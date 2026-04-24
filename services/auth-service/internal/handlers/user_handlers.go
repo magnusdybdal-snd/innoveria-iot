@@ -10,6 +10,7 @@ import (
 	"innoveria-iot/auth-service/internal/handlers/dto"
 	"innoveria-iot/pkg/authctx"
 	"innoveria-iot/pkg/json"
+	"innoveria-iot/pkg/roles"
 
 	"github.com/google/uuid"
 )
@@ -63,8 +64,8 @@ func PostUser(svc domain.UserService) http.HandlerFunc {
 		}
 
 		if payload.Role == "" {
-			payload.Role = authctx.RoleUser
-		} else if payload.Role != authctx.RolePlatformAdmin && payload.Role != authctx.RoleUser {
+			payload.Role = string(roles.User)
+		} else if payload.Role != string(roles.PlatformAdmin) && payload.Role != string(roles.User) {
 			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("invalid role %q", payload.Role), "role must be PLATFORM_ADMIN or FACTORY_WORKER")
 			return
 		}
