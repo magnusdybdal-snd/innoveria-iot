@@ -32,7 +32,7 @@ function measurementsToBuckets(
   payloadKey: string,
 ): BucketResponse[] {
   return measurements
-    .filter((m) => m.payload[payloadKey] !== undefined)
+    .filter((m) => Number.isFinite(Number(m.payload[payloadKey])))
     .sort(
       (a, b) =>
         new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
