@@ -174,22 +174,20 @@ export default function Users() {
           <PageDivider />
           <CategoryHeader
             categories={companyColumns}
-            columns={companyColumns.length}
+            columns={companyColumns.length + 1}
             sortableColumns={sortableCompanyColumns}
             sortConfig={companySortConfig}
             onSort={handleCompanySort}
           >
             {companiesLoading && <p>Loading...</p>}
             {sortedCompanies.map((company) => (
-              <DeviceRow
-                key={company.companyId}
-                onClick={() => handleSelectCompany(company)}
-              >
+              <DeviceRow key={company.companyId}>
                 <CompanyInfo
                   name={company.name}
                   address={company.address}
                   created_at={formatTimestamp(company.createdAt)}
                   updated_at={formatTimestamp(company.updatedAt)}
+                  onViewUsers={() => handleSelectCompany(company)}
                 />
               </DeviceRow>
             ))}
