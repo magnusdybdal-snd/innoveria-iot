@@ -1,1 +1,1 @@
-export { MeasurementTypeInfo } from "./MeasurementTypeInfo.tsx";
+export { FixedSensorSchema } from "./fixedSensorSchema.tsx";

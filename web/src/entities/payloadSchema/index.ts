@@ -6,7 +6,7 @@ export type {
   RawPayloadTagsApiResponse,
 } from "./model/payloadSchemaSchema.ts";
 export { getPayloadTags, putPayloadSchema } from "./api";
-export { MeasurementTypeInfo } from "./ui";
+export { FixedSensorSchema } from "./ui";
 export { sortMeasurementTypes } from "./lib/sortMeasurementTypes.ts";
 export type {
   MeasurementTypeSortKey,

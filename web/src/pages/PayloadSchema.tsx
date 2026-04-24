@@ -1,16 +1,12 @@
 import { useEffect, useState } from "react";
 
 import {
-  deprecateMeasurementType,
   getMeasurementTypesAll,
-  MeasurementTypeInfo,
-  postMeasurementType,
-  sortMeasurementTypes,
   type MeasurementTypeApiResponse,
   type MeasurementTypeSortKey,
   type SortDirection,
 } from "@entities/measurementType";
-import { getPayloadTags } from "@entities/payloadSchema";
+import { FixedSensorSchema, getPayloadTags } from "@entities/payloadSchema";
 import { getSensorProfiles } from "@entities/sensor";
 import { getDeviceEUI } from "@entities/sensor/api/getDeviceEUI.ts";
 import { getSensorProfileConfig } from "@entities/sensor/api/getSensorProfileConfig.ts";
@@ -20,8 +16,6 @@ import type {
 } from "@entities/sensor/model/sensorSchema.ts";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
-import { AddEntityDialog } from "@shared/ui/AddEntityDialog";
-import { CustomButton } from "@shared/ui/Button";
 import { CategoryHeader } from "@shared/ui/CategoryHeader";
 import { DeviceRow } from "@shared/ui/DeviceRow";
 import { NotFoundCard } from "@shared/ui/NotFoundCard";
@@ -60,51 +54,10 @@ export default function PayloadSchema() {
   const [type, setType] = useState<string>("");
   const [payloadKey, setPayloadKey] = useState<string>("");
 
-  // Adding a new measure type
-  const [openAdd, setOpenAdd] = useState(false);
-  const [addError, setAddError] = useState<string | null>(null);
-  const handleClickOpenAdd = () => {
-    setOpenAdd(true);
-  };
-  const handleCloseAdd = () => {
-    setOpenAdd(false);
-    setAddError(null);
-  };
-  const addButton = (
-    <CustomButton onClick={handleClickOpenAdd}>Add measure type</CustomButton>
-  );
-  const handleAddMeasurementType = (measurementTypeData: {
-    defaultUnit: string;
-    description: string;
-    displayName: string;
-    slug: string;
-  }) => {
-    setAddError(null);
-    return postMeasurementType({
-      defaultUnit: measurementTypeData.defaultUnit,
-      description: measurementTypeData.description,
-      displayName: measurementTypeData.displayName,
-      slug: measurementTypeData.slug,
-    })
-      .then(() => {
-        fetchMeasurementTypes();
-        setOpenAdd(false);
-        show("Measure type added successfully", SNACKBAR_SEVERITY.SUCCESS);
-      })
-      .catch(() => {
-        setAddError(
-          "Failed to add measure type.", // TODO: throw non-hardcoded error messages - based on actual error
-        );
-        show("Failed to add measure type", SNACKBAR_SEVERITY.ERROR);
-      });
-  };
-
   // State for controlling success snackbar
   const { show, hide, snackbar } = useSnackbar();
 
-  const fetchMeasurementTypes = () => {
-    setIsLoading(true);
-
+  useEffect(() => {
     getMeasurementTypesAll()
       .then((data) => {
         setMeasurementTypes(data);
@@ -115,22 +68,6 @@ export default function PayloadSchema() {
       .finally(() => {
         setIsLoading(false);
       });
-  };
-
-  //TODO: use deletion confirmation dialog when it has been implemented.
-  const handleDeprecateMeasurementType = (id: string) => {
-    deprecateMeasurementType(id)
-      .then(() => {
-        fetchMeasurementTypes();
-        show("Measure type deprecated successfully", SNACKBAR_SEVERITY.SUCCESS);
-      })
-      .catch(() => {
-        show("Failed to deprecate measure type", SNACKBAR_SEVERITY.ERROR);
-      });
-  };
-
-  useEffect(() => {
-    fetchMeasurementTypes();
   }, []);
 
   useEffect(() => {
@@ -165,16 +102,10 @@ export default function PayloadSchema() {
     );
   }
 
-  const sorted = sortMeasurementTypes(
-    measurementTypes,
-    sortConfig.key,
-    sortConfig.direction,
-  );
-
   return (
     <div className="flex h-screen">
       <PageContent>
-        <SubPageHeader title="Measurement types" action={addButton} />
+        <SubPageHeader title="Payload schema" />
         <PageDivider />
         {profile ? "full" : "empty"}
         <br />
@@ -236,43 +167,18 @@ export default function PayloadSchema() {
         >
           {isLoading && <p>Loading...</p>}
           {/*TODO: make a better looking loading indicator */}
-          {sorted.map((measurementType) => (
-            <DeviceRow
-              key={measurementType.slug}
-              greyed={measurementType.deprecated}
-            >
-              <MeasurementTypeInfo
-                defaultUnit={measurementType.defaultUnit}
-                description={measurementType.description}
-                displayName={measurementType.displayName}
-                slug={measurementType.slug}
-                deprecated={measurementType.deprecated}
-                onDeprecate={() =>
-                  handleDeprecateMeasurementType(measurementType.slug)
-                }
+          {payloadKeys.map((payloadKey) => (
+            <DeviceRow key={payloadKey}>
+              <FixedSensorSchema
+                payloadKey={payloadKey}
+                measurementTypes={measurementTypes}
               />
             </DeviceRow>
           ))}
         </CategoryHeader>
-        {!isLoading && sorted.length === 0 && (
+        {!isLoading && payloadKeys.length === 0 && (
           <NotFoundCard page="measure types" isEmpty={true} />
         )}
-        <AddEntityDialog
-          open={openAdd}
-          title="Add measure type"
-          fields={["Slug", "Default unit", "Description", "Display name"]}
-          optionalFields={["Default unit", "Description"]}
-          onClose={handleCloseAdd}
-          onSubmit={(values) =>
-            handleAddMeasurementType({
-              slug: values["Slug"],
-              defaultUnit: values["Default unit"],
-              description: values["Description"],
-              displayName: values["Display name"],
-            })
-          }
-          submitError={addError}
-        />
         <AppSnackbar
           open={snackbar?.open ?? false}
           message={snackbar?.message ?? ""}
