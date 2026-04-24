@@ -33,8 +33,6 @@ definitions:
     properties:
       address:
         type: string
-      company_id:
-        type: string
       name:
         type: string
     type: object
@@ -271,6 +269,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.FactoryListResponse'
+        "401":
+          description: Unauthorized
         "500":
           description: Internal Server Error
       summary: Get all factories
@@ -295,6 +295,8 @@ paths:
             $ref: '#/definitions/dto.FactoryResponse'
         "400":
           description: Bad Request
+        "401":
+          description: Unauthorized
         "404":
           description: Not Found
         "500":
@@ -305,7 +307,7 @@ paths:
   /factories/{id}:
     delete:
       parameters:
-      - description: id
+      - description: Factory ID
         in: path
         name: id
         required: true
@@ -315,6 +317,8 @@ paths:
           description: No Content
         "400":
           description: Bad Request
+        "401":
+          description: Unauthorized
         "404":
           description: Not Found
         "500":
@@ -324,7 +328,7 @@ paths:
       - factories
     get:
       parameters:
-      - description: id
+      - description: Factory ID
         in: path
         name: id
         required: true
@@ -338,6 +342,8 @@ paths:
             $ref: '#/definitions/dto.FactoryResponse'
         "400":
           description: Bad Request
+        "401":
+          description: Unauthorized
         "404":
           description: Not Found
         "500":
@@ -347,6 +353,12 @@ paths:
       - factories
   /factory-areas:
     get:
+      parameters:
+      - description: Factory ID
+        in: query
+        name: factory_id
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -354,6 +366,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.FactoryAreaListResponse'
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
         "500":
           description: Internal Server Error
       summary: Get all factory areas
@@ -378,6 +394,8 @@ paths:
             $ref: '#/definitions/dto.FactoryAreaResponse'
         "400":
           description: Bad Request
+        "401":
+          description: Unauthorized
         "404":
           description: Not Found
         "500":
@@ -388,7 +406,7 @@ paths:
   /factory-areas/{id}:
     delete:
       parameters:
-      - description: id
+      - description: Factory area ID
         in: path
         name: id
         required: true
@@ -398,6 +416,8 @@ paths:
           description: No Content
         "400":
           description: Bad Request
+        "401":
+          description: Unauthorized
         "404":
           description: Not Found
         "500":
@@ -407,7 +427,7 @@ paths:
       - factory-areas
     get:
       parameters:
-      - description: id
+      - description: Factory area ID
         in: path
         name: id
         required: true
@@ -421,6 +441,8 @@ paths:
             $ref: '#/definitions/dto.FactoryAreaResponse'
         "400":
           description: Bad Request
+        "401":
+          description: Unauthorized
         "404":
           description: Not Found
         "500":
