@@ -27,6 +27,7 @@ export function useFactoryAreas(factoryId?: string): UseFactoryAreasResult {
   const [refetchIndex, setRefetchIndex] = useState(0);
 
   const refetch = useCallback(() => {
+    setError(null);
     setFetchedFactoryId(undefined);
     setRefetchIndex((i) => i + 1);
   }, []);
@@ -55,11 +56,12 @@ export function useFactoryAreas(factoryId?: string): UseFactoryAreasResult {
 
   const isLoading = !!factoryId && fetchedFactoryId !== factoryId;
 
+  const settled = fetchedFactoryId === factoryId;
+
   return {
-    factoryAreas:
-      factoryId && fetchedFactoryId === factoryId ? factoryAreas : [],
+    factoryAreas: factoryId && settled ? factoryAreas : [],
     isLoading,
-    error,
+    error: settled ? error : null,
     refetch,
   };
 }
