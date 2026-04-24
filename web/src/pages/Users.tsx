@@ -29,6 +29,7 @@ import { formatTimestamp } from "@shared/lib";
 import { CustomButton } from "@shared/ui/Button";
 import { CategoryHeader } from "@shared/ui/CategoryHeader";
 import { DeviceRow } from "@shared/ui/DeviceRow";
+import { FetchErrorCard } from "@shared/ui/FetchErrorCard";
 import { NotFoundCard } from "@shared/ui/NotFoundCard";
 import { PageContent } from "@shared/ui/PageContent";
 import { PageDivider } from "@shared/ui/PageDivider";
@@ -276,9 +277,7 @@ export default function Users() {
           ))}
         </CategoryHeader>
         {usersError && !usersLoading && (
-          <Typography color="error" sx={{ p: 2 }}>
-            Failed to load users. Please try again.
-          </Typography>
+          <FetchErrorCard message="Failed to load users." onRetry={refetch} />
         )}
         {!usersError && !usersLoading && sorted.length === 0 && (
           <NotFoundCard page="users" isEmpty={true} />
