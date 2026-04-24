@@ -4,7 +4,11 @@ import { API_ROUTES } from "@shared/api/routes";
 
 /**
  * Posts a new gateway to the API. This function sends a POST request to the /api/v1/device/gateways endpoint with the provided gateway data.
- * @param gatewayData - An object containing the gatewayEui and name of the gateway to be created.
+ * @param gatewayData - An object containing the data of the gateway to be created.
+ * @param gatewayData.gatewayEui - The EUI of the gateway
+ * @param gatewayData.name - Display name of the gateway
+ * @param gatewayData.factoryId - ID of the factory the gateway belongs to
+ * @param gatewayData.factoryAreaId - ID of the factory area the gateway is located in
  */
 export const postGateway = async (
   gatewayData: CreateGatewayRequest,
