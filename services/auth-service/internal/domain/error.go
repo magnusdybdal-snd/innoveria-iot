@@ -13,4 +13,6 @@ var (
 	ErrUnauthorized = errors.New("unauthorized")
 	// ErrUserNotFound trigger when there is no user in db
 	ErrUserNotFound = errors.New("user not found")
+	// ErrERPAgentCredentialNotFound triggers when erp agent credential is missing
+	ErrERPAgentCredentialNotFound = errors.New("erp agent credential not found")
 )
