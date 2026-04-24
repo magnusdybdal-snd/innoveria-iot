@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import IconButton from "@mui/material/IconButton";
@@ -71,6 +71,7 @@ export default function Factories() {
   const {
     factoryAreas,
     isLoading: areasLoading,
+    error: areasError,
     refetch: refetchAreas,
   } = useFactoryAreas(selectedFactory?.id);
 
@@ -91,6 +92,11 @@ export default function Factories() {
   >(null);
 
   const { show, hide, snackbar } = useSnackbar();
+
+  useEffect(() => {
+    if (areasError)
+      show("Failed to load factory areas", SNACKBAR_SEVERITY.ERROR);
+  }, [areasError, show]);
 
   const handleSelectFactory = (factory: FactoryApiResponse) => {
     setSelectedFactory(factory);
@@ -280,8 +286,8 @@ export default function Factories() {
             </DeviceRow>
           ))}
         </CategoryHeader>
-        {!areasLoading && factoryAreas.length === 0 && (
-          <NotFoundCard page="factory areas" isEmpty={true} />
+        {!areasLoading && !areasError && factoryAreas.length === 0 && (
+          <NotFoundCard page="factory areas" isEmpty={false} />
         )}
       </PageContent>
       <AddEntityDialog

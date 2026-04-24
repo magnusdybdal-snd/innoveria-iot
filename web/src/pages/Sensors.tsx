@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
@@ -60,7 +60,8 @@ export default function Sensors() {
   const [selectedFactoryId, setSelectedFactoryId] = useState<
     string | undefined
   >();
-  const { factoryAreas } = useFactoryAreas(selectedFactoryId);
+  const { factoryAreas, error: areasError } =
+    useFactoryAreas(selectedFactoryId);
   const { sensorProfiles } = useSensorProfiles();
   const [openAdd, setOpenAdd] = useState(false);
   const [addError, setAddError] = useState<string | null>(null);
@@ -68,6 +69,12 @@ export default function Sensors() {
     useState<SensorApiResponse | null>(null);
 
   const { show, hide, snackbar } = useSnackbar();
+
+  useEffect(() => {
+    if (areasError)
+      show("Failed to load factory areas", SNACKBAR_SEVERITY.ERROR);
+  }, [areasError, show]);
+
   const [tabValue, setTabValue] = useState<number | string>(0);
 
   const handleTabChange = (

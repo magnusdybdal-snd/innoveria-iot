@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
@@ -51,11 +51,17 @@ export default function Gateways() {
   const [selectedFactoryId, setSelectedFactoryId] = useState<
     string | undefined
   >();
-  const { factoryAreas } = useFactoryAreas(selectedFactoryId);
+  const { factoryAreas, error: areasError } =
+    useFactoryAreas(selectedFactoryId);
   const [addError, setAddError] = useState<string | null>(null);
 
   // State for controlling success snackbar
   const { show, hide, snackbar } = useSnackbar();
+
+  useEffect(() => {
+    if (areasError)
+      show("Failed to load factory areas", SNACKBAR_SEVERITY.ERROR);
+  }, [areasError, show]);
 
   // Factory tabs
   const [tabValue, setTabValue] = useState<number | string>(0);
