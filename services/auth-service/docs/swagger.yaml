@@ -47,6 +47,21 @@ definitions:
       name:
         type: string
     type: object
+  dto.ERPAgentCredentialDetailsResponse:
+    properties:
+      company_id:
+        type: string
+      created_at:
+        type: string
+      key_id:
+        type: string
+      revoked_at:
+        type: string
+      rotated_at:
+        type: string
+      secret_hash:
+        type: string
+    type: object
   dto.FactoryAreaListResponse:
     properties:
       factory_areas:
@@ -212,6 +227,54 @@ paths:
       summary: Get one company
       tags:
       - companies
+  /erp-agent-credentials/company/{company_id}:
+    get:
+      parameters:
+      - description: company_id
+        in: path
+        name: company_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ERPAgentCredentialDetailsResponse'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get ERP agent credential by company id
+      tags:
+      - erp-agent-credentials
+  /erp-agent-credentials/key/{key_id}:
+    get:
+      parameters:
+      - description: key_id
+        in: path
+        name: key_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ERPAgentCredentialDetailsResponse'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get ERP agent credential by key id
+      tags:
+      - erp-agent-credentials
   /factories:
     get:
       produces:

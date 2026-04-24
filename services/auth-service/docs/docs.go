@@ -140,6 +140,80 @@ const docTemplate = `{
                 }
             }
         },
+        "/erp-agent-credentials/company/{company_id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "erp-agent-credentials"
+                ],
+                "summary": "Get ERP agent credential by company id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "company_id",
+                        "name": "company_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ERPAgentCredentialDetailsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/erp-agent-credentials/key/{key_id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "erp-agent-credentials"
+                ],
+                "summary": "Get ERP agent credential by key id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "key_id",
+                        "name": "key_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ERPAgentCredentialDetailsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/factories": {
             "get": {
                 "produces": [
@@ -558,6 +632,29 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.ERPAgentCredentialDetailsResponse": {
+            "type": "object",
+            "properties": {
+                "company_id": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "key_id": {
+                    "type": "string"
+                },
+                "revoked_at": {
+                    "type": "string"
+                },
+                "rotated_at": {
+                    "type": "string"
+                },
+                "secret_hash": {
                     "type": "string"
                 }
             }

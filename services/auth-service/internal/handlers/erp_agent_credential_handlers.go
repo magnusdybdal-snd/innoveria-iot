@@ -13,6 +13,16 @@ import (
 )
 
 // GetERPAgentCredentialByCompanyID returns ERP agent credential metadata for one company.
+//
+// @Summary Get ERP agent credential by company id
+// @Tags erp-agent-credentials
+// @Produce json
+// @Param company_id path string true "company_id"
+// @Success 200 {object} dto.ERPAgentCredentialDetailsResponse
+// @Failure 400
+// @Failure 404
+// @Failure 500
+// @Router /erp-agent-credentials/company/{company_id} [get]
 func GetERPAgentCredentialByCompanyID(svc domain.ERPAgentCredentialService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -47,6 +57,16 @@ func GetERPAgentCredentialByCompanyID(svc domain.ERPAgentCredentialService) http
 }
 
 // GetERPAgentCredentialByKeyID returns ERP agent credential metadata for one key id.
+//
+// @Summary Get ERP agent credential by key id
+// @Tags erp-agent-credentials
+// @Produce json
+// @Param key_id path string true "key_id"
+// @Success 200 {object} dto.ERPAgentCredentialDetailsResponse
+// @Failure 400
+// @Failure 404
+// @Failure 500
+// @Router /erp-agent-credentials/key/{key_id} [get]
 func GetERPAgentCredentialByKeyID(svc domain.ERPAgentCredentialService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
