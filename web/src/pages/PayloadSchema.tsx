@@ -150,9 +150,10 @@ export default function PayloadSchema() {
         </Select>
         <CategoryHeader
           categories={payloadDetails}
-          columns={payloadDetails.length + 1}
+          columns={payloadDetails.length}
           sortConfig={sortConfig}
           onSort={handleSort}
+          half={true}
         >
           {isLoading && <p>Loading...</p>}
           {/*TODO: make a better looking loading indicator */}

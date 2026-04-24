@@ -17,6 +17,7 @@ type CategoryHeaderProps = {
   sortableColumns?: string[];
   sortConfig?: { key: string | null; direction: SortDirection };
   onSort?: (column: string) => void;
+  half?: boolean;
 };
 
 /**
@@ -30,6 +31,8 @@ type CategoryHeaderProps = {
  * @param props.sortableColumns - Subset of category labels that are clickable for sorting
  * @param props.sortConfig - Currently active sort key and direction
  * @param props.onSort - Callback invoked with the column label when a sortable header is clicked
+ * @param props.hald - Weather the header stretches only haldt the
+ * @param props.half
  * @returns A full-width grid box with header labels and child content
  */
 export function CategoryHeader({
@@ -39,14 +42,17 @@ export function CategoryHeader({
   sortableColumns = [],
   sortConfig,
   onSort,
+  half,
 }: CategoryHeaderProps) {
   // Creates number of columns based on string[] passed as parameter
   // First category is made to fit the object through "auto"
-  const templateColumns = columns
-    ? `auto ${Array(columns - 1)
-        .fill("1fr")
-        .join(" ")}`
-    : `repeat(${categories.length}, 1fr)`;
+  const templateColumns = half
+    ? `repeat(${columns ?? categories.length}, max-content)`
+    : columns
+      ? `auto ${Array(columns - 1)
+          .fill("1fr")
+          .join(" ")}`
+      : `repeat(${categories.length}, 1fr)`;
 
   return (
     <Box
@@ -58,8 +64,8 @@ export function CategoryHeader({
         backgroundColor: "primary.light",
         color: "primary.main",
         padding: 2,
+        width: half ? "fit-content" : "100%",
       }}
-      className="w-full"
     >
       {/* Map every category to display as text */}
       {categories.map((category) => {
