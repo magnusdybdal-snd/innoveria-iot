@@ -49,7 +49,7 @@ export function DropDownSelect({
       getOptionKey={(option) => option.id}
       getOptionLabel={(option) => option.name}
       isOptionEqualToValue={(option, val) => option.id === val.id}
-      value={selected ?? undefined}
+      value={selected ?? null}
       onChange={(_, newValue) => {
         if (newValue) onChange(newValue.id);
       }}

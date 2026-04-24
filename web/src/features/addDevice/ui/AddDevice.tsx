@@ -68,6 +68,7 @@ export function AddDevice(props: AddDeviceProps) {
   const [lengthErrors, setLengthErrors] = useState<Record<string, boolean>>({});
 
   const handleClose = () => {
+    setValues({});
     onClose();
   };
 
