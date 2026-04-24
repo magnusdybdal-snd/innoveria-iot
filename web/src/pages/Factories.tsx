@@ -144,9 +144,10 @@ export default function Factories() {
   };
 
   const handleAddArea = (values: Record<string, string>) => {
+    if (!selectedFactory) return Promise.resolve();
     setAddAreaError(null);
     return postFactoryArea({
-      factoryId: selectedFactory!.id,
+      factoryId: selectedFactory.id,
       name: values["Name"],
       description: values["Description"] || undefined,
     })
