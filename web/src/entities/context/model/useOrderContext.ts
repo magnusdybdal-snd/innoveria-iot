@@ -26,6 +26,14 @@ export function useOrderContext(orderId: number | null): UseOrderContextResult {
   const [orderContext, setOrderContext] = useState<OrderContext | null>(null);
   const [error, setError] = useState<Error | null>(null);
   const [refetchIndex, setRefetchIndex] = useState(0);
+  const [prevOrderId, setPrevOrderId] = useState(orderId);
+
+  // Reset stale state when orderId changes (during render, not in an effect).
+  if (prevOrderId !== orderId) {
+    setPrevOrderId(orderId);
+    setError(null);
+    setOrderContext(null);
+  }
 
   const isLoading =
     orderId !== null && error === null && orderContext?.order.id !== orderId;
@@ -33,6 +41,7 @@ export function useOrderContext(orderId: number | null): UseOrderContextResult {
   // Clears stale data so isLoading becomes true for same-order refetches.
   const refetch = useCallback(() => {
     setOrderContext(null);
+    setError(null);
     setRefetchIndex((i) => i + 1);
   }, []);
 

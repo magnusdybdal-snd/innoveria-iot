@@ -41,6 +41,19 @@ export function toLocalDateTimeString(date: Date): string {
 }
 
 /**
+ * Converts a snake_case or underscore-separated status string into a
+ * space-separated, title-cased label for display (e.g. `"in_progress"` → `"In Progress"`).
+ * @param status - Raw status string from the API
+ * @returns Human-readable label
+ */
+export function formatStatus(status: string): string {
+  return status
+    .split("_")
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
+}
+
+/**
  * Formats a numeric sensor reading to one decimal place for display.
  * Returns "N/A" if the value is null, undefined, or not a finite number.
  * @param value - The raw numeric reading from the sensor payload

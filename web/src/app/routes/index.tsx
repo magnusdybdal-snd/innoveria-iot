@@ -1,6 +1,8 @@
 import Context from "@/pages/Context";
 import Factories from "@/pages/Factories";
 import OrderContext from "@/pages/OrderContext";
+import OrderDetail from "@/pages/OrderDetail";
+import OrderList from "@/pages/OrderList";
 import Rules from "@/pages/Rules";
 import StatusPage from "@/pages/StatusPage";
 import { Route, Routes } from "react-router";
@@ -27,6 +29,11 @@ export default function AppRoutes() {
         <Route path="/Dashboard" element={<Dashboard />} />
         <Route path="/Dashboard/Context" element={<Context />} />
         <Route path="/Dashboard/Context/Orders" element={<OrderContext />} />
+        <Route path="/Dashboard/Context/OrderList" element={<OrderList />} />
+        <Route
+          path="/Dashboard/Context/OrderList/:id"
+          element={<OrderDetail />}
+        />
         <Route path="/Admin/Rules" element={<Rules />} />
         <Route path="/Devices/Sensors" element={<Sensors />} />
         <Route path="/Devices/Gateways" element={<Gateways />} />

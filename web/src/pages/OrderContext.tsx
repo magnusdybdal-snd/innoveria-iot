@@ -9,7 +9,7 @@ import {
   MachineCard,
   useOrderContext,
   useOrders,
-  type Order,
+  type OrderSummary,
 } from "@entities/context";
 import { DropDownSelect } from "@shared/ui/DropDownSelect";
 import { LoadingIndicator } from "@shared/ui/LoadingIndicator";
@@ -25,7 +25,7 @@ export default function OrderContext() {
   const { orders, isLoading, error, refetch } = useOrders();
   const [selectedOrderId, setSelectedOrderId] = useState<string>("");
 
-  const selectedOrder: Order | undefined = orders.find(
+  const selectedOrder: OrderSummary | undefined = orders.find(
     (o) => String(o.id) === selectedOrderId,
   );
 
@@ -37,7 +37,7 @@ export default function OrderContext() {
 
   const orderOptions = orders.map((o) => ({
     id: String(o.id),
-    name: `${o.orderNumber} — ${o.partDescription}`,
+    name: o.name,
   }));
 
   return (
@@ -85,17 +85,25 @@ export default function OrderContext() {
               >
                 Work centers and their current status for the selected order
               </Typography>
-              <Box sx={{ mt: 3, display: "flex", flexWrap: "wrap", gap: 2 }}>
-                {selectedOrder.operations.map((op) => (
-                  <InfoWidget
-                    key={op.id}
-                    label={op.productionResource.number}
-                    value={op.productionResourceStatus}
-                    unit={op.productionResource.description ?? undefined}
-                  />
-                ))}
-                <PageDivider />
-              </Box>
+              {isContextLoading ? (
+                <LoadingIndicator message="Loading machines…" />
+              ) : contextError ? (
+                <Typography variant="body2" sx={{ mt: 3, color: "error.main" }}>
+                  Failed to load machine data. Please try again.
+                </Typography>
+              ) : (
+                <Box sx={{ mt: 3, display: "flex", flexWrap: "wrap", gap: 2 }}>
+                  {orderContext?.order.operations.map((op) => (
+                    <InfoWidget
+                      key={op.id}
+                      label={op.productionResource.number}
+                      value={op.productionResourceStatus}
+                      unit={op.productionResource.description ?? undefined}
+                    />
+                  ))}
+                  <PageDivider />
+                </Box>
+              )}
 
               <PageDivider />
               <Typography
