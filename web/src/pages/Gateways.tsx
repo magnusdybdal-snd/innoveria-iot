@@ -48,7 +48,10 @@ const addGatewayDetails: string[] = [
 export default function Gateways() {
   const { gateways, isLoading, refetch } = useGateways();
   const { factories } = useFactories();
-  const { factoryAreas } = useFactoryAreas();
+  const [selectedFactoryId, setSelectedFactoryId] = useState<
+    string | undefined
+  >();
+  const { factoryAreas } = useFactoryAreas(selectedFactoryId);
   const [addError, setAddError] = useState<string | null>(null);
 
   // State for controlling success snackbar
@@ -91,6 +94,7 @@ export default function Gateways() {
   const handleCloseAdd = () => {
     setOpenAdd(false);
     setAddError(null);
+    setSelectedFactoryId(undefined);
   };
   // Handler for submitting add gateway form; shows success or error snackbar based on result.
   const handleAddGateway = (gatewayData: {
@@ -101,7 +105,6 @@ export default function Gateways() {
   }) => {
     setAddError(null);
     return postGateway({
-      companyId: "a0000000-0000-0000-0000-000000000001", // TODO: replace with real company ID from auth
       gatewayEui: gatewayData.deviceEui,
       name: gatewayData.name,
       factoryId: gatewayData.factory,
@@ -198,6 +201,7 @@ export default function Gateways() {
         submitError={addError}
         factoryOptions={factories}
         factoryAreaOptions={factoryAreas}
+        onFactoryChange={setSelectedFactoryId}
       />
       <AppSnackbar
         open={snackbar?.open ?? false}

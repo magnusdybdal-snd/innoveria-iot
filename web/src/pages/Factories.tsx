@@ -65,7 +65,6 @@ export default function Factories() {
   const handleAddFactory = (factoryData: { name: string; address: string }) => {
     setAddError(null);
     return postFactory({
-      companyId: "a0000000-0000-0000-0000-000000000001", // TODO: replace with real company ID from auth
       name: factoryData.name,
       address: factoryData.address,
     })

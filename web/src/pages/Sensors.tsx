@@ -57,7 +57,10 @@ const sortableColumns: SensorSortKey[] = [
 export default function Sensors() {
   const { sensors, isLoading, refetch } = useSensors();
   const { factories } = useFactories();
-  const { factoryAreas } = useFactoryAreas();
+  const [selectedFactoryId, setSelectedFactoryId] = useState<
+    string | undefined
+  >();
+  const { factoryAreas } = useFactoryAreas(selectedFactoryId);
   const { sensorProfiles } = useSensorProfiles();
   const [openAdd, setOpenAdd] = useState(false);
   const [addError, setAddError] = useState<string | null>(null);
@@ -94,6 +97,7 @@ export default function Sensors() {
   const handleCloseAdd = () => {
     setOpenAdd(false);
     setAddError(null);
+    setSelectedFactoryId(undefined);
   };
 
   const handleAddSensor = (sensorData: {
@@ -107,7 +111,6 @@ export default function Sensors() {
   }): Promise<void> => {
     setAddError(null);
     return postSensor({
-      companyId: "a0000000-0000-0000-0000-000000000001", // TODO: replace with real company ID from auth
       factoryId: sensorData.factory,
       factoryAreaId: sensorData.factoryArea,
       deviceEui: sensorData.deviceEui,
@@ -252,6 +255,7 @@ export default function Sensors() {
         submitError={addError}
         factoryOptions={factories}
         factoryAreaOptions={factoryAreas}
+        onFactoryChange={setSelectedFactoryId}
       />
       <AppSnackbar
         open={snackbar?.open ?? false}
