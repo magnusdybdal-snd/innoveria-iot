@@ -18,7 +18,13 @@ interface WorkCenterGridProps {
  * @returns The rendered machine grid, or null when the list is empty
  */
 export function WorkCenterGrid({ operations }: WorkCenterGridProps) {
-  if (operations.length === 0) return null;
+  if (operations.length === 0) {
+    return (
+      <Typography variant="body2" sx={{ mt: 3, opacity: 0.6 }}>
+        No machines found for this order.
+      </Typography>
+    );
+  }
 
   return (
     <Box>
