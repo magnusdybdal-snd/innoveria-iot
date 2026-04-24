@@ -51,7 +51,6 @@ export default function PayloadSchema() {
     direction: SortDirection;
   }>({ key: null, direction: "asc" });
   const [profile, setProfile] = useState<string>("");
-  const [type, setType] = useState<string>("");
   const [payloadKey, setPayloadKey] = useState<string>("");
 
   // State for controlling success snackbar
@@ -132,17 +131,7 @@ export default function PayloadSchema() {
             </MenuItem>
           ))}
         </Select>
-        <Select
-          value={type}
-          onChange={(e) => setType(e.target.value)}
-          displayEmpty
-        >
-          {measurementTypes.map((option) => (
-            <MenuItem key={option.slug} value={option.slug}>
-              {option.displayName}
-            </MenuItem>
-          ))}
-        </Select>
+
         <Select
           value={payloadKey}
           onChange={(e) => {
@@ -161,7 +150,7 @@ export default function PayloadSchema() {
         </Select>
         <CategoryHeader
           categories={payloadDetails}
-          columns={payloadDetails.length}
+          columns={payloadDetails.length + 1}
           sortConfig={sortConfig}
           onSort={handleSort}
         >

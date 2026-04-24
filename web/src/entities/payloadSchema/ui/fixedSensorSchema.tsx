@@ -1,4 +1,8 @@
+import { useState } from "react";
+
 import type { MeasurementTypeApiResponse } from "@entities/measurementType";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
 import Typography from "@mui/material/Typography";
 
 type InfoMainProps = {
@@ -20,11 +24,24 @@ export function FixedSensorSchema({
   payloadKey,
   measurementTypes,
 }: InfoMainProps) {
+  const [type, setType] = useState<string>("");
+  const selectedType = measurementTypes.find((t) => t.slug === type);
+
   return (
     <>
       <Typography>{payloadKey}</Typography>
-      <Typography>{measurementTypes[0].displayName}</Typography>
-      <Typography>{measurementTypes[0].defaultUnit}</Typography>
+      <Select
+        value={type}
+        onChange={(e) => setType(e.target.value)}
+        displayEmpty
+      >
+        {measurementTypes.map((option) => (
+          <MenuItem key={option.slug} value={option.slug}>
+            {option.displayName}
+          </MenuItem>
+        ))}
+      </Select>
+      <Typography>{selectedType?.defaultUnit}</Typography>
     </>
   );
 }
