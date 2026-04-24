@@ -223,6 +223,8 @@ func mapOrderStatus(status int) domain.OrderStatus {
 // mapOperationStatus converts Monitor operation status values to domain operation statuses.
 func mapOperationStatus(status int) domain.OperationStatus {
 	switch status {
+	case 0:
+		return domain.OperationStatusNone
 	case 1:
 		return domain.OperationStatusStarted
 	case 2:
@@ -242,6 +244,8 @@ func mapOperationStatus(status int) domain.OperationStatus {
 // mapOrderReportType converts Monitor report type values to domain report types.
 func mapOrderReportType(reportType int) domain.OrderReportType {
 	switch reportType {
+	case 0:
+		return domain.OrderReportTypeRegular
 	case 1:
 		return domain.OrderReportTypeSendToSubcontractor
 	case 2:
@@ -277,15 +281,15 @@ func mapOrderReportType(reportType int) domain.OrderReportType {
 // mapWorkCenterType converts Monitor work center type values to domain resource types.
 func mapWorkCenterType(workCenterType int) domain.WorkCenterType {
 	switch workCenterType {
-	case 1:
+	case 0:
 		return domain.WorkCenterTypeMachine
-	case 2:
+	case 1:
 		return domain.WorkCenterTypeManualWork
-	case 3:
+	case 2:
 		return domain.WorkCenterTypeSubContract
-	case 4:
+	case 3:
 		return domain.WorkCenterTypePool
-	case 5:
+	case 4:
 		return domain.WorkCenterTypePick
 	default:
 		slog.Warn("unknown monitor work center type, preserving raw value", "type", workCenterType)
