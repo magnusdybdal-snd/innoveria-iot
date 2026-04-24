@@ -85,17 +85,25 @@ export default function OrderContext() {
               >
                 Work centers and their current status for the selected order
               </Typography>
-              <Box sx={{ mt: 3, display: "flex", flexWrap: "wrap", gap: 2 }}>
-                {orderContext?.order.operations.map((op) => (
-                  <InfoWidget
-                    key={op.id}
-                    label={op.productionResource.number}
-                    value={op.productionResourceStatus}
-                    unit={op.productionResource.description ?? undefined}
-                  />
-                ))}
-                <PageDivider />
-              </Box>
+              {isContextLoading ? (
+                <LoadingIndicator message="Loading machines…" />
+              ) : contextError ? (
+                <Typography variant="body2" sx={{ mt: 3, color: "error.main" }}>
+                  Failed to load machine data. Please try again.
+                </Typography>
+              ) : (
+                <Box sx={{ mt: 3, display: "flex", flexWrap: "wrap", gap: 2 }}>
+                  {orderContext?.order.operations.map((op) => (
+                    <InfoWidget
+                      key={op.id}
+                      label={op.productionResource.number}
+                      value={op.productionResourceStatus}
+                      unit={op.productionResource.description ?? undefined}
+                    />
+                  ))}
+                  <PageDivider />
+                </Box>
+              )}
 
               <PageDivider />
               <Typography
