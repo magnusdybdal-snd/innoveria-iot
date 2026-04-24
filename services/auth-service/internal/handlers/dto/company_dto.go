@@ -22,6 +22,22 @@ type CompanyListResponse struct {
 	Companies  []CompanyResponse `json:"companies"`
 }
 
+// ERPAgentCredentialResponse is the credential payload returned on company registration.
+type ERPAgentCredentialResponse struct {
+	KeyID  string `json:"key_id"`
+	Secret string `json:"secret"`
+}
+
+// RegisterCompanyResponse is response payload for company registration.
+type RegisterCompanyResponse struct {
+	ID                 string                     `json:"id"`
+	Name               string                     `json:"name"`
+	Address            string                     `json:"address"`
+	CreatedAt          string                     `json:"created_at"`
+	UpdatedAt          string                     `json:"updated_at"`
+	ERPAgentCredential ERPAgentCredentialResponse `json:"erp_agent_credential"`
+}
+
 // CreateNewCompany is the request payload for creating a company.
 type CreateNewCompany struct {
 	Name    string `json:"name"`
@@ -44,6 +60,21 @@ func MapCompanyFromDomain(from domain.Company) CompanyResponse {
 		Address:   from.Address,
 		CreatedAt: from.CreatedAt.Format(time.RFC3339),
 		UpdatedAt: from.UpdatedAt.Format(time.RFC3339),
+	}
+}
+
+// MapRegisterCompanyFromDomain maps register-company result to response DTO.
+func MapRegisterCompanyFromDomain(from domain.RegisterCompanyResult) RegisterCompanyResponse {
+	return RegisterCompanyResponse{
+		ID:        from.Company.ID,
+		Name:      from.Company.Name,
+		Address:   from.Company.Address,
+		CreatedAt: from.Company.CreatedAt.Format(time.RFC3339),
+		UpdatedAt: from.Company.UpdatedAt.Format(time.RFC3339),
+		ERPAgentCredential: ERPAgentCredentialResponse{
+			KeyID:  from.ERPAgentCredential.KeyID,
+			Secret: from.ERPAgentCredential.Secret,
+		},
 	}
 }
 

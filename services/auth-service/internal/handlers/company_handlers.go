@@ -44,14 +44,14 @@ func PostCompany(svc domain.CompanyService) http.HandlerFunc {
 			return
 		}
 
-		companyResp, err := svc.RegisterCompany(ctx, companyDomain)
+		registerResult, err := svc.RegisterCompany(ctx, companyDomain)
 		if err != nil {
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
 			return
 		}
 
 		// Maps from domain to DTO
-		resp := dto.MapCompanyFromDomain(companyResp)
+		resp := dto.MapRegisterCompanyFromDomain(registerResult)
 		if err := json.Encode(w, http.StatusCreated, resp); err != nil {
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
 		}

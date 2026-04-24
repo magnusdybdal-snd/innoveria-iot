@@ -11,8 +11,11 @@ const (
 	AUTH_ROUTE = API_ROUTE + "/auth"
 
 	// Company routes:
-	COMPANY_ROUTE    = AUTH_ROUTE + "/companies"
-	COMPANY_ID_ROUTE = COMPANY_ROUTE + "/{id}"
+	COMPANY_ROUTE                      = AUTH_ROUTE + "/companies"
+	COMPANY_ID_ROUTE                   = COMPANY_ROUTE + "/{id}"
+	ERP_AGENT_CREDENTIAL_ROUTE         = AUTH_ROUTE + "/erp-agent-credentials"
+	ERP_AGENT_CREDENTIAL_BY_COMPANY_ID = ERP_AGENT_CREDENTIAL_ROUTE + "/company/{company_id}"
+	ERP_AGENT_CREDENTIAL_BY_KEY_ID     = ERP_AGENT_CREDENTIAL_ROUTE + "/key/{key_id}"
 
 	// Factory routes:
 	FACTORY_ROUTE    = AUTH_ROUTE + "/factories"

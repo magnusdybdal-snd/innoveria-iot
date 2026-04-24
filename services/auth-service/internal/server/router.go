@@ -15,6 +15,7 @@ import (
 // NewRouter builds and returns the service HTTP router.
 func NewRouter(
 	companySvc domain.CompanyService,
+	erpAgentCredentialSvc domain.ERPAgentCredentialService,
 	factorySvc domain.FactoryService,
 	factoryAreaSvc domain.FactoryAreaService,
 	authSvc domain.AuthService,
@@ -30,6 +31,8 @@ func NewRouter(
 	mux.HandleFunc("GET "+COMPANY_ID_ROUTE, handlers.GetOneCompany(companySvc))
 	mux.HandleFunc("POST "+COMPANY_ROUTE, handlers.PostCompany(companySvc))
 	mux.HandleFunc("DELETE "+COMPANY_ID_ROUTE, handlers.DeleteCompany(companySvc))
+	mux.HandleFunc("GET "+ERP_AGENT_CREDENTIAL_BY_COMPANY_ID, handlers.GetERPAgentCredentialByCompanyID(erpAgentCredentialSvc))
+	mux.HandleFunc("GET "+ERP_AGENT_CREDENTIAL_BY_KEY_ID, handlers.GetERPAgentCredentialByKeyID(erpAgentCredentialSvc))
 
 	// Factory
 	mux.HandleFunc("GET "+FACTORY_ROUTE, handlers.GetAllFactories(factorySvc))

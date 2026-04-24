@@ -9,23 +9,35 @@ import (
 
 // CompanyServiceImpl implements company use-cases for the auth service.
 type CompanyServiceImpl struct {
-	companyRepo domain.CompanyRepo
+	companyRepo           domain.CompanyRepo
+	erpAgentCredentialSvc domain.ERPAgentCredentialService
 }
 
 // NewCompanyService creates a new CompanyServiceImpl instance.
-func NewCompanyService(companyRepo domain.CompanyRepo) *CompanyServiceImpl {
-	return &CompanyServiceImpl{companyRepo: companyRepo}
+func NewCompanyService(companyRepo domain.CompanyRepo, erpAgentCredentialSvc domain.ERPAgentCredentialService) *CompanyServiceImpl {
+	return &CompanyServiceImpl{companyRepo: companyRepo, erpAgentCredentialSvc: erpAgentCredentialSvc}
 }
 
 // RegisterCompany creates a new company.
-func (s *CompanyServiceImpl) RegisterCompany(ctx context.Context, payload domain.Company) (domain.Company, error) {
+func (s *CompanyServiceImpl) RegisterCompany(ctx context.Context, payload domain.Company) (domain.RegisterCompanyResult, error) {
 	company, err := s.companyRepo.Create(ctx, payload)
 	if err != nil {
-		return domain.Company{}, err
+		return domain.RegisterCompanyResult{}, err
+	}
+
+	credential, err := s.erpAgentCredentialSvc.CreateERPAgentCredential(ctx, domain.ERPAgentCredential{CompanyID: company.ID})
+	if err != nil {
+		if deleteErr := s.companyRepo.DeleteByID(ctx, company.ID); deleteErr != nil {
+			slog.Error("failed to compensate company after erp credential creation error")
+		}
+		return domain.RegisterCompanyResult{}, err
 	}
 
 	slog.Info("successfully registered company", "id", company.ID)
-	return company, nil
+	return domain.RegisterCompanyResult{
+		Company:            company,
+		ERPAgentCredential: credential,
+	}, nil
 }
 
 // GetOneCompany retrieves a single company by its ID.
