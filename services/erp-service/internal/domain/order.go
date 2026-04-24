@@ -28,6 +28,31 @@ const (
 	OrderStatusHistorical OrderStatus = "historical"
 )
 
+// OrderSummary is a lightweight projection of an order used for list views.
+//
+// It contains only the fields needed to present available orders and let
+// clients select an order ID for fetching a full OrderAggregate.
+type OrderSummary struct {
+	ID          int64
+	OrderNumber string
+}
+
+// OrderAggregate represents a high-level aggregation of orders and their
+// associated operations. It is typically used as a composite structure
+// to group multiple orders together with all related operational data.
+type OrderAggregate struct {
+	Order               Order
+	Operations          []OrderOperationWithReports
+	ProductionResources []ProductionResource
+}
+
+// OrderOperationWithReports represents a single operation within an order,
+// enriched with the operation report
+type OrderOperationWithReports struct {
+	Operation OrderOperation
+	Reports   []OrderReport
+}
+
 // Order represents a manufacturing order ingested from Monitor ERP.
 type Order struct {
 	ID                int64
@@ -46,6 +71,12 @@ type Order struct {
 
 // OrderRepo defines the repository interface for orders.
 type OrderRepo interface {
-	FindAllByCompanyID(ctx context.Context, companyID string) ([]Order, error)
+	FindAllByCompanyID(ctx context.Context, companyID string) ([]OrderSummary, error)
 	FindByID(ctx context.Context, orderID int64, companyID string) (Order, error)
+}
+
+// OrderService defines the business logic interface for orders
+type OrderService interface {
+	GetOrderSummary(ctx context.Context, companyID string) ([]OrderSummary, error)
+	GetOne(ctx context.Context, orderID int64, companyID string) (OrderAggregate, error)
 }

@@ -39,10 +39,16 @@ func Run() error {
 	ingestRepo := repository.NewIngestRepo(database)
 	reconcileRepo := repository.NewReconcileRepo(database)
 	prodResRepo := repository.NewProductionResourceRepo(database)
+	orderRepo := repository.NewOrderRepo(database)
+	orderOperationRepo := repository.NewOrderOperationRepo(database)
+	orderReportRepo := repository.NewOrderReportRepo(database)
 
 	// Service init
 	ingestSvc := service.NewIngestService(ingestRepo)
 	prodResSvc := service.NewProductionResourceSvc(prodResRepo)
+	orderSvc := service.NewOrderService(
+		orderRepo, orderOperationRepo, orderReportRepo, prodResRepo,
+	)
 
 	// Reconcile worker
 	workerCtx, workerCancel := context.WithCancel(context.Background())
@@ -53,7 +59,7 @@ func Run() error {
 	defer reconcileWorker.Stop()
 
 	// Setting up mux and http server
-	mux := NewRouter(ingestSvc, prodResSvc)
+	mux := NewRouter(ingestSvc, prodResSvc, orderSvc)
 	server := &http.Server{
 		Addr:              cfg.Addr,
 		Handler:           mux,

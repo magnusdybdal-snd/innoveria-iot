@@ -117,11 +117,81 @@ func MapProductionResourceDomainToDTO(from []domain.ProductionResource) []erpdto
 func MapProductionResourceDomainToDTOSingle(from domain.ProductionResource) erpdto.ProductionResource {
 	return erpdto.ProductionResource{
 		ID:          from.ID,
-		CompanyID:   from.CompanyID,
 		Number:      from.Number,
 		Description: from.Description,
 		Type:        erpdto.WorkCenterType(from.Type),
 		ReceivedAt:  from.ReceivedAt,
+	}
+}
+
+// MapOrderSummaryDomainToDTO maps domain order summaries into shared ERP DTOs.
+func MapOrderSummaryDomainToDTO(from []domain.OrderSummary) []erpdto.OrderSummary {
+	to := make([]erpdto.OrderSummary, len(from))
+	for i, item := range from {
+		to[i] = erpdto.OrderSummary{
+			ID:          item.ID,
+			OrderNumber: item.OrderNumber,
+		}
+	}
+
+	return to
+}
+
+// MapOrderAggregateDomainToDTO maps a domain order aggregate into shared ERP DTO.
+func MapOrderAggregateDomainToDTO(from domain.OrderAggregate) erpdto.OrderAggregate {
+	orderDTO := erpdto.Order{
+		ID:                from.Order.ID,
+		CompanyID:         from.Order.CompanyID,
+		OrderNumber:       from.Order.OrderNumber,
+		PartID:            from.Order.PartID,
+		PartDescription:   from.Order.PartDescription,
+		PlannedStartDate:  from.Order.PlannedStartDate,
+		PlannedFinishDate: from.Order.PlannedFinishDate,
+		ActualStartDate:   from.Order.ActualStartDate,
+		ActualFinishDate:  from.Order.ActualFinishDate,
+		Status:            erpdto.OrderStatus(from.Order.Status),
+		Priority:          from.Order.Priority,
+		ReceivedAt:        from.Order.ReceivedAt,
+	}
+
+	operations := make([]erpdto.OrderOperationWithReports, len(from.Operations))
+	for i, item := range from.Operations {
+		reports := make([]erpdto.OrderReport, len(item.Reports))
+		for j, report := range item.Reports {
+			reports[j] = erpdto.OrderReport{
+				ID:                   report.ID,
+				OrderOperationID:     report.OrderOperationID,
+				ProductionResourceID: report.ProductionResourceID,
+				Quantity:             report.Quantity,
+				RestQuantity:         report.RestQuantity,
+				Type:                 erpdto.OrderReportType(report.Type),
+				ReportingTimestamp:   report.ReportingTimestamp,
+				ActualReportedDate:   report.ActualReportedDate,
+				ReceivedAt:           report.ReceivedAt,
+			}
+		}
+
+		operations[i] = erpdto.OrderOperationWithReports{
+			ID:                       item.Operation.ID,
+			ProductionResourceID:     item.Operation.ProductionResourceID,
+			OrderID:                  item.Operation.OrderID,
+			PlannedStartDate:         item.Operation.PlannedStartDate,
+			PlannedFinishDate:        item.Operation.PlannedFinishDate,
+			ActualStartDate:          item.Operation.ActualStartDate,
+			ActualFinishDate:         item.Operation.ActualFinishDate,
+			Status:                   erpdto.OperationStatus(item.Operation.Status),
+			ProductionResourceStatus: erpdto.OperationStatus(item.Operation.ProductionResourceStatus),
+			ReceivedAt:               item.Operation.ReceivedAt,
+			Reports:                  reports,
+		}
+	}
+
+	resources := MapProductionResourceDomainToDTO(from.ProductionResources)
+
+	return erpdto.OrderAggregate{
+		Order:               orderDTO,
+		Operations:          operations,
+		ProductionResources: resources,
 	}
 }
 
@@ -153,6 +223,8 @@ func mapOrderStatus(status int) domain.OrderStatus {
 // mapOperationStatus converts Monitor operation status values to domain operation statuses.
 func mapOperationStatus(status int) domain.OperationStatus {
 	switch status {
+	case 0:
+		return domain.OperationStatusNone
 	case 1:
 		return domain.OperationStatusStarted
 	case 2:
@@ -172,6 +244,8 @@ func mapOperationStatus(status int) domain.OperationStatus {
 // mapOrderReportType converts Monitor report type values to domain report types.
 func mapOrderReportType(reportType int) domain.OrderReportType {
 	switch reportType {
+	case 0:
+		return domain.OrderReportTypeRegular
 	case 1:
 		return domain.OrderReportTypeSendToSubcontractor
 	case 2:
@@ -207,15 +281,15 @@ func mapOrderReportType(reportType int) domain.OrderReportType {
 // mapWorkCenterType converts Monitor work center type values to domain resource types.
 func mapWorkCenterType(workCenterType int) domain.WorkCenterType {
 	switch workCenterType {
-	case 1:
+	case 0:
 		return domain.WorkCenterTypeMachine
-	case 2:
+	case 1:
 		return domain.WorkCenterTypeManualWork
-	case 3:
+	case 2:
 		return domain.WorkCenterTypeSubContract
-	case 4:
+	case 3:
 		return domain.WorkCenterTypePool
-	case 5:
+	case 4:
 		return domain.WorkCenterTypePick
 	default:
 		slog.Warn("unknown monitor work center type, preserving raw value", "type", workCenterType)
