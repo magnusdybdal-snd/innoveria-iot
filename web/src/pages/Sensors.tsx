@@ -130,10 +130,9 @@ export default function Sensors() {
         setOpenAdd(false);
         show("Sensor added successfully", SNACKBAR_SEVERITY.SUCCESS);
       })
-      .catch((err: unknown) => {
+      .catch(() => {
         setAddError("Something went wrong adding sensor"); // TODO: improve error handling with specific messages based on error type
         show("Failed to add sensor.", SNACKBAR_SEVERITY.ERROR);
-        throw err;
       });
   };
 
