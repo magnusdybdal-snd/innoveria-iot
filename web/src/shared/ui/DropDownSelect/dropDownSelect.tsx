@@ -44,14 +44,13 @@ export function DropDownSelect({
     <Autocomplete
       sx={autocompleteSx}
       fullWidth
-      disableClearable
       options={options}
       getOptionKey={(option) => option.id}
       getOptionLabel={(option) => option.name}
       isOptionEqualToValue={(option, val) => option.id === val.id}
       value={selected ?? null}
       onChange={(_, newValue) => {
-        if (newValue) onChange(newValue.id);
+        onChange(newValue?.id ?? "");
       }}
       renderInput={(params) => <TextField {...params} />}
     />
