@@ -69,6 +69,8 @@ export function AddDevice(props: AddDeviceProps) {
 
   const handleClose = () => {
     setValues({});
+    setFillError(false);
+    setLengthErrors({});
     onClose();
   };
 
