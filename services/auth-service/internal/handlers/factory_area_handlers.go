@@ -15,6 +15,7 @@ import (
 )
 
 // PostFactoryArea handles factory area creation requests.
+// The factory must belong to the authenticated user's company.
 //
 // @Summary Register a new factory area
 // @Tags factory-areas
@@ -27,11 +28,12 @@ import (
 // @Failure 404
 // @Failure 500
 // @Router /factory-areas [post]
-func PostFactoryArea(svc domain.FactoryAreaService) http.HandlerFunc {
+func PostFactoryArea(svc domain.FactoryAreaService, factorySvc domain.FactoryService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
-		if _, err := authctx.FromRequest(r); err != nil {
+		auth, err := authctx.FromRequest(r)
+		if err != nil {
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
 			return
 		}
@@ -57,6 +59,15 @@ func PostFactoryArea(svc domain.FactoryAreaService) http.HandlerFunc {
 
 		if _, err := uuid.Parse(factoryAreaDomain.FactoryID); err != nil {
 			json.HandleError(w, http.StatusBadRequest, err, "invalid factory_id (uuid)")
+			return
+		}
+
+		if _, err := factorySvc.GetOneFactory(ctx, auth.CompanyID, factoryAreaDomain.FactoryID); err != nil {
+			if errors.Is(err, domain.ErrFactoryNotFound) {
+				json.HandleError(w, http.StatusNotFound, err, "factory not found")
+				return
+			}
+			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
 			return
 		}
 
