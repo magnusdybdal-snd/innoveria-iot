@@ -9,8 +9,6 @@ import (
 	"log/slog"
 
 	"innoveria-iot/auth-service/internal/domain"
-
-	"github.com/google/uuid"
 )
 
 // ERPAgentCredentialServiceImpl implements ERP agent credential use-cases.
@@ -34,7 +32,6 @@ func (s *ERPAgentCredentialServiceImpl) CreateERPAgentCredential(ctx context.Con
 		return domain.ERPAgentCredential{}, fmt.Errorf("create erp agent credential: generate secret: %w", err)
 	}
 
-	credential.KeyID = uuid.NewString()
 	credential.SecretHash = hashERPAgentSecret(rawSecret)
 
 	created, err := s.erpAgentCredentialRepo.Create(ctx, credential)

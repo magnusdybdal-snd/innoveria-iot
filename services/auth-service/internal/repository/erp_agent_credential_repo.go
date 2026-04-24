@@ -13,8 +13,8 @@ import (
 
 const (
 	createERPAgentCredentialQuery = `
-		INSERT INTO auth.erp_agent_credential (company_id, key_id, secret_hash)
-		VALUES ($1, $2, $3)
+		INSERT INTO auth.erp_agent_credential (company_id, secret_hash)
+		VALUES ($1, $2)
 		RETURNING company_id, key_id, secret_hash, created_at, rotated_at, revoked_at
 	`
 	findERPAgentCredentialByCompanyIDQuery = `
@@ -46,7 +46,6 @@ func (r *ERPAgentCredentialRepoImpl) Create(ctx context.Context, credential doma
 		ctx,
 		createERPAgentCredentialQuery,
 		credential.CompanyID,
-		credential.KeyID,
 		credential.SecretHash,
 	).Scan(
 		&out.CompanyID,
