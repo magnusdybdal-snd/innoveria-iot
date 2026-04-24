@@ -103,7 +103,7 @@ type OrderOperationWithReports struct {
 
 // OrderAggregate is the shared API contract for one aggregated order view.
 type OrderAggregate struct {
-	Order               []Order                     `json:"order"`
+	Order               Order                       `json:"order"`
 	Operations          []OrderOperationWithReports `json:"operations"`
 	ProductionResources []ProductionResource        `json:"production_resources"`
 }

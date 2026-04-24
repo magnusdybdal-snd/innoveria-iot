@@ -139,22 +139,19 @@ func MapOrderSummaryDomainToDTO(from []domain.OrderSummary) []erpdto.OrderSummar
 
 // MapOrderAggregateDomainToDTO maps a domain order aggregate into shared ERP DTO.
 func MapOrderAggregateDomainToDTO(from domain.OrderAggregate) erpdto.OrderAggregate {
-	orders := make([]erpdto.Order, len(from.Order))
-	for i, item := range from.Order {
-		orders[i] = erpdto.Order{
-			ID:                item.ID,
-			CompanyID:         item.CompanyID,
-			OrderNumber:       item.OrderNumber,
-			PartID:            item.PartID,
-			PartDescription:   item.PartDescription,
-			PlannedStartDate:  item.PlannedStartDate,
-			PlannedFinishDate: item.PlannedFinishDate,
-			ActualStartDate:   item.ActualStartDate,
-			ActualFinishDate:  item.ActualFinishDate,
-			Status:            erpdto.OrderStatus(item.Status),
-			Priority:          item.Priority,
-			ReceivedAt:        item.ReceivedAt,
-		}
+	orderDTO := erpdto.Order{
+		ID:                from.Order.ID,
+		CompanyID:         from.Order.CompanyID,
+		OrderNumber:       from.Order.OrderNumber,
+		PartID:            from.Order.PartID,
+		PartDescription:   from.Order.PartDescription,
+		PlannedStartDate:  from.Order.PlannedStartDate,
+		PlannedFinishDate: from.Order.PlannedFinishDate,
+		ActualStartDate:   from.Order.ActualStartDate,
+		ActualFinishDate:  from.Order.ActualFinishDate,
+		Status:            erpdto.OrderStatus(from.Order.Status),
+		Priority:          from.Order.Priority,
+		ReceivedAt:        from.Order.ReceivedAt,
 	}
 
 	operations := make([]erpdto.OrderOperationWithReports, len(from.Operations))
@@ -192,7 +189,7 @@ func MapOrderAggregateDomainToDTO(from domain.OrderAggregate) erpdto.OrderAggreg
 	resources := MapProductionResourceDomainToDTO(from.ProductionResources)
 
 	return erpdto.OrderAggregate{
-		Order:               orders,
+		Order:               orderDTO,
 		Operations:          operations,
 		ProductionResources: resources,
 	}

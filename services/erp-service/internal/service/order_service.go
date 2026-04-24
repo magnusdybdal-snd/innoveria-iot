@@ -76,7 +76,7 @@ func (s *OrderServiceImpl) GetOne(ctx context.Context, orderID int64, companyID 
 	}
 
 	return domain.OrderAggregate{
-		Order:               []domain.Order{orderData},
+		Order:               orderData,
 		Operations:          operationsWithReports,
 		ProductionResources: resources,
 	}, nil

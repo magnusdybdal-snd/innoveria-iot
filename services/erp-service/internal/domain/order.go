@@ -39,15 +39,13 @@ type OrderSummary struct {
 // associated operations. It is typically used as a composite structure
 // to group multiple orders together with all related operational data.
 type OrderAggregate struct {
-	Order               []Order
+	Order               Order
 	Operations          []OrderOperationWithReports
 	ProductionResources []ProductionResource
 }
 
 // OrderOperationWithReports represents a single operation within an order,
-// enriched with its execution reports and the production resource used.
-// It is useful for tracking both the planned operation and its actual
-// execution details in one structure.
+// enriched with the operation report
 type OrderOperationWithReports struct {
 	Operation OrderOperation
 	Reports   []OrderReport
