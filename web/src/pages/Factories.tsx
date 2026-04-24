@@ -138,7 +138,6 @@ export default function Factories() {
         show("Factory deleted successfully", SNACKBAR_SEVERITY.SUCCESS);
       })
       .catch(() => {
-        setPendingDeleteFactory(null);
         show("Failed to delete factory", SNACKBAR_SEVERITY.ERROR);
       });
   };
@@ -171,7 +170,6 @@ export default function Factories() {
         show("Factory area deleted successfully", SNACKBAR_SEVERITY.SUCCESS);
       })
       .catch(() => {
-        setPendingDeleteArea(null);
         show("Failed to delete factory area", SNACKBAR_SEVERITY.ERROR);
       });
   };
