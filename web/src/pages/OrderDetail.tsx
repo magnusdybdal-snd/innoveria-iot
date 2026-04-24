@@ -15,7 +15,8 @@ import { WorkCenterGrid } from "@widgets/workCenterGrid";
  */
 export default function OrderDetail() {
   const { id } = useParams<{ id: string }>();
-  const orderId = id ? Number(id) : null;
+  const parsed = Number(id);
+  const orderId = Number.isInteger(parsed) && parsed > 0 ? parsed : null;
 
   const { orderContext, isLoading, error } = useOrderContext(orderId);
 
@@ -24,15 +25,23 @@ export default function OrderDetail() {
       <PageContent>
         <SubPageHeader />
 
-        {isLoading && <LoadingIndicator message="Loading order…" />}
+        {orderId === null && (
+          <Typography variant="body2" sx={{ mt: 3, color: "error.main" }}>
+            Invalid order ID. Please navigate back to the order list.
+          </Typography>
+        )}
 
-        {!isLoading && error && (
+        {orderId !== null && isLoading && (
+          <LoadingIndicator message="Loading order…" />
+        )}
+
+        {orderId !== null && !isLoading && error && (
           <Typography variant="body2" sx={{ mt: 3, color: "error.main" }}>
             Failed to load order. Please try again.
           </Typography>
         )}
 
-        {!isLoading && !error && orderContext && (
+        {orderId !== null && !isLoading && !error && orderContext && (
           <>
             <OrderHeader order={orderContext.order} />
             <WorkCenterGrid operations={orderContext.operations} />
