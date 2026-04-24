@@ -21,18 +21,24 @@ const (
 		RETURNING area_id, factory_id, name, description, created_at, updated_at
 	`
 	findAllFactoryAreaQuery = `
-		SELECT area_id, factory_id, name, description, created_at, updated_at
-		FROM auth.factory_area
-		ORDER BY created_at ASC
+		SELECT fa.area_id, fa.factory_id, fa.name, fa.description, fa.created_at, fa.updated_at
+		FROM auth.factory_area fa
+		JOIN auth.factory f ON fa.factory_id = f.factory_id
+		WHERE fa.factory_id = $1 AND f.company_id = $2
+		ORDER BY fa.created_at ASC
 	`
 	findFactoryAreaByIDQuery = `
-		SELECT area_id, factory_id, name, description, created_at, updated_at
-		FROM auth.factory_area
-		WHERE area_id = $1
+		SELECT fa.area_id, fa.factory_id, fa.name, fa.description, fa.created_at, fa.updated_at
+		FROM auth.factory_area fa
+		JOIN auth.factory f ON fa.factory_id = f.factory_id
+		WHERE fa.area_id = $1 AND f.company_id = $2
 	`
 	deleteFactoryAreaByIDQuery = `
 		DELETE FROM auth.factory_area
-		WHERE area_id = $1
+		USING auth.factory
+		WHERE auth.factory_area.factory_id = auth.factory.factory_id
+		  AND auth.factory_area.area_id = $1
+		  AND auth.factory.company_id = $2
 	`
 )
 
@@ -74,9 +80,9 @@ func (r *FactoryAreaRepoImpl) Create(ctx context.Context, area domain.FactoryAre
 	return out, nil
 }
 
-// FindAll retrieves all factory areas.
-func (r *FactoryAreaRepoImpl) FindAll(ctx context.Context) ([]domain.FactoryArea, error) {
-	rows, err := r.db.Pool.Query(ctx, findAllFactoryAreaQuery)
+// FindAll retrieves all factory areas belonging to a factory, scoped to the given company.
+func (r *FactoryAreaRepoImpl) FindAll(ctx context.Context, companyID string, factoryID string) ([]domain.FactoryArea, error) {
+	rows, err := r.db.Pool.Query(ctx, findAllFactoryAreaQuery, factoryID, companyID)
 	if err != nil {
 		return nil, fmt.Errorf("find all factory areas: %w", err)
 	}
@@ -109,12 +115,12 @@ func (r *FactoryAreaRepoImpl) FindAll(ctx context.Context) ([]domain.FactoryArea
 	return out, nil
 }
 
-// FindByID retrieves a factory area by id.
-func (r *FactoryAreaRepoImpl) FindByID(ctx context.Context, areaID string) (domain.FactoryArea, error) {
+// FindByID retrieves a factory area by id, scoped to the given company via JOIN.
+func (r *FactoryAreaRepoImpl) FindByID(ctx context.Context, companyID string, areaID string) (domain.FactoryArea, error) {
 	var out domain.FactoryArea
 	var description sql.NullString
 
-	err := r.db.Pool.QueryRow(ctx, findFactoryAreaByIDQuery, areaID).Scan(
+	err := r.db.Pool.QueryRow(ctx, findFactoryAreaByIDQuery, areaID, companyID).Scan(
 		&out.ID,
 		&out.FactoryID,
 		&out.Name,
@@ -137,9 +143,9 @@ func (r *FactoryAreaRepoImpl) FindByID(ctx context.Context, areaID string) (doma
 	return out, nil
 }
 
-// Delete deletes a factory area by id.
-func (r *FactoryAreaRepoImpl) Delete(ctx context.Context, areaID string) error {
-	result, err := r.db.Pool.Exec(ctx, deleteFactoryAreaByIDQuery, areaID)
+// Delete deletes a factory area by id, scoped to the given company via JOIN.
+func (r *FactoryAreaRepoImpl) Delete(ctx context.Context, companyID string, areaID string) error {
+	result, err := r.db.Pool.Exec(ctx, deleteFactoryAreaByIDQuery, areaID, companyID)
 	if err != nil {
 		return fmt.Errorf("delete factory area by id: %w", err)
 	}
