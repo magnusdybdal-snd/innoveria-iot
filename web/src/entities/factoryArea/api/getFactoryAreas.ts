@@ -26,7 +26,7 @@ export const getFactoryAreas = async (
 ): Promise<FactoryAreaApiResponse[]> => {
   const data = await apiRequest<RawFactoryAreaListApiResponse>(
     serviceClient,
-    `${API_ROUTES.factoryAreas}?factory_id=${factoryId}`,
+    `${API_ROUTES.factoryAreas}?factory_id=${encodeURIComponent(factoryId)}`,
     "GET",
   );
 
