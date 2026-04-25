@@ -8,6 +8,7 @@ import Typography from "@mui/material/Typography";
 
 import {
   deleteFactory,
+  FactoryInfo,
   sortFactories,
   useFactories,
   type FactoryApiResponse,
@@ -15,14 +16,13 @@ import {
   type SortDirection,
 } from "@entities/factory";
 import { postFactory } from "@entities/factory/api/postFactory";
-import { FactoryInfo } from "@entities/factory/ui/FactoryInfo";
 import {
   deleteFactoryArea,
+  FactoryAreaInfo,
   postFactoryArea,
   useFactoryAreas,
   type FactoryAreaApiResponse,
 } from "@entities/factoryArea";
-import { FactoryAreaInfo } from "@entities/factoryArea/ui/FactoryAreaInfo";
 import { formatTimestamp } from "@shared/lib";
 import { AddEntityDialog } from "@shared/ui/AddEntityDialog";
 import { CustomButton } from "@shared/ui/Button";
