@@ -5,12 +5,14 @@ import { CustomButton } from "@/shared/ui/Button";
 import {
   CompanyInfo,
   postCompany,
+  postCompanyERPAgentToken,
   sortCompanies,
   useCompanies,
   type CompanySortKey,
   type SortDirection,
 } from "@entities/company";
 import { AddCompany } from "@features/addCompany";
+import { CompanyERPTokenDialog } from "@features/companyERPToken";
 import { formatTimestamp } from "@shared/lib";
 import { CategoryHeader } from "@shared/ui/CategoryHeader";
 import { DeviceRow } from "@shared/ui/DeviceRow";
@@ -52,6 +54,13 @@ const addCompanyDetails: string[] = ["Name", "Address"];
 export default function Companies() {
   const { companies, isLoading, refetch } = useCompanies();
   const [addError, setAddError] = useState<string | null>(null);
+  const [erpTokenError, setERPTokenError] = useState<string | null>(null);
+  const [erpTokenLoading, setERPTokenLoading] = useState(false);
+  const [erpToken, setERPToken] = useState<string | null>(null);
+  const [selectedCompany, setSelectedCompany] = useState<{
+    companyId: string;
+    name: string;
+  } | null>(null);
 
   // State for controlling success snackbar
   const { show, hide, snackbar } = useSnackbar();
@@ -74,6 +83,54 @@ export default function Companies() {
     setAddError(null);
   };
   const addAdminUser = () => {};
+
+  const closeERPTokenDialog = () => {
+    setSelectedCompany(null);
+    setERPToken(null);
+    setERPTokenError(null);
+    setERPTokenLoading(false);
+  };
+
+  const generateERPToken = (companyId: string) => {
+    setERPTokenLoading(true);
+    setERPTokenError(null);
+
+    postCompanyERPAgentToken(companyId)
+      .then((token) => {
+        setERPToken(token);
+        show("ERP token generated", SNACKBAR_SEVERITY.SUCCESS);
+      })
+      .catch(() => {
+        setERPTokenError("Failed to generate ERP token.");
+        show("Failed to generate ERP token", SNACKBAR_SEVERITY.ERROR);
+      })
+      .finally(() => {
+        setERPTokenLoading(false);
+      });
+  };
+
+  const handleOpenERPTokenDialog = (companyId: string, companyName: string) => {
+    setSelectedCompany({ companyId, name: companyName });
+    setERPToken(null);
+    setERPTokenError(null);
+    generateERPToken(companyId);
+  };
+
+  const handleCopyERPToken = () => {
+    if (!erpToken) {
+      return;
+    }
+
+    navigator.clipboard
+      .writeText(erpToken)
+      .then(() => {
+        show("ERP token copied", SNACKBAR_SEVERITY.SUCCESS);
+      })
+      .catch(() => {
+        show("Failed to copy ERP token", SNACKBAR_SEVERITY.ERROR);
+      });
+  };
+
   const handleAddCompany = (companyData: { name: string; address: string }) => {
     setAddError(null);
     postCompany({
@@ -135,6 +192,9 @@ export default function Companies() {
                 created_at={formatTimestamp(company.createdAt)}
                 updated_at={formatTimestamp(company.updatedAt)}
                 addUser={addAdminUser}
+                onGenerateERPToken={() =>
+                  handleOpenERPTokenDialog(company.companyId, company.name)
+                }
               />
             </DeviceRow>
           ))}
@@ -149,6 +209,22 @@ export default function Companies() {
         addOptions={addCompanyDetails}
         onAdd={handleAddCompany}
         submitError={addError}
+      />
+      <CompanyERPTokenDialog
+        open={selectedCompany !== null}
+        companyName={selectedCompany?.name ?? ""}
+        token={erpToken}
+        isLoading={erpTokenLoading}
+        error={erpTokenError}
+        onClose={closeERPTokenDialog}
+        onGenerate={() => {
+          if (!selectedCompany) {
+            return;
+          }
+
+          generateERPToken(selectedCompany.companyId);
+        }}
+        onCopy={handleCopyERPToken}
       />
       <AppSnackbar
         open={snackbar?.open ?? false}

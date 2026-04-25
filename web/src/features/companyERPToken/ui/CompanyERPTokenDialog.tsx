@@ -1,0 +1,134 @@
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+
+const fieldSx = {
+  "& .MuiOutlinedInput-root": {
+    color: "primary.main",
+    "& fieldset": { borderColor: "primary.main" },
+    "&:hover fieldset": { borderColor: "primary.main" },
+    "&.Mui-focused fieldset": { borderColor: "primary.main" },
+  },
+};
+
+type CompanyERPTokenDialogProps = {
+  open: boolean;
+  companyName: string;
+  token: string | null;
+  isLoading: boolean;
+  error?: string | null;
+  onClose: () => void;
+  onGenerate: () => void;
+  onCopy: () => void;
+};
+
+/**
+ * Dialog for generating, viewing, and copying a company's ERP agent token.
+ * @param props - Component props
+ * @param props.open - Whether the dialog is visible
+ * @param props.companyName - Name shown in the dialog title
+ * @param props.token - Current generated token value
+ * @param props.isLoading - Whether token generation request is in progress
+ * @param props.error - Optional generation error to display
+ * @param props.onClose - Callback for closing the dialog
+ * @param props.onGenerate - Callback for generating or regenerating a token
+ * @param props.onCopy - Callback for copying token value
+ * @returns Styled ERP token dialog
+ */
+export function CompanyERPTokenDialog({
+  open,
+  companyName,
+  token,
+  isLoading,
+  error,
+  onClose,
+  onGenerate,
+  onCopy,
+}: CompanyERPTokenDialogProps) {
+  return (
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="sm"
+      fullWidth
+      aria-labelledby="company-erp-token-dialog-title"
+      sx={{
+        "& .MuiPaper-root": {
+          backgroundColor: "primary.dark",
+          color: "primary.contrastText",
+        },
+      }}
+    >
+      <DialogTitle
+        id="company-erp-token-dialog-title"
+        sx={{ color: "primary.main" }}
+      >
+        ERP token for {companyName}
+      </DialogTitle>
+      <DialogContent>
+        <Typography variant="body2" color="primary.main" mb={0.5}>
+          ERP agent token
+        </Typography>
+        <TextField
+          sx={fieldSx}
+          fullWidth
+          multiline
+          minRows={3}
+          value={token ?? ""}
+          placeholder={
+            isLoading ? "Generating token..." : "No token generated yet"
+          }
+          slotProps={{ input: { readOnly: true } }}
+        />
+        <Typography
+          variant="caption"
+          color="primary.main"
+          mt={1}
+          display="block"
+        >
+          Store this token securely after copying it.
+        </Typography>
+        {error && (
+          <Typography color="error" mt={1}>
+            {error}
+          </Typography>
+        )}
+      </DialogContent>
+      <DialogActions>
+        <Button
+          sx={{
+            backgroundColor: "primary.main",
+            color: "primary.contrastText",
+          }}
+          onClick={onClose}
+        >
+          Close
+        </Button>
+        <Button
+          sx={{
+            backgroundColor: "primary.main",
+            color: "primary.contrastText",
+          }}
+          onClick={onGenerate}
+          disabled={isLoading}
+        >
+          Regenerate
+        </Button>
+        <Button
+          sx={{
+            backgroundColor: "primary.main",
+            color: "primary.contrastText",
+          }}
+          onClick={onCopy}
+          disabled={!token || isLoading}
+        >
+          Copy token
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+}
