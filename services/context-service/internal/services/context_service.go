@@ -94,11 +94,14 @@ func (s *ContextServiceImpl) GetContextData(
 		}
 
 		result, err := calc.Calculate(calculators.Input{
-			Rule:          rule,
-			Readings:      readings,
-			BucketMinutes: effectiveBucketMins,
-			From:          from,
-			To:            to,
+			Rule:              rule,
+			Readings:          readings,
+			BucketMinutes:     effectiveBucketMins,
+			From:              from,
+			To:                to,
+			CurrentPayloadKey: rule.MeasurementType,
+			// TODO: look up per-sensor voltage when GetContextData callers need it.
+			VoltageV: 230.0,
 		})
 		if err != nil {
 			return nil, fmt.Errorf("calculating context for device %s: %w", eui, err)
@@ -211,6 +214,7 @@ func (s *ContextServiceImpl) buildOperationContext(ctx context.Context, op domai
 }
 
 // buildSensorContext fetches metrics and measurements for a single sensor over the given time window.
+// For electricity sensors with a configured voltage, it also computes total energy consumption in Wh.
 func (s *ContextServiceImpl) buildSensorContext(ctx context.Context, sensor domain.DeviceSensor, from, to time.Time) (domain.SensorContext, error) {
 	metrics, err := s.deviceClient.GetSensorMetrics(ctx, sensor.DeviceEUI)
 	if err != nil {
@@ -222,5 +226,43 @@ func (s *ContextServiceImpl) buildSensorContext(ctx context.Context, sensor doma
 		return domain.SensorContext{}, fmt.Errorf("fetching measurements for sensor %s: %w", sensor.DeviceEUI, err)
 	}
 
-	return domain.SensorContext{Sensor: sensor, Metrics: metrics, Measurements: measurements}, nil
+	sc := domain.SensorContext{Sensor: sensor, Metrics: metrics, Measurements: measurements}
+
+	if sensor.ElectricitySensor {
+		if sensor.Voltage == nil {
+			slog.Warn("electricity sensor has no voltage configured, skipping Wh calculation", "device_eui", sensor.DeviceEUI)
+		} else {
+			currentKey := findPayloadKeyByMeasurementType(metrics, "electric_current")
+			if currentKey == "" {
+				slog.Warn("electricity sensor has no electric_current metric, skipping Wh calculation", "device_eui", sensor.DeviceEUI)
+			} else {
+				calc := &calculators.WattHourCalculator{}
+				result, err := calc.Calculate(calculators.Input{
+					Readings:          measurements,
+					From:              from,
+					To:                to,
+					VoltageV:          float64(*sensor.Voltage),
+					CurrentPayloadKey: currentKey,
+				})
+				if err != nil {
+					slog.Error("Wh calculation failed for sensor", "device_eui", sensor.DeviceEUI, "error", err)
+				} else {
+					sc.PowerConsumptionWh = &result.Value
+				}
+			}
+		}
+	}
+
+	return sc, nil
+}
+
+// findPayloadKeyByMeasurementType returns the payload key for the first metric matching the given
+// measurement type slug, or an empty string if none is found.
+func findPayloadKeyByMeasurementType(metrics []domain.SensorMetric, measurementType string) string {
+	for _, m := range metrics {
+		if m.MeasurementType == measurementType {
+			return m.PayloadKey
+		}
+	}
+	return ""
 }

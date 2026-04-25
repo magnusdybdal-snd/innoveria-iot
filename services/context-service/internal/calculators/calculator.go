@@ -10,11 +10,13 @@ import (
 
 // Input holds all data a Calculator needs to compute context data for a single device.
 type Input struct {
-	Rule          domain.AggregationRule
-	Readings      []domain.MeasurementReading
-	BucketMinutes int
-	From          time.Time
-	To            time.Time
+	Rule              domain.AggregationRule
+	Readings          []domain.MeasurementReading
+	BucketMinutes     int
+	From              time.Time
+	To                time.Time
+	VoltageV          float64 // line voltage in volts; required for WattHourCalculator
+	CurrentPayloadKey string  // payload key that holds the RMS current value in amps
 }
 
 // Calculator computes a ContextData result from raw sensor readings.

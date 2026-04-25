@@ -24,6 +24,8 @@ type DeviceSensor struct {
 	Name               string
 	DeviceEUI          string
 	ProductionResource *int64
+	ElectricitySensor  bool
+	Voltage            *int // 230 or 400 — only set when ElectricitySensor is true
 }
 
 // SensorMetric maps a sensor payload key to its measurement type and unit.
