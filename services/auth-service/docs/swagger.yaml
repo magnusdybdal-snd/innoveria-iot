@@ -47,6 +47,11 @@ definitions:
       name:
         type: string
     type: object
+  dto.ERPAgentTokenResponse:
+    properties:
+      erp_agent_token:
+        type: string
+    type: object
   dto.FactoryAreaListResponse:
     properties:
       factory_areas:
@@ -225,6 +230,30 @@ paths:
         "500":
           description: Internal Server Error
       summary: Get one company
+      tags:
+      - companies
+  /companies/{id}/erp-agent-token:
+    post:
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ERPAgentTokenResponse'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Issue ERP agent token
       tags:
       - companies
   /factories:

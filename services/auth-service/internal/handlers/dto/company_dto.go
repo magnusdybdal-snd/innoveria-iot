@@ -32,6 +32,11 @@ type RegisterCompanyResponse struct {
 	ERPAgentToken string `json:"erp_agent_token"`
 }
 
+// ERPAgentTokenResponse is response payload when issuing a new ERP agent token.
+type ERPAgentTokenResponse struct {
+	ERPAgentToken string `json:"erp_agent_token"`
+}
+
 // CreateNewCompany is the request payload for creating a company.
 type CreateNewCompany struct {
 	Name    string `json:"name"`
@@ -67,6 +72,11 @@ func MapRegisterCompanyFromDomain(from domain.RegisterCompanyResult) RegisterCom
 		UpdatedAt:     from.Company.UpdatedAt.Format(time.RFC3339),
 		ERPAgentToken: from.ERPAgentToken,
 	}
+}
+
+// MapERPAgentTokenResponse maps a raw token string to response DTO.
+func MapERPAgentTokenResponse(token string) ERPAgentTokenResponse {
+	return ERPAgentTokenResponse{ERPAgentToken: token}
 }
 
 // MapCompanyListFromDomain maps domain companies to a company list response DTO.

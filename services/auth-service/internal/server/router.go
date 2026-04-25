@@ -29,6 +29,7 @@ func NewRouter(
 	mux.HandleFunc("GET "+COMPANY_ROUTE, handlers.GetAllCompanies(companySvc))
 	mux.HandleFunc("GET "+COMPANY_ID_ROUTE, handlers.GetOneCompany(companySvc))
 	mux.HandleFunc("POST "+COMPANY_ROUTE, handlers.PostCompany(companySvc))
+	mux.HandleFunc("POST "+COMPANY_ERP_AGENT_TOKEN_ROUTE, handlers.PostCompanyERPAgentToken(companySvc))
 	mux.HandleFunc("DELETE "+COMPANY_ID_ROUTE, handlers.DeleteCompany(companySvc))
 
 	// Factory

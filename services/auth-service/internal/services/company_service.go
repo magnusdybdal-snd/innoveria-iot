@@ -71,6 +71,21 @@ func (s *CompanyServiceImpl) generateERPAgentRuntimeToken(companyID string) (str
 	return signed, nil
 }
 
+// IssueERPAgentToken creates a new ERP agent runtime token for an existing company.
+func (s *CompanyServiceImpl) IssueERPAgentToken(ctx context.Context, companyID string) (string, error) {
+	if _, err := s.companyRepo.FindByID(ctx, companyID); err != nil {
+		return "", err
+	}
+
+	token, err := s.generateERPAgentRuntimeToken(companyID)
+	if err != nil {
+		return "", err
+	}
+
+	slog.Info("successfully issued erp agent token", "company_id", companyID)
+	return token, nil
+}
+
 // GetOneCompany retrieves a single company by its ID.
 func (s *CompanyServiceImpl) GetOneCompany(ctx context.Context, companyID string) (domain.Company, error) {
 	company, err := s.companyRepo.FindByID(ctx, companyID)
