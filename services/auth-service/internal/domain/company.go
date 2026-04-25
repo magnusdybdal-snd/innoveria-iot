@@ -14,12 +14,6 @@ type Company struct {
 	UpdatedAt time.Time
 }
 
-// RegisterCompanyResult holds the created company and initial ERP agent credential.
-type RegisterCompanyResult struct {
-	Company       Company
-	ERPAgentToken string
-}
-
 // CompanyRepo defines the company repository needed by the auth domain.
 type CompanyRepo interface {
 	Create(ctx context.Context, company Company) (Company, error)
@@ -30,7 +24,7 @@ type CompanyRepo interface {
 
 // CompanyService defines company use-cases exposed by the service layer.
 type CompanyService interface {
-	RegisterCompany(ctx context.Context, payload Company) (RegisterCompanyResult, error)
+	RegisterCompany(ctx context.Context, payload Company) (Company, error)
 	IssueERPAgentToken(ctx context.Context, companyID string) (string, error)
 	GetOneCompany(ctx context.Context, companyID string) (Company, error)
 	GetAllCompanies(ctx context.Context) ([]Company, error)

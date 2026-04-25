@@ -30,22 +30,14 @@ func NewCompanyService(companyRepo domain.CompanyRepo, jwtSecret, jwtIssuer stri
 }
 
 // RegisterCompany creates a new company.
-func (s *CompanyServiceImpl) RegisterCompany(ctx context.Context, payload domain.Company) (domain.RegisterCompanyResult, error) {
+func (s *CompanyServiceImpl) RegisterCompany(ctx context.Context, payload domain.Company) (domain.Company, error) {
 	company, err := s.companyRepo.Create(ctx, payload)
 	if err != nil {
-		return domain.RegisterCompanyResult{}, err
-	}
-
-	erpAgentToken, err := s.generateERPAgentRuntimeToken(company.ID)
-	if err != nil {
-		return domain.RegisterCompanyResult{}, err
+		return domain.Company{}, err
 	}
 
 	slog.Info("successfully registered company", "id", company.ID)
-	return domain.RegisterCompanyResult{
-		Company:       company,
-		ERPAgentToken: erpAgentToken,
-	}, nil
+	return company, nil
 }
 
 func (s *CompanyServiceImpl) generateERPAgentRuntimeToken(companyID string) (string, error) {
