@@ -46,7 +46,7 @@ func Run() error {
 	refreshTokenRepo := repository.NewRefreshTokenRepo(database)
 
 	// service init
-	companySvc := services.NewCompanyService(companyRepo, cfg.JWT_SECRET, cfg.JWTIssuer, cfg.ERPAgentTokenTTL)
+	companySvc := services.NewCompanyService(companyRepo, cfg.ERP_AGENT_JWT_SECRET, cfg.JWTIssuer, cfg.ERPAgentTokenTTL)
 	factorySvc := services.NewFactoryService(factoryRepo)
 	factoryAreaSvc := services.NewFactoryAreaService(factoryAreaRepo)
 	authSvc := services.NewAuthServiceImpl(userRepo, refreshTokenRepo, cfg.JWT_SECRET, cfg.JWTIssuer, cfg.JWTAccessTTL, cfg.JWTRefreshTokenTTL, cfg.RefreshPepper)

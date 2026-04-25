@@ -22,15 +22,6 @@ type CompanyListResponse struct {
 	Companies  []CompanyResponse `json:"companies"`
 }
 
-// RegisterCompanyResponse is response payload for company registration.
-type RegisterCompanyResponse struct {
-	ID        string `json:"id"`
-	Name      string `json:"name"`
-	Address   string `json:"address"`
-	CreatedAt string `json:"created_at"`
-	UpdatedAt string `json:"updated_at"`
-}
-
 // ERPAgentTokenResponse is response payload when issuing a new ERP agent token.
 type ERPAgentTokenResponse struct {
 	ERPAgentToken string `json:"erp_agent_token"`
@@ -53,17 +44,6 @@ func MapCreateCompanyToDomain(from CreateNewCompany) domain.Company {
 // MapCompanyFromDomain maps a domain Company to a CompanyResponse DTO.
 func MapCompanyFromDomain(from domain.Company) CompanyResponse {
 	return CompanyResponse{
-		ID:        from.ID,
-		Name:      from.Name,
-		Address:   from.Address,
-		CreatedAt: from.CreatedAt.Format(time.RFC3339),
-		UpdatedAt: from.UpdatedAt.Format(time.RFC3339),
-	}
-}
-
-// MapRegisterCompanyFromDomain maps a created company to response DTO.
-func MapRegisterCompanyFromDomain(from domain.Company) RegisterCompanyResponse {
-	return RegisterCompanyResponse{
 		ID:        from.ID,
 		Name:      from.Name,
 		Address:   from.Address,
