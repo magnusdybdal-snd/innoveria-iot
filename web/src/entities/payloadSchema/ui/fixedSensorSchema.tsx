@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 import type { MeasurementTypeApiResponse } from "@entities/measurementType";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
@@ -8,6 +6,11 @@ import Typography from "@mui/material/Typography";
 type InfoMainProps = {
   payloadKey: string;
   measurementTypes: MeasurementTypeApiResponse[];
+  value?: {
+    measurementType: string;
+    unit: string;
+  };
+  onChange: (value: { measurementType: string; unit: string }) => void;
 };
 
 {
@@ -18,21 +21,33 @@ type InfoMainProps = {
  * @param root0 - Component props
  * @param root0.payloadKey - Unit tied to the measurement type
  * @param root0.measurementTypes - Description explaining the measurements type's function
+ * @param root0.value - Description explaining the measurements type's function
+ * @param root0.onChange - Description explaining the measurements type's function
  * @returns The rendered measurement type row cells
  */
 export function FixedSensorSchema({
   payloadKey,
   measurementTypes,
+  value,
+  onChange,
 }: InfoMainProps) {
-  const [type, setType] = useState<string>("");
-  const selectedType = measurementTypes.find((t) => t.slug === type);
+  const handleChange = (slug: string) => {
+    const selected = measurementTypes.find((m) => m.slug === slug);
+
+    if (!selected) return;
+
+    onChange({
+      measurementType: selected.slug,
+      unit: selected.defaultUnit,
+    });
+  };
 
   return (
     <>
       <Typography>{payloadKey}</Typography>
       <Select
-        value={type}
-        onChange={(e) => setType(e.target.value)}
+        value={value?.measurementType ?? ""}
+        onChange={(e) => handleChange(e.target.value)}
         displayEmpty
       >
         {measurementTypes.map((option) => (
@@ -41,7 +56,7 @@ export function FixedSensorSchema({
           </MenuItem>
         ))}
       </Select>
-      <Typography>{selectedType?.defaultUnit}</Typography>
+      <Typography>{value?.unit ?? "-"}</Typography>
     </>
   );
 }

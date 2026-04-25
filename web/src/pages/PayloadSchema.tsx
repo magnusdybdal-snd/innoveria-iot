@@ -6,7 +6,11 @@ import {
   type MeasurementTypeSortKey,
   type SortDirection,
 } from "@entities/measurementType";
-import { FixedSensorSchema, getPayloadTags } from "@entities/payloadSchema";
+import {
+  FixedSensorSchema,
+  getPayloadTags,
+  putPayloadSchema,
+} from "@entities/payloadSchema";
 import { getSensorProfiles } from "@entities/sensor";
 import { getDeviceEUI } from "@entities/sensor/api/getDeviceEUI.ts";
 import { getSensorProfileConfig } from "@entities/sensor/api/getSensorProfileConfig.ts";
@@ -14,11 +18,12 @@ import type {
   SensorProfileApiResponse,
   SensorProfileConfigApiResponse,
 } from "@entities/sensor/model/sensorSchema.ts";
-import MenuItem from "@mui/material/MenuItem";
-import Select from "@mui/material/Select";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { CategoryHeader } from "@shared/ui/CategoryHeader";
 import { DeviceRow } from "@shared/ui/DeviceRow";
+import { DropDownSelect } from "@shared/ui/DropDownSelect";
 import { NotFoundCard } from "@shared/ui/NotFoundCard";
 import { PageContent } from "@shared/ui/PageContent";
 import { PageDivider } from "@shared/ui/PageDivider";
@@ -44,7 +49,7 @@ export default function PayloadSchema() {
   >([]);
   const [sensorProfileConfig, setSensorProfileConfig] =
     useState<SensorProfileConfigApiResponse | null>(null);
-  const [deviceEui, setDeviceEui] = useState<string>("");
+  //const [deviceEui, setDeviceEui] = useState<string>("");
   const [payloadKeys, setPayloadKeys] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState<{
@@ -52,9 +57,39 @@ export default function PayloadSchema() {
     direction: SortDirection;
   }>({ key: null, direction: "asc" });
   const [profile, setProfile] = useState<string>("");
+  const [schemaRows, setSchemaRows] = useState<
+    Record<
+      string,
+      {
+        measurementType: string;
+        unit: string;
+      }
+    >
+  >({});
+
+  const profileOptions = sensorProfiles.map((p) => ({
+    id: p.id,
+    name: p.id, // or p.name if you have it
+  }));
 
   // State for controlling success snackbar
   const { show, hide, snackbar } = useSnackbar();
+
+  const handleSaveFixed = () => {
+    const labels = Object.entries(schemaRows).map(([payloadKey, value]) => ({
+      payloadKey,
+      measurementType: value.measurementType,
+      unit: value.unit,
+    }));
+
+    putPayloadSchema({ labels }, profile)
+      .then(() => {
+        show("Payload schema saved successfully", SNACKBAR_SEVERITY.SUCCESS);
+      })
+      .catch(() => {
+        show("Failed to save payload schema", SNACKBAR_SEVERITY.ERROR);
+      });
+  };
 
   useEffect(() => {
     getMeasurementTypesAll()
@@ -83,13 +118,14 @@ export default function PayloadSchema() {
   useEffect(() => {
     if (!profile) return;
 
-    getDeviceEUI(profile).then((eui) => {
-      setDeviceEui(eui ?? "b000000000000001");
-    });
+    getDeviceEUI(profile)
+      .then((eui) => {
+        const finalEui = eui ?? "b000000000000001";
+        //setDeviceEui(finalEui);
 
-    getPayloadTags(deviceEui).then((keys) => {
-      setPayloadKeys(keys);
-    });
+        return getPayloadTags(finalEui);
+      })
+      .then(setPayloadKeys);
   }, [profile]);
 
   function handleSort(column: string) {
@@ -112,19 +148,13 @@ export default function PayloadSchema() {
         <br />
         <br />
         <Typography>Select a sensor profile</Typography>
-        <Select
-          value={profile}
-          onChange={(e) => {
-            setProfile(e.target.value);
-          }}
-          displayEmpty
-        >
-          {sensorProfiles.map((option) => (
-            <MenuItem key={option.id} value={option.id}>
-              {option.id}
-            </MenuItem>
-          ))}
-        </Select>
+        <Box sx={{ width: 200 }}>
+          <DropDownSelect
+            options={profileOptions}
+            value={profile}
+            onChange={() => setProfile("f0000000-0000-0000-0000-000000000001")}
+          />
+        </Box>
         <br />
         {profile.length ? (
           <>
@@ -142,15 +172,39 @@ export default function PayloadSchema() {
                   <FixedSensorSchema
                     payloadKey={payloadKey}
                     measurementTypes={measurementTypes}
+                    value={schemaRows[payloadKey]}
+                    onChange={(value) => {
+                      setSchemaRows((prev) => ({
+                        ...prev,
+                        [payloadKey]: value,
+                      }));
+                    }}
                   />
                 </DeviceRow>
               ))}
             </CategoryHeader>
+            <Button
+              variant="outlined"
+              sx={{
+                backgroundColor: "primary.main",
+                color: "primary.dark",
+                "&:hover": { backgroundColor: "primary.main" },
+                borderRadius: 2,
+                textTransform: "none",
+                fontSize: 15,
+              }}
+              onClick={handleSaveFixed}
+            >
+              Save
+            </Button>
+          </>
+        ) : (
+          <>
             {!isLoading && payloadKeys.length === 0 && (
               <NotFoundCard page="measure types" isEmpty={true} />
             )}
           </>
-        ) : null}
+        )}
         <AppSnackbar
           open={snackbar?.open ?? false}
           message={snackbar?.message ?? ""}
