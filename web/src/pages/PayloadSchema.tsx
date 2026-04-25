@@ -20,6 +20,7 @@ import type {
 } from "@entities/sensor/model/sensorSchema.ts";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
+import Checkbox from "@mui/material/Checkbox";
 import Typography from "@mui/material/Typography";
 import { CategoryHeader } from "@shared/ui/CategoryHeader";
 import { DeviceRow } from "@shared/ui/DeviceRow";
@@ -57,6 +58,7 @@ export default function PayloadSchema() {
     direction: SortDirection;
   }>({ key: null, direction: "asc" });
   const [profile, setProfile] = useState<string>("");
+  const [perInstallation, setPerInstallation] = useState<boolean>(false);
   const [schemaRows, setSchemaRows] = useState<
     Record<
       string,
@@ -112,6 +114,8 @@ export default function PayloadSchema() {
     if (!profile) return;
     getSensorProfileConfig(profile).then((eui) => {
       setSensorProfileConfig(eui);
+
+      setPerInstallation(sensorProfileConfig?.configurableSchema ?? false);
     });
   }, [profile]);
 
@@ -120,7 +124,7 @@ export default function PayloadSchema() {
 
     getDeviceEUI(profile)
       .then((eui) => {
-        const finalEui = eui ?? "b000000000000001";
+        const finalEui = eui ?? "b000000000000001"; //TODO: Get actual eui
         //setDeviceEui(finalEui);
 
         return getPayloadTags(finalEui);
@@ -152,11 +156,28 @@ export default function PayloadSchema() {
           <DropDownSelect
             options={profileOptions}
             value={profile}
-            onChange={() => setProfile("f0000000-0000-0000-0000-000000000001")}
+            onChange={() => setProfile("f0000000-0000-0000-0000-000000000001")} //TODO: Get actual profile.
           />
         </Box>
         <br />
         {profile.length ? (
+          <>
+            <Typography>
+              This profile requires per-installation configuration
+            </Typography>
+            <Checkbox
+              checked={perInstallation}
+              onChange={(_, checked) => {
+                setPerInstallation(checked);
+              }}
+              slotProps={{
+                input: { "aria-label": "controlled" },
+              }}
+            />
+          </>
+        ) : null}
+
+        {!perInstallation ? (
           <>
             <CategoryHeader
               categories={payloadDetails}
