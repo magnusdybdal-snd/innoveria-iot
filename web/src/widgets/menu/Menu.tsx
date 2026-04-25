@@ -251,9 +251,11 @@ export default function Menu(menuProps: MenuProps) {
         </List>
         <Box sx={{ p: 2, display: "flex", justifyContent: "space-between" }}>
           <Button
-            component={RouterLink}
-            to="/Login"
-            onClick={() => localStorage.clear()}
+            onClick={() => {
+              localStorage.removeItem("access_token");
+              localStorage.removeItem("refresh_token");
+              window.location.href = "/Login";
+            }}
             variant="outlined"
             sx={{
               backgroundColor: "secondary.main",
