@@ -71,6 +71,7 @@ func (s *CompanyServiceImpl) IssueERPAgentToken(ctx context.Context, companyID s
 
 	token, err := s.generateERPAgentRuntimeToken(companyID)
 	if err != nil {
+		slog.Error("issue erp agent token failed", "error", err)
 		return "", err
 	}
 
