@@ -16,10 +16,7 @@ import { getSensorMetrics } from "@entities/sensor/api";
 import { getDeviceEUI } from "@entities/sensor/api/getDeviceEUI.ts";
 import { getSensorProfileConfig } from "@entities/sensor/api/getSensorProfileConfig.ts";
 import { putSensorMetrics } from "@entities/sensor/api/putSensorMetrics.ts";
-import type {
-  SensorProfileApiResponse,
-  SensorProfileConfigApiResponse,
-} from "@entities/sensor/model/sensorSchema.ts";
+import type { SensorProfileApiResponse } from "@entities/sensor/model/sensorSchema.ts";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Checkbox from "@mui/material/Checkbox";
@@ -50,8 +47,6 @@ export default function PayloadSchema() {
   const [measurementTypes, setMeasurementTypes] = useState<
     MeasurementTypeApiResponse[]
   >([]);
-  const [sensorProfileConfig, setSensorProfileConfig] =
-    useState<SensorProfileConfigApiResponse | null>(null);
   const { sensors } = useSensors();
   const [payloadKeys, setPayloadKeys] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -132,8 +127,6 @@ export default function PayloadSchema() {
   useEffect(() => {
     if (!profile) return;
     getSensorProfileConfig(profile).then((eui) => {
-      setSensorProfileConfig(eui);
-
       setPerInstallation(eui?.configurableSchema ?? false);
     });
   }, [profile]);
@@ -195,11 +188,6 @@ export default function PayloadSchema() {
       <PageContent>
         <SubPageHeader title="Payload schema" />
         <PageDivider />
-        {sensorProfileConfig?.chirpstackProfileId}
-        <br />
-        {sensorProfileConfig?.configurableSchema ? "true" : "false"}
-        <br />
-        <br />
         <Typography>Select a sensor profile</Typography>
         <Box sx={{ width: 200 }}>
           <DropDownSelect
