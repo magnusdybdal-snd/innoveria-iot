@@ -4,7 +4,6 @@ import { API_ROUTES } from "@shared/api/routes";
 
 type RawCompany = {
   id?: string;
-  company_id?: string;
   name: string;
   address: string;
   created_at: string;
@@ -28,7 +27,7 @@ export const getCompanies = async (): Promise<CompanyApiResponse[]> => {
   );
 
   return (data.companies ?? []).map((s) => {
-    const companyId = s.id ?? s.company_id ?? "";
+    const companyId = s.id ?? "";
 
     return {
       companyId,
