@@ -253,6 +253,7 @@ export default function Menu(menuProps: MenuProps) {
           <Button
             component={RouterLink}
             to="/Login"
+            onClick={() => localStorage.clear()}
             variant="outlined"
             sx={{
               backgroundColor: "secondary.main",

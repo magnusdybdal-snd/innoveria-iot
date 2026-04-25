@@ -23,10 +23,15 @@ import { ThemeContext } from "@shared/config/theme/themeContext";
 export default function Root() {
   // Fetch the current user once on mount and share via UserContext
   const [user, setUser] = useState<CurrentUserApiResponse | null>(null);
-  const [userLoading, setUserLoading] = useState(true);
+  const [userLoading, setUserLoading] = useState(
+    () => !!localStorage.getItem("access_token"),
+  );
   const [userError, setUserError] = useState<Error | null>(null);
 
   useEffect(() => {
+    if (!localStorage.getItem("access_token")) {
+      return;
+    }
     getUser()
       .then(setUser)
       .catch((err: unknown) => {
