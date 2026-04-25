@@ -17,6 +17,7 @@ import (
 // @Param		device_eui	query	string	true	"DeviceEUI"
 // @Success		200		{object}	domain.SensorMeasurement
 // @Failure		400
+// @Failure		401
 // @Failure		404
 // @Failure		500
 // @Router		/latest [get]
@@ -24,7 +25,7 @@ func HandleLatestMeasurement(svc domain.MeasurementService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		auth, err := authctx.FromRequest(r)
 		if err != nil {
-			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
 			return
 		}
 

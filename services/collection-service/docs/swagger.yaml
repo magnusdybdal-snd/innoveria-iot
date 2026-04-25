@@ -93,6 +93,8 @@ paths:
             $ref: '#/definitions/domain.SensorMeasurement'
         "400":
           description: Bad Request
+        "401":
+          description: Unauthorized
         "404":
           description: Not Found
         "500":
@@ -129,6 +131,8 @@ paths:
             type: array
         "400":
           description: Bad Request
+        "401":
+          description: Unauthorized
         "500":
           description: Internal Server Error
       summary: Get measurements by time range

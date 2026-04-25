@@ -3,11 +3,9 @@ package domain
 import (
 	"context"
 	"time"
-)
 
-// RoleType represents the authorization role assigned to a user.
-// Role string values are defined in pkg/authctx as the single source of truth.
-type RoleType string
+	"innoveria-iot/pkg/roles"
+)
 
 // User is the domain model for auth users.
 type User struct {
@@ -16,7 +14,7 @@ type User struct {
 	Name         string
 	Email        string
 	PasswordHash string
-	Role         RoleType
+	Role         roles.RoleType
 	LastLoggedIn *time.Time
 	CreatedAt    time.Time
 	UpdatedAt    time.Time

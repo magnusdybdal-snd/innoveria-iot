@@ -21,6 +21,7 @@ import (
 // @Tags		gateways
 // @Produce		json
 // @Success		200	{object}	dto.GatewayListResponse
+// @Failure		401
 // @Failure		500
 // @Router		/gateways [get]
 func GetGateways(svc domain.GatewayService) http.HandlerFunc {
@@ -28,7 +29,7 @@ func GetGateways(svc domain.GatewayService) http.HandlerFunc {
 		ctx := r.Context()
 		auth, err := authctx.FromRequest(r)
 		if err != nil {
-			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
 			return
 		}
 
@@ -58,6 +59,7 @@ func GetGateways(svc domain.GatewayService) http.HandlerFunc {
 // @Param		body	body	dto.CreateGatewayRequest	true	"Gateway payload"
 // @Success		201
 // @Failure		400
+// @Failure		401
 // @Failure		500
 // @Router		/gateways [post]
 func PostGateway(svc domain.GatewayService) http.HandlerFunc {
@@ -65,7 +67,7 @@ func PostGateway(svc domain.GatewayService) http.HandlerFunc {
 		ctx := r.Context()
 		auth, err := authctx.FromRequest(r)
 		if err != nil {
-			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
 			return
 		}
 
@@ -105,6 +107,7 @@ func PostGateway(svc domain.GatewayService) http.HandlerFunc {
 // @Param		body	body	dto.UpdateGatewayRequest	true	"Update payload"
 // @Success		204
 // @Failure		400
+// @Failure		401
 // @Failure		404
 // @Failure		500
 // @Router		/gateways/{id} [patch]
@@ -113,7 +116,7 @@ func PatchGateway(svc domain.GatewayService) http.HandlerFunc {
 		ctx := r.Context()
 		auth, err := authctx.FromRequest(r)
 		if err != nil {
-			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
 			return
 		}
 
@@ -170,6 +173,7 @@ func PatchGateway(svc domain.GatewayService) http.HandlerFunc {
 // @Param		id	path	string	true	"Gateway ID"
 // @Success		204
 // @Failure		400
+// @Failure		401
 // @Failure		404
 // @Failure		500
 // @Router		/gateways/{id} [delete]
@@ -178,7 +182,7 @@ func DeleteGateway(svc domain.GatewayService) http.HandlerFunc {
 		ctx := r.Context()
 		auth, err := authctx.FromRequest(r)
 		if err != nil {
-			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
 			return
 		}
 

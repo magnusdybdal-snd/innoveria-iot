@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"innoveria-iot/pkg/authctx"
+	"innoveria-iot/pkg/roles"
 )
 
 // TestFromRequest tests that FromRequest correctly extracts all three headers.
@@ -13,28 +14,28 @@ func TestFromRequest(t *testing.T) {
 		name      string
 		userID    string
 		companyID string
-		role      string
+		role      roles.RoleType
 		wantErr   bool
 	}{
 		{
 			name:      "all headers present",
 			userID:    "user-123",
 			companyID: "company-456",
-			role:      authctx.RolePlatformAdmin,
+			role:      roles.PlatformAdmin,
 			wantErr:   false,
 		},
 		{
 			name:      "missing user ID header",
 			userID:    "",
 			companyID: "company-456",
-			role:      authctx.RolePlatformAdmin,
+			role:      roles.PlatformAdmin,
 			wantErr:   true,
 		},
 		{
 			name:      "missing company ID header",
 			userID:    "user-123",
 			companyID: "",
-			role:      authctx.RolePlatformAdmin,
+			role:      roles.PlatformAdmin,
 			wantErr:   true,
 		},
 		{
@@ -64,7 +65,7 @@ func TestFromRequest(t *testing.T) {
 				r.Header.Set("X-Auth-Company-Id", tt.companyID)
 			}
 			if tt.role != "" {
-				r.Header.Set("X-Auth-Role", tt.role)
+				r.Header.Set("X-Auth-Role", string(tt.role))
 			}
 
 			auth, err := authctx.FromRequest(r)
@@ -96,17 +97,17 @@ func TestFromRequest(t *testing.T) {
 func TestIsAdmin(t *testing.T) {
 	tests := []struct {
 		name string
-		role string
+		role roles.RoleType
 		want bool
 	}{
 		{
 			name: "platform admin returns true",
-			role: authctx.RolePlatformAdmin,
+			role: roles.PlatformAdmin,
 			want: true,
 		},
 		{
 			name: "user returns false",
-			role: authctx.RoleUser,
+			role: roles.User,
 			want: false,
 		},
 		{

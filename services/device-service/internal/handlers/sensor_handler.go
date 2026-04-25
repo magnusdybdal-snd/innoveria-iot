@@ -22,6 +22,7 @@ import (
 // @Param       production_resource_id    query    string    false    "Production resource"
 // @Success 	200 {object} dto.SensorListResponse
 // @Failure 	400
+// @Failure		401
 // @Failure 	500
 // @Router 		/sensors [get]
 func GetSensors(svc domain.SensorService) http.HandlerFunc {
@@ -29,7 +30,7 @@ func GetSensors(svc domain.SensorService) http.HandlerFunc {
 		ctx := r.Context()
 		auth, err := authctx.FromRequest(r)
 		if err != nil {
-			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
 			return
 		}
 
@@ -72,6 +73,7 @@ func GetSensors(svc domain.SensorService) http.HandlerFunc {
 // @Param		body   body   dto.CreateSensorRequest   true   "Sensor payload"
 // @Success		201
 // @Failure		400
+// @Failure		401
 // @Failure 	500
 // @Router		/sensors [post]
 func PostSensor(svc domain.SensorService) http.HandlerFunc {
@@ -79,7 +81,7 @@ func PostSensor(svc domain.SensorService) http.HandlerFunc {
 		ctx := r.Context()
 		auth, err := authctx.FromRequest(r)
 		if err != nil {
-			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
 			return
 		}
 
@@ -122,6 +124,7 @@ func PostSensor(svc domain.SensorService) http.HandlerFunc {
 // @Param		body   body   dto.UpdateSensorRequest   true   "Update payload"
 // @Success		204
 // @Failure		400
+// @Failure     401
 // @Failure		404
 // @Failure		500
 // @Router		/sensors/{id} [patch]
@@ -130,7 +133,7 @@ func PatchSensor(svc domain.SensorService) http.HandlerFunc {
 		ctx := r.Context()
 		auth, err := authctx.FromRequest(r)
 		if err != nil {
-			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
 			return
 		}
 
@@ -187,6 +190,7 @@ func PatchSensor(svc domain.SensorService) http.HandlerFunc {
 // @Param		id		path	string		true	"SensorID"
 // @Success		204
 // @Failure		400
+// @Failure     401
 // @Failure		404
 // @Failure		500
 // @Router		/sensors/{id} [delete]
@@ -195,7 +199,7 @@ func DeleteSensor(svc domain.SensorService) http.HandlerFunc {
 		ctx := r.Context()
 		auth, err := authctx.FromRequest(r)
 		if err != nil {
-			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
 			return
 		}
 
