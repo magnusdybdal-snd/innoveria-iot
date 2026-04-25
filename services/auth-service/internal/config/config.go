@@ -19,6 +19,7 @@ type Config struct {
 	JWTIssuer          string
 	JWTAccessTTL       time.Duration
 	JWTRefreshTokenTTL time.Duration
+	ERPAgentTokenTTL   time.Duration
 	EnableSwagger      bool
 }
 
@@ -55,6 +56,12 @@ func Load() *Config {
 		os.Exit(1)
 	}
 
+	erpAgentTokenTTL, err := time.ParseDuration(env.Get("ERP_AGENT_TOKEN_TTL", "8760h"))
+	if err != nil {
+		slog.Error("invalid ERP_AGENT_TOKEN_TTL", "error", err)
+		os.Exit(1)
+	}
+
 	return &Config{
 		Addr: ":" + env.Get("PORT", "8080"),
 		DB_URL: fmt.Sprintf(
@@ -71,6 +78,7 @@ func Load() *Config {
 		JWTIssuer:          env.Get("JWT_ISSUER", "auth-service"),
 		JWTAccessTTL:       jwtAccessTTL,
 		JWTRefreshTokenTTL: jwtRefreshTTL,
+		ERPAgentTokenTTL:   erpAgentTokenTTL,
 		EnableSwagger:      env.GetBool("ENABLE_SWAGGER", false),
 	}
 }

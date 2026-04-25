@@ -16,8 +16,8 @@ type Company struct {
 
 // RegisterCompanyResult holds the created company and initial ERP agent credential.
 type RegisterCompanyResult struct {
-	Company            Company
-	ERPAgentCredential ERPAgentCredential
+	Company       Company
+	ERPAgentToken string
 }
 
 // CompanyRepo defines the company repository needed by the auth domain.
