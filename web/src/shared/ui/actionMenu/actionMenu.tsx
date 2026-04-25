@@ -29,6 +29,7 @@ export function ActionMenu({ items, icon }: ActionMenuProps) {
   const [anchor, setAnchor] = useState<null | HTMLElement>(null);
 
   const handleOpen = (e: React.MouseEvent<HTMLElement>) => {
+    e.stopPropagation();
     setAnchor(e.currentTarget);
   };
 

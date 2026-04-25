@@ -12,7 +12,6 @@ export interface FactoryApiResponse {
 }
 
 export interface CreateFactoryRequest {
-  companyId: string;
   name: string;
   address: string;
 }

@@ -16,6 +16,7 @@ export interface AddDeviceProps {
   profileOptions?: { id: string; name: string }[];
   factoryOptions?: { id: string; name: string }[];
   factoryAreaOptions?: { id: string; name: string }[];
+  onFactoryChange?: (factoryId: string) => void;
   onAdd: (sensor: {
     name: string;
     deviceEui: string;
@@ -59,6 +60,7 @@ export function AddDevice(props: AddDeviceProps) {
     profileOptions = [],
     factoryOptions = [],
     factoryAreaOptions = [],
+    onFactoryChange,
     submitError,
   } = props;
   const [values, setValues] = useState<Record<string, string>>({});
@@ -66,6 +68,9 @@ export function AddDevice(props: AddDeviceProps) {
   const [lengthErrors, setLengthErrors] = useState<Record<string, boolean>>({});
 
   const handleClose = () => {
+    setValues({});
+    setFillError(false);
+    setLengthErrors({});
     onClose();
   };
 
@@ -138,9 +143,18 @@ export function AddDevice(props: AddDeviceProps) {
           lengthErrors={lengthErrors}
           lengthErrorMessages={inputLengthError}
           inputHints={inputHints}
-          onChange={(option, value) =>
-            setValues((prev) => ({ ...prev, [option]: value }))
-          }
+          onChange={(option, value) => {
+            if (option === "Factory") {
+              setValues((prev) => ({
+                ...prev,
+                Factory: value,
+                "Factory area": "",
+              }));
+              onFactoryChange?.(value);
+            } else {
+              setValues((prev) => ({ ...prev, [option]: value }));
+            }
+          }}
         />
         {fillError && (
           <Typography color="error" mt={1}>
