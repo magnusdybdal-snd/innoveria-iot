@@ -30,6 +30,7 @@ serviceClient.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
+    if (!originalRequest) return Promise.reject(error);
 
     const isRefreshRequest = originalRequest.url?.includes("/refresh");
     const isLoginRequest = originalRequest.url?.includes("/login");
@@ -47,6 +48,8 @@ serviceClient.interceptors.response.use(
 
     // If refresh fails → logout
     if (error.response?.status === 401 && isRefreshRequest) {
+      isRefreshing = false;
+      refreshPromise = null;
       localStorage.clear();
       window.location.href = "/Login";
       return Promise.reject(error);
