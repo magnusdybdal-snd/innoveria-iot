@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 
@@ -66,6 +68,7 @@ export default function Factories() {
   const {
     factories,
     isLoading: factoriesLoading,
+    error: factoriesError,
     refetch: refetchFactories,
   } = useFactories();
   const {
@@ -202,6 +205,20 @@ export default function Factories() {
             onSort={handleSort}
           >
             {factoriesLoading && <p>Loading...</p>}
+            {factoriesError && (
+              <Box sx={{ mt: 2 }}>
+                <Typography variant="body2" sx={{ color: "error.main", mb: 1 }}>
+                  Failed to load factories. {factoriesError.message}
+                </Typography>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  onClick={refetchFactories}
+                >
+                  Retry
+                </Button>
+              </Box>
+            )}
             {sorted.map((factory) => (
               <DeviceRow key={factory.id}>
                 <FactoryInfo
@@ -215,7 +232,7 @@ export default function Factories() {
               </DeviceRow>
             ))}
           </CategoryHeader>
-          {!factoriesLoading && sorted.length === 0 && (
+          {!factoriesLoading && !factoriesError && sorted.length === 0 && (
             <NotFoundCard page="factories" isEmpty={true} />
           )}
         </PageContent>
