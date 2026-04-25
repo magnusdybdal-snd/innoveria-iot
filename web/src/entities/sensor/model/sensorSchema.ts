@@ -66,6 +66,10 @@ export interface SensorProfileConfigApiResponse {
   configurableSchema: boolean;
 }
 
+export interface SaveSensorProfileConfigListRequest {
+  configurableSchema: boolean;
+}
+
 export interface SaveSensorMetricRequest {
   measurementType: string;
   payloadKey: string;

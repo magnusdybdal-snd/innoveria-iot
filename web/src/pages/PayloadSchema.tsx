@@ -16,6 +16,7 @@ import { getSensorMetrics } from "@entities/sensor/api";
 import { getDeviceEUI } from "@entities/sensor/api/getDeviceEUI.ts";
 import { getSensorProfileConfig } from "@entities/sensor/api/getSensorProfileConfig.ts";
 import { putSensorMetrics } from "@entities/sensor/api/putSensorMetrics.ts";
+import { putSensorProfileConfig } from "@entities/sensor/api/putSensorProfileConfig.ts";
 import type { SensorProfileApiResponse } from "@entities/sensor/model/sensorSchema.ts";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -69,7 +70,7 @@ export default function PayloadSchema() {
 
   const profileOptions = sensorProfiles.map((p) => ({
     id: p.id,
-    name: p.id, // or p.name if you have it
+    name: p.name,
   }));
 
   // State for controlling success snackbar
@@ -207,6 +208,10 @@ export default function PayloadSchema() {
                 checked={perInstallation}
                 onChange={(_, checked) => {
                   setPerInstallation(checked);
+                  putSensorProfileConfig(
+                    { configurableSchema: checked },
+                    profile,
+                  );
                 }}
                 slotProps={{
                   input: { "aria-label": "controlled" },
