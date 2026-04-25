@@ -57,7 +57,7 @@ func (s *CompanyServiceImpl) generateERPAgentRuntimeToken(companyID string) (str
 		"company_id": companyID,
 		"token_use":  "erp_agent_runtime",
 		"iss":        s.jwtIssuer,
-		"aud":        "erp-ingest",
+		"aud":        "erp-agent-service",
 		"iat":        now.Unix(),
 		"exp":        expiresAt.Unix(),
 	}
