@@ -111,7 +111,7 @@ export default function PayloadSchema() {
         {sensorProfileConfig?.configurableSchema ? "true" : "false"}
         <br />
         <br />
-        <Typography>Select sensor profile</Typography>
+        <Typography>Select a sensor profile</Typography>
         <Select
           value={profile}
           onChange={(e) => {
@@ -126,27 +126,31 @@ export default function PayloadSchema() {
           ))}
         </Select>
         <br />
-        <CategoryHeader
-          categories={payloadDetails}
-          columns={payloadDetails.length}
-          sortConfig={sortConfig}
-          onSort={handleSort}
-          half={true}
-        >
-          {isLoading && <p>Loading...</p>}
-          {/*TODO: make a better looking loading indicator */}
-          {payloadKeys.map((payloadKey) => (
-            <DeviceRow key={payloadKey}>
-              <FixedSensorSchema
-                payloadKey={payloadKey}
-                measurementTypes={measurementTypes}
-              />
-            </DeviceRow>
-          ))}
-        </CategoryHeader>
-        {!isLoading && payloadKeys.length === 0 && (
-          <NotFoundCard page="measure types" isEmpty={true} />
-        )}
+        {profile.length ? (
+          <>
+            <CategoryHeader
+              categories={payloadDetails}
+              columns={payloadDetails.length}
+              sortConfig={sortConfig}
+              onSort={handleSort}
+              half={true}
+            >
+              {isLoading && <p>Loading...</p>}
+              {/*TODO: make a better looking loading indicator */}
+              {payloadKeys.map((payloadKey) => (
+                <DeviceRow key={payloadKey}>
+                  <FixedSensorSchema
+                    payloadKey={payloadKey}
+                    measurementTypes={measurementTypes}
+                  />
+                </DeviceRow>
+              ))}
+            </CategoryHeader>
+            {!isLoading && payloadKeys.length === 0 && (
+              <NotFoundCard page="measure types" isEmpty={true} />
+            )}
+          </>
+        ) : null}
         <AppSnackbar
           open={snackbar?.open ?? false}
           message={snackbar?.message ?? ""}
