@@ -65,3 +65,19 @@ export interface SensorProfileConfigApiResponse {
   chirpstackProfileId: string;
   configurableSchema: boolean;
 }
+
+export interface SaveSensorMetricRequest {
+  measurementType: string;
+  payloadKey: string;
+  unit: string;
+}
+
+export interface SaveSensorMetricListRequest {
+  metrics: SaveSensorMetricRequest[];
+}
+
+export interface SensorMetricApiResponse {
+  measurementType: string;
+  payloadKey: string;
+  unit: string;
+}

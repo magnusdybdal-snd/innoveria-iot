@@ -12,8 +12,10 @@ import {
   putPayloadSchema,
 } from "@entities/payloadSchema";
 import { getSensorProfiles, useSensors } from "@entities/sensor";
+import { getSensorMetrics } from "@entities/sensor/api";
 import { getDeviceEUI } from "@entities/sensor/api/getDeviceEUI.ts";
 import { getSensorProfileConfig } from "@entities/sensor/api/getSensorProfileConfig.ts";
+import { putSensorMetrics } from "@entities/sensor/api/putSensorMetrics.ts";
 import type {
   SensorProfileApiResponse,
   SensorProfileConfigApiResponse,
@@ -51,7 +53,6 @@ export default function PayloadSchema() {
   const [sensorProfileConfig, setSensorProfileConfig] =
     useState<SensorProfileConfigApiResponse | null>(null);
   const { sensors } = useSensors();
-  //const [deviceEui, setDeviceEui] = useState<string>("");
   const [payloadKeys, setPayloadKeys] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState<{
@@ -95,6 +96,22 @@ export default function PayloadSchema() {
       });
   };
 
+  const handleSaveConfigurable = () => {
+    const metrics = Object.entries(schemaRows).map(([payloadKey, value]) => ({
+      payloadKey,
+      measurementType: value.measurementType,
+      unit: value.unit,
+    }));
+
+    putSensorMetrics({ metrics }, sensor)
+      .then(() => {
+        show("Sensor metrics saved successfully", SNACKBAR_SEVERITY.SUCCESS);
+      })
+      .catch(() => {
+        show("Failed to save sensor metrics", SNACKBAR_SEVERITY.ERROR);
+      });
+  };
+
   useEffect(() => {
     getMeasurementTypesAll()
       .then((data) => {
@@ -117,22 +134,43 @@ export default function PayloadSchema() {
     getSensorProfileConfig(profile).then((eui) => {
       setSensorProfileConfig(eui);
 
-      setPerInstallation(sensorProfileConfig?.configurableSchema ?? false);
+      setPerInstallation(eui?.configurableSchema ?? false);
     });
   }, [profile]);
 
   useEffect(() => {
-    if (!profile) return;
+    if (!profile || perInstallation) return;
 
     getDeviceEUI(profile)
       .then((eui) => {
-        const finalEui = eui ?? "b000000000000001"; //TODO: Get actual eui
-        //setDeviceEui(finalEui);
-
+        const finalEui = eui ?? "b000000000000001"; //TODO: Get actual eui.
         return getPayloadTags(finalEui);
       })
-      .then(setPayloadKeys);
-  }, [profile]);
+      .then((keys) => {
+        setPayloadKeys(keys);
+        setSchemaRows({});
+      });
+  }, [profile, perInstallation]);
+
+  useEffect(() => {
+    if (!sensor || !perInstallation) return;
+
+    getSensorMetrics(sensor).then((metrics) => {
+      setPayloadKeys(metrics.map((m) => m.payloadKey));
+
+      setSchemaRows(
+        Object.fromEntries(
+          metrics.map((m) => [
+            m.payloadKey,
+            {
+              measurementType: m.measurementType,
+              unit: m.unit,
+            },
+          ]),
+        ),
+      );
+    });
+  }, [sensor, perInstallation]);
 
   function handleSort(column: string) {
     const col = column as MeasurementTypeSortKey;
@@ -146,6 +184,11 @@ export default function PayloadSchema() {
   const filteredSensors = sensors.filter((sensor) => {
     return sensor.sensorProfileId === profile;
   });
+
+  const filteredSensorOptions = filteredSensors.map((s) => ({
+    id: s.deviceEui,
+    name: s.name,
+  }));
 
   return (
     <div className="flex h-screen">
@@ -229,13 +272,63 @@ export default function PayloadSchema() {
                 )}
               </>
             ) : (
-              <Box sx={{ width: 200 }}>
-                <DropDownSelect
-                  options={filteredSensors}
-                  value={sensor}
-                  onChange={(e) => setSensor(e)}
-                />
-              </Box>
+              <>
+                <Box sx={{ width: 200 }}>
+                  <DropDownSelect
+                    options={filteredSensorOptions}
+                    value={sensor}
+                    onChange={(e) => {
+                      setSensor(e);
+                    }}
+                  />
+                </Box>
+                {sensor.length ? (
+                  <>
+                    <CategoryHeader
+                      categories={payloadDetails}
+                      columns={payloadDetails.length}
+                      sortConfig={sortConfig}
+                      onSort={handleSort}
+                      half={true}
+                    >
+                      {isLoading && <p>Loading...</p>}
+                      {/*TODO: make a better looking loading indicator */}
+                      {payloadKeys.map((payloadKey) => (
+                        <DeviceRow key={payloadKey}>
+                          <FixedSensorSchema
+                            payloadKey={payloadKey}
+                            measurementTypes={measurementTypes}
+                            value={schemaRows[payloadKey]}
+                            onChange={(value) => {
+                              setSchemaRows((prev) => ({
+                                ...prev,
+                                [payloadKey]: value,
+                              }));
+                            }}
+                          />
+                        </DeviceRow>
+                      ))}
+                    </CategoryHeader>
+                    <Button
+                      variant="outlined"
+                      sx={{
+                        backgroundColor: "primary.main",
+                        color: "primary.dark",
+                        "&:hover": { backgroundColor: "primary.main" },
+                        borderRadius: 2,
+                        textTransform: "none",
+                        fontSize: 15,
+                      }}
+                      onClick={handleSaveConfigurable}
+                    >
+                      Save
+                    </Button>
+                    {!isLoading && payloadKeys.length === 0 && (
+                      <NotFoundCard page="measure types" isEmpty={true} />
+                    )}
+                  </>
+                ) : null}
+              </>
             )}
           </>
         ) : null}
