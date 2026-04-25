@@ -3,7 +3,8 @@ import { apiRequest, serviceClient } from "@shared/api";
 import { API_ROUTES } from "@shared/api/routes";
 
 type RawCompany = {
-  company_id: string;
+  id?: string;
+  company_id?: string;
   name: string;
   address: string;
   created_at: string;
@@ -16,7 +17,7 @@ type RawCompanyListApiResponse = {
 };
 
 /**
- * Fetches all companies from the collection-service via the API company.
+ * Fetches all companies from the auth-service API.
  * @returns Array of CompanyApiResponse objects
  */
 export const getCompanies = async (): Promise<CompanyApiResponse[]> => {
@@ -26,11 +27,15 @@ export const getCompanies = async (): Promise<CompanyApiResponse[]> => {
     "GET",
   );
 
-  return (data.companies ?? []).map((s) => ({
-    companyId: s.company_id,
-    name: s.name,
-    address: s.address,
-    createdAt: s.created_at,
-    updatedAt: s.updated_at,
-  }));
+  return (data.companies ?? []).map((s) => {
+    const companyId = s.id ?? s.company_id ?? "";
+
+    return {
+      companyId,
+      name: s.name,
+      address: s.address,
+      createdAt: s.created_at,
+      updatedAt: s.updated_at,
+    };
+  });
 };

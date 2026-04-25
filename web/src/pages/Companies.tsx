@@ -110,6 +110,11 @@ export default function Companies() {
   };
 
   const handleOpenERPTokenDialog = (companyId: string, companyName: string) => {
+    if (!companyId) {
+      show("Company ID is missing", SNACKBAR_SEVERITY.ERROR);
+      return;
+    }
+
     setSelectedCompany({ companyId, name: companyName });
     setERPToken(null);
     setERPTokenError(null);
