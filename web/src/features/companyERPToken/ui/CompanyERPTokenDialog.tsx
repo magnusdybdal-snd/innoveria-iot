@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -12,6 +14,15 @@ const fieldSx = {
     "& fieldset": { borderColor: "primary.main" },
     "&:hover fieldset": { borderColor: "primary.main" },
     "&.Mui-focused fieldset": { borderColor: "primary.main" },
+  },
+  "& .MuiInputBase-input": {
+    fontSize: "0.72rem",
+    fontFamily: "monospace",
+    lineHeight: 1.2,
+    whiteSpace: "nowrap",
+    overflowX: "auto",
+    textOverflow: "clip",
+    scrollbarWidth: "thin",
   },
 };
 
@@ -49,6 +60,13 @@ export function CompanyERPTokenDialog({
   onGenerate,
   onCopy,
 }: CompanyERPTokenDialogProps) {
+  const [isTokenVisible, setIsTokenVisible] = useState(false);
+
+  const displayedToken =
+    token && !isTokenVisible
+      ? "Token hidden. Click Show token or use Copy token."
+      : (token ?? "");
+
   return (
     <Dialog
       open={open}
@@ -70,19 +88,22 @@ export function CompanyERPTokenDialog({
         ERP token for {companyName}
       </DialogTitle>
       <DialogContent>
-        <Typography variant="body2" color="primary.main" mb={0.5}>
+        <Typography variant="caption" color="primary.main" mb={0.5}>
           ERP agent token
         </Typography>
         <TextField
           sx={fieldSx}
           fullWidth
-          multiline
-          minRows={3}
-          value={token ?? ""}
+          size="small"
+          value={displayedToken}
           placeholder={
             isLoading ? "Generating token..." : "No token generated yet"
           }
-          slotProps={{ input: { readOnly: true } }}
+          slotProps={{
+            input: {
+              readOnly: true,
+            },
+          }}
         />
         <Typography
           variant="caption"
@@ -90,7 +111,8 @@ export function CompanyERPTokenDialog({
           mt={1}
           display="block"
         >
-          Store this token securely after copying it.
+          Long tokens can be scrolled horizontally. Store securely after
+          copying.
         </Typography>
         {error && (
           <Typography color="error" mt={1}>
@@ -99,6 +121,16 @@ export function CompanyERPTokenDialog({
         )}
       </DialogContent>
       <DialogActions>
+        <Button
+          sx={{
+            backgroundColor: "primary.main",
+            color: "primary.contrastText",
+          }}
+          onClick={() => setIsTokenVisible((prev) => !prev)}
+          disabled={!token || isLoading}
+        >
+          {isTokenVisible ? "Hide token" : "Show token"}
+        </Button>
         <Button
           sx={{
             backgroundColor: "primary.main",

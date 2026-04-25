@@ -215,22 +215,20 @@ export default function Companies() {
         onAdd={handleAddCompany}
         submitError={addError}
       />
-      <CompanyERPTokenDialog
-        open={selectedCompany !== null}
-        companyName={selectedCompany?.name ?? ""}
-        token={erpToken}
-        isLoading={erpTokenLoading}
-        error={erpTokenError}
-        onClose={closeERPTokenDialog}
-        onGenerate={() => {
-          if (!selectedCompany) {
-            return;
-          }
-
-          generateERPToken(selectedCompany.companyId);
-        }}
-        onCopy={handleCopyERPToken}
-      />
+      {selectedCompany && (
+        <CompanyERPTokenDialog
+          open={true}
+          companyName={selectedCompany.name}
+          token={erpToken}
+          isLoading={erpTokenLoading}
+          error={erpTokenError}
+          onClose={closeERPTokenDialog}
+          onGenerate={() => {
+            generateERPToken(selectedCompany.companyId);
+          }}
+          onCopy={handleCopyERPToken}
+        />
+      )}
       <AppSnackbar
         open={snackbar?.open ?? false}
         message={snackbar?.message ?? ""}
