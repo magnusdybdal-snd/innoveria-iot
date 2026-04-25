@@ -11,7 +11,7 @@ import {
   getPayloadTags,
   putPayloadSchema,
 } from "@entities/payloadSchema";
-import { getSensorProfiles } from "@entities/sensor";
+import { getSensorProfiles, useSensors } from "@entities/sensor";
 import { getDeviceEUI } from "@entities/sensor/api/getDeviceEUI.ts";
 import { getSensorProfileConfig } from "@entities/sensor/api/getSensorProfileConfig.ts";
 import type {
@@ -50,6 +50,7 @@ export default function PayloadSchema() {
   >([]);
   const [sensorProfileConfig, setSensorProfileConfig] =
     useState<SensorProfileConfigApiResponse | null>(null);
+  const { sensors } = useSensors();
   //const [deviceEui, setDeviceEui] = useState<string>("");
   const [payloadKeys, setPayloadKeys] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -58,6 +59,7 @@ export default function PayloadSchema() {
     direction: SortDirection;
   }>({ key: null, direction: "asc" });
   const [profile, setProfile] = useState<string>("");
+  const [sensor, setSensor] = useState<string>("");
   const [perInstallation, setPerInstallation] = useState<boolean>(false);
   const [schemaRows, setSchemaRows] = useState<
     Record<
@@ -141,6 +143,10 @@ export default function PayloadSchema() {
     );
   }
 
+  const filteredSensors = sensors.filter((sensor) => {
+    return sensor.sensorProfileId === profile;
+  });
+
   return (
     <div className="flex h-screen">
       <PageContent>
@@ -162,70 +168,78 @@ export default function PayloadSchema() {
         <br />
         {profile.length ? (
           <>
-            <Typography>
-              This profile requires per-installation configuration
-            </Typography>
-            <Checkbox
-              checked={perInstallation}
-              onChange={(_, checked) => {
-                setPerInstallation(checked);
-              }}
-              slotProps={{
-                input: { "aria-label": "controlled" },
-              }}
-            />
+            <Box display="flex" alignItems="center" gap={1}>
+              <Typography>
+                This profile requires per-installation configuration:
+              </Typography>
+              <Checkbox
+                checked={perInstallation}
+                onChange={(_, checked) => {
+                  setPerInstallation(checked);
+                }}
+                slotProps={{
+                  input: { "aria-label": "controlled" },
+                }}
+              />
+            </Box>
+
+            {!perInstallation ? (
+              <>
+                <CategoryHeader
+                  categories={payloadDetails}
+                  columns={payloadDetails.length}
+                  sortConfig={sortConfig}
+                  onSort={handleSort}
+                  half={true}
+                >
+                  {isLoading && <p>Loading...</p>}
+                  {/*TODO: make a better looking loading indicator */}
+                  {payloadKeys.map((payloadKey) => (
+                    <DeviceRow key={payloadKey}>
+                      <FixedSensorSchema
+                        payloadKey={payloadKey}
+                        measurementTypes={measurementTypes}
+                        value={schemaRows[payloadKey]}
+                        onChange={(value) => {
+                          setSchemaRows((prev) => ({
+                            ...prev,
+                            [payloadKey]: value,
+                          }));
+                        }}
+                      />
+                    </DeviceRow>
+                  ))}
+                </CategoryHeader>
+                <Button
+                  variant="outlined"
+                  sx={{
+                    backgroundColor: "primary.main",
+                    color: "primary.dark",
+                    "&:hover": { backgroundColor: "primary.main" },
+                    borderRadius: 2,
+                    textTransform: "none",
+                    fontSize: 15,
+                  }}
+                  onClick={handleSaveFixed}
+                >
+                  Save
+                </Button>
+                {!isLoading && payloadKeys.length === 0 && (
+                  <NotFoundCard page="measure types" isEmpty={true} />
+                )}
+              </>
+            ) : (
+              <Box sx={{ width: 200 }}>
+                <DropDownSelect
+                  options={filteredSensors}
+                  value={sensor}
+                  onChange={(e) => setSensor(e)}
+                />
+              </Box>
+            )}
           </>
         ) : null}
 
-        {!perInstallation ? (
-          <>
-            <CategoryHeader
-              categories={payloadDetails}
-              columns={payloadDetails.length}
-              sortConfig={sortConfig}
-              onSort={handleSort}
-              half={true}
-            >
-              {isLoading && <p>Loading...</p>}
-              {/*TODO: make a better looking loading indicator */}
-              {payloadKeys.map((payloadKey) => (
-                <DeviceRow key={payloadKey}>
-                  <FixedSensorSchema
-                    payloadKey={payloadKey}
-                    measurementTypes={measurementTypes}
-                    value={schemaRows[payloadKey]}
-                    onChange={(value) => {
-                      setSchemaRows((prev) => ({
-                        ...prev,
-                        [payloadKey]: value,
-                      }));
-                    }}
-                  />
-                </DeviceRow>
-              ))}
-            </CategoryHeader>
-            <Button
-              variant="outlined"
-              sx={{
-                backgroundColor: "primary.main",
-                color: "primary.dark",
-                "&:hover": { backgroundColor: "primary.main" },
-                borderRadius: 2,
-                textTransform: "none",
-                fontSize: 15,
-              }}
-              onClick={handleSaveFixed}
-            >
-              Save
-            </Button>
-          </>
-        ) : (
-          <>
-            {!isLoading && payloadKeys.length === 0 && (
-              <NotFoundCard page="measure types" isEmpty={true} />
-            )}
-          </>
-        )}
         <AppSnackbar
           open={snackbar?.open ?? false}
           message={snackbar?.message ?? ""}
