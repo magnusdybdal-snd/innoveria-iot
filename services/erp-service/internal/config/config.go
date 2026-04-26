@@ -4,6 +4,7 @@ package config
 import (
 	"fmt"
 	"log/slog"
+	"os"
 	"time"
 
 	"innoveria-iot/pkg/env"
@@ -16,7 +17,8 @@ type Config struct {
 	Addr  string
 	DBURL string
 
-	ReconcileInterval time.Duration
+	ReconcileInterval    time.Duration
+	ERP_AGENT_JWT_SECRET string
 	// EnableSwagger bool
 }
 
@@ -43,6 +45,12 @@ func Load() *Config {
 		reconcileInterval = defaultReconcileInterval
 	}
 
+	erpAgentSecret, err := env.Required("ERP_AGENT_JWT_SECRET")
+	if err != nil {
+		slog.Error("invalid erp agent jwt secret", "error", err)
+		os.Exit(1)
+	}
+
 	return &Config{
 		Addr: ":" + env.Get("PORT", "8080"),
 		DBURL: fmt.Sprintf(
@@ -54,6 +62,7 @@ func Load() *Config {
 			dbName,
 			sslmode,
 		),
-		ReconcileInterval: reconcileInterval,
+		ReconcileInterval:    reconcileInterval,
+		ERP_AGENT_JWT_SECRET: erpAgentSecret,
 	}
 }
