@@ -8,6 +8,7 @@ import (
 
 	"innoveria-iot/device-service/internal/domain"
 	"innoveria-iot/device-service/internal/handlers/dto"
+	"innoveria-iot/pkg/authctx"
 	"innoveria-iot/pkg/json"
 )
 
@@ -49,7 +50,7 @@ func GetSensorMetrics(svc domain.SensorMetricService) http.HandlerFunc {
 	}
 }
 
-// PutSensorMetrics saves operator-defined metric labels for a configurable sensor.
+// PutSensorMetrics saves operator-defined metric labels for a configurable sensor. Admin only.
 //
 // @Summary		Save metric labels for a sensor
 // @Tags		sensor-metrics
@@ -58,6 +59,8 @@ func GetSensorMetrics(svc domain.SensorMetricService) http.HandlerFunc {
 // @Param		body	body	dto.UpsertSensorMetricsRequest	true	"Metrics to save"
 // @Success		204
 // @Failure		400
+// @Failure		401
+// @Failure		403
 // @Failure		404
 // @Failure		422
 // @Failure		500
@@ -65,6 +68,16 @@ func GetSensorMetrics(svc domain.SensorMetricService) http.HandlerFunc {
 func PutSensorMetrics(svc domain.SensorMetricService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
+
+		auth, err := authctx.FromRequest(r)
+		if err != nil {
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
+			return
+		}
+		if !auth.IsAdmin() {
+			json.HandleError(w, http.StatusForbidden, fmt.Errorf("forbidden"), "forbidden")
+			return
+		}
 
 		eui := r.PathValue("eui")
 
