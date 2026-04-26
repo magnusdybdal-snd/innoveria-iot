@@ -1,6 +1,9 @@
 import { useState } from "react";
 
 import { CustomButton } from "@/shared/ui/Button";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
 
 import {
   CompanyInfo,
@@ -52,7 +55,7 @@ const addCompanyDetails: string[] = ["Name", "Address"];
  * @returns The rendered Companies page
  */
 export default function Companies() {
-  const { companies, isLoading, refetch } = useCompanies();
+  const { companies, isLoading, error, refetch } = useCompanies();
   const [addError, setAddError] = useState<string | null>(null);
   const [erpTokenError, setERPTokenError] = useState<string | null>(null);
   const [erpTokenLoading, setERPTokenLoading] = useState(false);
@@ -189,22 +192,33 @@ export default function Companies() {
         >
           {isLoading && <p>Loading...</p>}{" "}
           {/*TODO: make a better looking loading indicator */}
-          {sorted.map((company) => (
-            <DeviceRow key={company.companyId}>
-              <CompanyInfo
-                name={company.name}
-                address={company.address}
-                created_at={formatTimestamp(company.createdAt)}
-                updated_at={formatTimestamp(company.updatedAt)}
-                addUser={addAdminUser}
-                onGenerateERPToken={() =>
-                  handleOpenERPTokenDialog(company.companyId, company.name)
-                }
-              />
-            </DeviceRow>
-          ))}
+          {error ? (
+            <Box sx={{ p: 2 }}>
+              <Typography variant="body2" sx={{ color: "error.main", mb: 1 }}>
+                Failed to load companies. {error.message}
+              </Typography>
+              <Button variant="outlined" size="small" onClick={refetch}>
+                Retry
+              </Button>
+            </Box>
+          ) : (
+            sorted.map((company) => (
+              <DeviceRow key={company.companyId}>
+                <CompanyInfo
+                  name={company.name}
+                  address={company.address}
+                  created_at={formatTimestamp(company.createdAt)}
+                  updated_at={formatTimestamp(company.updatedAt)}
+                  addUser={addAdminUser}
+                  onGenerateERPToken={() =>
+                    handleOpenERPTokenDialog(company.companyId, company.name)
+                  }
+                />
+              </DeviceRow>
+            ))
+          )}
         </CategoryHeader>
-        {!isLoading && sorted.length === 0 && (
+        {!isLoading && !error && sorted.length === 0 && (
           <NotFoundCard page="companies" isEmpty={true} />
         )}
       </PageContent>
