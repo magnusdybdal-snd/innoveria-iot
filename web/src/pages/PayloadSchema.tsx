@@ -52,7 +52,7 @@ export default function PayloadSchema() {
   >([]);
   const { sensors } = useSensors();
   const [payloadKeys, setPayloadKeys] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingKeys, setIsLoadingKeys] = useState(false);
   const [profile, setProfile] = useState<string>("");
   const [sensor, setSensor] = useState<string>("");
   const [perInstallation, setPerInstallation] = useState<boolean>(false);
@@ -113,9 +113,6 @@ export default function PayloadSchema() {
       })
       .catch(() => {
         show("Failed to fetch measurement types", SNACKBAR_SEVERITY.ERROR);
-      })
-      .finally(() => {
-        setIsLoading(false);
       });
   }, []);
 
@@ -135,6 +132,7 @@ export default function PayloadSchema() {
 
     getDeviceEUI(profile)
       .then((eui) => {
+        setIsLoadingKeys(true);
         if (!eui) {
           setPayloadKeys([]);
           setSchemaRows({});
@@ -154,6 +152,7 @@ export default function PayloadSchema() {
             ]),
           ),
         );
+        setIsLoadingKeys(false);
       });
   }, [profile, perInstallation]);
 
@@ -161,6 +160,7 @@ export default function PayloadSchema() {
     if (!sensor || !perInstallation) return;
 
     getSensorMetrics(sensor).then((metrics) => {
+      setIsLoadingKeys(true);
       if (metrics.length > 0) {
         setPayloadKeys(metrics.map((m) => m.payloadKey));
         setSchemaRows(
@@ -177,6 +177,7 @@ export default function PayloadSchema() {
           setSchemaRows({});
         });
       }
+      setIsLoadingKeys(false);
     });
   }, [sensor, perInstallation]);
 
@@ -231,7 +232,7 @@ export default function PayloadSchema() {
                   columns={payloadDetails.length}
                   half={true}
                 >
-                  {isLoading && <p>Loading...</p>}
+                  {isLoadingKeys && <p>Loading...</p>}
                   {/*TODO: make a better looking loading indicator */}
                   {payloadKeys.map((payloadKey) => (
                     <DeviceRow key={payloadKey}>
@@ -263,7 +264,7 @@ export default function PayloadSchema() {
                 >
                   Save
                 </Button>
-                {!isLoading && payloadKeys.length === 0 && (
+                {!isLoadingKeys && payloadKeys.length === 0 && (
                   <NotFoundCard page="measure types" isEmpty={true} />
                 )}
               </>
@@ -285,7 +286,7 @@ export default function PayloadSchema() {
                       columns={payloadDetails.length}
                       half={true}
                     >
-                      {isLoading && <p>Loading...</p>}
+                      {isLoadingKeys && <p>Loading...</p>}
                       {/*TODO: make a better looking loading indicator */}
                       {payloadKeys.map((payloadKey) => (
                         <DeviceRow key={payloadKey}>
@@ -317,7 +318,7 @@ export default function PayloadSchema() {
                     >
                       Save
                     </Button>
-                    {!isLoading && payloadKeys.length === 0 && (
+                    {!isLoadingKeys && payloadKeys.length === 0 && (
                       <NotFoundCard page="measure types" isEmpty={true} />
                     )}
                   </>
