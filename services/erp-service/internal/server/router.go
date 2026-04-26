@@ -13,16 +13,17 @@ func NewRouter(
 	prodResSvc domain.ProductionResourceSvc,
 	orderSvc domain.OrderService,
 	jwtSecret string,
+	goEnv string,
 ) *http.ServeMux {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /", handlers.Root)
 
 	// ERP AGENT SERVICE Endpoints
-	mux.Handle("POST "+ORDER_ROUTE, RequireAgentAuth(jwtSecret, handlers.PostIngestOrder(ingestSvc)))
-	mux.Handle("POST "+ORDER_OPERATIONS_ROUTE, RequireAgentAuth(jwtSecret, handlers.PostIngestOrderOperations(ingestSvc)))
-	mux.Handle("POST "+ORDER_REPORTINGS_ROUTE, RequireAgentAuth(jwtSecret, handlers.PostIngestOrderReports(ingestSvc)))
-	mux.Handle("POST "+WORKCENTERS_ROUTE, RequireAgentAuth(jwtSecret, handlers.PostIngestWorkCenters(ingestSvc)))
+	mux.Handle("POST "+ORDER_ROUTE, RequireAgentAuth(jwtSecret, goEnv, handlers.PostIngestOrder(ingestSvc)))
+	mux.Handle("POST "+ORDER_OPERATIONS_ROUTE, RequireAgentAuth(jwtSecret, goEnv, handlers.PostIngestOrderOperations(ingestSvc)))
+	mux.Handle("POST "+ORDER_REPORTINGS_ROUTE, RequireAgentAuth(jwtSecret, goEnv, handlers.PostIngestOrderReports(ingestSvc)))
+	mux.Handle("POST "+WORKCENTERS_ROUTE, RequireAgentAuth(jwtSecret, goEnv, handlers.PostIngestWorkCenters(ingestSvc)))
 
 	// Extracting monitor erp data
 	mux.HandleFunc("GET "+PRODUCTION_RESOURCE_ROUTE, handlers.GetAllProductionResources(prodResSvc))

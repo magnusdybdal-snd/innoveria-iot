@@ -15,13 +15,28 @@ const SeededCompanyID = "a0000000-0000-0000-0000-000000000001"
 
 // RequireAgentAuth validates ERP agent bearer JWTs and injects a trusted
 // company header for downstream handlers.
-func RequireAgentAuth(jwtSecret string, next http.Handler) http.Handler {
+func RequireAgentAuth(jwtSecret string, goEnv string, next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		tokenStr, err := request.AuthorizationHeaderExtractor.ExtractToken(r)
 		if err != nil {
 			json.HandleError(w, http.StatusUnauthorized, errors.New("missing bearer token"), "unauthorized")
 			return
 		}
+
+		// dev mode
+		if tokenStr == "dev" {
+			if goEnv != "development" {
+				json.HandleError(w, http.StatusUnauthorized, errors.New("invalid token"), "unauthorized")
+				return
+			}
+
+			r.Header.Del("X-Erp-Company-Id")
+			r.Header.Add("X-Erp-Company-Id", SeededCompanyID)
+			next.ServeHTTP(w, r)
+			return
+		}
+
+		// Prod mode
 		claims := jwt.MapClaims{}
 		token, err := jwt.ParseWithClaims(tokenStr, claims, func(t *jwt.Token) (any, error) {
 			if t.Method != jwt.SigningMethodHS256 {
@@ -35,6 +50,9 @@ func RequireAgentAuth(jwtSecret string, next http.Handler) http.Handler {
 		}
 
 		companyID, _ := claims["company_id"].(string)
+		if companyID == "" && goEnv == "development" {
+			companyID = SeededCompanyID
+		}
 		if companyID == "" {
 			json.HandleError(w, http.StatusUnauthorized, errors.New("invalid company"), "unauthorized")
 			return
