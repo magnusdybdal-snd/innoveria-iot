@@ -255,7 +255,7 @@ export default function Menu(menuProps: MenuProps) {
             onClick={() => {
               postLogout().finally(() => {
                 localStorage.removeItem("access_token");
-                window.location.href = "/Login";
+                window.location.replace("/Login");
               });
             }}
             variant="outlined"

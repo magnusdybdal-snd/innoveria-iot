@@ -41,7 +41,7 @@ serviceClient.interceptors.response.use(
       !isLoginRequest &&
       !localStorage.getItem("access_token")
     ) {
-      window.location.href = "/Login";
+      window.location.replace("/Login");
       return Promise.reject(error);
     }
 
@@ -50,7 +50,7 @@ serviceClient.interceptors.response.use(
       refreshPromise = null;
       void postLogout().finally(() => {
         localStorage.removeItem("access_token");
-        window.location.href = "/Login";
+        window.location.replace("/Login");
       });
       return Promise.reject(error);
     }
@@ -85,7 +85,7 @@ serviceClient.interceptors.response.use(
         // Refresh fails → logout
         void postLogout().finally(() => {
           localStorage.removeItem("access_token");
-          window.location.href = "/Login";
+          window.location.replace("/Login");
         });
 
         return Promise.reject(refreshError);
