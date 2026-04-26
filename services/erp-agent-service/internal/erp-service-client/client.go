@@ -14,7 +14,7 @@ import (
 type Client struct {
 	baseURL    string
 	httpClient *httpclient.Client
-	// apiKey string // TODO: add this when ready
+	apiKey     string
 }
 
 // Endpoint is an ERP service API path.
@@ -39,11 +39,16 @@ const (
 )
 
 // New builds an ERP ingest client for the given base URL.
-func New(baseURL string) *Client {
+func New(baseURL string, apiKey string) *Client {
 	return &Client{
 		baseURL:    baseURL,
 		httpClient: httpclient.New(),
+		apiKey:     apiKey,
 	}
+}
+
+func (c *Client) authHeader() string {
+	return "Bearer " + c.apiKey
 }
 
 // Post sends a JSON payload to the selected ERP endpoint.
@@ -55,7 +60,9 @@ func (c *Client) Post(ctx context.Context, path Endpoint, body any) error {
 		url,
 		http.MethodPost,
 		body,
-		nil, // TODO: jwt token
+		map[string]string{
+			"Authorization": c.authHeader(),
+		},
 	)
 	if err != nil {
 		return err

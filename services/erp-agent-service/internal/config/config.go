@@ -12,8 +12,9 @@ import (
 
 // Config holds erp-agent-service runtime configuration.
 type Config struct {
-	Addr  string
-	GOEnv string
+	Addr     string
+	GOEnv    string
+	JWTToken string
 
 	UseMockMonitor bool
 
@@ -38,6 +39,8 @@ func Load() (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	jwtToken := env.Get("JWT_TOKEN", "dev") // special dev check, so erp-service can use the dev seed
 	useMockMonitor := env.GetBool("MOCK_MONITOR", goEnv == "development")
 
 	if useMockMonitor && goEnv != "development" {
@@ -76,6 +79,10 @@ func Load() (*Config, error) {
 		if err != nil {
 			return nil, err
 		}
+		jwtToken, err = env.Required("JWT_TOKEN")
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	companyNumber, err := strconv.Atoi(companyRaw)
@@ -108,6 +115,7 @@ func Load() (*Config, error) {
 	return &Config{
 		Addr:                    ":" + env.Get("PORT", "8080"),
 		GOEnv:                   goEnv,
+		JWTToken:                jwtToken,
 		UseMockMonitor:          useMockMonitor,
 		MonitorERPHost:          host,
 		MonitorERPPort:          monitorPort,

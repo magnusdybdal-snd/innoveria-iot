@@ -34,7 +34,7 @@ func main() {
 	}
 
 	// setting up the clients
-	erpClient := erpserviceclient.New(cfg.ErpSvcURL)
+	erpClient := erpserviceclient.New(cfg.ErpSvcURL, cfg.JWTToken)
 
 	// Check enviroment to decide mock or real monitor erp
 	var monitorClient domain.MonitorHandler
