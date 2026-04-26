@@ -197,7 +197,7 @@ export default function PayloadSchema() {
           <DropDownSelect
             options={profileOptions}
             value={profile}
-            onChange={() => setProfile("f0000000-0000-0000-0000-000000000001")} //TODO: Get actual profile.
+            onChange={(value) => setProfile(value)} //TODO: Get actual profile.
           />
         </Box>
         <br />
