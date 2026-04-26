@@ -242,6 +242,31 @@ services:
       - POSTGRES_PASSWORD=${CONTEXT_DB_PASSWORD}
       - POSTGRES_DB=${CONTEXT_DB_NAME}
 
+  erp-service:
+    build:
+      context: .
+      dockerfile: infra/production/erp-service.Dockerfile
+    environment:
+      - GO_ENV=${GO_ENV}
+      - DB_HOST=erp-db
+      - DB_USER=${ERP_DB_USER}
+      - DB_PASSWORD=${ERP_DB_PASSWORD}
+      - DB_NAME=${ERP_DB_NAME}
+      - DB_SSLMODE=${ERP_DB_SSLMODE}
+    depends_on:
+      - erp-db
+    restart: unless-stopped
+
+  erp-db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    volumes:
+      - context-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=${ERP_DB_USER}
+      - POSTGRES_PASSWORD=${ERP_DB_PASSWORD}
+      - POSTGRES_DB=${ERP_DB_NAME}
+
 volumes:
   chirpstack-secrets:
   chirpstack-data:
