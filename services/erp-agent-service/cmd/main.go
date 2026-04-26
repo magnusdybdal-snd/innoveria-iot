@@ -25,12 +25,17 @@ import (
 // @host        localhost:8088
 func main() {
 	logger.NewLogger("erp-agent-service")
+	if err := run(); err != nil {
+		slog.Error("service exited with error", "err", err)
+		os.Exit(1)
+	}
+}
 
+func run() error {
 	// Loading config
 	cfg, err := config.Load()
 	if err != nil {
-		slog.Error("failed to load enviroment variables", "err", err)
-		os.Exit(1)
+		return err
 	}
 
 	// setting up the clients
@@ -59,5 +64,9 @@ func main() {
 		"Cycle timeout", cfg.CycleTimeout,
 		"Max backoff time", cfg.MaxBackoffTime,
 	)
-	worker.Start(ctx)
+	if err := worker.Start(ctx); err != nil {
+		return err
+	}
+
+	return nil
 }
