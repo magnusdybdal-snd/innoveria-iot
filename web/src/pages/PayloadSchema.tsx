@@ -11,6 +11,7 @@ import {
   putPayloadSchema,
 } from "@entities/payloadSchema";
 import {
+  getDeviceEUI,
   getSensorMetrics,
   getSensorProfileConfig,
   getSensorProfiles,
@@ -18,7 +19,6 @@ import {
   putSensorProfileConfig,
   useSensors,
 } from "@entities/sensor";
-import { getDeviceEUI } from "@entities/sensor/api/getDeviceEUI.ts";
 import type { SensorProfileApiResponse } from "@entities/sensor/model/sensorSchema.ts";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -135,55 +135,92 @@ export default function PayloadSchema() {
   useEffect(() => {
     if (!profile || perInstallation) return;
 
-    getDeviceEUI(profile)
-      .then((eui) => {
-        setIsLoadingKeys(true);
+    let active = true;
+
+    (async () => {
+      setIsLoadingKeys(true);
+
+      try {
+        const eui = await getDeviceEUI(profile);
+
         if (!eui) {
+          if (!active) return;
           setPayloadKeys([]);
           setSchemaRows({});
-          return Promise.all([[], []]);
+          return;
         }
-        return Promise.all([getPayloadTags(eui), getPayloadSchema(profile)]);
-      })
-      .then((result) => {
-        if (!result) return;
-        const [keys, existing] = result;
+
+        const [keys, existing] = await Promise.all([
+          getPayloadTags(eui),
+          getPayloadSchema(profile),
+        ]);
+
+        if (!active) return;
+
         setPayloadKeys(keys);
         setSchemaRows(
           Object.fromEntries(
             existing.map((row) => [
               row.payloadKey,
-              { measurementType: row.measurementType, unit: row.unit },
+              {
+                measurementType: row.measurementType,
+                unit: row.unit,
+              },
             ]),
           ),
         );
-        setIsLoadingKeys(false);
-      });
+      } finally {
+        if (active) setIsLoadingKeys(false);
+      }
+    })();
+
+    return () => {
+      active = false;
+    };
   }, [profile, perInstallation]);
 
   useEffect(() => {
     if (!sensor || !perInstallation) return;
 
-    getSensorMetrics(sensor).then((metrics) => {
+    let active = true;
+
+    (async () => {
       setIsLoadingKeys(true);
-      if (metrics.length > 0) {
-        setPayloadKeys(metrics.map((m) => m.payloadKey));
-        setSchemaRows(
-          Object.fromEntries(
-            metrics.map((m) => [
-              m.payloadKey,
-              { measurementType: m.measurementType, unit: m.unit },
-            ]),
-          ),
-        );
-      } else {
-        getPayloadTags(sensor).then((keys) => {
+
+      try {
+        const metrics = await getSensorMetrics(sensor);
+
+        if (!active) return;
+
+        if (metrics.length > 0) {
+          setPayloadKeys(metrics.map((m) => m.payloadKey));
+          setSchemaRows(
+            Object.fromEntries(
+              metrics.map((m) => [
+                m.payloadKey,
+                {
+                  measurementType: m.measurementType,
+                  unit: m.unit,
+                },
+              ]),
+            ),
+          );
+        } else {
+          const keys = await getPayloadTags(sensor);
+
+          if (!active) return;
+
           setPayloadKeys(keys);
           setSchemaRows({});
-        });
+        }
+      } finally {
+        if (active) setIsLoadingKeys(false);
       }
-      setIsLoadingKeys(false);
-    });
+    })();
+
+    return () => {
+      active = false;
+    };
   }, [sensor, perInstallation]);
 
   const filteredSensors = sensors.filter((sensor) => {
