@@ -3,7 +3,13 @@ package domain
 
 import (
 	"context"
+	"errors"
 	"net/url"
+)
+
+var (
+	// ErrERPUnauthorized marks a non-retriable auth failure to ERP service.
+	ErrERPUnauthorized = errors.New("erp service unauthorized")
 )
 
 // MonitorERPEndpoint is a relative Monitor ERP API endpoint path.

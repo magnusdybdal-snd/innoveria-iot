@@ -3,6 +3,8 @@ package erpserviceclient
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"io"
 	"net/http"
 
@@ -65,6 +67,10 @@ func (c *Client) Post(ctx context.Context, path Endpoint, body any) error {
 		},
 	)
 	if err != nil {
+		var httpErr *httpclient.HTTPError
+		if errors.As(err, &httpErr) && httpErr.StatusCode == http.StatusUnauthorized {
+			return fmt.Errorf("%w: %s", domain.ErrERPUnauthorized, httpErr.Error())
+		}
 		return err
 	}
 
