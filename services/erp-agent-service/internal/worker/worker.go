@@ -3,6 +3,7 @@ package worker
 
 import (
 	"context"
+	"errors"
 	"innoveria-iot/erp-agent-service/internal/domain"
 	"log/slog"
 	"time"
@@ -27,8 +28,8 @@ func New(interval, cycleTimeout, maxBackoff time.Duration, runner domain.Runner)
 	}
 }
 
-// Start starts the polling loop until the context is cancelled.
-func (w *Worker) Start(ctx context.Context) {
+// Start starts the polling loop until the context is cancelled or a fatal error occurs.
+func (w *Worker) Start(ctx context.Context) error {
 	backoff := time.Second
 	nextDelay := time.Duration(0) // run immediately on startup
 
@@ -43,15 +44,19 @@ func (w *Worker) Start(ctx context.Context) {
 				}
 			}
 			slog.Info("worker loop stopped")
-			return
+			return nil
 		case <-timer.C: // Handle one cycle
 		}
 
 		cycleCtx, cancel := context.WithTimeout(ctx, w.cycleTimeout)
 		err := w.runner.RunCycle(cycleCtx)
-		defer cancel()
+		cancel()
 
 		if err != nil {
+			if errors.Is(err, domain.ErrERPUnauthorized) {
+				slog.Error("worker loop stopped due to unauthorized ERP token", "err", err)
+				return err
+			}
 			slog.Error("worker loop failed", "err", err, "backoff", backoff)
 			nextDelay = backoff
 			backoff *= 2

@@ -40,7 +40,16 @@ func Load() (*Config, error) {
 		return nil, err
 	}
 
-	jwtToken := env.Get("JWT_TOKEN", "dev") // special dev check, so erp-service can use the dev seed
+	var jwtToken string
+	if goEnv == "development" {
+		jwtToken = "dev"
+	} else {
+		jwtToken, err = env.Required("JWT_TOKEN")
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	useMockMonitor := env.GetBool("MOCK_MONITOR", goEnv == "development")
 
 	if useMockMonitor && goEnv != "development" {
@@ -79,10 +88,7 @@ func Load() (*Config, error) {
 		if err != nil {
 			return nil, err
 		}
-		jwtToken, err = env.Required("JWT_TOKEN")
-		if err != nil {
-			return nil, err
-		}
+
 	}
 
 	companyNumber, err := strconv.Atoi(companyRaw)
