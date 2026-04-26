@@ -10,7 +10,6 @@ export const serviceClient = axios.create({
   },
 });
 
-let isRefreshing = false;
 let refreshPromise: Promise<TokenApiResponse> | null = null;
 
 serviceClient.interceptors.request.use((config) => {
@@ -48,7 +47,6 @@ serviceClient.interceptors.response.use(
 
     // If refresh fails → logout
     if (error.response?.status === 401 && isRefreshRequest) {
-      isRefreshing = false;
       refreshPromise = null;
       void postLogout().finally(() => {
         localStorage.removeItem("access_token");
@@ -69,20 +67,13 @@ serviceClient.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        // Prevent multiple refresh calls
-        if (!isRefreshing) {
-          isRefreshing = true;
-          refreshPromise = postRefresh();
-        }
-
         if (!refreshPromise) {
-          throw new Error("Refresh promise was not initialized");
+          refreshPromise = postRefresh().finally(() => {
+            refreshPromise = null;
+          });
         }
 
         const data = await refreshPromise;
-
-        isRefreshing = false;
-        refreshPromise = null;
 
         localStorage.setItem("access_token", data.accessToken);
 
@@ -91,9 +82,6 @@ serviceClient.interceptors.response.use(
 
         return serviceClient(originalRequest);
       } catch (refreshError) {
-        isRefreshing = false;
-        refreshPromise = null;
-
         // Refresh fails → logout
         void postLogout().finally(() => {
           localStorage.removeItem("access_token");
