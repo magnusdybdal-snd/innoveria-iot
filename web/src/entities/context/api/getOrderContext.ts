@@ -70,6 +70,7 @@ type RawSensorContext = {
   device_eui: string;
   metrics: RawSensorMetric[];
   measurements: RawMeasurement[];
+  total_power_wh: number | null;
 };
 
 type RawOperationContext = {
@@ -131,6 +132,7 @@ const toSensorContext = (s: RawSensorContext): SensorContext => ({
   deviceEui: s.device_eui,
   metrics: s.metrics.map(toSensorMetric),
   measurements: s.measurements.map(toMeasurement),
+  totalPowerWh: s.total_power_wh,
 });
 
 const toOperationContext = (op: RawOperationContext): OperationContext => ({

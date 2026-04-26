@@ -209,8 +209,6 @@ interface MachineEnergyCardProps {
  * Card displaying a work center's operational status, sensor state, and on-demand
  * sensor graphs. Charts are not mounted until the user expands the card, keeping
  * initial render cost low when many cards are shown simultaneously.
- *
- * The energy (kWh) field is a placeholder pending backend support.
  * @param props - Component props
  * @param props.operationContext - The operation context to render
  * @returns The rendered machine energy card
@@ -219,6 +217,11 @@ export function MachineEnergyCard({
   operationContext,
 }: MachineEnergyCardProps) {
   const { operation, sensors, degraded } = operationContext;
+  const totalWh = sensors
+    .map((s) => s.totalPowerWh)
+    .filter((wh): wh is number => wh !== null)
+    .reduce((sum, wh) => sum + wh, 0);
+  const hasEnergyData = sensors.some((s) => s.totalPowerWh !== null);
   const sensorState = resolveSensorState(sensors, degraded);
   const sensorGroups = buildChartData(operationContext);
   const hasCharts = sensorGroups.length > 0;
@@ -259,16 +262,21 @@ export function MachineEnergyCard({
       {/* Operation status chip */}
       <Box sx={{ mb: 1.5 }}></Box>
 
-      {/* Energy placeholder — TODO: wire up kWh once backend returns energy totals (see issue #293) */}
       <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1.5 }}>
         <Typography variant="body2" sx={{ opacity: 0.7 }}>
           Energy:
         </Typography>
-        <Tooltip title="Energy totals will be available in a future update">
+        {hasEnergyData ? (
           <Typography variant="body1" fontWeight={600}>
-            —
+            {(totalWh / 1000).toFixed(2)}
           </Typography>
-        </Tooltip>
+        ) : (
+          <Tooltip title="Energy totals require an electricity sensor with a configured voltage">
+            <Typography variant="body1" fontWeight={600}>
+              —
+            </Typography>
+          </Tooltip>
+        )}
         <Typography variant="body2" sx={{ opacity: 0.5 }}>
           kWh
         </Typography>
