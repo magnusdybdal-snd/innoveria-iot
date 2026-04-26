@@ -178,10 +178,12 @@ services:
     environment:
       - GO_ENV=${GO_ENV_AUTH} # for seeded users
       - JWT_SECRET=${JWT_SECRET}
+      - ERP_AGENT_JWT_SECRET=${ERP_AGENT_JWT_SECRET}
       - REFRESH_PEPPER=${REFRESH_PEPPER}
       - JWT_ISSUER=auth-service
       - JWT_ACCESS_TTL=${JWT_ACCESS_TTL}
       - JWT_REFRESH_TTL=${JWT_REFRESH_TTL}
+      - ERP_AGENT_TOKEN_TTL=${ERP_AGENT_TOKEN_TTL}
       - DB_HOST=auth-db
       - DB_USER=${AUTH_DB_USER}
       - DB_PASSWORD=${AUTH_DB_PASSWORD}

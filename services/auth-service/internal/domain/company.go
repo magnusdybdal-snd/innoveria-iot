@@ -25,6 +25,7 @@ type CompanyRepo interface {
 // CompanyService defines company use-cases exposed by the service layer.
 type CompanyService interface {
 	RegisterCompany(ctx context.Context, payload Company) (Company, error)
+	IssueERPAgentToken(ctx context.Context, companyID string) (string, error)
 	GetOneCompany(ctx context.Context, companyID string) (Company, error)
 	GetAllCompanies(ctx context.Context) ([]Company, error)
 	DeleteCompany(ctx context.Context, companyID string) error

@@ -62,7 +62,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/dto.CompanyResponse"
+                            "$ref": "#/definitions/dto.RegisterCompanyResponse"
                         }
                     },
                     "400": {
@@ -127,6 +127,43 @@ const docTemplate = `{
                 "responses": {
                     "204": {
                         "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/companies/{id}/erp-agent-token": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "companies"
+                ],
+                "summary": "Issue ERP agent token",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ERPAgentTokenResponse"
+                        }
                     },
                     "400": {
                         "description": "Bad Request"
@@ -562,6 +599,14 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.ERPAgentTokenResponse": {
+            "type": "object",
+            "properties": {
+                "erp_agent_token": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.FactoryAreaListResponse": {
             "type": "object",
             "properties": {
@@ -677,6 +722,29 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.RegisterCompanyResponse": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "erp_agent_token": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "updated_at": {
                     "type": "string"
                 }
             }
