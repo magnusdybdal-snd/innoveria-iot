@@ -51,7 +51,12 @@ func RegisterProxyService(
 		return
 	}
 	RegisterServiceInfo(mux, route, serviceName, paths)
+	seen := make(map[string]struct{}, len(paths))
 	for _, path := range paths {
+		if _, ok := seen[path]; ok {
+			continue
+		}
+		seen[path] = struct{}{}
 		full := route + path
 		mux.Handle(full, proxy)
 		mux.Handle(full+"/", proxy)
