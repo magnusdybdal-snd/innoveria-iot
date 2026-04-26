@@ -59,7 +59,7 @@ func Run() error {
 	defer reconcileWorker.Stop()
 
 	// Setting up mux and http server
-	mux := NewRouter(ingestSvc, prodResSvc, orderSvc)
+	mux := NewRouter(ingestSvc, prodResSvc, orderSvc, cfg.ERP_AGENT_JWT_SECRET)
 	server := &http.Server{
 		Addr:              cfg.Addr,
 		Handler:           mux,
