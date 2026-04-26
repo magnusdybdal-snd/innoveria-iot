@@ -8,7 +8,6 @@ import StatusPage from "@/pages/StatusPage";
 import { Route, Routes } from "react-router";
 
 import Companies from "@pages/Companies.tsx";
-import Dashboard from "@pages/Dashboard.tsx";
 import Gateways from "@pages/Gateways";
 import Home from "@pages/Home.tsx";
 import Login from "@pages/Login.tsx";
@@ -26,7 +25,6 @@ export default function AppRoutes() {
       <Route path="/Login" element={<Login />} />
       <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
-        <Route path="/Dashboard" element={<Dashboard />} />
         <Route path="/Dashboard/Context" element={<Context />} />
         <Route path="/Dashboard/Context/Orders" element={<OrderContext />} />
         <Route path="/Dashboard/Context/OrderList" element={<OrderList />} />
