@@ -24,4 +24,5 @@ type RefreshTokenRepo interface {
 	UpdateRefreshToken(ctx context.Context, token RefreshToken) error
 	UpsertForLogin(ctx context.Context, token RefreshToken) error
 	FindActiveByHash(ctx context.Context, oldHash string) (RefreshToken, error)
+	RevokeByHash(ctx context.Context, tokenHash string) error
 }

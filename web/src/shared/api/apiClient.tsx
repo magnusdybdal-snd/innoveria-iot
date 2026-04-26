@@ -1,6 +1,6 @@
 import axios, { type AxiosInstance, type AxiosResponse } from "axios";
 
-import { postRefresh, type TokenApiResponse } from "@entities/user";
+import { postLogout, postRefresh, type TokenApiResponse } from "@entities/user";
 
 // Client for all microservice requests — routed through the api-gateway
 export const serviceClient = axios.create({
@@ -10,7 +10,6 @@ export const serviceClient = axios.create({
   },
 });
 
-let isRefreshing = false;
 let refreshPromise: Promise<TokenApiResponse> | null = null;
 
 serviceClient.interceptors.request.use((config) => {
@@ -30,42 +29,51 @@ serviceClient.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
+    if (!originalRequest) return Promise.reject(error);
 
     const isRefreshRequest = originalRequest.url?.includes("/refresh");
     const isLoginRequest = originalRequest.url?.includes("/login");
 
-    // If refresh fails → logout
-    if (error.response?.status === 401 && isRefreshRequest) {
-      localStorage.clear();
-      window.location.href = "/login";
+    // No token at all → redirect to login immediately
+    if (
+      error.response?.status === 401 &&
+      !isRefreshRequest &&
+      !isLoginRequest &&
+      !localStorage.getItem("access_token")
+    ) {
+      window.location.replace("/Login");
       return Promise.reject(error);
     }
 
-    // Only refresh for normal API calls (not login/refresh)
+    // If refresh fails → logout
+    if (error.response?.status === 401 && isRefreshRequest) {
+      refreshPromise = null;
+      void postLogout().finally(() => {
+        localStorage.removeItem("access_token");
+        window.location.replace("/Login");
+      });
+      return Promise.reject(error);
+    }
+
+    // Only refresh for normal API calls (not login/refresh) and only when a token exists
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
       !isRefreshRequest &&
-      !isLoginRequest
+      !isLoginRequest &&
+      localStorage.getItem("access_token")
     ) {
       originalRequest.headers = originalRequest.headers || {};
       originalRequest._retry = true;
 
       try {
-        // Prevent multiple refresh calls
-        if (!isRefreshing) {
-          isRefreshing = true;
-          refreshPromise = postRefresh();
-        }
-
         if (!refreshPromise) {
-          throw new Error("Refresh promise was not initialized");
+          refreshPromise = postRefresh().finally(() => {
+            refreshPromise = null;
+          });
         }
 
         const data = await refreshPromise;
-
-        isRefreshing = false;
-        refreshPromise = null;
 
         localStorage.setItem("access_token", data.accessToken);
 
@@ -74,12 +82,11 @@ serviceClient.interceptors.response.use(
 
         return serviceClient(originalRequest);
       } catch (refreshError) {
-        isRefreshing = false;
-        refreshPromise = null;
-
         // Refresh fails → logout
-        localStorage.clear();
-        window.location.href = "/login";
+        void postLogout().finally(() => {
+          localStorage.removeItem("access_token");
+          window.location.replace("/Login");
+        });
 
         return Promise.reject(refreshError);
       }

@@ -25,7 +25,7 @@ export default function AdminRoute() {
   }
 
   if (user === null) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/Login" replace />;
   }
 
   if (user.role !== "PLATFORM_ADMIN") {

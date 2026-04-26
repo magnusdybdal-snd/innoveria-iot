@@ -29,6 +29,7 @@ const (
 	// auth routes:
 	LOGIN_ROUTE   = AUTH_ROUTE + "/login"
 	REFRESH_ROUTE = AUTH_ROUTE + "/refresh"
+	LOGOUT_ROUTE  = AUTH_ROUTE + "/logout"
 	ME_ROUTE      = AUTH_ROUTE + "/me"
 	// REGISTER_ROUTE = AUTH_ROUTE + "/register"
 )

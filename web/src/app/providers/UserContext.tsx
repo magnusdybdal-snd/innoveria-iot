@@ -10,6 +10,6 @@ export type UserContextValue = {
 
 export const UserContext = createContext<UserContextValue>({
   user: null,
-  isLoading: true,
+  isLoading: false,
   error: null,
 });

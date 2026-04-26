@@ -45,6 +45,13 @@ const (
 		ORDER BY created_at DESC
 		LIMIT 1
 	`
+
+	revokeRefreshTokenByHashQuery = `
+		UPDATE auth.refresh_token
+		SET revoked_at = NOW()
+		WHERE token_hash = $1
+			AND revoked_at IS NULL
+	`
 )
 
 // RefreshTokenRepoImpl is the PostgreSQL implementation of refresh token persistence.
@@ -107,6 +114,15 @@ func (r *RefreshTokenRepoImpl) UpsertForLogin(ctx context.Context, token domain.
 		if err := r.Create(ctx, token); err != nil {
 			return fmt.Errorf("upsert refresh token: %w", err)
 		}
+	}
+	return nil
+}
+
+// RevokeByHash marks a refresh token as revoked by its HMAC hash.
+func (r *RefreshTokenRepoImpl) RevokeByHash(ctx context.Context, tokenHash string) error {
+	_, err := r.db.Pool.Exec(ctx, revokeRefreshTokenByHashQuery, tokenHash)
+	if err != nil {
+		return fmt.Errorf("revoke refresh token: %w", err)
 	}
 	return nil
 }

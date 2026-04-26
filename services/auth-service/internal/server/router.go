@@ -53,6 +53,7 @@ func NewRouter(
 	// Auth
 	mux.HandleFunc("POST "+LOGIN_ROUTE, handlers.PostLogin(authSvc, refreshTTL))
 	mux.HandleFunc("POST "+REFRESH_ROUTE, handlers.PostRefresh(authSvc, refreshTTL))
+	mux.HandleFunc("POST "+LOGOUT_ROUTE, handlers.PostLogout(authSvc))
 
 	// Me
 	mux.HandleFunc("GET "+ME_ROUTE, handlers.GetMe(authSvc))
