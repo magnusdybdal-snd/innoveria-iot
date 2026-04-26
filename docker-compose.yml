@@ -303,6 +303,8 @@ services:
       - MONITOR_ERP_USERNAME=test
       - MONITOR_ERP_PASSWORD=1234
       - MONITOR_ERP_FORCE_RELOGIN=false
+    depends_on:
+      - erp-service # only in dev mode, as erp agent service will exit on 401
 
 #
 # Docker data volumes
