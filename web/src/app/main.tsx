@@ -35,7 +35,6 @@ export default function Root() {
     getUser()
       .then(setUser)
       .catch((err: unknown) => {
-        console.error("Failed to fetch current user:", err);
         setUserError(err instanceof Error ? err : new Error(String(err)));
       })
       .finally(() => setUserLoading(false));
