@@ -209,7 +209,7 @@ func (s *SensorServiceImpl) GetAll(ctx context.Context) ([]domain.Sensor, error)
 
 // GetByProductionResourceID  retrieves all sensors attatched to one production resource ID from the database and merges the
 // response with the status from Chirpstack (status and last seen).
-func (s *SensorServiceImpl) GetByProductionResourceID(ctx context.Context, productionResourceID string) ([]domain.Sensor, error) {
+func (s *SensorServiceImpl) GetByProductionResourceID(ctx context.Context, productionResourceID int64) ([]domain.Sensor, error) {
 
 	sensors, err := s.sensorRepo.FindByProductionResourceID(ctx, productionResourceID)
 	if err != nil {
