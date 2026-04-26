@@ -169,14 +169,38 @@ export default function Companies() {
       return;
     }
 
-    navigator.clipboard
-      .writeText(erpToken)
-      .then(() => {
+    if (window.isSecureContext && navigator.clipboard) {
+      navigator.clipboard
+        .writeText(erpToken)
+        .then(() => {
+          show("ERP token copied", SNACKBAR_SEVERITY.SUCCESS);
+        })
+        .catch(() => {
+          show("Failed to copy ERP token", SNACKBAR_SEVERITY.ERROR);
+        });
+      return;
+    }
+
+    const textArea = document.createElement("textarea");
+    textArea.value = erpToken;
+    textArea.style.position = "fixed";
+    textArea.style.opacity = "0";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    try {
+      const copied = document.execCommand("copy");
+      if (copied) {
         show("ERP token copied", SNACKBAR_SEVERITY.SUCCESS);
-      })
-      .catch(() => {
+      } else {
         show("Failed to copy ERP token", SNACKBAR_SEVERITY.ERROR);
-      });
+      }
+    } catch {
+      show("Failed to copy ERP token", SNACKBAR_SEVERITY.ERROR);
+    } finally {
+      document.body.removeChild(textArea);
+    }
   };
 
   const handleAddCompany = (companyData: { name: string; address: string }) => {
