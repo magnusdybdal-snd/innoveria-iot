@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { CustomButton } from "@/shared/ui/Button";
 import Box from "@mui/material/Box";
@@ -60,10 +60,21 @@ export default function Companies() {
   const [erpTokenError, setERPTokenError] = useState<string | null>(null);
   const [erpTokenLoading, setERPTokenLoading] = useState(false);
   const [erpToken, setERPToken] = useState<string | null>(null);
+  const erpTokenCancelledRef = useRef(false);
+  const erpTokenInFlightRef = useRef(false);
+  const erpTokenRequestIdRef = useRef(0);
   const [selectedCompany, setSelectedCompany] = useState<{
     companyId: string;
     name: string;
   } | null>(null);
+
+  useEffect(() => {
+    return () => {
+      erpTokenCancelledRef.current = true;
+      erpTokenRequestIdRef.current += 1;
+      erpTokenInFlightRef.current = false;
+    };
+  }, []);
 
   // State for controlling success snackbar
   const { show, hide, snackbar } = useSnackbar();
@@ -88,6 +99,9 @@ export default function Companies() {
   const addAdminUser = () => {};
 
   const closeERPTokenDialog = () => {
+    erpTokenCancelledRef.current = true;
+    erpTokenRequestIdRef.current += 1;
+    erpTokenInFlightRef.current = false;
     setSelectedCompany(null);
     setERPToken(null);
     setERPTokenError(null);
@@ -95,19 +109,45 @@ export default function Companies() {
   };
 
   const generateERPToken = (companyId: string) => {
+    if (erpTokenInFlightRef.current) {
+      return;
+    }
+
+    erpTokenInFlightRef.current = true;
+    erpTokenCancelledRef.current = false;
+    const requestId = ++erpTokenRequestIdRef.current;
     setERPTokenLoading(true);
     setERPTokenError(null);
 
     postCompanyERPAgentToken(companyId)
       .then((token) => {
+        if (
+          erpTokenCancelledRef.current ||
+          requestId !== erpTokenRequestIdRef.current
+        ) {
+          return;
+        }
         setERPToken(token);
         show("ERP token generated", SNACKBAR_SEVERITY.SUCCESS);
       })
       .catch(() => {
+        if (
+          erpTokenCancelledRef.current ||
+          requestId !== erpTokenRequestIdRef.current
+        ) {
+          return;
+        }
         setERPTokenError("Failed to generate ERP token.");
         show("Failed to generate ERP token", SNACKBAR_SEVERITY.ERROR);
       })
       .finally(() => {
+        erpTokenInFlightRef.current = false;
+        if (
+          erpTokenCancelledRef.current ||
+          requestId !== erpTokenRequestIdRef.current
+        ) {
+          return;
+        }
         setERPTokenLoading(false);
       });
   };
