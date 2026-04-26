@@ -41,7 +41,6 @@ func (m *mockRuleService) DeleteRule(ctx context.Context, ruleID string) error {
 }
 
 const validRuleBody = `{
-	"company_id": "a0000000-0000-0000-0000-000000000001",
 	"name": "Test Rule",
 	"context_type": "energy",
 	"measurement_type": "watt",
@@ -59,7 +58,7 @@ func TestCreateRule_ValidBody_Returns201(t *testing.T) {
 		},
 	}
 
-	req := httptest.NewRequest(http.MethodPost, "/api/v1/context/rules", strings.NewReader(validRuleBody))
+	req := withAuthHeaders(httptest.NewRequest(http.MethodPost, "/api/v1/context/rules", strings.NewReader(validRuleBody)))
 	req.Header.Set("Content-Type", "application/json")
 	rec := httptest.NewRecorder()
 
@@ -74,7 +73,7 @@ func TestCreateRule_ValidBody_Returns201(t *testing.T) {
 func TestCreateRule_MalformedJSON_Returns400(t *testing.T) {
 	svc := &mockRuleService{t: t}
 
-	req := httptest.NewRequest(http.MethodPost, "/api/v1/context/rules", strings.NewReader(`{not valid json`))
+	req := withAuthHeaders(httptest.NewRequest(http.MethodPost, "/api/v1/context/rules", strings.NewReader(`{not valid json`)))
 	req.Header.Set("Content-Type", "application/json")
 	rec := httptest.NewRecorder()
 
@@ -89,7 +88,7 @@ func TestCreateRule_MalformedJSON_Returns400(t *testing.T) {
 func TestCreateRule_EmptyBody_Returns400(t *testing.T) {
 	svc := &mockRuleService{t: t}
 
-	req := httptest.NewRequest(http.MethodPost, "/api/v1/context/rules", strings.NewReader(""))
+	req := withAuthHeaders(httptest.NewRequest(http.MethodPost, "/api/v1/context/rules", strings.NewReader("")))
 	req.Header.Set("Content-Type", "application/json")
 	rec := httptest.NewRecorder()
 
@@ -108,15 +107,14 @@ func TestCreateRule_MissingRequiredFields_Returns400(t *testing.T) {
 		name string
 		body string
 	}{
-		{"missing company_id", `{"name":"Test","context_type":"energy","measurement_type":"watt","aggregation_method":"AVG","time_bucket_minutes":15}`},
-		{"missing name", `{"company_id":"a0000000-0000-0000-0000-000000000001","context_type":"energy","measurement_type":"watt","aggregation_method":"AVG","time_bucket_minutes":15}`},
-		{"missing context_type", `{"company_id":"a0000000-0000-0000-0000-000000000001","name":"Test","measurement_type":"watt","aggregation_method":"AVG","time_bucket_minutes":15}`},
-		{"missing measurement_type", `{"company_id":"a0000000-0000-0000-0000-000000000001","name":"Test","context_type":"energy","aggregation_method":"AVG","time_bucket_minutes":15}`},
+		{"missing name", `{"context_type":"energy","measurement_type":"watt","aggregation_method":"AVG","time_bucket_minutes":15}`},
+		{"missing context_type", `{"name":"Test","measurement_type":"watt","aggregation_method":"AVG","time_bucket_minutes":15}`},
+		{"missing measurement_type", `{"name":"Test","context_type":"energy","aggregation_method":"AVG","time_bucket_minutes":15}`},
 	}
 
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			req := httptest.NewRequest(http.MethodPost, "/api/v1/context/rules", strings.NewReader(tc.body))
+			req := withAuthHeaders(httptest.NewRequest(http.MethodPost, "/api/v1/context/rules", strings.NewReader(tc.body)))
 			req.Header.Set("Content-Type", "application/json")
 			rec := httptest.NewRecorder()
 
@@ -134,7 +132,6 @@ func TestCreateRule_InvalidAggregationMethod_Returns400(t *testing.T) {
 	svc := &mockRuleService{t: t}
 
 	body := `{
-		"company_id": "a0000000-0000-0000-0000-000000000001",
 		"name": "Test Rule",
 		"context_type": "energy",
 		"measurement_type": "watt",
@@ -143,7 +140,7 @@ func TestCreateRule_InvalidAggregationMethod_Returns400(t *testing.T) {
 		"is_active": true
 	}`
 
-	req := httptest.NewRequest(http.MethodPost, "/api/v1/context/rules", strings.NewReader(body))
+	req := withAuthHeaders(httptest.NewRequest(http.MethodPost, "/api/v1/context/rules", strings.NewReader(body)))
 	req.Header.Set("Content-Type", "application/json")
 	rec := httptest.NewRecorder()
 
@@ -159,7 +156,6 @@ func TestCreateRule_ZeroTimeBucket_Returns400(t *testing.T) {
 	svc := &mockRuleService{t: t}
 
 	body := `{
-		"company_id": "a0000000-0000-0000-0000-000000000001",
 		"name": "Test Rule",
 		"context_type": "energy",
 		"measurement_type": "watt",
@@ -168,7 +164,7 @@ func TestCreateRule_ZeroTimeBucket_Returns400(t *testing.T) {
 		"is_active": true
 	}`
 
-	req := httptest.NewRequest(http.MethodPost, "/api/v1/context/rules", strings.NewReader(body))
+	req := withAuthHeaders(httptest.NewRequest(http.MethodPost, "/api/v1/context/rules", strings.NewReader(body)))
 	req.Header.Set("Content-Type", "application/json")
 	rec := httptest.NewRecorder()
 
@@ -184,7 +180,6 @@ func TestCreateRule_NegativeTimeBucket_Returns400(t *testing.T) {
 	svc := &mockRuleService{t: t}
 
 	body := `{
-		"company_id": "a0000000-0000-0000-0000-000000000001",
 		"name": "Test Rule",
 		"context_type": "energy",
 		"measurement_type": "watt",
@@ -193,7 +188,7 @@ func TestCreateRule_NegativeTimeBucket_Returns400(t *testing.T) {
 		"is_active": true
 	}`
 
-	req := httptest.NewRequest(http.MethodPost, "/api/v1/context/rules", strings.NewReader(body))
+	req := withAuthHeaders(httptest.NewRequest(http.MethodPost, "/api/v1/context/rules", strings.NewReader(body)))
 	req.Header.Set("Content-Type", "application/json")
 	rec := httptest.NewRecorder()
 
@@ -213,7 +208,7 @@ func TestCreateRule_DuplicateRule_Returns409(t *testing.T) {
 		},
 	}
 
-	req := httptest.NewRequest(http.MethodPost, "/api/v1/context/rules", strings.NewReader(validRuleBody))
+	req := withAuthHeaders(httptest.NewRequest(http.MethodPost, "/api/v1/context/rules", strings.NewReader(validRuleBody)))
 	req.Header.Set("Content-Type", "application/json")
 	rec := httptest.NewRecorder()
 
@@ -233,7 +228,7 @@ func TestCreateRule_ServiceError_Returns500(t *testing.T) {
 		},
 	}
 
-	req := httptest.NewRequest(http.MethodPost, "/api/v1/context/rules", strings.NewReader(validRuleBody))
+	req := withAuthHeaders(httptest.NewRequest(http.MethodPost, "/api/v1/context/rules", strings.NewReader(validRuleBody)))
 	req.Header.Set("Content-Type", "application/json")
 	rec := httptest.NewRecorder()
 
