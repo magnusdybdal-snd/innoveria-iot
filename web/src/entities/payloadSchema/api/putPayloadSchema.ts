@@ -5,7 +5,7 @@ import { API_ROUTES } from "@shared/api/routes";
 /**
  * Puts payload schema data to the API gateway.
  * @param payloadSchemaDataList - A list of payload schemas containing the measurementType, payloadKey, and unit of the payloadSchema to be saved.
- * @param chirpstackProfileId - ID used to identify the profile
+ * @param chirpstackProfileId - Chirpstack ID used to identify the profile
  */
 export const putPayloadSchema = async (
   payloadSchemaDataList: SavePayloadSchemaListRequest,

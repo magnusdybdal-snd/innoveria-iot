@@ -6,9 +6,9 @@ import { apiRequest, serviceClient } from "@shared/api";
 import { API_ROUTES } from "@shared/api/routes";
 
 /**
- * Fetches all payload schemas  for a profile from the device-service via the API gateway.
- * @param chirpstackProfileId - ID used to identify the profile
- * @returns Array of PayloadSchemaApiResponse objects, or an empty array if the request fails
+ * Fetches saved payload schema labels for a Chirpstack profile from device-service.
+ * @param chirpstackProfileId - Chirpstack profile ID to fetch labels for
+ * @returns Array of labeled schema rows, or an empty array if the request fails
  */
 export const getPayloadSchema = async (
   chirpstackProfileId: string,

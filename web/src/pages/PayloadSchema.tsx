@@ -122,9 +122,14 @@ export default function PayloadSchema() {
 
   useEffect(() => {
     if (!profile) return;
-    getSensorProfileConfig(profile).then((eui) => {
-      setPerInstallation(eui?.configurableSchema ?? false);
-    });
+
+    getSensorProfileConfig(profile)
+      .then((config) => {
+        setPerInstallation(config.configurableSchema);
+      })
+      .catch(() => {
+        show("Failed to fetch profile configuration", SNACKBAR_SEVERITY.ERROR);
+      });
   }, [profile]);
 
   useEffect(() => {

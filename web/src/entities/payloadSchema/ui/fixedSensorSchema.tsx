@@ -17,12 +17,12 @@ type InfoMainProps = {
   /*Format for single sensor schema info*/
 }
 /**
- * Renders the primary sensor schema row cells: default unit, description, display name, slug, and an action menu.
+ * Renders a single payload key row with a measurement type dropdown and unit display.
  * @param root0 - Component props
- * @param root0.payloadKey - Key to be identified
- * @param root0.measurementTypes - Types choose between to define the payload key
- * @param root0.value - Type and unit for each chosen measurement type
- * @param root0.onChange - Called with the chosen value when the input changes
+ * @param root0.payloadKey - The raw payload key name from the sensor
+ * @param root0.measurementTypes - Available measurement types to select from
+ * @param root0.value - Currently selected measurement type and unit
+ * @param root0.onChange - Called with the new measurement type and unit when selection changes
  * @returns The rendered sensor schema type row cells
  */
 export function FixedSensorSchema({

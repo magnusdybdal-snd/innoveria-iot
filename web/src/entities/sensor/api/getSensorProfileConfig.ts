@@ -6,16 +6,16 @@ import { apiRequest, serviceClient } from "@shared/api";
 import { API_ROUTES } from "@shared/api/routes";
 
 /**
- * Fetches one sensor profile config based on a given profile from the collection-service.
- * @param profileId - Profile ID used to identify the sensor profile
- * @returns The given SensorProfileConfigApiResponse for the profile
+ * Fetches saved payload schema labels for a Chirpstack profile from device-service.
+ * @param chirpstackProfileId - Chirpstack profile ID to fetch labels for
+ * @returns Array of labeled schema rows, or an empty array if the request fails
  */
 export const getSensorProfileConfig = async (
-  profileId: string,
+  chirpstackProfileId: string,
 ): Promise<SensorProfileConfigApiResponse> => {
   const data = await apiRequest<RawSensorProfileConfigApiResponse>(
     serviceClient,
-    `${API_ROUTES.sensorProfileConfig}${encodeURIComponent(profileId)}`,
+    `${API_ROUTES.sensorProfileConfig}${encodeURIComponent(chirpstackProfileId)}`,
     "GET",
   );
   return {
