@@ -23,7 +23,7 @@ type InfoMainProps = {
  * @param root0.description - Description explaining the measurements type's function
  * @param root0.displayName - The displayed name of the measurements type
  * @param root0.slug - The id of the measurement type
- * @param root0.deprecated - Weather or not the measurement type is deprecated
+ * @param root0.deprecated - Whether the measurement type is deprecated
  * @param root0.onDeprecate - Called when the user clicks "Deprecate" to deprecates the measurement type
  * @returns The rendered measurement type row cells
  */

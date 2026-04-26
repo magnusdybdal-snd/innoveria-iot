@@ -172,7 +172,7 @@ export default function MeasurementTypes() {
           ))}
         </CategoryHeader>
         {!isLoading && sorted.length === 0 && (
-          <NotFoundCard page="measure types" isEmpty={true} />
+          <NotFoundCard page="measure types" />
         )}
         <AddEntityDialog
           open={openAdd}

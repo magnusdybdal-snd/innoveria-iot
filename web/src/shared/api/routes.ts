@@ -6,6 +6,8 @@ export const API_ROUTES = {
   sensors: `/v1/device/sensors`,
   collection: `/v1/collection`,
   sensorProfile: `/v1/device/sensor-profiles`,
+  deviceEUI: `/v1/device/sensors/sample-eui?chirpstack_profile_id=`,
+  sensorProfileConfig: `/v1/device/sensor-profile-config/`,
   sensorLatest: `/v1/collection/latest?device_eui=`,
   companies: `/v1/auth/companies`,
   factories: `/v1/auth/factories`,
@@ -19,4 +21,6 @@ export const API_ROUTES = {
   refresh: `/v1/auth/refresh`,
   measurementTypes: `/v1/device/measurement-types`,
   measurementTypesAll: `/v1/device/measurement-types/all`,
+  payloadSchema: `/v1/device/payload-schema/`,
+  payloadTags: `/v1/collection/payload-tags?device_eui=`,
 };

@@ -147,9 +147,7 @@ export default function Factories() {
             </DeviceRow>
           ))}
         </CategoryHeader>
-        {!isLoading && sorted.length === 0 && (
-          <NotFoundCard page="factories" isEmpty={true} />
-        )}
+        {!isLoading && sorted.length === 0 && <NotFoundCard page="factories" />}
         <AddEntityDialog
           open={openAdd}
           title="Add factory"
