@@ -8,21 +8,33 @@ import (
 
 	"innoveria-iot/device-service/internal/domain"
 	"innoveria-iot/device-service/internal/handlers/dto"
+	"innoveria-iot/pkg/authctx"
 	"innoveria-iot/pkg/json"
 )
 
-// GetPayloadSchemaDrafts returns ChirpStack profile IDs with unlabeled payload schema rows.
-// Admin only — enforcement is handled at the API gateway level.
+// GetPayloadSchemaDrafts returns ChirpStack profile IDs with unlabeled payload schema rows. Admin only.
 //
 // @Summary		List profiles with unlabeled payload schema rows
 // @Tags		payload-schema
 // @Produce		json
 // @Success		200	{object}	dto.DraftProfilesResponse
+// @Failure		401
+// @Failure		403
 // @Failure		500
 // @Router		/payload-schema/drafts [get]
 func GetPayloadSchemaDrafts(svc domain.PayloadSchemaService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
+
+		auth, err := authctx.FromRequest(r)
+		if err != nil {
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
+			return
+		}
+		if !auth.IsAdmin() {
+			json.HandleError(w, http.StatusForbidden, fmt.Errorf("forbidden"), "forbidden")
+			return
+		}
 
 		profileIDs, err := svc.GetDraftProfiles(ctx)
 		if err != nil {
@@ -39,8 +51,7 @@ func GetPayloadSchemaDrafts(svc domain.PayloadSchemaService) http.HandlerFunc {
 	}
 }
 
-// GetPayloadSchemaByProfile returns all payload schema rows for a ChirpStack profile.
-// Admin only — enforcement is handled at the API gateway level.
+// GetPayloadSchemaByProfile returns all payload schema rows for a ChirpStack profile. Admin only.
 //
 // @Summary		Get payload schema for a profile
 // @Tags		payload-schema
@@ -48,11 +59,23 @@ func GetPayloadSchemaDrafts(svc domain.PayloadSchemaService) http.HandlerFunc {
 // @Param		chirpstack_profile_id	path	string	true	"ChirpStack profile ID"
 // @Success		200	{object}	dto.PayloadSchemaListResponse
 // @Failure		400
+// @Failure		401
+// @Failure		403
 // @Failure		500
 // @Router		/payload-schema/{chirpstack_profile_id} [get]
 func GetPayloadSchemaByProfile(svc domain.PayloadSchemaService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
+
+		auth, err := authctx.FromRequest(r)
+		if err != nil {
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
+			return
+		}
+		if !auth.IsAdmin() {
+			json.HandleError(w, http.StatusForbidden, fmt.Errorf("forbidden"), "forbidden")
+			return
+		}
 
 		profileID := r.PathValue("chirpstack_profile_id")
 
@@ -71,8 +94,7 @@ func GetPayloadSchemaByProfile(svc domain.PayloadSchemaService) http.HandlerFunc
 	}
 }
 
-// PostDiscoverPayloadKeys creates draft payload schema rows for a profile from discovered keys.
-// Admin only — enforcement is handled at the API gateway level.
+// PostDiscoverPayloadKeys creates draft payload schema rows for a profile from discovered keys. Admin only.
 //
 // @Summary		Discover payload keys for a profile
 // @Tags		payload-schema
@@ -81,11 +103,23 @@ func GetPayloadSchemaByProfile(svc domain.PayloadSchemaService) http.HandlerFunc
 // @Param		body					body	dto.DiscoverPayloadKeysRequest	true	"Discovered payload keys"
 // @Success		201
 // @Failure		400
+// @Failure		401
+// @Failure		403
 // @Failure		500
 // @Router		/payload-schema/{chirpstack_profile_id}/discover [post]
 func PostDiscoverPayloadKeys(svc domain.PayloadSchemaService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
+
+		auth, err := authctx.FromRequest(r)
+		if err != nil {
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
+			return
+		}
+		if !auth.IsAdmin() {
+			json.HandleError(w, http.StatusForbidden, fmt.Errorf("forbidden"), "forbidden")
+			return
+		}
 
 		profileID := r.PathValue("chirpstack_profile_id")
 
@@ -117,8 +151,7 @@ func PostDiscoverPayloadKeys(svc domain.PayloadSchemaService) http.HandlerFunc {
 	}
 }
 
-// PutPayloadSchemaLabels saves measurement type labels for a profile's payload schema rows.
-// Admin only — enforcement is handled at the API gateway level.
+// PutPayloadSchemaLabels saves measurement type labels for a profile's payload schema rows. Admin only.
 //
 // @Summary		Save payload schema labels for a profile
 // @Tags		payload-schema
@@ -127,12 +160,24 @@ func PostDiscoverPayloadKeys(svc domain.PayloadSchemaService) http.HandlerFunc {
 // @Param		body					body	dto.SavePayloadSchemaLabelsRequest	true	"Labels to save"
 // @Success		204
 // @Failure		400
+// @Failure		401
+// @Failure		403
 // @Failure		422
 // @Failure		500
 // @Router		/payload-schema/{chirpstack_profile_id} [put]
 func PutPayloadSchemaLabels(svc domain.PayloadSchemaService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
+
+		auth, err := authctx.FromRequest(r)
+		if err != nil {
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
+			return
+		}
+		if !auth.IsAdmin() {
+			json.HandleError(w, http.StatusForbidden, fmt.Errorf("forbidden"), "forbidden")
+			return
+		}
 
 		profileID := r.PathValue("chirpstack_profile_id")
 
