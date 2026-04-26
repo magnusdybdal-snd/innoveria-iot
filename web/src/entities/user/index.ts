@@ -11,6 +11,7 @@ export {
   getUsers,
   postLogin,
   postRefresh,
+  postLogout,
   postUser,
   deleteUser,
   patchUser,

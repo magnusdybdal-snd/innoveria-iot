@@ -39,6 +39,7 @@ import { Link as RouterLink, useLocation } from "react-router";
 import { useCurrentUser } from "@app/providers/useCurrentUser";
 import innLogoDark from "@assets/innoveriaDark.png";
 import innLogoLight from "@assets/innoveriaLight.png";
+import { postLogout } from "@entities/user";
 import MainPages from "@shared/config/navigation/mainPageList";
 import SubPages from "@shared/config/navigation/subPageList";
 import { ThemeContext } from "@shared/config/theme/themeContext";
@@ -252,8 +253,10 @@ export default function Menu(menuProps: MenuProps) {
         <Box sx={{ p: 2, display: "flex", justifyContent: "space-between" }}>
           <Button
             onClick={() => {
-              localStorage.removeItem("access_token");
-              window.location.href = "/Login";
+              postLogout().finally(() => {
+                localStorage.removeItem("access_token");
+                window.location.href = "/Login";
+              });
             }}
             variant="outlined"
             sx={{

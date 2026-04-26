@@ -1,6 +1,6 @@
 import axios, { type AxiosInstance, type AxiosResponse } from "axios";
 
-import { postRefresh, type TokenApiResponse } from "@entities/user";
+import { postLogout, postRefresh, type TokenApiResponse } from "@entities/user";
 
 // Client for all microservice requests — routed through the api-gateway
 export const serviceClient = axios.create({
@@ -50,8 +50,10 @@ serviceClient.interceptors.response.use(
     if (error.response?.status === 401 && isRefreshRequest) {
       isRefreshing = false;
       refreshPromise = null;
-      localStorage.removeItem("access_token");
-      window.location.href = "/Login";
+      void postLogout().finally(() => {
+        localStorage.removeItem("access_token");
+        window.location.href = "/Login";
+      });
       return Promise.reject(error);
     }
 
@@ -93,8 +95,10 @@ serviceClient.interceptors.response.use(
         refreshPromise = null;
 
         // Refresh fails → logout
-        localStorage.removeItem("access_token");
-        window.location.href = "/Login";
+        void postLogout().finally(() => {
+          localStorage.removeItem("access_token");
+          window.location.href = "/Login";
+        });
 
         return Promise.reject(refreshError);
       }

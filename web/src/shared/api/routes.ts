@@ -18,4 +18,5 @@ export const API_ROUTES = {
   users: `/v1/auth/users`,
   login: `/v1/auth/login`,
   refresh: `/v1/auth/refresh`,
+  logout: `/v1/auth/logout`,
 };
