@@ -269,6 +269,7 @@ services:
       - ./pkg:/pkg
     environment:
       - GO_ENV=development
+      - ERP_AGENT_JWT_SECRET=secret
     depends_on:
       - erp-db
 
