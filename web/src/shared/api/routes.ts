@@ -12,6 +12,8 @@ export const API_ROUTES = {
   factoryAreas: `/v1/auth/factory-areas`,
   companiesGet: `/v1/auth/companies`,
   companiesPost: `/v1/onboarding/company`,
+  issueCompanyERPAgentToken: (companyId: string) =>
+    `/v1/auth/companies/${encodeURIComponent(companyId)}/erp-agent-token`,
   contextRules: `/v1/context/rules`,
   contextData: `/v1/context/data`,
   contextOrders: `/v1/context/orders`,
