@@ -1,3 +1,4 @@
+import CircularProgress from "@mui/material/CircularProgress";
 import Typography from "@mui/material/Typography";
 import { Navigate, Outlet } from "react-router";
 
@@ -5,15 +6,15 @@ import { useCurrentUser } from "@app/providers/useCurrentUser";
 
 /**
  * Route guard that restricts access to authenticated users.
- * - Renders nothing while the user fetch is in progress.
+ * - Shows a spinner while the user fetch is in progress.
  * - Shows an error message if the fetch failed (distinguishes backend failure from not being logged in).
  * - Redirects unauthenticated users to /Login.
- * @returns The child routes via Outlet, a redirect to "/Login", an error message, or null while loading
+ * @returns The child routes via Outlet, a redirect to "/Login", an error message, or a spinner while loading
  */
 export default function ProtectedRoute() {
   const { user, isLoading, error } = useCurrentUser();
 
-  if (isLoading) return null;
+  if (isLoading) return <CircularProgress />;
 
   if (error) {
     return (
