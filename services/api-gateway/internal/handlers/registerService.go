@@ -6,6 +6,11 @@ import (
 	"innoveria-iot/pkg/json"
 )
 
+// NotFound returns a 404 response. Use this to explicitly block specific routes.
+func NotFound(w http.ResponseWriter, r *http.Request) {
+	http.NotFound(w, r)
+}
+
 // RegisterServiceError TODO(@vinjar): add proper documentation.
 func RegisterServiceError(mux *http.ServeMux, route, name string) {
 	handler := func(w http.ResponseWriter, r *http.Request) {

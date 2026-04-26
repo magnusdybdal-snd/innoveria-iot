@@ -21,6 +21,10 @@ func NewRouter(cfg *config.Config) *http.ServeMux {
 		Proxy routes microservice:
 	*/
 
+	// Block internal-only company mutation endpoints
+	mux.HandleFunc("POST "+AUTHENTICATION_ROUTE+"/companies", handlers.NotFound)
+	mux.HandleFunc("DELETE "+AUTHENTICATION_ROUTE+"/companies/", handlers.NotFound)
+
 	// auth service
 	handlers.RegisterProxyService(mux, AUTHENTICATION_ROUTE, "auth-service", cfg.AuthSvcURL, []string{
 		"/companies",
