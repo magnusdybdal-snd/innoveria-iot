@@ -145,7 +145,10 @@ export function CompanyERPTokenDialog({
             backgroundColor: "primary.main",
             color: "primary.contrastText",
           }}
-          onClick={onGenerate}
+          onClick={() => {
+            setIsTokenVisible(false);
+            onGenerate();
+          }}
           disabled={isLoading}
         >
           Regenerate
