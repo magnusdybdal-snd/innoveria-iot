@@ -161,7 +161,7 @@ export default function Companies() {
     setSelectedCompany({ companyId, name: companyName });
     setERPToken(null);
     setERPTokenError(null);
-    generateERPToken(companyId);
+    setERPTokenLoading(false);
   };
 
   const handleCopyERPToken = () => {
