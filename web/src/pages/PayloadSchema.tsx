@@ -3,11 +3,10 @@ import { useEffect, useState } from "react";
 import {
   getMeasurementTypesAll,
   type MeasurementTypeApiResponse,
-  type MeasurementTypeSortKey,
-  type SortDirection,
 } from "@entities/measurementType";
 import {
   FixedSensorSchema,
+  getPayloadSchema,
   getPayloadTags,
   putPayloadSchema,
 } from "@entities/payloadSchema";
@@ -54,10 +53,6 @@ export default function PayloadSchema() {
   const { sensors } = useSensors();
   const [payloadKeys, setPayloadKeys] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [sortConfig, setSortConfig] = useState<{
-    key: MeasurementTypeSortKey | null;
-    direction: SortDirection;
-  }>({ key: null, direction: "asc" });
   const [profile, setProfile] = useState<string>("");
   const [sensor, setSensor] = useState<string>("");
   const [perInstallation, setPerInstallation] = useState<boolean>(false);
@@ -140,12 +135,25 @@ export default function PayloadSchema() {
 
     getDeviceEUI(profile)
       .then((eui) => {
-        const finalEui = eui ?? "b000000000000001"; //TODO: Get actual eui.
-        return getPayloadTags(finalEui);
+        if (!eui) {
+          setPayloadKeys([]);
+          setSchemaRows({});
+          return Promise.all([[], []]);
+        }
+        return Promise.all([getPayloadTags(eui), getPayloadSchema(profile)]);
       })
-      .then((keys) => {
+      .then((result) => {
+        if (!result) return;
+        const [keys, existing] = result;
         setPayloadKeys(keys);
-        setSchemaRows({});
+        setSchemaRows(
+          Object.fromEntries(
+            existing.map((row) => [
+              row.payloadKey,
+              { measurementType: row.measurementType, unit: row.unit },
+            ]),
+          ),
+        );
       });
   }, [profile, perInstallation]);
 
@@ -153,30 +161,24 @@ export default function PayloadSchema() {
     if (!sensor || !perInstallation) return;
 
     getSensorMetrics(sensor).then((metrics) => {
-      setPayloadKeys(metrics.map((m) => m.payloadKey));
-
-      setSchemaRows(
-        Object.fromEntries(
-          metrics.map((m) => [
-            m.payloadKey,
-            {
-              measurementType: m.measurementType,
-              unit: m.unit,
-            },
-          ]),
-        ),
-      );
+      if (metrics.length > 0) {
+        setPayloadKeys(metrics.map((m) => m.payloadKey));
+        setSchemaRows(
+          Object.fromEntries(
+            metrics.map((m) => [
+              m.payloadKey,
+              { measurementType: m.measurementType, unit: m.unit },
+            ]),
+          ),
+        );
+      } else {
+        getPayloadTags(sensor).then((keys) => {
+          setPayloadKeys(keys);
+          setSchemaRows({});
+        });
+      }
     });
   }, [sensor, perInstallation]);
-
-  function handleSort(column: string) {
-    const col = column as MeasurementTypeSortKey;
-    setSortConfig((prev) =>
-      prev.key === col
-        ? { key: col, direction: prev.direction === "asc" ? "desc" : "asc" }
-        : { key: col, direction: "asc" },
-    );
-  }
 
   const filteredSensors = sensors.filter((sensor) => {
     return sensor.sensorProfileId === profile;
@@ -197,7 +199,7 @@ export default function PayloadSchema() {
           <DropDownSelect
             options={profileOptions}
             value={profile}
-            onChange={(value) => setProfile(value)} //TODO: Get actual profile.
+            onChange={(value) => setProfile(value)}
           />
         </Box>
         <br />
@@ -227,8 +229,6 @@ export default function PayloadSchema() {
                 <CategoryHeader
                   categories={payloadDetails}
                   columns={payloadDetails.length}
-                  sortConfig={sortConfig}
-                  onSort={handleSort}
                   half={true}
                 >
                   {isLoading && <p>Loading...</p>}
@@ -283,8 +283,6 @@ export default function PayloadSchema() {
                     <CategoryHeader
                       categories={payloadDetails}
                       columns={payloadDetails.length}
-                      sortConfig={sortConfig}
-                      onSort={handleSort}
                       half={true}
                     >
                       {isLoading && <p>Loading...</p>}
