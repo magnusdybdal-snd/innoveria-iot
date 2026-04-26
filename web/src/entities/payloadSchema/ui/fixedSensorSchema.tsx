@@ -14,16 +14,16 @@ type InfoMainProps = {
 };
 
 {
-  /*Format for single measurement type info*/
+  /*Format for single sensor schema info*/
 }
 /**
- * Renders the primary measurement type row cells: default unit, description, display name, slug, and an action menu.
+ * Renders the primary sensor schema row cells: default unit, description, display name, slug, and an action menu.
  * @param root0 - Component props
- * @param root0.payloadKey - Unit tied to the measurement type
- * @param root0.measurementTypes - Description explaining the measurements type's function
- * @param root0.value - Description explaining the measurements type's function
- * @param root0.onChange - Description explaining the measurements type's function
- * @returns The rendered measurement type row cells
+ * @param root0.payloadKey - Key to be identified
+ * @param root0.measurementTypes - Types choose between to define the payload key
+ * @param root0.value - Type and unit for each chosen measurement type
+ * @param root0.onChange - Called with the chosen value when the input changes
+ * @returns The rendered sensor schema type row cells
  */
 export function FixedSensorSchema({
   payloadKey,

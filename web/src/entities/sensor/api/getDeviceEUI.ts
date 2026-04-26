@@ -3,7 +3,7 @@ import { apiRequest, serviceClient } from "@shared/api";
 import { API_ROUTES } from "@shared/api/routes";
 
 /**
- * Fetches one EUI based on a given chirpstack profile from the collection-service.
+ * Fetches a sample EUI based on a given chirpstack profile from the device-service.
  * @param profileId - Chirpstack profile ID used to identify the EUI
  * @returns The given EUI for the profile, or null if the request fails
  */

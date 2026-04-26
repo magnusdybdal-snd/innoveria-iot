@@ -12,6 +12,11 @@ export {
   getSensorProfiles,
   fetchSensorReading,
   postSensor,
+  deleteSensor,
+  getSensorMetrics,
+  getSensorProfileConfig,
+  putSensorProfileConfig,
+  putSensorMetrics,
 } from "./api";
 export { SensorMainInfo, SensorAllInfoPopUp, SensorsGenInfo } from "./ui";
 export { sortSensors } from "./lib/sortSensors";

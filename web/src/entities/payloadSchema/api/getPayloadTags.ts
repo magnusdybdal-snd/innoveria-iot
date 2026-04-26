@@ -4,9 +4,8 @@ import { API_ROUTES } from "@shared/api/routes";
 
 /**
  * Fetches all payload tags from the collection-service via the API gateway.
- * Maps snake_case API response keys to camelCase.
  * @param deviceEUI - Device EUI used to identify the tags
- * @returns Array of PayloadTagsApiResponse objects, or an empty array if the request fails
+ * @returns Array of RawPayloadTagsApiResponse objects, or an empty array if the request fails
  */
 export const getPayloadTags = async (deviceEUI: string): Promise<string[]> => {
   try {

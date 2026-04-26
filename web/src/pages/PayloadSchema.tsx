@@ -11,12 +11,15 @@ import {
   getPayloadTags,
   putPayloadSchema,
 } from "@entities/payloadSchema";
-import { getSensorProfiles, useSensors } from "@entities/sensor";
-import { getSensorMetrics } from "@entities/sensor/api";
+import {
+  getSensorMetrics,
+  getSensorProfileConfig,
+  getSensorProfiles,
+  putSensorMetrics,
+  putSensorProfileConfig,
+  useSensors,
+} from "@entities/sensor";
 import { getDeviceEUI } from "@entities/sensor/api/getDeviceEUI.ts";
-import { getSensorProfileConfig } from "@entities/sensor/api/getSensorProfileConfig.ts";
-import { putSensorMetrics } from "@entities/sensor/api/putSensorMetrics.ts";
-import { putSensorProfileConfig } from "@entities/sensor/api/putSensorProfileConfig.ts";
 import type { SensorProfileApiResponse } from "@entities/sensor/model/sensorSchema.ts";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -38,8 +41,8 @@ import { SubPageHeader } from "@shared/ui/SubPageHeader";
 const payloadDetails: string[] = ["Payload key", "Measurement type", "Unit"];
 
 /**
- * Full-page view listing all measure types registered on the site.
- * @returns The rendered MeasurementTypes page
+ * Full-page view listing sensor schema from a given profile registered on the site.
+ * @returns The rendered SensorSchema page
  */
 export default function PayloadSchema() {
   const [sensorProfiles, setSensorProfiles] = useState<

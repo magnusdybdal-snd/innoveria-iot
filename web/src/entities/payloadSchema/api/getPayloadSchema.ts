@@ -6,10 +6,9 @@ import { apiRequest, serviceClient } from "@shared/api";
 import { API_ROUTES } from "@shared/api/routes";
 
 /**
- * Fetches all payload tags from the collection-service via the API gateway.
- * Maps snake_case API response keys to camelCase.
- * @param chirpstackProfileId - Device EUI used to identify the tags
- * @returns Array of PayloadTagsApiResponse objects, or an empty array if the request fails
+ * Fetches all payload schemas  for a profile from the device-service via the API gateway.
+ * @param chirpstackProfileId - ID used to identify the profile
+ * @returns Array of PayloadSchemaApiResponse objects, or an empty array if the request fails
  */
 export const getPayloadSchema = async (
   chirpstackProfileId: string,
@@ -22,7 +21,7 @@ export const getPayloadSchema = async (
     );
     return data.schemas ?? [];
   } catch (error) {
-    console.error("Failed to get payload tags:", error);
+    console.error("Failed to get payload schemas:", error);
     return [];
   }
 };

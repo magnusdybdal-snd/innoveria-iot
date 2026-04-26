@@ -5,11 +5,10 @@ export type {
   SavePayloadSchemaListRequest,
   RawPayloadTagsApiResponse,
 } from "./model/payloadSchemaSchema.ts";
-export { getPayloadTags, putPayloadSchema } from "./api";
+export { getPayloadTags, putPayloadSchema, getPayloadSchema } from "./api";
 export { FixedSensorSchema } from "./ui";
-export { sortMeasurementTypes } from "./lib/sortMeasurementTypes.ts";
+export { sortPayloadSchema } from "./lib/sortPayloadSchema.ts";
 export type {
-  MeasurementTypeSortKey,
+  PayloadSchemasSortKey,
   SortDirection,
-} from "./lib/sortMeasurementTypes.ts";
-export { useMeasurementTypes } from "./model/useMeasurementTypes.ts";
+} from "./lib/sortPayloadSchema.ts";

@@ -3,9 +3,9 @@ import { apiRequest, serviceClient } from "@shared/api";
 import { API_ROUTES } from "@shared/api/routes";
 
 /**
- * Puts new payload schema data to the API.
+ * Puts sensor metrics data to the API.
  * @param sensorMetricsDataList - A list of metrics containing the measurementType, payloadKey, and unit of the sensor metrics to be saved.
- * @param deviceEui -
+ * @param deviceEui - Device EUI used to identify the sensor
  */
 export const putSensorMetrics = async (
   sensorMetricsDataList: SaveSensorMetricListRequest,

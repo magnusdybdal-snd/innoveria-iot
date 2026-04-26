@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import {
+  deleteSensor,
   getSensorProfiles,
   postSensor,
   SensorAllInfoPopUp,
@@ -13,7 +14,6 @@ import {
   type SensorSortKey,
   type SortDirection,
 } from "@entities/sensor";
-import { deleteSensor } from "@entities/sensor/api/deleteSensor";
 import { AddDevice } from "@features/addDevice";
 import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";

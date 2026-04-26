@@ -14,10 +14,10 @@ export interface RawSensorMetricListApiResponse {
 }
 
 /**
- * Fetches all sensors from the collection-service via the API gateway.
- * @param deviceEui -
+ * Fetches all sensor metrics of a given sensor from the device-service via the API gateway.
+ * @param deviceEui - Device EUI used to identify the sensor
  * Maps snake_case API response keys to camelCase.
- * @returns Array of SensorApiResponse objects, or an empty array if the request fails
+ * @returns Array of SensorMetricApiResponse objects, or an empty array if the request fails
  */
 export const getSensorMetrics = async (
   deviceEui: string,
@@ -35,7 +35,7 @@ export const getSensorMetrics = async (
       unit: m.unit,
     }));
   } catch (error) {
-    console.error("Failed to fetch sensors:", error);
+    console.error("Failed to fetch sensor metrics:", error);
     return [];
   }
 };

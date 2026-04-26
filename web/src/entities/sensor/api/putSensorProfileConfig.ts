@@ -3,9 +3,9 @@ import { apiRequest, serviceClient } from "@shared/api";
 import { API_ROUTES } from "@shared/api/routes";
 
 /**
- * Puts new payload schema data to the API.
+ * Puts sensor profile metrics data to the API.
  * @param sensorProfileConfigData - A list of metrics containing the measurementType, payloadKey, and unit of the sensor metrics to be saved.
- * @param profileId -
+ * @param profileId - Profile ID used to identify the sensor profile
  */
 export const putSensorProfileConfig = async (
   sensorProfileConfigData: SaveSensorProfileConfigListRequest,

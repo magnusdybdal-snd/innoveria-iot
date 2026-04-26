@@ -6,9 +6,9 @@ import { apiRequest, serviceClient } from "@shared/api";
 import { API_ROUTES } from "@shared/api/routes";
 
 /**
- * Fetches one EUI based on a given chirpstack profile from the collection-service.
- * @param profileId - Chirpstack profile ID used to identify the EUI
- * @returns The given EUI for the profile, or null if the request fails
+ * Fetches one sensor profile config based on a given profile from the collection-service.
+ * @param profileId - Profile ID used to identify the sensor profile
+ * @returns The given SensorProfileConfigApiResponse for the profile
  */
 export const getSensorProfileConfig = async (
   profileId: string,
