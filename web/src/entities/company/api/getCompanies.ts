@@ -3,7 +3,7 @@ import { apiRequest, serviceClient } from "@shared/api";
 import { API_ROUTES } from "@shared/api/routes";
 
 type RawCompany = {
-  id?: string;
+  id: string;
   name: string;
   address: string;
   created_at: string;
@@ -27,10 +27,8 @@ export const getCompanies = async (): Promise<CompanyApiResponse[]> => {
   );
 
   return (data.companies ?? []).map((s) => {
-    const companyId = s.id ?? "";
-
     return {
-      companyId,
+      companyId: s.id,
       name: s.name,
       address: s.address,
       createdAt: s.created_at,
