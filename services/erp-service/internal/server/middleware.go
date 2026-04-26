@@ -10,6 +10,9 @@ import (
 	"github.com/golang-jwt/jwt/v5/request"
 )
 
+// SeededCompanyID is a dev only const used to insert correct erp data with the dev company
+const SeededCompanyID = "a0000000-0000-0000-0000-000000000001"
+
 // RequireAgentAuth validates ERP agent bearer JWTs and injects a trusted
 // company header for downstream handlers.
 func RequireAgentAuth(jwtSecret string, next http.Handler) http.Handler {

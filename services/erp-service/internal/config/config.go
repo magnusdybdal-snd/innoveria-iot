@@ -16,6 +16,7 @@ const defaultReconcileInterval = 30 * time.Second
 type Config struct {
 	Addr  string
 	DBURL string
+	GOEnv string
 
 	ReconcileInterval    time.Duration
 	ERP_AGENT_JWT_SECRET string
@@ -30,6 +31,7 @@ func Load() *Config {
 	dbPassword := env.Get("DB_PASSWORD", "erp")
 	dbName := env.Get("DB_NAME", "erp")
 	sslmode := env.Get("DB_SSLMODE", "disable")
+	goEnv := env.Get("GO_ENV", "development")
 
 	reconcileIntervalRaw := env.Get("ERP_RECONCILE_INTERVAL", "30s")
 	reconcileInterval, err := time.ParseDuration(reconcileIntervalRaw)
@@ -62,6 +64,7 @@ func Load() *Config {
 			dbName,
 			sslmode,
 		),
+		GOEnv:                goEnv,
 		ReconcileInterval:    reconcileInterval,
 		ERP_AGENT_JWT_SECRET: erpAgentSecret,
 	}
