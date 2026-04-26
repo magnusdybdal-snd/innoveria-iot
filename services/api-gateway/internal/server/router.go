@@ -51,6 +51,7 @@ func NewRouter(cfg *config.Config) *http.ServeMux {
 	handlers.RegisterProxyService(mux, COLLECTION_ROUTE, "collection-service", cfg.CollSvcURL, []string{
 		"/latest",
 		"/measurements",
+		"/payload-tags",
 	})
 
 	// Onboarding service
