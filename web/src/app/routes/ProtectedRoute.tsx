@@ -1,3 +1,4 @@
+import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import Typography from "@mui/material/Typography";
 import { Navigate, Outlet } from "react-router";
@@ -18,9 +19,12 @@ export default function ProtectedRoute() {
 
   if (error) {
     return (
-      <Typography color="error" sx={{ p: 4 }}>
-        Could not verify your session. Please reload the page.
-      </Typography>
+      <div style={{ padding: 32 }}>
+        <Typography color="error">Could not verify your session.</Typography>
+        <Button onClick={() => window.location.reload()} sx={{ mt: 2 }}>
+          Retry
+        </Button>
+      </div>
     );
   }
 
