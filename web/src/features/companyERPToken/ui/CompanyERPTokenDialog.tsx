@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -120,46 +121,76 @@ export function CompanyERPTokenDialog({
           </Typography>
         )}
       </DialogContent>
-      <DialogActions>
+      <DialogActions
+        sx={{
+          px: 3,
+          pb: 2,
+          pt: 1,
+          justifyContent: "space-between",
+          alignItems: "center",
+          gap: 1,
+          flexWrap: "wrap",
+        }}
+      >
         <Button
+          variant="outlined"
           sx={{
-            backgroundColor: "primary.main",
-            color: "primary.contrastText",
+            color: "primary.main",
+            borderColor: "primary.main",
+            "&:hover": {
+              borderColor: "primary.main",
+              backgroundColor: "action.hover",
+            },
           }}
           onClick={() => setIsTokenVisible((prev) => !prev)}
           disabled={!token || isLoading}
         >
           {isTokenVisible ? "Hide token" : "Show token"}
         </Button>
-        <Button
-          sx={{
-            backgroundColor: "primary.main",
-            color: "primary.contrastText",
-          }}
-          onClick={onClose}
-        >
-          Close
-        </Button>
-        <Button
-          sx={{
-            backgroundColor: "primary.main",
-            color: "primary.contrastText",
-          }}
-          onClick={onGenerate}
-          disabled={isLoading}
-        >
-          Regenerate
-        </Button>
-        <Button
-          sx={{
-            backgroundColor: "primary.main",
-            color: "primary.contrastText",
-          }}
-          onClick={onCopy}
-          disabled={!token || isLoading}
-        >
-          Copy token
-        </Button>
+        <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+          <Button
+            sx={{
+              backgroundColor: "primary.main",
+              color: "primary.contrastText",
+            }}
+            onClick={() => {
+              setIsTokenVisible(false);
+              onGenerate();
+            }}
+            disabled={isLoading}
+          >
+            {token ? "Regenerate" : "Generate"}
+          </Button>
+          <Button
+            variant="outlined"
+            sx={{
+              color: "primary.main",
+              borderColor: "primary.main",
+              "&:hover": {
+                borderColor: "primary.main",
+                backgroundColor: "action.hover",
+              },
+            }}
+            onClick={onCopy}
+            disabled={!token || isLoading}
+          >
+            Copy token
+          </Button>
+          <Button
+            variant="outlined"
+            sx={{
+              color: "primary.main",
+              borderColor: "primary.main",
+              "&:hover": {
+                borderColor: "primary.main",
+                backgroundColor: "action.hover",
+              },
+            }}
+            onClick={onClose}
+          >
+            Close
+          </Button>
+        </Box>
       </DialogActions>
     </Dialog>
   );
