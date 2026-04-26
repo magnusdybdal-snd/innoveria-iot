@@ -235,7 +235,7 @@ export default function PayloadSchema() {
                 <CategoryHeader
                   categories={payloadDetails}
                   columns={payloadDetails.length}
-                  half={true}
+                  fit={true}
                 >
                   {isLoadingKeys && <p>Loading...</p>}
                   {/*TODO: make a better looking loading indicator */}
@@ -270,7 +270,11 @@ export default function PayloadSchema() {
                   Save
                 </Button>
                 {!isLoadingKeys && payloadKeys.length === 0 && (
-                  <NotFoundCard page="measure types" isEmpty={true} />
+                  <NotFoundCard
+                    page="readings"
+                    action="available"
+                    extra=" — deploy a sensor and wait for its first transmission"
+                  />
                 )}
               </>
             ) : (
@@ -289,7 +293,7 @@ export default function PayloadSchema() {
                     <CategoryHeader
                       categories={payloadDetails}
                       columns={payloadDetails.length}
-                      half={true}
+                      fit={true}
                     >
                       {isLoadingKeys && <p>Loading...</p>}
                       {/*TODO: make a better looking loading indicator */}
@@ -324,7 +328,7 @@ export default function PayloadSchema() {
                       Save
                     </Button>
                     {!isLoadingKeys && payloadKeys.length === 0 && (
-                      <NotFoundCard page="measure types" isEmpty={true} />
+                      <NotFoundCard page="measure types" />
                     )}
                   </>
                 ) : null}

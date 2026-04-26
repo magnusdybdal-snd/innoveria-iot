@@ -269,7 +269,10 @@ export default function Sensors() {
           />
         )}
         {!isLoading && filteredSensors.length === 0 && (
-          <NotFoundCard page="Sensors" isEmpty={sorted.length === 0} />
+          <NotFoundCard
+            page="Sensors"
+            action={sorted.length === 0 ? "found" : "registered"}
+          />
         )}
       </PageContent>
 
