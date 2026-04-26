@@ -50,7 +50,7 @@ serviceClient.interceptors.response.use(
     if (error.response?.status === 401 && isRefreshRequest) {
       isRefreshing = false;
       refreshPromise = null;
-      localStorage.clear();
+      localStorage.removeItem("access_token");
       window.location.href = "/Login";
       return Promise.reject(error);
     }
@@ -93,7 +93,7 @@ serviceClient.interceptors.response.use(
         refreshPromise = null;
 
         // Refresh fails → logout
-        localStorage.clear();
+        localStorage.removeItem("access_token");
         window.location.href = "/Login";
 
         return Promise.reject(refreshError);

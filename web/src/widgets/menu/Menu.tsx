@@ -253,7 +253,6 @@ export default function Menu(menuProps: MenuProps) {
           <Button
             onClick={() => {
               localStorage.removeItem("access_token");
-              localStorage.removeItem("refresh_token");
               window.location.href = "/Login";
             }}
             variant="outlined"
