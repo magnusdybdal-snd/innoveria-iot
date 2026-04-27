@@ -838,40 +838,10 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "production_resource": {
-<<<<<<< HEAD
-                    "description": "Optional — ERP ProductionResource ID",
-                    "type": "integer"
-=======
                     "description": "Optional — int64 ERP production resource ID",
                     "type": "integer"
-                }
-            }
-        },
-        "dto.DiscoverPayloadKeysRequest": {
-            "type": "object",
-            "required": [
-                "payload_keys"
-            ],
-            "properties": {
-                "payload_keys": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            }
-        },
-        "dto.DraftProfilesResponse": {
-            "type": "object",
-            "properties": {
-                "profile_ids": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
->>>>>>> origin/dev
                 },
-                "total_count": {
+                "voltage": {
                     "type": "integer"
                 }
             }
@@ -1246,7 +1216,7 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "factory_area_id": {
-                    "description": "Optional — omit if not applicable",
+                    "description": "Optional — UUID, omit if service not yet available",
                     "type": "string"
                 },
                 "factory_id": {
@@ -1256,7 +1226,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "production_resource": {
-                    "description": "Optional — ERP ProductionResource ID",
+                    "description": "Optional — int64 ERP production resource ID",
                     "type": "integer"
                 },
                 "voltage": {

@@ -69,7 +69,7 @@ definitions:
       name:
         type: string
       production_resource:
-        description: Optional — ERP ProductionResource ID
+        description: Optional — int64 ERP production resource ID
         type: integer
       voltage:
         type: integer
@@ -328,14 +328,14 @@ definitions:
       electricity_sensor:
         type: boolean
       factory_area_id:
-        description: Optional — omit if not applicable
+        description: Optional — UUID, omit if service not yet available
         type: string
       factory_id:
         type: string
       name:
         type: string
       production_resource:
-        description: Optional — ERP ProductionResource ID
+        description: Optional — int64 ERP production resource ID
         type: integer
       voltage:
         type: integer
