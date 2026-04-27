@@ -263,13 +263,14 @@ services:
     image: postgres:16-alpine
     restart: unless-stopped
     volumes:
-      - context-data:/var/lib/postgresql/data
+      - erp-data:/var/lib/postgresql/data
     environment:
       - POSTGRES_USER=${ERP_DB_USER}
       - POSTGRES_PASSWORD=${ERP_DB_PASSWORD}
       - POSTGRES_DB=${ERP_DB_NAME}
 
 volumes:
+  erp-data:
   chirpstack-secrets:
   chirpstack-data:
   collection-data:
