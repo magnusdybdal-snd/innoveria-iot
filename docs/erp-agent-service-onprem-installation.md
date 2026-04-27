@@ -48,7 +48,7 @@ Notes:
 - `MOCK_MONITOR` must not be enabled in production.
 - `PORT` is currently not used for inbound HTTP in this service, but leaving default is safe.
 
-## 3) Get `JWT_TOKEN` from the website (platform admin)
+## 3) Get `Company ERP Token` from the website (platform admin)
 
 Use a platform admin account in the web app and extract a valid **access JWT**:
 
