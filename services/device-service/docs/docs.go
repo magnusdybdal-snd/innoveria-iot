@@ -491,8 +491,8 @@ const docTemplate = `{
                 "summary": "Lists all sensors.",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Production resource",
+                        "type": "integer",
+                        "description": "Production resource (ERP ProductionResource ID)",
                         "name": "production_resource_id",
                         "in": "query"
                     }
@@ -838,6 +838,10 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "production_resource": {
+<<<<<<< HEAD
+                    "description": "Optional — ERP ProductionResource ID",
+                    "type": "integer"
+=======
                     "description": "Optional — int64 ERP production resource ID",
                     "type": "integer"
                 }
@@ -865,6 +869,7 @@ const docTemplate = `{
                     "items": {
                         "type": "string"
                     }
+>>>>>>> origin/dev
                 },
                 "total_count": {
                     "type": "integer"
@@ -1241,7 +1246,7 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "factory_area_id": {
-                    "description": "Optional — UUID, omit if service not yet available",
+                    "description": "Optional — omit if not applicable",
                     "type": "string"
                 },
                 "factory_id": {
@@ -1251,8 +1256,8 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "production_resource": {
-                    "description": "Optional — UUID, omit if service not yet available",
-                    "type": "string"
+                    "description": "Optional — ERP ProductionResource ID",
+                    "type": "integer"
                 },
                 "voltage": {
                     "type": "integer"

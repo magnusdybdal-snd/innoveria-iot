@@ -19,7 +19,7 @@ import (
 // @Summary 	Lists all sensors.
 // @Tags 		sensors
 // @Produce 	json
-// @Param       production_resource_id    query    string    false    "Production resource"
+// @Param       production_resource_id    query    integer    false    "Production resource (ERP ProductionResource ID)"
 // @Success 	200 {object} dto.SensorListResponse
 // @Failure 	400
 // @Failure 	500
@@ -34,12 +34,12 @@ func GetSensors(svc domain.SensorService) http.HandlerFunc {
 		productionResourceID := r.URL.Query().Get("production_resource_id")
 
 		if productionResourceID != "" {
-			parsedID, parseErr := strconv.ParseInt(productionResourceID, 10, 64)
-			if parseErr != nil || parsedID <= 0 {
+			prID, parseErr := strconv.ParseInt(productionResourceID, 10, 64)
+			if parseErr != nil || prID < 1 {
 				json.HandleError(w, http.StatusBadRequest, fmt.Errorf("production_resource_id must be a positive integer"), "bad request")
 				return
 			}
-			data, err = svc.GetByProductionResourceID(ctx, parsedID)
+			data, err = svc.GetByProductionResourceID(ctx, prID)
 		} else {
 			data, err = svc.GetAll(ctx)
 		}
