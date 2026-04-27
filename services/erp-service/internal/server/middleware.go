@@ -14,6 +14,11 @@ import (
 // SeededCompanyID is a dev only const used to insert correct erp data with the dev company
 const seededCompanyID = "a0000000-0000-0000-0000-000000000001"
 
+const (
+	erpAgentAudience = "erp-agent-service" // see @auth-service/company-service
+	erpAgentTokenUse = "erp_agent_runtime" // see @auth-service/company-service
+)
+
 // RequireAgentAuth validates ERP agent bearer JWTs and injects a trusted
 // company header for downstream handlers.
 func RequireAgentAuth(jwtSecret string, goEnv string, next http.Handler) http.Handler {
@@ -45,9 +50,19 @@ func RequireAgentAuth(jwtSecret string, goEnv string, next http.Handler) http.Ha
 				return nil, errors.New("invalid signing method")
 			}
 			return []byte(jwtSecret), nil
-		}, jwt.WithIssuer("auth-service"))
-		if err != nil || !token.Valid {
+		}, jwt.WithIssuer("auth-service"), jwt.WithAudience(erpAgentAudience))
+		if err != nil {
 			json.HandleError(w, http.StatusUnauthorized, errors.New("invalid token"), "unauthorized")
+			return
+		}
+		if token == nil || !token.Valid {
+			json.HandleError(w, http.StatusUnauthorized, errors.New("invalid token"), "unauthorized")
+			return
+		}
+
+		tokenUse, _ := claims["token_use"].(string)
+		if tokenUse != erpAgentTokenUse {
+			json.HandleError(w, http.StatusUnauthorized, errors.New("invalid token use"), "unauthorized")
 			return
 		}
 
