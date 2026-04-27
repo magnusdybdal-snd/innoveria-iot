@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -18,7 +19,7 @@ import (
 // @Summary 	Lists all sensors.
 // @Tags 		sensors
 // @Produce 	json
-// @Param       production_resource_id    query    string    false    "Production resource"
+// @Param       production_resource_id    query    integer    false    "Production resource (ERP ProductionResource ID)"
 // @Success 	200 {object} dto.SensorListResponse
 // @Failure 	400
 // @Failure 	500
@@ -33,12 +34,12 @@ func GetSensors(svc domain.SensorService) http.HandlerFunc {
 		productionResourceID := r.URL.Query().Get("production_resource_id")
 
 		if productionResourceID != "" {
-			parsedID, parseErr := strconv.ParseInt(productionResourceID, 10, 64)
-			if parseErr != nil || parsedID <= 0 {
+			prID, parseErr := strconv.ParseInt(productionResourceID, 10, 64)
+			if parseErr != nil || prID < 1 {
 				json.HandleError(w, http.StatusBadRequest, fmt.Errorf("production_resource_id must be a positive integer"), "bad request")
 				return
 			}
-			data, err = svc.GetByProductionResourceID(ctx, parsedID)
+			data, err = svc.GetByProductionResourceID(ctx, prID)
 		} else {
 			data, err = svc.GetAll(ctx)
 		}
@@ -93,6 +94,11 @@ func PostSensor(svc domain.SensorService) http.HandlerFunc {
 			return
 		}
 
+		if payload.ElectricitySensor && payload.Voltage == nil {
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("voltage must be set when electricity_sensor is true"), "bad request")
+			return
+		}
+
 		data := dto.MapCreateSensorDTOToDomain(payload)
 
 		if err := svc.Create(ctx, data); err != nil {
@@ -137,7 +143,7 @@ func PatchSensor(svc domain.SensorService) http.HandlerFunc {
 			return
 		}
 
-		if payload.Name == nil && payload.Description == nil && payload.FactoryID == nil && payload.FactoryAreaID == nil && payload.ChirpstackProfileID == nil && payload.ProductionResource == nil {
+		if payload.Name == nil && payload.Description == nil && payload.ElectricitySensor == nil && payload.Voltage == nil && payload.FactoryID == nil && payload.FactoryAreaID == nil && payload.ChirpstackProfileID == nil && payload.ProductionResource == nil {
 			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("no fields provided"), "bad request")
 			return
 		}
@@ -156,6 +162,11 @@ func PatchSensor(svc domain.SensorService) http.HandlerFunc {
 			}
 		}
 
+		if payload.ElectricitySensor != nil && *payload.ElectricitySensor && payload.Voltage == nil {
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("voltage must be set when electricity_sensor is true"), "bad request")
+			return
+		}
+
 		data := dto.MapUpdateSensorDTOToDomain(payload)
 
 		if err := svc.Update(ctx, id, data); err != nil {
@@ -164,6 +175,52 @@ func PatchSensor(svc domain.SensorService) http.HandlerFunc {
 		}
 
 		w.WriteHeader(http.StatusNoContent)
+	}
+}
+
+// GetSampleEUI returns a single device EUI from any sensor registered on the given Chirpstack profile.
+// Used by the admin UI to obtain a sample EUI for payload key lookup via collection-service /payload-tags.
+//
+// @Summary		Get a sample device EUI for a Chirpstack profile
+// @Tags		sensors
+// @Produce		json
+// @Param		chirpstack_profile_id	query		string	true	"Chirpstack profile ID"
+// @Success		200						{object}	dto.SampleEUIResponse
+// @Failure		400
+// @Failure		404
+// @Failure		500
+// @Router		/sensors/sample-eui [get]
+func GetSampleEUI(svc domain.SensorService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+
+		profileID := r.URL.Query().Get("chirpstack_profile_id")
+		if profileID == "" {
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("chirpstack_profile_id is required"), "bad request")
+			return
+		}
+
+		eui, err := svc.GetSampleEUI(ctx, profileID)
+		if err != nil {
+			if errors.Is(err, domain.ErrNotFound) {
+				json.HandleError(w, http.StatusNotFound, err, "no sensor found for this profile")
+				return
+			}
+			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			return
+		}
+
+		if eui == "" {
+			json.HandleError(w, http.StatusInternalServerError, fmt.Errorf("sample EUI is empty"), "internal server error")
+			return
+		}
+
+		resp := dto.MapSampleEUIDomainToDTO(eui)
+
+		if err := json.Encode(w, http.StatusOK, resp); err != nil {
+			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			return
+		}
 	}
 }
 

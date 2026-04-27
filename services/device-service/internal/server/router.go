@@ -21,6 +21,7 @@ func NewRouter(
 	measurementTypeSvc domain.MeasurementTypeService,
 	payloadSchemaSvc domain.PayloadSchemaService,
 	sensorMetricSvc domain.SensorMetricService,
+	sensorProfileConfigSvc domain.SensorProfileConfigService,
 	enableSwagger bool,
 ) *http.ServeMux {
 	mux := http.NewServeMux()
@@ -36,6 +37,7 @@ func NewRouter(
 	// Sensor Routes:
 	mux.HandleFunc("GET "+SENSOR_ROUTE, handlers.GetSensors(sensorSvc))
 	mux.HandleFunc("POST "+SENSOR_ROUTE, handlers.PostSensor(sensorSvc))
+	mux.HandleFunc("GET "+SENSOR_SAMPLE_EUI_ROUTE, handlers.GetSampleEUI(sensorSvc))
 	mux.HandleFunc("DELETE "+SENSOR_ROUTE_ID, handlers.DeleteSensor(sensorSvc))
 	mux.HandleFunc("PATCH "+SENSOR_ROUTE_ID, handlers.PatchSensor(sensorSvc))
 
@@ -53,14 +55,16 @@ func NewRouter(
 	mux.HandleFunc("PATCH "+MEASUREMENT_TYPE_ROUTE_DEPRECATE, handlers.PatchDeprecateMeasurementType(measurementTypeSvc))
 
 	// Payload schema routes:
-	mux.HandleFunc("GET "+PAYLOAD_SCHEMA_ROUTE_DRAFTS, handlers.GetPayloadSchemaDrafts(payloadSchemaSvc))
 	mux.HandleFunc("GET "+PAYLOAD_SCHEMA_ROUTE_PROFILE, handlers.GetPayloadSchemaByProfile(payloadSchemaSvc))
-	mux.HandleFunc("POST "+PAYLOAD_SCHEMA_ROUTE_DISCOVER, handlers.PostDiscoverPayloadKeys(payloadSchemaSvc))
 	mux.HandleFunc("PUT "+PAYLOAD_SCHEMA_ROUTE_PROFILE, handlers.PutPayloadSchemaLabels(payloadSchemaSvc))
 
 	// Sensor metric routes:
 	mux.HandleFunc("GET "+SENSOR_METRICS_ROUTE, handlers.GetSensorMetrics(sensorMetricSvc))
 	mux.HandleFunc("PUT "+SENSOR_METRICS_ROUTE, handlers.PutSensorMetrics(sensorMetricSvc))
+
+	// Sensor profile config routes:
+	mux.HandleFunc("GET "+SENSOR_PROFILE_CONFIG_ROUTE_ID, handlers.GetSensorProfileConfig(sensorProfileConfigSvc))
+	mux.HandleFunc("PUT "+SENSOR_PROFILE_CONFIG_ROUTE_ID, handlers.PutSensorProfileConfig(sensorProfileConfigSvc))
 
 	// Swagger docs
 	if enableSwagger {

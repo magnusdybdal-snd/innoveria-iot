@@ -63,7 +63,7 @@ export default function OrderList() {
         )}
 
         {!isLoading && !error && orders.length === 0 && (
-          <NotFoundCard page="orders" isEmpty={true} />
+          <NotFoundCard page="orders" />
         )}
 
         {!isLoading && !error && orders.length > 0 && (

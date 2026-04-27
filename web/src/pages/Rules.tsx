@@ -82,9 +82,7 @@ export default function Rules() {
             </DeviceRow>
           ))}
         </CategoryHeader>
-        {!isLoading && rules.length === 0 && (
-          <NotFoundCard page="Rules" isEmpty={true} />
-        )}
+        {!isLoading && rules.length === 0 && <NotFoundCard page="Rules" />}
       </PageContent>
       <AddRule
         open={openAdd}
