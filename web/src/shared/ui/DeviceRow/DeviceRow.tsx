@@ -5,6 +5,7 @@ import Box from "@mui/material/Box";
 type DeviceRowProps = {
   children: ReactNode;
   onClick?: () => void;
+  greyed?: boolean;
 };
 
 /**
@@ -12,9 +13,14 @@ type DeviceRowProps = {
  * @param root0 - Component props
  * @param root0.children - Cell content to render inside the row
  * @param root0.onClick - Optional click handler; enables hover highlight when provided
+ * @param root0.greyed - Optional bool for weather the row is greyed out
  * @returns The rendered device row
  */
-export function DeviceRow({ children, onClick }: DeviceRowProps) {
+export function DeviceRow({
+  children,
+  onClick,
+  greyed = false,
+}: DeviceRowProps) {
   return (
     <Box
       onClick={onClick}
@@ -23,7 +29,7 @@ export function DeviceRow({ children, onClick }: DeviceRowProps) {
         gridColumn: "1 / -1",
         display: "grid",
         gridTemplateColumns: "subgrid",
-        backgroundColor: "secondary.light",
+        backgroundColor: greyed ? "secondary.main" : "secondary.light",
         padding: 2,
         borderRadius: 2,
         marginTop: 1,
