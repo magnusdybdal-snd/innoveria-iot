@@ -274,10 +274,13 @@ export default function Sensors() {
         submitError={addError}
         factoryOptions={factories}
         factoryAreaOptions={factoryAreas}
-        productionResourceOptions={productionResources.map((r) => ({
-          id: String(r.id),
-          name: `${r.number} – ${r.description}`,
-        }))}
+        productionResourceOptions={[
+          { id: "", name: "No machine" },
+          ...productionResources.map((r) => ({
+            id: String(r.id),
+            name: `${r.number} – ${r.description}`,
+          })),
+        ]}
       />
       <AppSnackbar
         open={snackbar?.open ?? false}
