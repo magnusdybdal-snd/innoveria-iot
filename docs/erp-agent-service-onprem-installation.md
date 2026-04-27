@@ -8,6 +8,11 @@ This guide installs `erp-agent-service` as a standalone on-prem service, separat
 - Network access to `erp-service` ingest API (`http(s)://<ERP_SERVICE_HOST>:<PORT>/api/v1/erp/ingest/...`)
 - A valid platform admin JWT access token used as `JWT_TOKEN`
 
+## What this service is NOT
+- its not used inside the regular enviroment
+- its ran on the same network as monitor erp
+- it can be ran inside the same network as the rest, ALTHOUGH it will use the seeded company instead
+
 ## 1) Build the Docker image
 
 Run from repository root (the Dockerfile copies both `pkg/` and `services/erp-agent-service/`):
@@ -53,9 +58,9 @@ Notes:
 Use a platform admin account in the web app and extract a valid **access JWT**:
 
 1. Log in to the website as platform admin.
-2. Open browser DevTools.
-3. Find an authenticated API request (Network tab) and copy the `Authorization` header value.
-4. Remove the `Bearer ` prefix and paste the token into `JWT_TOKEN`.
+2. Go to admin page, then companies
+3. Click the three dots, and to generate a new erp agent token
+4. add it to the enviroment variables
 
 Security recommendations:
 - Treat this token as a secret.
@@ -69,7 +74,7 @@ docker run -d \
   --name erp-agent-service \
   --restart unless-stopped \
   --env-file erp-agent-service.onprem.env \
-  innoveria/erp-agent-service:onprem
+  innoveria/erp-agent-service
 ```
 
 ## 5) Verify operation
