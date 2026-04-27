@@ -9,6 +9,7 @@ import { useFactories } from "@entities/factory";
 import { useFactoryAreas } from "@entities/factoryArea";
 import { useProductionResources } from "@entities/productionResource";
 import {
+  deleteSensor,
   postSensor,
   SensorAllInfoPopUp,
   SensorMainInfo,
@@ -20,7 +21,6 @@ import {
   type SensorSortKey,
   type SortDirection,
 } from "@entities/sensor";
-import { deleteSensor } from "@entities/sensor/api/deleteSensor";
 import { AddDevice } from "@features/addDevice";
 import { formatTimestamp } from "@shared/lib";
 import { CustomButton } from "@shared/ui/Button";
@@ -44,12 +44,18 @@ const addSensorDetails: string[] = [
   "Production resource",
   "Application key",
   "Sensor profile",
+  "Electricity sensor",
+  "Voltage",
 ];
 const sortableColumns: SensorSortKey[] = [
   "Status",
   "Factory",
   "Name",
   "Last reading",
+];
+const voltageOptions = [
+  { id: "230", name: "230V" },
+  { id: "400", name: "400V" },
 ];
 
 /**
@@ -102,15 +108,18 @@ export default function Sensors() {
   const handleAddSensor = (sensorData: {
     name: string;
     deviceEui: string;
+    electricitySensor: boolean;
     factory: string;
     factoryArea: string;
     productionResource: number | null;
     appKey: string;
     senProf: string;
+    voltage: number | null;
   }): Promise<void> => {
     setAddError(null);
     return postSensor({
       companyId: "a0000000-0000-0000-0000-000000000001", // TODO: replace with real company ID from auth
+      electricitySensor: sensorData.electricitySensor,
       factoryId: sensorData.factory,
       factoryAreaId: sensorData.factoryArea,
       deviceEui: sensorData.deviceEui,
@@ -118,6 +127,7 @@ export default function Sensors() {
       productionResource: sensorData.productionResource,
       appKey: sensorData.appKey,
       name: sensorData.name,
+      voltage: sensorData.voltage,
     })
       .then(() => {
         refetch();
@@ -247,7 +257,10 @@ export default function Sensors() {
           />
         )}
         {!isLoading && filteredSensors.length === 0 && (
-          <NotFoundCard page="Sensors" isEmpty={sorted.length === 0} />
+          <NotFoundCard
+            page="Sensors"
+            action={sorted.length === 0 ? "found" : "registered"}
+          />
         )}
       </PageContent>
 
@@ -256,6 +269,7 @@ export default function Sensors() {
         onClose={handleCloseAdd}
         addOptions={addSensorDetails}
         profileOptions={sensorProfiles}
+        voltageOptions={voltageOptions}
         onAdd={handleAddSensor}
         submitError={addError}
         factoryOptions={factories}

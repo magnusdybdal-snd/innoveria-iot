@@ -1,7 +1,9 @@
 import Box from "@mui/material/Box";
+import Checkbox from "@mui/material/Checkbox";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 
+import { ELECTRICITY_SENSOR, VOLTAGE } from "@shared/const";
 import { DropDownSelect } from "@shared/ui/DropDownSelect";
 
 interface DeviceFormFieldsProps {
@@ -11,6 +13,7 @@ interface DeviceFormFieldsProps {
   factoryOptions: { id: string; name: string }[];
   factoryAreaOptions: { id: string; name: string }[];
   productionResourceOptions: { id: string; name: string }[];
+  voltageOptions: { id: string; name: string }[];
   lengthErrors: Record<string, boolean>;
   lengthErrorMessages: Record<string, string>;
   inputHints: Record<string, string>;
@@ -22,7 +25,9 @@ const dropdownOptions: Record<string, string> = {
   Factory: "factoryOptions",
   "Factory area": "factoryAreaOptions",
   "Production resource": "productionResourceOptions",
+  Voltage: "voltageOptions",
 };
+const checkBoxes: string[] = [ELECTRICITY_SENSOR];
 
 const fieldSx = {
   "& .MuiOutlinedInput-root": {
@@ -42,6 +47,7 @@ const fieldSx = {
  * @param props.factoryOptions - Factory choices for the dropdown
  * @param props.factoryAreaOptions - Factory area choices for the dropdown
  * @param props.productionResourceOptions - Production resource (work center) choices for the dropdown
+ * @param props.voltageOptions - Voltage choices for the dropdown
  * @param props.lengthErrors - Map of field name to whether it has a length error
  * @param props.lengthErrorMessages - Map of field name to its error message
  * @param props.inputHints - Map of field name to its placeholder hint
@@ -55,6 +61,7 @@ export function DeviceFormFields({
   factoryOptions,
   factoryAreaOptions,
   productionResourceOptions,
+  voltageOptions,
   lengthErrors,
   lengthErrorMessages,
   inputHints,
@@ -65,6 +72,7 @@ export function DeviceFormFields({
     factoryOptions,
     factoryAreaOptions,
     productionResourceOptions,
+    voltageOptions,
   };
 
   const maxLengths: Record<string, number> = {
@@ -77,15 +85,29 @@ export function DeviceFormFields({
     <Box display="flex" flexDirection="column" gap={2}>
       {options.map((option) => (
         <Box key={option}>
-          <Typography variant="body2" color="primary.main" mb={0.5}>
-            {option}
-          </Typography>
-
+          {(option != VOLTAGE || values[ELECTRICITY_SENSOR] === "true") && (
+            <Typography variant="body2" color="primary.main" mb={0.5}>
+              {option}
+            </Typography>
+          )}
           {option in dropdownOptions ? (
-            <DropDownSelect
-              options={dropdownData[dropdownOptions[option]]}
-              value={values[option] ?? ""}
-              onChange={(value) => onChange(option, value)}
+            (option != VOLTAGE || values[ELECTRICITY_SENSOR] === "true") && (
+              <DropDownSelect
+                options={dropdownData[dropdownOptions[option]]}
+                value={typeof values[option] === "string" ? values[option] : ""}
+                onChange={(value) => onChange(option, value)}
+              />
+            )
+          ) : checkBoxes.includes(option) ? (
+            <Checkbox
+              checked={values[option] === "true"}
+              onChange={(_, checked) => {
+                onChange(option, String(checked));
+                if (!checked) onChange(VOLTAGE, "");
+              }}
+              slotProps={{
+                input: { "aria-label": "controlled" },
+              }}
             />
           ) : (
             <TextField
@@ -96,7 +118,7 @@ export function DeviceFormFields({
                 lengthErrors[option] ? lengthErrorMessages[option] : ""
               }
               error={!!lengthErrors[option]}
-              value={values[option] ?? ""}
+              value={typeof values[option] === "string" ? values[option] : ""}
               slotProps={{
                 htmlInput: {
                   maxLength: maxLengths[option],
