@@ -1,2 +1,2 @@
-export { EditUser } from "./ui";
-export type { EditUserProps } from "./ui";
+export { EditDevice } from "./ui";
+export type { EditDeviceProps } from "./ui";

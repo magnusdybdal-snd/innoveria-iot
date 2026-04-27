@@ -1,2 +1,2 @@
-export { EditUser } from "./EditUser";
-export type { EditUserProps } from "./EditUser";
+export { EditDevice } from "./EditDevice.tsx";
+export type { EditDeviceProps } from "./EditDevice.tsx";
