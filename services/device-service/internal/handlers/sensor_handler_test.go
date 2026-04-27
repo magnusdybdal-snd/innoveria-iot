@@ -22,6 +22,7 @@ type mockSensorService struct {
 	createFunc                  func(ctx context.Context, payload domain.Sensor) error
 	updateFunc                  func(ctx context.Context, deviceID string, payload domain.Sensor) error
 	deleteFunc                  func(ctx context.Context, deviceID string) error
+	getSampleEUIFunc            func(ctx context.Context, chirpstackProfileID string) (string, error)
 }
 
 func (m *mockSensorService) GetAll(ctx context.Context) ([]domain.Sensor, error) {
@@ -57,6 +58,13 @@ func (m *mockSensorService) Delete(ctx context.Context, deviceID string) error {
 		m.t.Fatal("unexpected call to Delete")
 	}
 	return m.deleteFunc(ctx, deviceID)
+}
+
+func (m *mockSensorService) GetSampleEUI(ctx context.Context, chirpstackProfileID string) (string, error) {
+	if m.getSampleEUIFunc == nil {
+		m.t.Fatal("unexpected call to GetSampleEUI")
+	}
+	return m.getSampleEUIFunc(ctx, chirpstackProfileID)
 }
 
 const validSensorBody = `{

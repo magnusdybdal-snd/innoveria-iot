@@ -138,7 +138,24 @@ var mockOrders = []domain.ERPOrder{
 				ActualFinishDate:         ptr(mockWindowEnd),
 				Status:                   "finished",
 				ProductionResourceStatus: "finished",
-				Reports:                  []domain.ERPOrderReport{},
+				Reports: []domain.ERPOrderReport{
+					{
+						ID:                 300,
+						Quantity:           5.0,
+						RestQuantity:       10.0,
+						Type:               "regular",
+						ReportingTimestamp: mockWindowStart.Add(8 * 24 * time.Hour),
+						ActualReportedDate: ptr(mockWindowStart.Add(8*24*time.Hour + 5*time.Minute)),
+					},
+					{
+						ID:                 301,
+						Quantity:           7.0,
+						RestQuantity:       3.0,
+						Type:               "regular",
+						ReportingTimestamp: mockWindowStart.Add(20 * 24 * time.Hour),
+						ActualReportedDate: ptr(mockWindowStart.Add(20*24*time.Hour + 3*time.Minute)),
+					},
+				},
 			},
 			{
 				ID: 31,
@@ -154,7 +171,16 @@ var mockOrders = []domain.ERPOrder{
 				ActualFinishDate:         ptr(mockWindowEnd),
 				Status:                   "finished",
 				ProductionResourceStatus: "finished",
-				Reports:                  []domain.ERPOrderReport{},
+				Reports: []domain.ERPOrderReport{
+					{
+						ID:                 310,
+						Quantity:           4.0,
+						RestQuantity:       3.0,
+						Type:               "regular",
+						ReportingTimestamp: mockWindowStart.Add(22 * 24 * time.Hour),
+						ActualReportedDate: ptr(mockWindowStart.Add(22*24*time.Hour + 2*time.Minute)),
+					},
+				},
 			},
 		},
 	},

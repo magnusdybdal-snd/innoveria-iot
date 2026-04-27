@@ -7,6 +7,15 @@ export interface ProductionResource {
   type: string;
 }
 
+export interface OrderReport {
+  id: number;
+  quantity: number;
+  restQuantity: number;
+  type: string;
+  reportingTimestamp: string;
+  actualReportedDate: string | null;
+}
+
 export interface OrderOperation {
   id: number;
   productionResource: ProductionResource;
@@ -16,6 +25,13 @@ export interface OrderOperation {
   actualFinishDate: string | null;
   status: string;
   productionResourceStatus: string;
+  reports: OrderReport[];
+}
+
+/** Slim order representation returned by GET /orders (id + display name only). */
+export interface OrderSummary {
+  id: number;
+  name: string;
 }
 
 export interface Order {
