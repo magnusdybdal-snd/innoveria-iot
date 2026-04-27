@@ -129,3 +129,12 @@ func MapOrdersDomainToDTO(orders []domain.ERPOrder) []OrderResponse {
 	}
 	return result
 }
+
+// MapProductionResourcesDomainToDTO converts a slice of domain ERPProductionResource to its API response shape.
+func MapProductionResourcesDomainToDTO(resources []domain.ERPProductionResource) []ProductionResourceResponse {
+	result := make([]ProductionResourceResponse, len(resources))
+	for i, r := range resources {
+		result[i] = ProductionResourceResponse{ID: r.ID, Number: r.Number, Description: r.Description, Type: r.Type}
+	}
+	return result
+}

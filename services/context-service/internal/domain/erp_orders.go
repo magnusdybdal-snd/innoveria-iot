@@ -23,6 +23,9 @@ type ERPClient interface {
 	//
 	// TODO: erp-service GET /orders/{id} endpoint shape is not yet finalised.
 	GetOrderByID(ctx context.Context, companyID string, orderID int64) (*ERPOrder, error)
+
+	// GetProductionResources returns all production resources (work centers) for the given company.
+	GetProductionResources(ctx context.Context, companyID string) ([]ERPProductionResource, error)
 }
 
 // ERPProductionResource represents a work center from Monitor ERP.
