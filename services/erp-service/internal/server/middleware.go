@@ -73,7 +73,7 @@ func RequireAgentAuth(jwtSecret string, goEnv string, next http.Handler) http.Ha
 			return
 		}
 
-		// Dont trust any inbound header from agents
+		// Don't trust any inbound header from agents
 		r.Header.Del("X-Erp-Company-Id")
 
 		// inject trusted header
