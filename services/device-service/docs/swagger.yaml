@@ -69,8 +69,8 @@ definitions:
       name:
         type: string
       production_resource:
-        description: Optional — UUID, omit if service not yet available
-        type: string
+        description: Optional — ERP ProductionResource ID
+        type: integer
       voltage:
         type: integer
     required:
@@ -298,7 +298,7 @@ definitions:
       name:
         type: string
       production_resource:
-        type: string
+        type: integer
       state:
         type: string
       status:
@@ -328,15 +328,15 @@ definitions:
       electricity_sensor:
         type: boolean
       factory_area_id:
-        description: Optional — UUID, omit if service not yet available
+        description: Optional — omit if not applicable
         type: string
       factory_id:
         type: string
       name:
         type: string
       production_resource:
-        description: Optional — UUID, omit if service not yet available
-        type: string
+        description: Optional — ERP ProductionResource ID
+        type: integer
       voltage:
         type: integer
     type: object
@@ -660,10 +660,10 @@ paths:
   /sensors:
     get:
       parameters:
-      - description: Production resource
+      - description: Production resource (ERP ProductionResource ID)
         in: query
         name: production_resource_id
-        type: string
+        type: integer
       produces:
       - application/json
       responses:
