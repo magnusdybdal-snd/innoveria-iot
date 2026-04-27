@@ -18,8 +18,8 @@ type Config struct {
 	DBURL string
 	GOEnv string
 
-	ReconcileInterval    time.Duration
-	ERP_AGENT_JWT_SECRET string
+	ReconcileInterval time.Duration
+	ErpAgentJwtSecret string
 	// EnableSwagger bool
 }
 
@@ -67,8 +67,8 @@ func Load() *Config {
 			dbName,
 			sslmode,
 		),
-		GOEnv:                goEnv,
-		ReconcileInterval:    reconcileInterval,
-		ERP_AGENT_JWT_SECRET: erpAgentSecret,
+		GOEnv:             goEnv,
+		ReconcileInterval: reconcileInterval,
+		ErpAgentJwtSecret: erpAgentSecret,
 	}
 }
