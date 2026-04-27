@@ -31,9 +31,10 @@ func Load() *Config {
 	dbPassword := env.Get("DB_PASSWORD", "erp")
 	dbName := env.Get("DB_NAME", "erp")
 	sslmode := env.Get("DB_SSLMODE", "disable")
-	goEnv := env.Get("GO_ENV", "")
-	if goEnv == "" {
+	goEnv := env.Get("GO_ENV", "production")
+	if goEnv != "development" && goEnv != "production" {
 		slog.Warn("GO_ENV is not set using default devlopement")
+		goEnv = "production"
 	}
 
 	reconcileIntervalRaw := env.Get("ERP_RECONCILE_INTERVAL", "30s")
