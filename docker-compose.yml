@@ -241,9 +241,11 @@ services:
       - ./pkg:/pkg
     environment:
       - GO_ENV=development
+      - USE_MOCK_ERP=false
     depends_on:
       - collection-service
       - context-db
+      - erp-service
 
   context-db:
     image: postgres:16-alpine
