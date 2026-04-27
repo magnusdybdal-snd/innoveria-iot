@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
 
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Checkbox from "@mui/material/Checkbox";
+import Typography from "@mui/material/Typography";
+
 import {
   getMeasurementTypesAll,
   type MeasurementTypeApiResponse,
@@ -20,10 +25,6 @@ import {
   useSensors,
 } from "@entities/sensor";
 import type { SensorProfileApiResponse } from "@entities/sensor/model/sensorSchema.ts";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Checkbox from "@mui/material/Checkbox";
-import Typography from "@mui/material/Typography";
 import { CategoryHeader } from "@shared/ui/CategoryHeader";
 import { DeviceRow } from "@shared/ui/DeviceRow";
 import { DropDownSelect } from "@shared/ui/DropDownSelect";

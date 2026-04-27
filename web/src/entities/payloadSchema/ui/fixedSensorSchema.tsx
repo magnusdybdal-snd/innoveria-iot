@@ -1,7 +1,8 @@
-import type { MeasurementTypeApiResponse } from "@entities/measurementType";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import Typography from "@mui/material/Typography";
+
+import type { MeasurementTypeApiResponse } from "@entities/measurementType";
 
 type InfoMainProps = {
   payloadKey: string;
