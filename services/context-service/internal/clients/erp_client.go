@@ -38,6 +38,10 @@ func (c *erpClientImpl) GetOrders(ctx context.Context, companyID string) ([]doma
 		c.client, ctx, url, http.MethodGet, nil, headers,
 	)
 	if err != nil {
+		var httpErr *httpclient.HTTPError
+		if errors.As(err, &httpErr) && httpErr.StatusCode == http.StatusUnauthorized {
+			return nil, domain.ErrUnauthorized
+		}
 		return nil, err
 	}
 
@@ -57,6 +61,10 @@ func (c *erpClientImpl) GetProductionResources(ctx context.Context, companyID st
 		c.client, ctx, url, http.MethodGet, nil, headers,
 	)
 	if err != nil {
+		var httpErr *httpclient.HTTPError
+		if errors.As(err, &httpErr) && httpErr.StatusCode == http.StatusUnauthorized {
+			return nil, domain.ErrUnauthorized
+		}
 		return nil, err
 	}
 

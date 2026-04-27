@@ -113,6 +113,10 @@ func GetOrders(svc domain.ContextService) http.HandlerFunc {
 
 		orders, err := svc.GetOrders(ctx, companyID)
 		if err != nil {
+			if errors.Is(err, domain.ErrUnauthorized) {
+				json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
+				return
+			}
 			json.HandleError(w, http.StatusInternalServerError, err, "failed to fetch orders")
 			return
 		}

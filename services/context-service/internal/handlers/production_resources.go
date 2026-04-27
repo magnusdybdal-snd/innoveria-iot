@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"errors"
 	"net/http"
 
 	"innoveria-iot/context-service/internal/domain"
@@ -25,6 +26,10 @@ func GetProductionResources(svc domain.ContextService) http.HandlerFunc {
 
 		resources, err := svc.GetProductionResources(ctx, companyID)
 		if err != nil {
+			if errors.Is(err, domain.ErrUnauthorized) {
+				json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
+				return
+			}
 			json.HandleError(w, http.StatusInternalServerError, err, "failed to fetch production resources")
 			return
 		}
