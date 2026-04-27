@@ -2,6 +2,7 @@ package server
 
 import (
 	"errors"
+	"fmt"
 	"log/slog"
 	"net/http"
 
@@ -52,7 +53,7 @@ func RequireAgentAuth(jwtSecret string, goEnv string, next http.Handler) http.Ha
 			return []byte(jwtSecret), nil
 		}, jwt.WithIssuer("auth-service"), jwt.WithAudience(erpAgentAudience))
 		if err != nil {
-			json.HandleError(w, http.StatusUnauthorized, errors.New("invalid token"), "unauthorized")
+			json.HandleError(w, http.StatusUnauthorized, fmt.Errorf("parse token: %w", err), "unauthorized")
 			return
 		}
 		if token == nil || !token.Valid {
