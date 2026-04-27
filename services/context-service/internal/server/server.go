@@ -13,8 +13,10 @@ import (
 	"time"
 
 	"innoveria-iot/context-service/internal/clients"
+	"innoveria-iot/context-service/internal/clients/mock"
 	"innoveria-iot/context-service/internal/config"
 	"innoveria-iot/context-service/internal/db"
+	"innoveria-iot/context-service/internal/domain"
 	"innoveria-iot/context-service/internal/repository"
 	"innoveria-iot/context-service/internal/services"
 	"innoveria-iot/pkg/dbutil"
@@ -38,8 +40,18 @@ func Run() error {
 		return fmt.Errorf("seeds: %w", err)
 	}
 	client := clients.NewCollectionClient(cfg.CollectionSvcURL)
+	deviceClient := clients.NewDeviceClient(cfg.DeviceSvcURL)
+
+	var erpClient domain.ERPClient
+	if cfg.UseMockERP {
+		slog.Info("context-service: using mock ERP client")
+		erpClient = mock.NewERPClient()
+	} else {
+		erpClient = clients.NewERPClient(cfg.ERPSvcURL)
+	}
+
 	repo := repository.NewRuleRepository(database)
-	contextSvc := services.NewContextServiceImpl(client, repo)
+	contextSvc := services.NewContextServiceImpl(client, erpClient, deviceClient, repo)
 	ruleSvc := services.NewRuleServiceImpl(repo)
 
 	// Setting up mux and http server

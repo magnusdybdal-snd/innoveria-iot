@@ -1,0 +1,17 @@
+import type { OrderSummary } from "@entities/context/model/contextSchema";
+import { apiRequest, serviceClient } from "@shared/api";
+import { API_ROUTES } from "@shared/api/routes";
+
+/**
+ * Fetches the slim ERP order list from the context service.
+ * Each entry contains only the order ID and display name — use `getOrderContext`
+ * to fetch full detail for a specific order.
+ * @returns Array of order summaries for the current company
+ */
+export const getOrders = async (): Promise<OrderSummary[]> => {
+  return apiRequest<OrderSummary[]>(
+    serviceClient,
+    API_ROUTES.contextOrders,
+    "GET",
+  );
+};

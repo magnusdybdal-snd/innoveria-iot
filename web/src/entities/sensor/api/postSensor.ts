@@ -16,6 +16,7 @@ export const postSensor = async (
     factory_area_id: sensorData.factoryAreaId,
     device_eui: sensorData.deviceEui,
     device_profile_id: sensorData.sensorProfileId,
+    production_resource: sensorData.productionResource,
     app_key: sensorData.appKey,
     name: sensorData.name,
     voltage: sensorData.voltage,

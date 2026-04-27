@@ -40,8 +40,8 @@ type UpdateSensorRequest struct {
 	ElectricitySensor   *bool   `json:"electricity_sensor"`
 	Voltage             *int    `json:"voltage"`
 	FactoryID           *string `json:"factory_id"`
-	FactoryAreaID       *string `json:"factory_area_id"`     // Optional — omit if not applicable
-	ProductionResource  *int64  `json:"production_resource"` // Optional — ERP ProductionResource ID
+	FactoryAreaID       *string `json:"factory_area_id"`     // Optional — UUID, omit if service not yet available
+	ProductionResource  *int64  `json:"production_resource"` // Optional — int64 ERP production resource ID
 }
 
 // CreateSensorRequest represents the fields required to register a new sensor.
@@ -57,5 +57,5 @@ type CreateSensorRequest struct {
 	Voltage             *int    `json:"voltage"`
 	FactoryID           string  `json:"factory_id"            binding:"required"`
 	FactoryAreaID       string  `json:"factory_area_id"       binding:"required"`
-	ProductionResource  *int64  `json:"production_resource"` // Optional — ERP ProductionResource ID
+	ProductionResource  *int64  `json:"production_resource"` // Optional — int64 ERP production resource ID
 }

@@ -79,6 +79,150 @@ definitions:
     - name
     - time_bucket_minutes
     type: object
+  dto.OperationContextResponse:
+    properties:
+      degraded:
+        description: |-
+          Degraded is true when sensor data could not be loaded due to a technical error.
+          A false value with an empty sensors array means no sensors are mapped (expected state).
+        type: boolean
+      operation:
+        $ref: '#/definitions/dto.OrderOperationResponse'
+      sensors:
+        items:
+          $ref: '#/definitions/dto.SensorContextResponse'
+        type: array
+    type: object
+  dto.OrderContextResponse:
+    properties:
+      operations:
+        items:
+          $ref: '#/definitions/dto.OperationContextResponse'
+        type: array
+      order:
+        $ref: '#/definitions/dto.OrderResponse'
+    type: object
+  dto.OrderOperationResponse:
+    properties:
+      actual_finish_date:
+        type: string
+      actual_start_date:
+        type: string
+      id:
+        type: integer
+      planned_finish_date:
+        type: string
+      planned_start_date:
+        type: string
+      production_resource:
+        $ref: '#/definitions/dto.ProductionResourceResponse'
+      production_resource_status:
+        type: string
+      reports:
+        items:
+          $ref: '#/definitions/dto.OrderReportResponse'
+        type: array
+      status:
+        type: string
+    type: object
+  dto.OrderReportResponse:
+    properties:
+      actual_reported_date:
+        type: string
+      id:
+        type: integer
+      quantity:
+        type: number
+      reporting_timestamp:
+        type: string
+      rest_quantity:
+        type: number
+      type:
+        type: string
+    type: object
+  dto.OrderResponse:
+    properties:
+      actual_finish_date:
+        type: string
+      actual_start_date:
+        type: string
+      id:
+        type: integer
+      operations:
+        items:
+          $ref: '#/definitions/dto.OrderOperationResponse'
+        type: array
+      order_number:
+        type: string
+      part_description:
+        type: string
+      part_id:
+        type: string
+      planned_finish_date:
+        type: string
+      planned_start_date:
+        type: string
+      priority:
+        type: integer
+      received_at:
+        type: string
+      status:
+        type: string
+    type: object
+  dto.OrderSummaryResponse:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  dto.ProductionResourceResponse:
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+      number:
+        type: string
+      type:
+        type: string
+    type: object
+  dto.SensorContextResponse:
+    properties:
+      device_eui:
+        type: string
+      id:
+        type: string
+      measurements:
+        items:
+          $ref: '#/definitions/internal_handlers_dto.MeasurementResponse'
+        type: array
+      metrics:
+        items:
+          $ref: '#/definitions/internal_handlers_dto.SensorMetricResponse'
+        type: array
+      name:
+        type: string
+    type: object
+  internal_handlers_dto.MeasurementResponse:
+    properties:
+      device_eui:
+        type: string
+      payload:
+        additionalProperties: {}
+        type: object
+      timestamp:
+        type: string
+    type: object
+  internal_handlers_dto.SensorMetricResponse:
+    properties:
+      measurement_type:
+        type: string
+      payload_key:
+        type: string
+      unit:
+        type: string
+    type: object
 host: localhost:8086
 info:
   contact: {}
@@ -88,8 +232,6 @@ info:
 paths:
   /data:
     get:
-      consumes:
-      - application/json
       parameters:
       - description: Company ID
         in: query
@@ -141,10 +283,72 @@ paths:
       summary: Get Context Data
       tags:
       - context
+  /orders:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.OrderSummaryResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+      summary: Get Orders
+      tags:
+      - orders
+  /orders/{id}:
+    get:
+      parameters:
+      - description: ERP Order ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.OrderResponse'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get Order By ID
+      tags:
+      - orders
+  /orders/{id}/context:
+    get:
+      parameters:
+      - description: ERP Order ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.OrderContextResponse'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get Order Context
+      tags:
+      - orders
   /rules:
     get:
-      consumes:
-      - application/json
       parameters:
       - description: Company ID
         in: query
@@ -184,9 +388,31 @@ paths:
           description: Created
         "400":
           description: Bad Request
+        "409":
+          description: Conflict
         "500":
           description: Internal Server Error
       summary: Create Aggregation Rule
+      tags:
+      - context
+  /rules/{id}:
+    delete:
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Delete Aggregation Rule
       tags:
       - context
 swagger: "2.0"

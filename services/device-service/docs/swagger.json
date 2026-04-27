@@ -832,10 +832,40 @@
                     "type": "string"
                 },
                 "production_resource": {
+<<<<<<< HEAD
                     "description": "Optional — ERP ProductionResource ID",
                     "type": "integer"
+=======
+                    "description": "Optional — int64 ERP production resource ID",
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.DiscoverPayloadKeysRequest": {
+            "type": "object",
+            "required": [
+                "payload_keys"
+            ],
+            "properties": {
+                "payload_keys": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "dto.DraftProfilesResponse": {
+            "type": "object",
+            "properties": {
+                "profile_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+>>>>>>> origin/dev
                 },
-                "voltage": {
+                "total_count": {
                     "type": "integer"
                 }
             }

@@ -1,5 +1,6 @@
-import { postRefresh, type TokenApiResponse } from "@entities/user";
 import axios, { type AxiosInstance, type AxiosResponse } from "axios";
+
+import { postRefresh, type TokenApiResponse } from "@entities/user";
 
 // Client for all microservice requests — routed through the api-gateway
 export const serviceClient = axios.create({

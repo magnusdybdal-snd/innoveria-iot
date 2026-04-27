@@ -123,7 +123,11 @@ func (s *SensorServiceImpl) Update(ctx context.Context, sensorID string, payload
 		sensor.FactoryAreaID = payload.FactoryAreaID
 	}
 	if payload.ProductionResource != nil {
-		sensor.ProductionResource = payload.ProductionResource
+		if *payload.ProductionResource == 0 {
+			sensor.ProductionResource = nil
+		} else {
+			sensor.ProductionResource = payload.ProductionResource
+		}
 	}
 	if payload.Voltage != nil && payload.ElectricitySensor == nil {
 		if sensor.ElectricitySensor == nil || !*sensor.ElectricitySensor {

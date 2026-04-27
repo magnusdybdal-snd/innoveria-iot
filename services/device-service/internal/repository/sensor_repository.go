@@ -339,6 +339,7 @@ func (r *SensorRepository) Update(ctx context.Context, sensorID string, payload 
 		payload.FactoryID,
 		payload.FactoryAreaID,
 		payload.ChirpstackProfileID,
+		payload.ProductionResource,
 		sensorID,
 	)
 

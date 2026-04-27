@@ -2,6 +2,7 @@ import Box from "@mui/material/Box";
 import Checkbox from "@mui/material/Checkbox";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
+
 import { ELECTRICITY_SENSOR, VOLTAGE } from "@shared/const";
 import { DropDownSelect } from "@shared/ui/DropDownSelect";
 
@@ -73,7 +74,7 @@ export function DeviceFormFields({
     Name: 100,
     DeviceEUI: 16,
     "Application key": 32,
-    Machine: 100,
+    "Production resource": 19, // Max length for 64-bit integer in decimal
   };
 
   return (
@@ -123,6 +124,9 @@ export function DeviceFormFields({
                 let value = e.target.value;
                 if (option === "DeviceEUI" || option === "Application key") {
                   value = value.replace(/[^a-fA-F0-9]/g, "");
+                }
+                if (option === "Production resource") {
+                  value = value.replace(/[^0-9]/g, "");
                 }
                 onChange(option, value);
               }}

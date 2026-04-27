@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
+
 import { DeleteConfirmation } from "@shared/ui/DeleteConfirmation";
 
 type InfoMainProps = {

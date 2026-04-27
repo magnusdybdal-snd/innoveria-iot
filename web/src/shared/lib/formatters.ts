@@ -27,6 +27,33 @@ export function formatTimestamp(timestamp: string): string {
 }
 
 /**
+ * Converts a Date to a local datetime string compatible with datetime-local inputs (YYYY-MM-DDTHH:mm).
+ * Uses local time, not UTC, so the value displayed in the input matches the user's timezone.
+ * @param date - The Date to format
+ * @returns A string in YYYY-MM-DDTHH:mm format in local time
+ */
+export function toLocalDateTimeString(date: Date): string {
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return (
+    `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}` +
+    `T${pad(date.getHours())}:${pad(date.getMinutes())}`
+  );
+}
+
+/**
+ * Converts a snake_case or underscore-separated status string into a
+ * space-separated, title-cased label for display (e.g. `"in_progress"` → `"In Progress"`).
+ * @param status - Raw status string from the API
+ * @returns Human-readable label
+ */
+export function formatStatus(status: string): string {
+  return status
+    .split("_")
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
+}
+
+/**
  * Formats a numeric sensor reading to one decimal place for display.
  * Returns "N/A" if the value is null, undefined, or not a finite number.
  * @param value - The raw numeric reading from the sensor payload
