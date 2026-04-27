@@ -19,7 +19,6 @@ type AggregationRuleResponse struct {
 
 // CreateAggregationRuleRequest represents the request structure for creating a new aggregation rule in the context service API.
 type CreateAggregationRuleRequest struct {
-	CompanyID         string `json:"company_id" validate:"required"`
 	Name              string `json:"name" validate:"required"`
 	ContextType       string `json:"context_type" validate:"required"`
 	MeasurementType   string `json:"measurement_type" validate:"required"`

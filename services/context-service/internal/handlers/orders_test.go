@@ -60,7 +60,7 @@ func TestGetOrders_Success_Returns200(t *testing.T) {
 		},
 	}
 
-	req := httptest.NewRequest(http.MethodGet, "/api/v1/context/orders", nil)
+	req := withAuthHeaders(httptest.NewRequest(http.MethodGet, "/api/v1/context/orders", nil))
 	rec := httptest.NewRecorder()
 
 	handlers.GetOrders(svc).ServeHTTP(rec, req)
@@ -96,7 +96,7 @@ func TestGetOrders_EmptyList_Returns200(t *testing.T) {
 		},
 	}
 
-	req := httptest.NewRequest(http.MethodGet, "/api/v1/context/orders", nil)
+	req := withAuthHeaders(httptest.NewRequest(http.MethodGet, "/api/v1/context/orders", nil))
 	rec := httptest.NewRecorder()
 
 	handlers.GetOrders(svc).ServeHTTP(rec, req)
@@ -123,7 +123,7 @@ func TestGetOrders_ServiceError_Returns500(t *testing.T) {
 		},
 	}
 
-	req := httptest.NewRequest(http.MethodGet, "/api/v1/context/orders", nil)
+	req := withAuthHeaders(httptest.NewRequest(http.MethodGet, "/api/v1/context/orders", nil))
 	rec := httptest.NewRecorder()
 
 	handlers.GetOrders(svc).ServeHTTP(rec, req)
