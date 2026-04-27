@@ -16,6 +16,7 @@ export interface AddDeviceProps {
   profileOptions?: { id: string; name: string }[];
   factoryOptions?: { id: string; name: string }[];
   factoryAreaOptions?: { id: string; name: string }[];
+  productionResourceOptions?: { id: string; name: string }[];
   onAdd: (sensor: {
     name: string;
     deviceEui: string;
@@ -38,7 +39,6 @@ const inputHints: Record<string, string> = {
 const inputLengthError: Record<string, string> = {
   DeviceEUI: "DeviceEUI must be 16 characters",
   "Application key": "Application key must be 32 characters",
-  ProductionResource: "Production resource must be a positive number",
 };
 
 /**
@@ -60,6 +60,7 @@ export function AddDevice(props: AddDeviceProps) {
     profileOptions = [],
     factoryOptions = [],
     factoryAreaOptions = [],
+    productionResourceOptions = [],
     submitError,
   } = props;
   const [values, setValues] = useState<Record<string, string>>({});
@@ -75,16 +76,9 @@ export function AddDevice(props: AddDeviceProps) {
       .filter((option) => option !== "Production resource")
       .every((option) => (values[option] ?? "").trim() !== "");
 
-    const productionResourceRaw = (values["Production resource"] ?? "").trim();
-    const productionResourceParsed = parseInt(productionResourceRaw, 10);
-    const productionResourceInvalid =
-      productionResourceRaw !== "" &&
-      (isNaN(productionResourceParsed) || productionResourceParsed <= 0);
-
     const newLengthErrors = {
       DeviceEUI: (values["DeviceEUI"] ?? "").length !== 16,
       "Application key": (values["Application key"] ?? "").length !== 32,
-      ProductionResource: productionResourceInvalid,
     };
 
     if (!allFilled) {
@@ -93,14 +87,15 @@ export function AddDevice(props: AddDeviceProps) {
     } else if (
       (addOptions.includes("DeviceEUI") && newLengthErrors.DeviceEUI) ||
       (addOptions.includes("Application key") &&
-        newLengthErrors["Application key"]) ||
-      (addOptions.includes("Production resource") &&
-        newLengthErrors.ProductionResource)
+        newLengthErrors["Application key"])
     ) {
       setFillError(false);
       setLengthErrors(newLengthErrors);
       return;
     }
+
+    const productionResourceRaw = (values["Production resource"] ?? "").trim();
+    const productionResourceParsed = parseInt(productionResourceRaw, 10);
 
     props
       .onAdd({
@@ -146,6 +141,7 @@ export function AddDevice(props: AddDeviceProps) {
           profileOptions={profileOptions}
           factoryOptions={factoryOptions}
           factoryAreaOptions={factoryAreaOptions}
+          productionResourceOptions={productionResourceOptions}
           lengthErrors={lengthErrors}
           lengthErrorMessages={inputLengthError}
           inputHints={inputHints}

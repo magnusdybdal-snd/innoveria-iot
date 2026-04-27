@@ -7,6 +7,7 @@ import axios from "axios";
 
 import { useFactories } from "@entities/factory";
 import { useFactoryAreas } from "@entities/factoryArea";
+import { useProductionResources } from "@entities/productionResource";
 import {
   postSensor,
   SensorAllInfoPopUp,
@@ -60,6 +61,7 @@ export default function Sensors() {
   const { factories } = useFactories();
   const { factoryAreas } = useFactoryAreas();
   const { sensorProfiles } = useSensorProfiles();
+  const { productionResources } = useProductionResources();
   const [openAdd, setOpenAdd] = useState(false);
   const [addError, setAddError] = useState<string | null>(null);
   const [selectedSensor, setSelectedSensor] =
@@ -258,6 +260,10 @@ export default function Sensors() {
         submitError={addError}
         factoryOptions={factories}
         factoryAreaOptions={factoryAreas}
+        productionResourceOptions={productionResources.map((r) => ({
+          id: String(r.id),
+          name: `${r.number} – ${r.description}`,
+        }))}
       />
       <AppSnackbar
         open={snackbar?.open ?? false}
