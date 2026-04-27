@@ -491,8 +491,8 @@ const docTemplate = `{
                 "summary": "Lists all sensors.",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Production resource",
+                        "type": "integer",
+                        "description": "Production resource (ERP ProductionResource ID)",
                         "name": "production_resource_id",
                         "in": "query"
                     }
@@ -840,33 +840,8 @@ const docTemplate = `{
                 "production_resource": {
                     "description": "Optional — int64 ERP production resource ID",
                     "type": "integer"
-                }
-            }
-        },
-        "dto.DiscoverPayloadKeysRequest": {
-            "type": "object",
-            "required": [
-                "payload_keys"
-            ],
-            "properties": {
-                "payload_keys": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            }
-        },
-        "dto.DraftProfilesResponse": {
-            "type": "object",
-            "properties": {
-                "profile_ids": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
                 },
-                "total_count": {
+                "voltage": {
                     "type": "integer"
                 }
             }
@@ -1251,8 +1226,8 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "production_resource": {
-                    "description": "Optional — UUID, omit if service not yet available",
-                    "type": "string"
+                    "description": "Optional — int64 ERP production resource ID",
+                    "type": "integer"
                 },
                 "voltage": {
                     "type": "integer"
