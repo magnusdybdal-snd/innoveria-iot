@@ -68,9 +68,6 @@ func RequireAgentAuth(jwtSecret string, goEnv string, next http.Handler) http.Ha
 		}
 
 		companyID, _ := claims["company_id"].(string)
-		if companyID == "" && goEnv == "development" {
-			companyID = seededCompanyID
-		}
 		if companyID == "" {
 			json.HandleError(w, http.StatusUnauthorized, errors.New("invalid company"), "unauthorized")
 			return
