@@ -838,10 +838,35 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "production_resource": {
-                    "description": "Optional — UUID, omit if service not yet available",
-                    "type": "string"
+                    "description": "Optional — int64 ERP production resource ID",
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.DiscoverPayloadKeysRequest": {
+            "type": "object",
+            "required": [
+                "payload_keys"
+            ],
+            "properties": {
+                "payload_keys": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "dto.DraftProfilesResponse": {
+            "type": "object",
+            "properties": {
+                "profile_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
-                "voltage": {
+                "total_count": {
                     "type": "integer"
                 }
             }
@@ -1170,7 +1195,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "production_resource": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "state": {
                     "type": "string"

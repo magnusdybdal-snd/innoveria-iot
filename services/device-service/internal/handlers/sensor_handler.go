@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"innoveria-iot/device-service/internal/domain"
@@ -33,11 +34,12 @@ func GetSensors(svc domain.SensorService) http.HandlerFunc {
 		productionResourceID := r.URL.Query().Get("production_resource_id")
 
 		if productionResourceID != "" {
-			if _, parseErr := uuid.Parse(productionResourceID); parseErr != nil {
-				json.HandleError(w, http.StatusBadRequest, parseErr, "bad request")
+			parsedID, parseErr := strconv.ParseInt(productionResourceID, 10, 64)
+			if parseErr != nil || parsedID <= 0 {
+				json.HandleError(w, http.StatusBadRequest, fmt.Errorf("production_resource_id must be a positive integer"), "bad request")
 				return
 			}
-			data, err = svc.GetByProductionResourceID(ctx, productionResourceID)
+			data, err = svc.GetByProductionResourceID(ctx, parsedID)
 		} else {
 			data, err = svc.GetAll(ctx)
 		}
@@ -143,6 +145,11 @@ func PatchSensor(svc domain.SensorService) http.HandlerFunc {
 
 		if payload.Name == nil && payload.Description == nil && payload.ElectricitySensor == nil && payload.Voltage == nil && payload.FactoryID == nil && payload.FactoryAreaID == nil && payload.ChirpstackProfileID == nil && payload.ProductionResource == nil {
 			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("no fields provided"), "bad request")
+			return
+		}
+
+		if payload.ProductionResource != nil && *payload.ProductionResource < 0 {
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("production_resource must be 0 (to clear) or a positive integer"), "bad request")
 			return
 		}
 

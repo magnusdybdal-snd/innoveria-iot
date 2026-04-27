@@ -6,7 +6,7 @@
     "",
     "<THIRD_PARTY_MODULES>",
     "",
-    "^@/(.*)$",
+    "^@(app|pages|widgets|features|entities|shared|assets|mocks)/(.*)$",
     "",
     "^[./]"
   ],

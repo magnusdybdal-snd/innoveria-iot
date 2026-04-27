@@ -1,23 +1,26 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
+import Box from "@mui/material/Box";
+import Tab from "@mui/material/Tab";
+import Tabs from "@mui/material/Tabs";
+import axios from "axios";
+
+import { useFactories } from "@entities/factory";
+import { useFactoryAreas } from "@entities/factoryArea";
 import {
   deleteSensor,
-  getSensorProfiles,
   postSensor,
   SensorAllInfoPopUp,
   SensorMainInfo,
   SensorsGenInfo,
   sortSensors,
+  useSensorProfiles,
   useSensors,
   type SensorApiResponse,
-  type SensorProfileApiResponse,
   type SensorSortKey,
   type SortDirection,
 } from "@entities/sensor";
 import { AddDevice } from "@features/addDevice";
-import Box from "@mui/material/Box";
-import Tab from "@mui/material/Tab";
-import Tabs from "@mui/material/Tabs";
 import { formatTimestamp } from "@shared/lib";
 import { CustomButton } from "@shared/ui/Button";
 import { CategoryHeader } from "@shared/ui/CategoryHeader";
@@ -31,19 +34,13 @@ import {
 } from "@shared/ui/snackbar";
 import { SubPageHeader } from "@shared/ui/SubPageHeader";
 
-import { getFactories, type FactoryApiResponse } from "@/entities/factory";
-import {
-  getFactoryAreas,
-  type FactoryAreaApiResponse,
-} from "@/entities/factoryArea";
-
 const sensorMainDetails: string[] = ["Status", "Name", "Last reading"];
 const addSensorDetails: string[] = [
   "Name",
   "DeviceEUI",
   "Factory",
   "Factory area",
-  "Machine",
+  "Production resource",
   "Application key",
   "Sensor profile",
   "Electricity sensor",
@@ -66,17 +63,13 @@ const voltageOptions = [
  */
 export default function Sensors() {
   const { sensors, isLoading, refetch } = useSensors();
+  const { factories } = useFactories();
+  const { factoryAreas } = useFactoryAreas();
+  const { sensorProfiles } = useSensorProfiles();
   const [openAdd, setOpenAdd] = useState(false);
   const [addError, setAddError] = useState<string | null>(null);
   const [selectedSensor, setSelectedSensor] =
     useState<SensorApiResponse | null>(null);
-  const [sensorProfiles, setSensorProfiles] = useState<
-    SensorProfileApiResponse[]
-  >([]);
-  const [factory, setFactory] = useState<FactoryApiResponse[]>([]); // factory location sensor
-  const [factoryAreas, setFactoryAreas] = useState<FactoryAreaApiResponse[]>(
-    [],
-  );
 
   const { show, hide, snackbar } = useSnackbar();
   const [tabValue, setTabValue] = useState<number | string>(0);
@@ -87,18 +80,6 @@ export default function Sensors() {
   ) => {
     setTabValue(newValue);
   };
-
-  useEffect(() => {
-    getSensorProfiles().then(setSensorProfiles);
-  }, []);
-
-  useEffect(() => {
-    getFactories().then(setFactory);
-  }, []);
-
-  useEffect(() => {
-    getFactoryAreas().then(setFactoryAreas);
-  }, []);
 
   // Handler for deleting a sensor; refreshes list on success
   const handleDeleteSensor = (id: string) => {
@@ -128,7 +109,7 @@ export default function Sensors() {
     electricitySensor: boolean;
     factory: string;
     factoryArea: string;
-    machine: string;
+    productionResource: number | null;
     appKey: string;
     senProf: string;
     voltage: number | null;
@@ -141,6 +122,7 @@ export default function Sensors() {
       factoryAreaId: sensorData.factoryArea,
       deviceEui: sensorData.deviceEui,
       sensorProfileId: sensorData.senProf,
+      productionResource: sensorData.productionResource,
       appKey: sensorData.appKey,
       name: sensorData.name,
       voltage: sensorData.voltage,
@@ -151,7 +133,11 @@ export default function Sensors() {
         show("Sensor added successfully", SNACKBAR_SEVERITY.SUCCESS);
       })
       .catch((err: unknown) => {
-        setAddError("Something went wrong adding sensor"); // TODO: improve error handling with specific messages based on error type
+        const message =
+          axios.isAxiosError(err) && err.response?.data?.message
+            ? (err.response.data.message as string)
+            : "Something went wrong adding sensor.";
+        setAddError(message);
         show("Failed to add sensor.", SNACKBAR_SEVERITY.ERROR);
         throw err;
       });
@@ -225,7 +211,7 @@ export default function Sensors() {
             aria-label="scrollable auto tabs example"
           >
             <Tab label="All" value={0} />
-            {factory.map((factory) => (
+            {factories.map((factory) => (
               <Tab label={factory.name} value={factory.id} />
             ))}
           </Tabs>
@@ -284,7 +270,7 @@ export default function Sensors() {
         voltageOptions={voltageOptions}
         onAdd={handleAddSensor}
         submitError={addError}
-        factoryOptions={factory}
+        factoryOptions={factories}
         factoryAreaOptions={factoryAreas}
       />
       <AppSnackbar

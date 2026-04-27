@@ -298,7 +298,7 @@ definitions:
       name:
         type: string
       production_resource:
-        type: string
+        type: integer
       state:
         type: string
       status:

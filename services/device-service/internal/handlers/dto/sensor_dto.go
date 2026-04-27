@@ -18,7 +18,7 @@ type SensorResponse struct {
 	State               string  `json:"state"`
 	FactoryID           string  `json:"factory_id"`
 	FactoryAreaID       string  `json:"factory_area_id"`
-	ProductionResource  *string `json:"production_resource"`
+	ProductionResource  *int64  `json:"production_resource"`
 	ChirpstackProfileID string  `json:"device_profile_id"`
 	Status              int     `json:"status"`
 	LastSeenAt          string  `json:"last_seen_at"`
@@ -41,7 +41,7 @@ type UpdateSensorRequest struct {
 	Voltage             *int    `json:"voltage"`
 	FactoryID           *string `json:"factory_id"`
 	FactoryAreaID       *string `json:"factory_area_id"`     // Optional — UUID, omit if service not yet available
-	ProductionResource  *string `json:"production_resource"` // Optional — UUID, omit if service not yet available
+	ProductionResource  *int64  `json:"production_resource"` // Optional — int64 ERP production resource ID
 }
 
 // CreateSensorRequest represents the fields required to register a new sensor.
@@ -57,5 +57,5 @@ type CreateSensorRequest struct {
 	Voltage             *int    `json:"voltage"`
 	FactoryID           string  `json:"factory_id"            binding:"required"`
 	FactoryAreaID       string  `json:"factory_area_id"       binding:"required"`
-	ProductionResource  *string `json:"production_resource"` // Optional — UUID, omit if service not yet available
+	ProductionResource  *int64  `json:"production_resource"` // Optional — int64 ERP production resource ID
 }

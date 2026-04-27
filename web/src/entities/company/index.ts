@@ -4,6 +4,7 @@ export type {
   CreateCompanyRequest,
 } from "./model/companySchema";
 export { getCompanies, postCompany } from "./api";
+export { useCompanies } from "./model/useCompanies";
 export { CompanyInfo } from "./ui";
 export { sortCompanies } from "./lib/sortCompanies";
 export type { CompanySortKey, SortDirection } from "./lib/sortCompanies";

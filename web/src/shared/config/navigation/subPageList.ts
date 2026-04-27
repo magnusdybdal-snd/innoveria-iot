@@ -7,10 +7,9 @@ const subPages: Map<string, SubPage[]> = new Map([
   [
     "Dashboard views",
     [
-      { name: "KPI dashboard", path: "/Dashboard/KPI_dashboard" },
-      { name: "Building dashboard", path: "/Dashboard/Building_dashboard" },
-      { name: "Prod.line 5", path: "/Dashboard/Prod.line_5" },
       { name: "Context dashboard", path: "/Dashboard/Context" },
+      { name: "Order context", path: "/Dashboard/Context/Orders" },
+      { name: "Orders", path: "/Dashboard/Context/OrderList" },
     ],
   ],
   [
@@ -20,7 +19,6 @@ const subPages: Map<string, SubPage[]> = new Map([
       { name: "Sensors", path: "/Devices/Sensors" },
     ],
   ],
-  ["Reports", []],
   [
     "Admin",
     [
@@ -29,6 +27,8 @@ const subPages: Map<string, SubPage[]> = new Map([
       { name: "Measurement types", path: "/Admin/Measurement" },
       { name: "Payload schema", path: "/Admin/PayloadSchema" },
       { name: "Users", path: "/Admin/Users" },
+      // Rules are supposed to be viewed by normal users. NOT JUST innoveria
+      { name: "Context rules", path: "/Admin/Rules" },
     ],
   ],
 ]);

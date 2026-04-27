@@ -1,11 +1,12 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+
+import { CustomButton } from "@/shared/ui/Button";
 
 import {
   CompanyInfo,
-  getCompanies,
   postCompany,
   sortCompanies,
-  type CompanyApiResponse,
+  useCompanies,
   type CompanySortKey,
   type SortDirection,
 } from "@entities/company";
@@ -22,8 +23,6 @@ import {
   useSnackbar,
 } from "@shared/ui/snackbar";
 import { SubPageHeader } from "@shared/ui/SubPageHeader";
-
-import { CustomButton } from "@/shared/ui/Button";
 
 // Column labels rendered by CategoryHeader; order determines grid layout
 const companyDetails: string[] = [
@@ -51,23 +50,12 @@ const addCompanyDetails: string[] = ["Name", "Address"];
  * @returns The rendered Companies page
  */
 export default function Companies() {
-  const [companies, setCompanies] = useState<CompanyApiResponse[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { companies, isLoading, refetch } = useCompanies();
   const [addError, setAddError] = useState<string | null>(null);
 
   // State for controlling success snackbar
   const { show, hide, snackbar } = useSnackbar();
 
-  const fetchCompanies = () => {
-    getCompanies().then((data) => {
-      setCompanies(data);
-      setIsLoading(false);
-    });
-  };
-
-  useEffect(() => {
-    fetchCompanies();
-  }, []);
   const [openAdd, setOpenAdd] = useState(false);
   const [sortConfig, setSortConfig] = useState<{
     key: CompanySortKey | null;
@@ -93,7 +81,7 @@ export default function Companies() {
       address: companyData.address,
     })
       .then(() => {
-        fetchCompanies();
+        refetch();
         setOpenAdd(false);
         show("Company added successfully", SNACKBAR_SEVERITY.SUCCESS);
       })

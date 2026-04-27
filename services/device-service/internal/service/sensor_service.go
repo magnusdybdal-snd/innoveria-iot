@@ -123,7 +123,11 @@ func (s *SensorServiceImpl) Update(ctx context.Context, sensorID string, payload
 		sensor.FactoryAreaID = payload.FactoryAreaID
 	}
 	if payload.ProductionResource != nil {
-		sensor.ProductionResource = payload.ProductionResource
+		if *payload.ProductionResource == 0 {
+			sensor.ProductionResource = nil
+		} else {
+			sensor.ProductionResource = payload.ProductionResource
+		}
 	}
 	if payload.Voltage != nil && payload.ElectricitySensor == nil {
 		if sensor.ElectricitySensor == nil || !*sensor.ElectricitySensor {
@@ -209,7 +213,7 @@ func (s *SensorServiceImpl) GetAll(ctx context.Context) ([]domain.Sensor, error)
 
 // GetByProductionResourceID  retrieves all sensors attatched to one production resource ID from the database and merges the
 // response with the status from Chirpstack (status and last seen).
-func (s *SensorServiceImpl) GetByProductionResourceID(ctx context.Context, productionResourceID string) ([]domain.Sensor, error) {
+func (s *SensorServiceImpl) GetByProductionResourceID(ctx context.Context, productionResourceID int64) ([]domain.Sensor, error) {
 
 	sensors, err := s.sensorRepo.FindByProductionResourceID(ctx, productionResourceID)
 	if err != nil {

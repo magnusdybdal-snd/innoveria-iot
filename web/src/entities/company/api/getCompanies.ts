@@ -17,25 +17,20 @@ type RawCompanyListApiResponse = {
 
 /**
  * Fetches all companies from the collection-service via the API company.
- * @returns Array of CompanyApiResponse objects, or an empty array if the request fails
+ * @returns Array of CompanyApiResponse objects
  */
 export const getCompanies = async (): Promise<CompanyApiResponse[]> => {
-  try {
-    const data = await apiRequest<RawCompanyListApiResponse>(
-      serviceClient,
-      API_ROUTES.companiesGet,
-      "GET",
-    );
+  const data = await apiRequest<RawCompanyListApiResponse>(
+    serviceClient,
+    API_ROUTES.companiesGet,
+    "GET",
+  );
 
-    return (data.companies ?? []).map((s) => ({
-      companyId: s.company_id,
-      name: s.name,
-      address: s.address,
-      createdAt: s.created_at,
-      updatedAt: s.updated_at,
-    }));
-  } catch (error) {
-    console.error("Failed to fetch companies:", error);
-    return [];
-  }
+  return (data.companies ?? []).map((s) => ({
+    companyId: s.company_id,
+    name: s.name,
+    address: s.address,
+    createdAt: s.created_at,
+    updatedAt: s.updated_at,
+  }));
 };

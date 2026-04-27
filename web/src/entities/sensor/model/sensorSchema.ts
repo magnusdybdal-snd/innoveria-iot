@@ -21,7 +21,7 @@ export interface SensorApiResponse {
 export interface SensorReadingApiResponse {
   deviceEui: string;
   timestamp: string;
-  payload: Record<string, unknown>;
+  payload: Record<string, unknown> | null;
   companyId: string;
 }
 
@@ -35,6 +35,7 @@ export interface CreateSensorRequest {
   factoryId: string;
   factoryAreaId: string;
   deviceEui: string;
+  productionResource: number | null;
   appKey: string;
   sensorProfileId: string;
   name: string;
