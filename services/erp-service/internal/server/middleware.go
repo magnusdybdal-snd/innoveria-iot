@@ -2,6 +2,7 @@ package server
 
 import (
 	"errors"
+	"log/slog"
 	"net/http"
 
 	"innoveria-iot/pkg/json"
@@ -26,6 +27,7 @@ func RequireAgentAuth(jwtSecret string, goEnv string, next http.Handler) http.Ha
 		// dev mode
 		if tokenStr == "dev" {
 			if goEnv != "development" {
+				slog.Warn("dev token rejected outside development", "path", r.URL.Path, "env", goEnv)
 				json.HandleError(w, http.StatusUnauthorized, errors.New("invalid token"), "unauthorized")
 				return
 			}
