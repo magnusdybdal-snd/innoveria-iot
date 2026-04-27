@@ -93,6 +93,105 @@ const docTemplate = `{
                 }
             }
         },
+        "/orders": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "orders"
+                ],
+                "summary": "Get Orders",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.OrderSummaryResponse"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/orders/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "orders"
+                ],
+                "summary": "Get Order By ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ERP Order ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.OrderResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/orders/{id}/context": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "orders"
+                ],
+                "summary": "Get Order Context",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ERP Order ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.OrderContextResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/rules": {
             "get": {
                 "produces": [
@@ -167,7 +266,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/rules/{rule_id}": {
+        "/rules/{id}": {
             "delete": {
                 "tags": [
                     "context"
@@ -315,6 +414,223 @@ const docTemplate = `{
                 },
                 "time_bucket_minutes": {
                     "type": "integer"
+                }
+            }
+        },
+        "dto.OperationContextResponse": {
+            "type": "object",
+            "properties": {
+                "degraded": {
+                    "description": "Degraded is true when sensor data could not be loaded due to a technical error.\nA false value with an empty sensors array means no sensors are mapped (expected state).",
+                    "type": "boolean"
+                },
+                "operation": {
+                    "$ref": "#/definitions/dto.OrderOperationResponse"
+                },
+                "sensors": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.SensorContextResponse"
+                    }
+                }
+            }
+        },
+        "dto.OrderContextResponse": {
+            "type": "object",
+            "properties": {
+                "operations": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.OperationContextResponse"
+                    }
+                },
+                "order": {
+                    "$ref": "#/definitions/dto.OrderResponse"
+                }
+            }
+        },
+        "dto.OrderOperationResponse": {
+            "type": "object",
+            "properties": {
+                "actual_finish_date": {
+                    "type": "string"
+                },
+                "actual_start_date": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "planned_finish_date": {
+                    "type": "string"
+                },
+                "planned_start_date": {
+                    "type": "string"
+                },
+                "production_resource": {
+                    "$ref": "#/definitions/dto.ProductionResourceResponse"
+                },
+                "production_resource_status": {
+                    "type": "string"
+                },
+                "reports": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.OrderReportResponse"
+                    }
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.OrderReportResponse": {
+            "type": "object",
+            "properties": {
+                "actual_reported_date": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "quantity": {
+                    "type": "number"
+                },
+                "reporting_timestamp": {
+                    "type": "string"
+                },
+                "rest_quantity": {
+                    "type": "number"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.OrderResponse": {
+            "type": "object",
+            "properties": {
+                "actual_finish_date": {
+                    "type": "string"
+                },
+                "actual_start_date": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "operations": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.OrderOperationResponse"
+                    }
+                },
+                "order_number": {
+                    "type": "string"
+                },
+                "part_description": {
+                    "type": "string"
+                },
+                "part_id": {
+                    "type": "string"
+                },
+                "planned_finish_date": {
+                    "type": "string"
+                },
+                "planned_start_date": {
+                    "type": "string"
+                },
+                "priority": {
+                    "type": "integer"
+                },
+                "received_at": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.OrderSummaryResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.ProductionResourceResponse": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "number": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.SensorContextResponse": {
+            "type": "object",
+            "properties": {
+                "device_eui": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "measurements": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/internal_handlers_dto.MeasurementResponse"
+                    }
+                },
+                "metrics": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/internal_handlers_dto.SensorMetricResponse"
+                    }
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_handlers_dto.MeasurementResponse": {
+            "type": "object",
+            "properties": {
+                "device_eui": {
+                    "type": "string"
+                },
+                "payload": {
+                    "type": "object",
+                    "additionalProperties": {}
+                },
+                "timestamp": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_handlers_dto.SensorMetricResponse": {
+            "type": "object",
+            "properties": {
+                "measurement_type": {
+                    "type": "string"
+                },
+                "payload_key": {
+                    "type": "string"
+                },
+                "unit": {
+                    "type": "string"
                 }
             }
         }

@@ -38,7 +38,7 @@ export function DropDownSelect({
   value,
   onChange,
 }: DropDownSelectProps) {
-  const selected = options.find((o) => o.id === value);
+  const selected = options.find((o) => o.id === value) ?? null;
 
   return (
     <Autocomplete

@@ -197,9 +197,7 @@ export default function Gateways() {
             </DeviceRow>
           ))}
         </CategoryHeader>
-        {!isLoading && sorted.length === 0 && (
-          <NotFoundCard page="gateways" isEmpty={true} />
-        )}
+        {!isLoading && sorted.length === 0 && <NotFoundCard page="gateways" />}
       </PageContent>
       <AddDevice
         open={openAdd}

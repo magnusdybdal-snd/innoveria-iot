@@ -7,6 +7,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import Typography from "@mui/material/Typography";
 
+import { ELECTRICITY_SENSOR, VOLTAGE } from "@shared/const";
 import { DeviceFormFields } from "@shared/ui/DeviceFormFields";
 
 export interface AddDeviceProps {
@@ -16,15 +17,18 @@ export interface AddDeviceProps {
   profileOptions?: { id: string; name: string }[];
   factoryOptions?: { id: string; name: string }[];
   factoryAreaOptions?: { id: string; name: string }[];
+  voltageOptions?: { id: string; name: string }[];
   onFactoryChange?: (factoryId: string) => void;
   onAdd: (sensor: {
     name: string;
     deviceEui: string;
+    electricitySensor: boolean;
     factory: string;
     factoryArea: string;
-    machine: string;
+    productionResource: number | null;
     appKey: string;
     senProf: string;
+    voltage: number | null;
   }) => Promise<void>;
   submitError?: string | null;
 }
@@ -32,13 +36,14 @@ export interface AddDeviceProps {
 const inputHints: Record<string, string> = {
   Name: "Enter device name",
   DeviceEUI: "16 characters (hex)",
-  Machine: "Enter machine name",
+  ProductionResource: "Enter production resource",
   "Application key": "32 characters (hex)",
 };
 
 const inputLengthError: Record<string, string> = {
   DeviceEUI: "DeviceEUI must be 16 characters",
   "Application key": "Application key must be 32 characters",
+  ProductionResource: "Production resource must be a positive number",
 };
 
 /**
@@ -61,6 +66,7 @@ export function AddDevice(props: AddDeviceProps) {
     factoryOptions = [],
     factoryAreaOptions = [],
     onFactoryChange,
+    voltageOptions = [],
     submitError,
   } = props;
   const [values, setValues] = useState<Record<string, string>>({});
@@ -75,13 +81,27 @@ export function AddDevice(props: AddDeviceProps) {
   };
 
   const handleSafeClose = () => {
-    const allFilled = addOptions.every(
-      (option) => (values[option] ?? "").trim() !== "",
-    );
+    const electricityEnabled = values[ELECTRICITY_SENSOR] === "true";
+
+    const allFilled = addOptions
+      .filter(
+        (option) =>
+          option !== ELECTRICITY_SENSOR &&
+          option !== "Production resource" &&
+          (option !== VOLTAGE || electricityEnabled),
+      )
+      .every((option) => (values[option] ?? "").trim() !== "");
+
+    const productionResourceRaw = (values["Production resource"] ?? "").trim();
+    const productionResourceParsed = parseInt(productionResourceRaw, 10);
+    const productionResourceInvalid =
+      productionResourceRaw !== "" &&
+      (isNaN(productionResourceParsed) || productionResourceParsed <= 0);
 
     const newLengthErrors = {
       DeviceEUI: (values["DeviceEUI"] ?? "").length !== 16,
       "Application key": (values["Application key"] ?? "").length !== 32,
+      ProductionResource: productionResourceInvalid,
     };
 
     if (!allFilled) {
@@ -90,7 +110,9 @@ export function AddDevice(props: AddDeviceProps) {
     } else if (
       (addOptions.includes("DeviceEUI") && newLengthErrors.DeviceEUI) ||
       (addOptions.includes("Application key") &&
-        newLengthErrors["Application key"])
+        newLengthErrors["Application key"]) ||
+      (addOptions.includes("Production resource") &&
+        newLengthErrors.ProductionResource)
     ) {
       setFillError(false);
       setLengthErrors(newLengthErrors);
@@ -101,18 +123,21 @@ export function AddDevice(props: AddDeviceProps) {
       .onAdd({
         name: values["Name"],
         deviceEui: values["DeviceEUI"],
+        electricitySensor: values["Electricity sensor"] === "true",
         factory: values["Factory"],
         factoryArea: values["Factory area"],
-        machine: values["Machine"],
+        productionResource:
+          productionResourceRaw !== "" ? productionResourceParsed : null,
         appKey: values["Application key"],
         senProf: values["Sensor profile"],
+        voltage: electricityEnabled ? Number(values["Voltage"]) : null,
       })
       .then(() => {
         setValues({});
-      });
-
-    setFillError(false);
-    setLengthErrors({});
+        setFillError(false); // only clear on success
+        setLengthErrors({});
+      })
+      .catch(() => {});
   };
 
   return (
@@ -140,6 +165,7 @@ export function AddDevice(props: AddDeviceProps) {
           profileOptions={profileOptions}
           factoryOptions={factoryOptions}
           factoryAreaOptions={factoryAreaOptions}
+          voltageOptions={voltageOptions}
           lengthErrors={lengthErrors}
           lengthErrorMessages={inputLengthError}
           inputHints={inputHints}

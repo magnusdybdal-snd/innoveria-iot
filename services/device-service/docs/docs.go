@@ -464,36 +464,71 @@ const docTemplate = `{
                 }
             }
         },
-        "/payload-schema/{chirpstack_profile_id}/discover": {
-            "post": {
-                "consumes": [
+        "/sensor-profile-config/{profile_id}": {
+            "get": {
+                "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "payload-schema"
+                    "sensor-profile-config"
                 ],
-                "summary": "Discover payload keys for a profile",
+                "summary": "Get sensor profile config",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "ChirpStack profile ID",
-                        "name": "chirpstack_profile_id",
+                        "description": "Chirpstack profile ID",
+                        "name": "profile_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SensorProfileConfigResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "sensor-profile-config"
+                ],
+                "summary": "Set sensor profile config",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Chirpstack profile ID",
+                        "name": "profile_id",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "description": "Discovered payload keys",
+                        "description": "Sensor profile config payload",
                         "name": "body",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.DiscoverPayloadKeysRequest"
+                            "$ref": "#/definitions/dto.PutSensorProfileConfigRequest"
                         }
                     }
                 ],
                 "responses": {
-                    "201": {
-                        "description": "Created"
+                    "204": {
+                        "description": "No Content"
                     },
                     "400": {
                         "description": "Bad Request"
@@ -544,8 +579,8 @@ const docTemplate = `{
                 "summary": "Lists all sensors.",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Production resource",
+                        "type": "integer",
+                        "description": "Production resource (ERP ProductionResource ID)",
                         "name": "production_resource_id",
                         "in": "query"
                     }
@@ -594,8 +629,42 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request"
                     },
-                    "401": {
-                        "description": "Unauthorized"
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/sensors/sample-eui": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "sensors"
+                ],
+                "summary": "Get a sample device EUI for a Chirpstack profile",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Chirpstack profile ID",
+                        "name": "chirpstack_profile_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SampleEUIResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not Found"
                     },
                     "500": {
                         "description": "Internal Server Error"
@@ -856,6 +925,9 @@ const docTemplate = `{
                 "device_profile_id": {
                     "type": "string"
                 },
+                "electricity_sensor": {
+                    "type": "boolean"
+                },
                 "factory_area_id": {
                     "type": "string"
                 },
@@ -866,8 +938,12 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "production_resource": {
-                    "description": "Optional — UUID, omit if service not yet available",
-                    "type": "string"
+<<<<<<< HEAD
+                    "description": "Optional — ERP ProductionResource ID",
+                    "type": "integer"
+=======
+                    "description": "Optional — int64 ERP production resource ID",
+                    "type": "integer"
                 }
             }
         },
@@ -893,6 +969,7 @@ const docTemplate = `{
                     "items": {
                         "type": "string"
                     }
+>>>>>>> origin/dev
                 },
                 "total_count": {
                     "type": "integer"
@@ -1040,6 +1117,23 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.PutSensorProfileConfigRequest": {
+            "type": "object",
+            "properties": {
+                "configurable_schema": {
+                    "description": "ConfigurableSchema uses *bool to distinguish an explicit false from a missing field,\nsince Go's JSON decoder cannot differentiate the two for plain bool types.\nThe field is required — a nil value is rejected with 400.",
+                    "type": "boolean"
+                }
+            }
+        },
+        "dto.SampleEUIResponse": {
+            "type": "object",
+            "properties": {
+                "device_eui": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.SavePayloadSchemaLabelsRequest": {
             "type": "object",
             "required": [
@@ -1114,6 +1208,17 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.SensorProfileConfigResponse": {
+            "type": "object",
+            "properties": {
+                "chirpstack_profile_id": {
+                    "type": "string"
+                },
+                "configurable_schema": {
+                    "type": "boolean"
+                }
+            }
+        },
         "dto.SensorProfileListResponse": {
             "type": "object",
             "properties": {
@@ -1176,6 +1281,9 @@ const docTemplate = `{
                 "device_profile_id": {
                     "type": "string"
                 },
+                "electricity_sensor": {
+                    "type": "boolean"
+                },
                 "factory_area_id": {
                     "type": "string"
                 },
@@ -1192,7 +1300,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "production_resource": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "state": {
                     "type": "string"
@@ -1202,6 +1310,9 @@ const docTemplate = `{
                 },
                 "updated_at": {
                     "type": "string"
+                },
+                "voltage": {
+                    "type": "integer"
                 }
             }
         },
@@ -1231,8 +1342,11 @@ const docTemplate = `{
                 "device_profile_id": {
                     "type": "string"
                 },
+                "electricity_sensor": {
+                    "type": "boolean"
+                },
                 "factory_area_id": {
-                    "description": "Optional — UUID, omit if service not yet available",
+                    "description": "Optional — omit if not applicable",
                     "type": "string"
                 },
                 "factory_id": {
@@ -1242,8 +1356,11 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "production_resource": {
-                    "description": "Optional — UUID, omit if service not yet available",
-                    "type": "string"
+                    "description": "Optional — ERP ProductionResource ID",
+                    "type": "integer"
+                },
+                "voltage": {
+                    "type": "integer"
                 }
             }
         },

@@ -12,7 +12,10 @@ const (
 	CONTEXT_ROUTE = API_ROUTE + "/context"
 
 	// Routes:
-	RULES_ROUTE        = CONTEXT_ROUTE + "/rules"
-	RULES_ID_ROUTE     = RULES_ROUTE + "/{id}"
-	CONTEXT_DATA_ROUTE = CONTEXT_ROUTE + "/data"
+	RULES_ROUTE         = CONTEXT_ROUTE + "/rules"
+	RULES_ID_ROUTE      = RULES_ROUTE + "/{id}"
+	CONTEXT_DATA_ROUTE  = CONTEXT_ROUTE + "/data"
+	ORDERS_ROUTE        = CONTEXT_ROUTE + "/orders"
+	ORDER_BY_ID_ROUTE   = ORDERS_ROUTE + "/{id}"
+	ORDER_CONTEXT_ROUTE = ORDERS_ROUTE + "/{id}/context"
 )

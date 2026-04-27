@@ -13,14 +13,53 @@ import (
 	"time"
 
 	"innoveria-iot/erp-service/internal/config"
+	"innoveria-iot/erp-service/internal/db"
+	"innoveria-iot/erp-service/internal/repository"
+	"innoveria-iot/erp-service/internal/service"
+	"innoveria-iot/pkg/dbutil"
 )
 
 // Run starts the erp service HTTP server and handles graceful shutdown.
 func Run() error {
 	cfg := config.Load()
 
+	// Init connection to erp database
+	database, err := dbutil.New(cfg.DBURL, "erp-db")
+	if err != nil {
+		return fmt.Errorf("db error: %w", err)
+	}
+	defer database.Close()
+
+	// setup database with migrations
+	if err := db.RunMigrations(database.Pool); err != nil {
+		return fmt.Errorf("migrations: %w", err)
+	}
+
+	// repository init
+	ingestRepo := repository.NewIngestRepo(database)
+	reconcileRepo := repository.NewReconcileRepo(database)
+	prodResRepo := repository.NewProductionResourceRepo(database)
+	orderRepo := repository.NewOrderRepo(database)
+	orderOperationRepo := repository.NewOrderOperationRepo(database)
+	orderReportRepo := repository.NewOrderReportRepo(database)
+
+	// Service init
+	ingestSvc := service.NewIngestService(ingestRepo)
+	prodResSvc := service.NewProductionResourceSvc(prodResRepo)
+	orderSvc := service.NewOrderService(
+		orderRepo, orderOperationRepo, orderReportRepo, prodResRepo,
+	)
+
+	// Reconcile worker
+	workerCtx, workerCancel := context.WithCancel(context.Background())
+	defer workerCancel()
+
+	reconcileWorker := service.NewReconcileService(reconcileRepo)
+	reconcileWorker.Start(workerCtx, cfg.ReconcileInterval)
+	defer reconcileWorker.Stop()
+
 	// Setting up mux and http server
-	mux := NewRouter()
+	mux := NewRouter(ingestSvc, prodResSvc, orderSvc)
 	server := &http.Server{
 		Addr:              cfg.Addr,
 		Handler:           mux,
