@@ -11,7 +11,7 @@ import (
 )
 
 // SeededCompanyID is a dev only const used to insert correct erp data with the dev company
-const SeededCompanyID = "a0000000-0000-0000-0000-000000000001"
+const seededCompanyID = "a0000000-0000-0000-0000-000000000001"
 
 // RequireAgentAuth validates ERP agent bearer JWTs and injects a trusted
 // company header for downstream handlers.
@@ -31,7 +31,7 @@ func RequireAgentAuth(jwtSecret string, goEnv string, next http.Handler) http.Ha
 			}
 
 			r.Header.Del("X-Erp-Company-Id")
-			r.Header.Add("X-Erp-Company-Id", SeededCompanyID)
+			r.Header.Add("X-Erp-Company-Id", seededCompanyID)
 			next.ServeHTTP(w, r)
 			return
 		}
@@ -51,7 +51,7 @@ func RequireAgentAuth(jwtSecret string, goEnv string, next http.Handler) http.Ha
 
 		companyID, _ := claims["company_id"].(string)
 		if companyID == "" && goEnv == "development" {
-			companyID = SeededCompanyID
+			companyID = seededCompanyID
 		}
 		if companyID == "" {
 			json.HandleError(w, http.StatusUnauthorized, errors.New("invalid company"), "unauthorized")
