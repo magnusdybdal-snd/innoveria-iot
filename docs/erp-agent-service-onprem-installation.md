@@ -61,7 +61,7 @@ Use a platform admin account in the web app and extract a valid **access JWT**:
 1. Log in to the website as platform admin.
 2. Go to admin page, then companies
 3. Click the three dots, and to generate a new erp agent token
-4. add it to the enviroment variables
+4. add it to the enviroment variables, before starting up the `erp agent service`
 
 Security recommendations:
 - Treat this token as a secret.
