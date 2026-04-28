@@ -1,4 +1,3 @@
-// Package db contains database migration logic for the erp service.
 package db
 
 import (
