@@ -10,6 +10,8 @@ import (
 	"innoveria-iot/auth-service/internal/handlers/dto"
 	"innoveria-iot/pkg/json"
 
+	"innoveria-iot/pkg/authctx"
+
 	"github.com/google/uuid"
 )
 
@@ -181,6 +183,16 @@ func DeleteCompany(svc domain.CompanyService) http.HandlerFunc {
 func PostCompanyERPAgentToken(svc domain.CompanyService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
+
+		auth, err := authctx.FromRequest(r)
+		if err != nil {
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
+			return
+		}
+		if !auth.IsAdmin() {
+			json.HandleError(w, http.StatusForbidden, fmt.Errorf("forbidden"), "forbidden")
+			return
+		}
 
 		companyID := r.PathValue("id")
 		if companyID == "" {
