@@ -13,12 +13,18 @@ import (
 func PostIngestOrder(svc domain.Ingest) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
+		companyID, err := companyIDFromHeader(r)
+		if err != nil {
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
+			return
+		}
+
 		payload, err := json.Decode[[]monitordto.ManufacturingOrder](r)
 		if err != nil {
 			json.HandleError(w, http.StatusBadRequest, err, "bad request")
 			return
 		}
-		result := dto.MapMonitorOrderToDomain(payload)
+		result := dto.MapMonitorOrderToDomain(payload, companyID)
 		if err := svc.CreateOrder(ctx, result); err != nil {
 			status, message, cause := MapDomainError(err)
 			json.HandleError(w, status, cause, message)
@@ -38,12 +44,18 @@ func PostIngestOrder(svc domain.Ingest) http.HandlerFunc {
 func PostIngestOrderOperations(svc domain.Ingest) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
+		companyID, err := companyIDFromHeader(r)
+		if err != nil {
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
+			return
+		}
+
 		payload, err := json.Decode[[]monitordto.ManufacturingOrderOperation](r)
 		if err != nil {
 			json.HandleError(w, http.StatusBadRequest, err, "bad request")
 			return
 		}
-		result := dto.MapMonitorOrderOperationToDomain(payload)
+		result := dto.MapMonitorOrderOperationToDomain(payload, companyID)
 		if err := svc.CreateOrderOperation(ctx, result); err != nil {
 			status, message, cause := MapDomainError(err)
 			json.HandleError(w, status, cause, message)
@@ -63,12 +75,18 @@ func PostIngestOrderOperations(svc domain.Ingest) http.HandlerFunc {
 func PostIngestOrderReports(svc domain.Ingest) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
+		companyID, err := companyIDFromHeader(r)
+		if err != nil {
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
+			return
+		}
+
 		payload, err := json.Decode[[]monitordto.ManufacturingOrderOperationReporting](r)
 		if err != nil {
 			json.HandleError(w, http.StatusBadRequest, err, "bad request")
 			return
 		}
-		result := dto.MapMonitorOrderReportToDomain(payload)
+		result := dto.MapMonitorOrderReportToDomain(payload, companyID)
 		if err := svc.CreateOrderReport(ctx, result); err != nil {
 			status, message, cause := MapDomainError(err)
 			json.HandleError(w, status, cause, message)
@@ -88,12 +106,18 @@ func PostIngestOrderReports(svc domain.Ingest) http.HandlerFunc {
 func PostIngestWorkCenters(svc domain.Ingest) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
+		companyID, err := companyIDFromHeader(r)
+		if err != nil {
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
+			return
+		}
+
 		payload, err := json.Decode[[]monitordto.WorkCenter](r)
 		if err != nil {
 			json.HandleError(w, http.StatusBadRequest, err, "bad request")
 			return
 		}
-		result := dto.MapMonitorWorkcenterToDomain(payload)
+		result := dto.MapMonitorWorkcenterToDomain(payload, companyID)
 		if err := svc.CreateProductionResource(ctx, result); err != nil {
 			status, message, cause := MapDomainError(err)
 			json.HandleError(w, status, cause, message)
