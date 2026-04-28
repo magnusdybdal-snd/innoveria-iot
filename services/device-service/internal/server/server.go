@@ -76,13 +76,13 @@ func Run() error {
 	// main startup function
 	serverErrors := make(chan error, 2)
 	go func() {
-		slog.Info("device-service server listning", "addr", cfg.Addr)
+		slog.Info("device-service server listening", "addr", cfg.Addr)
 		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			serverErrors <- err
 		}
 	}()
 	go func() {
-		slog.Info("device-service internal server listning", "addr", cfg.InternalAddr)
+		slog.Info("device-service internal server listening", "addr", cfg.InternalAddr)
 		if err := internalServer.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			serverErrors <- err
 		}
