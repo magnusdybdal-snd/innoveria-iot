@@ -245,6 +245,7 @@ services:
     depends_on:
       - collection-service
       - context-db
+      - erp-service
 
   context-db:
     image: postgres:16-alpine
