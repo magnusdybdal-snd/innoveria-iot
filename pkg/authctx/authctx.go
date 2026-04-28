@@ -4,14 +4,14 @@ package authctx
 import (
 	"fmt"
 	"net/http"
-
-	"innoveria-iot/pkg/roles"
 )
+
+// TODO: Add roles here
 
 const (
 	headerUserID    = "X-Auth-User-Id"
 	headerCompanyID = "X-Auth-Company-Id"
-	headerRole      = "X-Auth-Role"
+	// headerRole      = "X-Auth-Role"
 )
 
 // Auth holds the authenticated user's identity extracted from request headers.
@@ -19,13 +19,15 @@ const (
 type Auth struct {
 	UserID    string
 	CompanyID string
-	Role      roles.RoleType
+	// Role      roles.RoleType
 }
 
+/*
 // IsAdmin returns true if the user has the PLATFORM_ADMIN role.
 func (a Auth) IsAdmin() bool {
 	return a.Role == roles.PlatformAdmin
 }
+*/
 
 // FromRequest extracts the authenticated user's identity from the request headers.
 // Returns an error if any header is missing, which should not happen for requests
@@ -40,15 +42,15 @@ func FromRequest(r *http.Request) (Auth, error) {
 	if companyID == "" {
 		return Auth{}, fmt.Errorf("authctx: missing %s header", headerCompanyID)
 	}
-
-	role := r.Header.Get(headerRole)
-	if role == "" {
-		return Auth{}, fmt.Errorf("authctx: missing %s header", headerRole)
-	}
+	/*
+		role := r.Header.Get(headerRole)
+		if role == "" {
+			return Auth{}, fmt.Errorf("authctx: missing %s header", headerRole)
+		}
+	*/
 
 	return Auth{
 		UserID:    userID,
 		CompanyID: companyID,
-		Role:      roles.RoleType(role),
 	}, nil
 }
