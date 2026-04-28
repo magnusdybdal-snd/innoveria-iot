@@ -26,6 +26,8 @@ func NewRouter(contextSvc domain.ContextService, ruleSvc domain.RuleService) *ht
 	mux.HandleFunc("GET "+ORDERS_ROUTE, handlers.GetOrders(contextSvc))
 	mux.HandleFunc("GET "+ORDER_BY_ID_ROUTE, handlers.GetOrderByID(contextSvc))
 	mux.HandleFunc("GET "+ORDER_CONTEXT_ROUTE, handlers.GetOrderContext(contextSvc))
+	// Production resources endpoint
+	mux.HandleFunc("GET "+PRODUCTION_RESOURCES_ROUTE, handlers.GetProductionResources(contextSvc))
 
 	// Swagger docs
 	mux.HandleFunc("GET /swagger/", httpSwagger.WrapHandler)
