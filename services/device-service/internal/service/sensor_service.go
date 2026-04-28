@@ -44,6 +44,7 @@ func (s *SensorServiceImpl) Create(ctx context.Context, payload domain.Sensor) e
 	if err != nil {
 		return fmt.Errorf("create sensor: ensure tenant profile: %w", err)
 	}
+	payload.GlobalChirpstackProfileID = payload.ChirpstackProfileID
 	payload.ChirpstackProfileID = tenantProfileID
 
 	// Post request to Chirpstack
