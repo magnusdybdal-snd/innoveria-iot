@@ -1,6 +1,7 @@
 # ERP Agent Service On-Prem Installation
 
 This guide installs `erp-agent-service` as a standalone on-prem service, separate from the rest of the platform.
+So this should be ran in the same network as monitor ERP.
 
 ## What this service needs
 
