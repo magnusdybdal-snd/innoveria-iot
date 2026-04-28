@@ -177,6 +177,8 @@ func DeleteCompany(svc domain.CompanyService) http.HandlerFunc {
 // @Param id path string true "id"
 // @Success 200 {object} dto.ERPAgentTokenResponse
 // @Failure 400
+// @Failure 401
+// @Failure 403
 // @Failure 404
 // @Failure 500
 // @Router /companies/{id}/erp-agent-token [post]
