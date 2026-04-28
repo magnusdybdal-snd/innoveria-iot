@@ -169,6 +169,7 @@ services:
     environment:
       - GO_ENV=development
       - ENABLE_SWAGGER=true
+      - INTERNAL_PORT=9090
     depends_on:
       - device-db
 
