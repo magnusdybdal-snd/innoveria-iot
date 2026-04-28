@@ -88,7 +88,7 @@ func Run() error {
 		}
 	}()
 
-	shutdown := make(chan os.Signal, 2)
+	shutdown := make(chan os.Signal, 1)
 	signal.Notify(shutdown, os.Interrupt, syscall.SIGTERM)
 
 	// Handles server startup errors and graceful shutdown
