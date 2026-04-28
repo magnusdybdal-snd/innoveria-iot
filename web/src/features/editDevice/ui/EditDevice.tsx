@@ -28,8 +28,9 @@ export interface EditDeviceProps {
     factoryArea: string;
     productionResource: number | null;
     appKey: string;
-    senProf: string;
+    deviceProfile: string;
     voltage: number | null;
+    description?: string;
   };
   onEdit: (
     deviceId: string,
@@ -40,7 +41,7 @@ export interface EditDeviceProps {
       factoryArea?: string;
       productionResource?: number | null;
       appKey?: string;
-      senProf?: string;
+      deviceProfile?: string;
       voltage?: number | null;
     },
   ) => void;
@@ -50,14 +51,14 @@ export interface EditDeviceProps {
 const inputHints: Record<string, string> = {
   Name: "Enter device name",
   DeviceEUI: "16 characters (hex)",
-  ProductionResource: "Enter production resource",
+  "Production resource": "Enter production resource",
   "Application key": "32 characters (hex)",
 };
 
 const inputLengthError: Record<string, string> = {
   DeviceEUI: "DeviceEUI must be 16 characters",
   "Application key": "Application key must be 32 characters",
-  ProductionResource: "Production resource must be a positive number",
+  "Production resource": "Production resource must be a positive number",
 };
 
 /**
@@ -101,7 +102,7 @@ export function EditDevice(props: EditDeviceProps) {
       "Factory area": device.factoryArea,
       "Production resource": device.productionResource?.toString() ?? "",
       "Application key": device.appKey,
-      "Sensor profile": device.senProf,
+      "Sensor profile": device.deviceProfile,
       Voltage: device.voltage?.toString() ?? "",
     });
   }, [device]);
@@ -171,10 +172,10 @@ export function EditDevice(props: EditDeviceProps) {
       payload.appKey = values["Application key"];
 
     if (
-      values["Sensor profile"] !== device.senProf &&
+      values["Sensor profile"] !== device.deviceProfile &&
       values["Sensor profile"].length > 0
     )
-      payload.senProf = values["Sensor profile"];
+      payload.deviceProfile = values["Sensor profile"];
 
     const voltageValue = electricityEnabled ? Number(values["Voltage"]) : null;
 

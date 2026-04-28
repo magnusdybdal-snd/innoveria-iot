@@ -5,6 +5,7 @@ export type {
   SensorReadingApiResponse,
   CreateSensorRequest,
   SensorProfileApiResponse,
+  UpdateSensorRequest,
 } from "./model/sensorSchema";
 export {
   getSensors,

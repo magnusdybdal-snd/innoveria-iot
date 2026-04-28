@@ -27,7 +27,7 @@ export interface AddDeviceProps {
     factoryArea: string;
     productionResource: number | null;
     appKey: string;
-    senProf: string;
+    deviceProfile: string;
     voltage: number | null;
   }) => Promise<void>;
   submitError?: string | null;
@@ -129,7 +129,7 @@ export function AddDevice(props: AddDeviceProps) {
         productionResource:
           productionResourceRaw !== "" ? productionResourceParsed : null,
         appKey: values["Application key"],
-        senProf: values["Sensor profile"],
+        deviceProfile: values["Sensor profile"],
         voltage: electricityEnabled ? Number(values["Voltage"]) : null,
       })
       .then(() => {

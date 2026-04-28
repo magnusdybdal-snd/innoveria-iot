@@ -7,10 +7,19 @@ type RawSensor = {
   device_eui: string;
   name: string;
   factory_id: string;
+  factory_area_id: string;
   status: number;
   production_resource: string | null;
   last_seen_at: string;
   device_profile_id: string;
+  app_key: string;
+  voltage: number | null;
+  electricity_sensor: boolean;
+  updated_at: string;
+  description: string;
+  company_id: string;
+  state: string;
+  created_at: string;
 };
 
 type RawSensorListApiResponse = {
@@ -35,9 +44,18 @@ export const getSensors = async (): Promise<SensorApiResponse[]> => {
     deviceEui: s.device_eui,
     name: s.name,
     factory: s.factory_id,
+    factoryArea: s.factory_area_id,
     status: s.status,
-    machine: s.production_resource ?? "",
+    productionResource: s.production_resource ?? "",
     lastReading: s.last_seen_at,
-    sensorProfileId: s.device_profile_id,
+    deviceProfileId: s.device_profile_id,
+    appKey: s.app_key,
+    voltage: s.voltage,
+    electricitySensor: s.electricity_sensor,
+    updatedAt: s.updated_at,
+    description: s.description,
+    companyId: s.company_id,
+    state: s.state,
+    createdAt: s.created_at,
   }));
 };

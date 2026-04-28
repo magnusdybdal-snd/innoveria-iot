@@ -39,7 +39,7 @@ export function sortSensors(
         cmp = a.lastReading.localeCompare(b.lastReading);
         break;
       case "Sensor profile":
-        cmp = a.sensorProfileId.localeCompare(b.sensorProfileId);
+        cmp = a.deviceProfileId.localeCompare(b.deviceProfileId);
         break;
     }
     return direction === "asc" ? cmp : -cmp;

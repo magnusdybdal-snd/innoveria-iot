@@ -9,7 +9,7 @@ export const mockSensors: SensorApiResponse[] = [
     deviceEui: "A1B2C3D4E5F6G7H8",
     machine: "Machine 1",
     lastReading: "2 min",
-    sensorProfileId: "Milesight EM300-MLD",
+    deviceProfileId: "Milesight EM300-MLD",
   },
   {
     id: "2",
@@ -19,7 +19,7 @@ export const mockSensors: SensorApiResponse[] = [
     deviceEui: "B8F2X7C4Q1W9E6R3",
     machine: "Machine 2",
     lastReading: "2 min",
-    sensorProfileId: "Milesight EM310-TILT",
+    deviceProfileId: "Milesight EM310-TILT",
   },
   {
     id: "3",
@@ -29,6 +29,6 @@ export const mockSensors: SensorApiResponse[] = [
     deviceEui: "Z4P9L2R7T6H3K8M1",
     machine: "Machine 3",
     lastReading: "50 min",
-    sensorProfileId: "Milesight EM300-CL",
+    deviceProfileId: "Milesight EM300-CL",
   },
 ];
