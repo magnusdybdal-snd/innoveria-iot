@@ -12,6 +12,16 @@ import (
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
+// NewInternalRouter creates and returns an HTTP ServerMux with all device service internal routes
+func NewInternalRouter(sensorMetricSvc domain.SensorMetricService) *http.ServeMux {
+	mux := http.NewServeMux()
+
+	// Sensor metric internal routes
+	mux.HandleFunc("GET "+SENSOR_METRICS_ROUTE, handlers.GetSensorMetrics(sensorMetricSvc))
+
+	return mux
+}
+
 // NewRouter creates and returns an HTTP ServeMux with all device service routes registered.
 func NewRouter(
 	gatewaySvc domain.GatewayService,
