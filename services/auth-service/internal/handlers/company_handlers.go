@@ -3,6 +3,7 @@ package handlers
 import (
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"strings"
 
@@ -191,6 +192,7 @@ func PostCompanyERPAgentToken(svc domain.CompanyService) http.HandlerFunc {
 			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
 			return
 		}
+		slog.Info("auth role", "role", auth.Role)
 		if !auth.IsAdmin() {
 			json.HandleError(w, http.StatusForbidden, fmt.Errorf("forbidden"), "forbidden")
 			return

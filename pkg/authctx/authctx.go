@@ -50,5 +50,6 @@ func FromRequest(r *http.Request) (Auth, error) {
 	return Auth{
 		UserID:    userID,
 		CompanyID: companyID,
+		Role:      roles.RoleType(role),
 	}, nil
 }

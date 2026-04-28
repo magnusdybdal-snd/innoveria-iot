@@ -80,6 +80,7 @@ func authMiddleware(cfg *config.Config, next http.Handler) http.Handler {
 		userID, _ := claims["sub"].(string)
 		companyID, _ := claims["company_id"].(string)
 		role, _ := claims["role"].(string)
+
 		if userID == "" {
 			json.HandleError(w, http.StatusUnauthorized, errors.New("invalid subject"), "unauthorized")
 			return
