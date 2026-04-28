@@ -233,7 +233,7 @@ export default function Factories() {
             ))}
           </CategoryHeader>
           {!factoriesLoading && !factoriesError && sorted.length === 0 && (
-            <NotFoundCard page="factories" isEmpty={true} />
+            <NotFoundCard page="factories" />
           )}
         </PageContent>
         <AddEntityDialog
@@ -307,7 +307,7 @@ export default function Factories() {
           ))}
         </CategoryHeader>
         {!areasLoading && !areasError && factoryAreas.length === 0 && (
-          <NotFoundCard page="factory areas" isEmpty={false} />
+          <NotFoundCard page="factory areas" />
         )}
       </PageContent>
       <AddEntityDialog

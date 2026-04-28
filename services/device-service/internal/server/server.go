@@ -46,6 +46,7 @@ func Run() error {
 	measurementTypeRepo := repository.NewMeasurementTypeRepository(database)
 	payloadSchemaRepo := repository.NewPayloadSchemaRepository(database)
 	sensorMetricRepo := repository.NewSensorMetricRepository(database)
+	sensorProfileConfigRepo := repository.NewSensorProfileConfigRepository(database)
 	gatewaySvc := service.NewGatewayService(chirpstackClient, gatewayRepo, companyConfigRepo)
 	sensorProfileSvc := service.NewSensorProfileService(chirpstackClient)
 	sensorSvc := service.NewSensorService(chirpstackClient, sensorRepo, companyConfigRepo, sensorProfileSvc)
@@ -53,9 +54,10 @@ func Run() error {
 	measurementTypeSvc := service.NewMeasurementTypeService(measurementTypeRepo)
 	payloadSchemaSvc := service.NewPayloadSchemaService(payloadSchemaRepo)
 	sensorMetricSvc := service.NewSensorMetricService(sensorRepo, sensorMetricRepo, payloadSchemaRepo)
+	sensorProfileConfigSvc := service.NewSensorProfileConfigService(sensorProfileConfigRepo)
 
 	// Setting up mux and http server
-	mux := NewRouter(gatewaySvc, sensorSvc, sensorProfileSvc, companyConfigSvc, measurementTypeSvc, payloadSchemaSvc, sensorMetricSvc, cfg.EnableSwagger)
+	mux := NewRouter(gatewaySvc, sensorSvc, sensorProfileSvc, companyConfigSvc, measurementTypeSvc, payloadSchemaSvc, sensorMetricSvc, sensorProfileConfigSvc, cfg.EnableSwagger)
 	server := &http.Server{
 		Addr:              cfg.Addr,
 		Handler:           mux,

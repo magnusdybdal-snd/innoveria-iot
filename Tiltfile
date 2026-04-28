@@ -26,6 +26,11 @@ dc_resource(
 )
 
 dc_resource(
+    'erp-db',
+    labels=['database']
+)
+
+dc_resource(
     'collection-service',
     labels=['microservice']
 )

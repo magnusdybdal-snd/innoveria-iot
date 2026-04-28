@@ -269,6 +269,21 @@ services:
       - ./pkg:/pkg
     environment:
       - GO_ENV=development
+    depends_on:
+      - erp-db
+
+  erp-db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    ports:
+      - "5437:5432"
+    volumes:
+      - erpdata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=erp
+      - POSTGRES_PASSWORD=erp
+      - POSTGRES_DB=erp
+    
 
   erp-agent-service:
     build:
@@ -298,4 +313,5 @@ volumes:
   devicedata:
   authdata:
   contextdata:
+  erpdata:
   chirpstack-secrets: # for api key

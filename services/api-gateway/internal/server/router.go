@@ -65,6 +65,12 @@ func NewRouter(cfg *config.Config) *http.ServeMux {
 	handlers.RegisterProxyService(mux, CONTEXT_ROUTE, "context-service", cfg.ContextSvcURL, []string{
 		"/rules",
 		"/data",
+		"/orders",
+		"/orders/{id}/context",
+	})
+
+	handlers.RegisterProxyService(mux, ERP_ROUTE, "erp-service", cfg.ErpSvcURL, []string{
+		"/production-resources",
 	})
 
 	// Swagger — merged spec from all services, served via the gateway

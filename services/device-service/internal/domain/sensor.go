@@ -15,10 +15,12 @@ type Sensor struct {
 	AppKey              string // password for sensor to connect to an application
 	Name                string
 	Description         *string
+	ElectricitySensor   *bool       // true if this sensor measures electrical supply; nil means "not provided" in update payloads
+	Voltage             *int        // 230/400 - only set when ElectricitySensor is true
 	State               DeviceState // administrative state: ACTIVE / INACTIVE
 	FactoryID           string      // loose cross-service ref
 	FactoryAreaID       string      // loose cross-service ref
-	ProductionResource  *string     // loose cross-service ref
+	ProductionResource  *int64      // loose cross-service ref — ERP ProductionResource.ID
 	ChirpstackProfileID string      // LoRaWAN template that describes device model, chosen on registration
 	CreatedAt           time.Time
 	UpdatedAt           time.Time
@@ -36,7 +38,11 @@ type SensorService interface {
 	// GetByID retrieves a single sensor by ID scoped to the caller's company.
 	// Not yet wired to a handler or route.
 	GetByID(ctx context.Context, companyID string, sensorID string) (Sensor, error)
-	GetByProductionResourceID(ctx context.Context, companyID string, productionResourceID string) ([]Sensor, error)
+	GetByProductionResourceID(ctx context.Context, companyID string, productionResourceID int64) ([]Sensor, error)
+	// GetSampleEUI returns a single device EUI from any sensor registered on the given Chirpstack profile.
+	// Used by the admin UI to obtain a sample EUI for payload key lookup via collection-service /payload-tags.
+	// Returns domain.ErrNotFound (wrapped) if no sensor exists for the given profile.
+	GetSampleEUI(ctx context.Context, chirpstackProfileID string) (string, error)
 	Delete(ctx context.Context, companyID string, deviceID string) error
 }
 
@@ -45,9 +51,12 @@ type SensorService interface {
 type SensorRepository interface {
 	Create(ctx context.Context, sensor Sensor) (Sensor, error)
 	FindByID(ctx context.Context, companyID string, sensorID string) (Sensor, error)
-	FindByProductionResourceID(ctx context.Context, companyID string, productionResourceID string) ([]Sensor, error)
+	FindByProductionResourceID(ctx context.Context, companyID string, productionResourceID int64) ([]Sensor, error)
 	FindAllByCompanyID(ctx context.Context, companyID string) ([]Sensor, error)
 	FindByEUI(ctx context.Context, deviceEUI string) (Sensor, error)
+	// FindOneByChirpstackProfileID returns any single sensor registered on the given Chirpstack profile.
+	// Used to obtain a sample EUI for payload key lookup via collection-service /payload-tags. Returns domain.ErrNotFound if no sensor exists on the profile.
+	FindOneByChirpstackProfileID(ctx context.Context, chirpstackProfileID string) (Sensor, error)
 	UpdateState(ctx context.Context, companyID string, sensorID string, state DeviceState) error
 	Update(ctx context.Context, companyID string, deviceID string, sensor Sensor) error
 	Delete(ctx context.Context, companyID string, deviceID string) error

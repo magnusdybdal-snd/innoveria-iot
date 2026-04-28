@@ -213,7 +213,7 @@ export default function Users() {
             ))}
           </CategoryHeader>
           {!companiesLoading && sortedCompanies.length === 0 && (
-            <NotFoundCard page="companies" isEmpty={true} />
+            <NotFoundCard page="companies" />
           )}
         </PageContent>
         <AppSnackbar
@@ -278,7 +278,7 @@ export default function Users() {
           <FetchErrorCard message="Failed to load users." onRetry={refetch} />
         )}
         {!usersError && !usersLoading && sorted.length === 0 && (
-          <NotFoundCard page="users" isEmpty={true} />
+          <NotFoundCard page="users" />
         )}
       </PageContent>
       <AddUser

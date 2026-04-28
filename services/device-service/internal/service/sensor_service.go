@@ -94,11 +94,14 @@ func (s *SensorServiceImpl) Update(ctx context.Context, companyID string, sensor
 	}
 
 	// Ensure a tenant-level copy of the selected profile exists, get its ID.
-	tenantProfileID, err := s.sensorProfileService.EnsureTenantProfile(ctx, payload.ChirpstackProfileID, companycfg.ChirpstackTenantID)
-	if err != nil {
-		return fmt.Errorf("update sensor: ensure tenant profile: %w", err)
+	// Only needed when the caller is changing the profile.
+	if payload.ChirpstackProfileID != "" {
+		tenantProfileID, err := s.sensorProfileService.EnsureTenantProfile(ctx, payload.ChirpstackProfileID, companycfg.ChirpstackTenantID)
+		if err != nil {
+			return fmt.Errorf("update sensor: ensure tenant profile: %w", err)
+		}
+		payload.ChirpstackProfileID = tenantProfileID
 	}
-	payload.ChirpstackProfileID = tenantProfileID
 
 	// Retain old values before merging payload, needed for potential compensation.
 	oldSensor := sensor
@@ -120,7 +123,25 @@ func (s *SensorServiceImpl) Update(ctx context.Context, companyID string, sensor
 		sensor.FactoryAreaID = payload.FactoryAreaID
 	}
 	if payload.ProductionResource != nil {
-		sensor.ProductionResource = payload.ProductionResource
+		if *payload.ProductionResource == 0 {
+			sensor.ProductionResource = nil
+		} else {
+			sensor.ProductionResource = payload.ProductionResource
+		}
+	}
+	if payload.Voltage != nil && payload.ElectricitySensor == nil {
+		if sensor.ElectricitySensor == nil || !*sensor.ElectricitySensor {
+			return fmt.Errorf("update sensor: cannot set voltage on a non-electricity sensor")
+		}
+		sensor.Voltage = payload.Voltage
+	}
+	if payload.ElectricitySensor != nil {
+		sensor.ElectricitySensor = payload.ElectricitySensor
+		if !*payload.ElectricitySensor {
+			sensor.Voltage = nil
+		} else {
+			sensor.Voltage = payload.Voltage
+		}
 	}
 
 	// Only call Chirpstack if a Chirpstack-stored field changed (name, description, profile).
@@ -192,7 +213,7 @@ func (s *SensorServiceImpl) GetAll(ctx context.Context, companyID string) ([]dom
 
 // GetByProductionResourceID  retrieves all sensors attatched to one production resource ID from the database and merges the
 // response with the status from Chirpstack (status and last seen).
-func (s *SensorServiceImpl) GetByProductionResourceID(ctx context.Context, companyID string, productionResourceID string) ([]domain.Sensor, error) {
+func (s *SensorServiceImpl) GetByProductionResourceID(ctx context.Context, companyID string, productionResourceID int64) ([]domain.Sensor, error) {
 
 	sensors, err := s.sensorRepo.FindByProductionResourceID(ctx, companyID, productionResourceID)
 	if err != nil {
@@ -225,6 +246,15 @@ func (s *SensorServiceImpl) GetByID(ctx context.Context, companyID string, senso
 	}
 
 	return sensor, nil
+}
+
+// GetSampleEUI returns a single device EUI from any sensor registered on the given Chirpstack profile.
+func (s *SensorServiceImpl) GetSampleEUI(ctx context.Context, chirpstackProfileID string) (string, error) {
+	sensor, err := s.sensorRepo.FindOneByChirpstackProfileID(ctx, chirpstackProfileID)
+	if err != nil {
+		return "", fmt.Errorf("get sample eui: %w", err)
+	}
+	return sensor.DeviceEUI, nil
 }
 
 // Delete removes a sensor from Chirpstack and then from the database.

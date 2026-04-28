@@ -1,4 +1,10 @@
 export { getSensors } from "./getSensors.ts";
+export { getDeviceEUI } from "./getDeviceEUI.ts";
 export { getSensorProfiles } from "./getSensorProfiles.ts";
 export { fetchSensorReading } from "./getSensorReading.ts";
 export { postSensor } from "./postSensor.ts";
+export { getSensorMetrics } from "./getSensorMetrics.ts";
+export { deleteSensor } from "./deleteSensor.ts";
+export { getSensorProfileConfig } from "./getSensorProfileConfig.ts";
+export { putSensorMetrics } from "./putSensorMetrics.ts";
+export { putSensorProfileConfig } from "./putSensorProfileConfig.ts";
