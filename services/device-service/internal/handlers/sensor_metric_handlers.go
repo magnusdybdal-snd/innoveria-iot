@@ -22,12 +22,24 @@ import (
 // @Produce		json
 // @Param		eui	path	string	true	"Device EUI"
 // @Success		200	{object}	dto.SensorMetricListResponse
+// @Failure		401
+// @Failure		403
 // @Failure		404
 // @Failure		500
 // @Router		/sensors/{eui}/metrics [get]
 func GetSensorMetrics(svc domain.SensorMetricService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
+
+		auth, err := authctx.FromRequest(r)
+		if err != nil {
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
+			return
+		}
+		if !auth.IsAdmin() {
+			json.HandleError(w, http.StatusForbidden, fmt.Errorf("forbidden"), "forbidden")
+			return
+		}
 
 		eui := r.PathValue("eui")
 
