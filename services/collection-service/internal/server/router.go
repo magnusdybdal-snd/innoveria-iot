@@ -4,6 +4,7 @@ package server
 import (
 	"innoveria-iot/collection-service/internal/domain"
 	"innoveria-iot/collection-service/internal/handlers"
+	"innoveria-iot/pkg/middleware"
 	"net/http"
 
 	_ "innoveria-iot/collection-service/docs"
@@ -23,7 +24,7 @@ func NewRouter(svc domain.MeasurementService, tenantMappingSvc domain.TenantMapp
 	mux.HandleFunc("GET "+MEASUREMENTS_BY_TIME, handlers.HandleMeasurementsByTimeRange(svc))
 
 	// Payload tags
-	mux.HandleFunc("GET "+PAYLOAD_TAGS, handlers.HandlePayloadTags(svc))
+	mux.HandleFunc("GET "+PAYLOAD_TAGS, middleware.AdminGuard(handlers.HandlePayloadTags(svc)))
 
 	// Company config routes:
 	mux.HandleFunc("POST "+COMPANY_CONFIG_ROUTE, handlers.PostTenantMapping(tenantMappingSvc))
