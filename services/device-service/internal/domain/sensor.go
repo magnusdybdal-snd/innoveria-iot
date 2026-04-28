@@ -9,21 +9,22 @@ import (
 // A sensor is assigned to a Chirpstack application and sends data through
 // whichever gateway is in range. There is no fixed gateway assignment in LoRaWAN.
 type Sensor struct {
-	Id                  string
-	CompanyID           string
-	DeviceEUI           string // hardware identifier, shared key with Chirpstack
-	AppKey              string // password for sensor to connect to an application
-	Name                string
-	Description         *string
-	ElectricitySensor   *bool       // true if this sensor measures electrical supply; nil means "not provided" in update payloads
-	Voltage             *int        // 230/400 - only set when ElectricitySensor is true
-	State               DeviceState // administrative state: ACTIVE / INACTIVE
-	FactoryID           string      // loose cross-service ref
-	FactoryAreaID       string      // loose cross-service ref
-	ProductionResource  *int64      // loose cross-service ref — ERP ProductionResource.ID
-	ChirpstackProfileID string      // LoRaWAN template that describes device model, chosen on registration
-	CreatedAt           time.Time
-	UpdatedAt           time.Time
+	Id                        string
+	CompanyID                 string
+	DeviceEUI                 string // hardware identifier, shared key with Chirpstack
+	AppKey                    string // password for sensor to connect to an application
+	Name                      string
+	Description               *string
+	ElectricitySensor         *bool       // true if this sensor measures electrical supply; nil means "not provided" in update payloads
+	Voltage                   *int        // 230/400 - only set when ElectricitySensor is true
+	State                     DeviceState // administrative state: ACTIVE / INACTIVE
+	FactoryID                 string      // loose cross-service ref
+	FactoryAreaID             string      // loose cross-service ref
+	ProductionResource        *int64      // loose cross-service ref — ERP ProductionResource.ID
+	ChirpstackProfileID       string      // tenant-level Chirpstack profile ID stored on the sensor after EnsureTenantProfile
+	GlobalChirpstackProfileID string      // original profile ID selected by the user — used to look up sensors by profile in the admin UI
+	CreatedAt                 time.Time
+	UpdatedAt                 time.Time
 
 	// Runtime fields - populated from Chirpstack, not stored in DB
 	Status     Status // Chirpstack connectivity: 0=online, 1=never_seen, 2=offline
