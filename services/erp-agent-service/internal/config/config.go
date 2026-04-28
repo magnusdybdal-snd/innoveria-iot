@@ -51,6 +51,9 @@ func Load() (*Config, error) {
 	}
 
 	useMockMonitor := env.GetBool("MOCK_MONITOR", goEnv == "development")
+	if useMockMonitor {
+		slog.Warn("MOCK_MONITOR is enabled; using mock Monitor ERP integration")
+	}
 
 	if useMockMonitor && goEnv != "development" {
 		return nil, fmt.Errorf("mock monitor is only allowed in development")
