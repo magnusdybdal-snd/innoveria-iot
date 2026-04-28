@@ -188,7 +188,10 @@ export default function Base() {
             sx={textFieldSx}
             value={loginValues.email ?? ""}
             onChange={(e) =>
-              setLoginValues((prev) => ({ ...prev, email: e.target.value }))
+              setLoginValues((prev) => ({
+                ...prev,
+                email: e.target.value.toLowerCase(),
+              }))
             }
           />
         )}

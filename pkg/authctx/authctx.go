@@ -23,6 +23,7 @@ type Auth struct {
 }
 
 /*
+
 // IsAdmin returns true if the user has the PLATFORM_ADMIN role.
 func (a Auth) IsAdmin() bool {
 	return a.Role == roles.PlatformAdmin

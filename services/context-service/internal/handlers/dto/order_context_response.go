@@ -46,6 +46,17 @@ type OrderContextResponse struct {
 
 // mapOperation converts a domain ERPOrderOperation to its API response shape.
 func mapOperation(op domain.ERPOrderOperation) OrderOperationResponse {
+	reports := make([]OrderReportResponse, len(op.Reports))
+	for i, r := range op.Reports {
+		reports[i] = OrderReportResponse{
+			ID:                 r.ID,
+			Quantity:           r.Quantity,
+			RestQuantity:       r.RestQuantity,
+			Type:               r.Type,
+			ReportingTimestamp: r.ReportingTimestamp,
+			ActualReportedDate: r.ActualReportedDate,
+		}
+	}
 	return OrderOperationResponse{
 		ID: op.ID,
 		ProductionResource: ProductionResourceResponse{
@@ -60,6 +71,7 @@ func mapOperation(op domain.ERPOrderOperation) OrderOperationResponse {
 		ActualFinishDate:         op.ActualFinishDate,
 		Status:                   op.Status,
 		ProductionResourceStatus: op.ProductionResourceStatus,
+		Reports:                  reports,
 	}
 }
 

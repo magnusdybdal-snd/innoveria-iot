@@ -3,6 +3,7 @@ import type {
   OperationContext,
   OrderContext,
   OrderOperation,
+  OrderReport,
   ProductionResource,
   SensorContext,
   SensorMetric,
@@ -17,6 +18,15 @@ type RawProductionResource = {
   type: string;
 };
 
+type RawOrderReport = {
+  id: number;
+  quantity: number;
+  rest_quantity: number;
+  type: string;
+  reporting_timestamp: string;
+  actual_reported_date: string | null;
+};
+
 type RawOrderOperation = {
   id: number;
   production_resource: RawProductionResource;
@@ -26,6 +36,7 @@ type RawOrderOperation = {
   actual_finish_date: string | null;
   status: string;
   production_resource_status: string;
+  reports: RawOrderReport[];
 };
 
 type RawOrder = {
@@ -81,6 +92,15 @@ const toProductionResource = (
   type: r.type,
 });
 
+const toOrderReport = (r: RawOrderReport): OrderReport => ({
+  id: r.id,
+  quantity: r.quantity,
+  restQuantity: r.rest_quantity,
+  type: r.type,
+  reportingTimestamp: r.reporting_timestamp,
+  actualReportedDate: r.actual_reported_date,
+});
+
 const toOrderOperation = (op: RawOrderOperation): OrderOperation => ({
   id: op.id,
   productionResource: toProductionResource(op.production_resource),
@@ -90,6 +110,7 @@ const toOrderOperation = (op: RawOrderOperation): OrderOperation => ({
   actualFinishDate: op.actual_finish_date,
   status: op.status,
   productionResourceStatus: op.production_resource_status,
+  reports: (op.reports ?? []).map(toOrderReport),
 });
 
 const toSensorMetric = (m: RawSensorMetric): SensorMetric => ({

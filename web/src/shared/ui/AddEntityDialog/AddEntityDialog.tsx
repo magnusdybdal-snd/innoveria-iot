@@ -22,6 +22,7 @@ export interface AddEntityDialogProps {
   open: boolean;
   title: string;
   fields: string[];
+  optionalFields?: string[];
   onClose: () => void;
   onSubmit: (values: Record<string, string>) => Promise<void>;
   submitError?: string | null;
@@ -33,6 +34,7 @@ export interface AddEntityDialogProps {
  * @param props.open - Whether the dialog is visible
  * @param props.title - Title displayed at the top of the dialog
  * @param props.fields - Field labels to render as text inputs
+ * @param props.optionalFields - Fields that are not required to be filled
  * @param props.onClose - Called when the dialog should close without submitting
  * @param props.onSubmit - Called with a map of field label to value when the user confirms
  * @param props.submitError - Error message to display if the submission fails
@@ -42,6 +44,7 @@ export function AddEntityDialog({
   open,
   title,
   fields,
+  optionalFields,
   onClose,
   onSubmit,
   submitError,
@@ -54,9 +57,12 @@ export function AddEntityDialog({
   };
 
   const handleSubmit = () => {
-    const allFilled = fields.every(
-      (field) => (values[field] ?? "").trim() !== "",
-    );
+    const allFilled = fields.every((field) => {
+      const isOptional = optionalFields?.includes(field);
+      if (isOptional) return true;
+
+      return (values[field] ?? "").trim() !== "";
+    });
 
     if (!allFilled) {
       setFillError(true);
@@ -99,9 +105,18 @@ export function AddEntityDialog({
                 sx={fieldSx}
                 fullWidth
                 value={values[field] ?? ""}
-                onChange={(e) =>
-                  setValues((prev) => ({ ...prev, [field]: e.target.value }))
-                }
+                onChange={(e) => {
+                  let value = e.target.value;
+
+                  if (field === "Slug") {
+                    value = value
+                      .replace(/ /g, "_") // spaces → underscores
+                      .replace(/[^a-zA-Z0-9_]/g, "") // only letters
+                      .toLowerCase();
+                  }
+
+                  setValues((prev) => ({ ...prev, [field]: value }));
+                }}
               />
             </Box>
           ))}

@@ -7,6 +7,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import Typography from "@mui/material/Typography";
 
+import { ELECTRICITY_SENSOR, VOLTAGE } from "@shared/const";
 import { DeviceFormFields } from "@shared/ui/DeviceFormFields";
 
 export interface AddDeviceProps {
@@ -16,14 +17,17 @@ export interface AddDeviceProps {
   profileOptions?: { id: string; name: string }[];
   factoryOptions?: { id: string; name: string }[];
   factoryAreaOptions?: { id: string; name: string }[];
+  voltageOptions?: { id: string; name: string }[];
   onAdd: (sensor: {
     name: string;
     deviceEui: string;
+    electricitySensor: boolean;
     factory: string;
     factoryArea: string;
     productionResource: number | null;
     appKey: string;
     senProf: string;
+    voltage: number | null;
   }) => Promise<void>;
   submitError?: string | null;
 }
@@ -60,6 +64,7 @@ export function AddDevice(props: AddDeviceProps) {
     profileOptions = [],
     factoryOptions = [],
     factoryAreaOptions = [],
+    voltageOptions = [],
     submitError,
   } = props;
   const [values, setValues] = useState<Record<string, string>>({});
@@ -71,8 +76,15 @@ export function AddDevice(props: AddDeviceProps) {
   };
 
   const handleSafeClose = () => {
+    const electricityEnabled = values[ELECTRICITY_SENSOR] === "true";
+
     const allFilled = addOptions
-      .filter((option) => option !== "Production resource")
+      .filter(
+        (option) =>
+          option !== ELECTRICITY_SENSOR &&
+          option !== "Production resource" &&
+          (option !== VOLTAGE || electricityEnabled),
+      )
       .every((option) => (values[option] ?? "").trim() !== "");
 
     const productionResourceRaw = (values["Production resource"] ?? "").trim();
@@ -106,19 +118,21 @@ export function AddDevice(props: AddDeviceProps) {
       .onAdd({
         name: values["Name"],
         deviceEui: values["DeviceEUI"],
+        electricitySensor: values["Electricity sensor"] === "true",
         factory: values["Factory"],
         factoryArea: values["Factory area"],
         productionResource:
           productionResourceRaw !== "" ? productionResourceParsed : null,
         appKey: values["Application key"],
         senProf: values["Sensor profile"],
+        voltage: electricityEnabled ? Number(values["Voltage"]) : null,
       })
       .then(() => {
         setValues({});
-      });
-
-    setFillError(false);
-    setLengthErrors({});
+        setFillError(false); // only clear on success
+        setLengthErrors({});
+      })
+      .catch(() => {});
   };
 
   return (
@@ -146,6 +160,7 @@ export function AddDevice(props: AddDeviceProps) {
           profileOptions={profileOptions}
           factoryOptions={factoryOptions}
           factoryAreaOptions={factoryAreaOptions}
+          voltageOptions={voltageOptions}
           lengthErrors={lengthErrors}
           lengthErrorMessages={inputLengthError}
           inputHints={inputHints}
