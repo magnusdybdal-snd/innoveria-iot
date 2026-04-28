@@ -157,7 +157,6 @@ services:
       - DB_PASSWORD=${DEVICE_DB_PASSWORD}
       - DB_NAME=${DEVICE_DB_NAME}
       - DB_SSLMODE=${DEVICE_DB_SSLMODE}
-      - INTERNAL_PORT=9090
     depends_on:
       - device-db
     restart: unless-stopped
