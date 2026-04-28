@@ -35,14 +35,18 @@ SET "electricity_sensor" = true, "voltage" = 230
 WHERE "sensor_id" = 'c0000000-0000-0000-0000-000000000004';
 
 -- Map sensors to production resources (matches mock ERP data in context-service)
--- Resource 1 (WC-101): sensors 1, 2, and 4 (electricity)
+-- Resource 1 (WC-101): sensors 1 and 2 (temperature/humidity)
 UPDATE "device"."sensor"
 SET "production_resource_id" = 1
 WHERE "sensor_id" IN (
     'c0000000-0000-0000-0000-000000000001',
-    'c0000000-0000-0000-0000-000000000002',
-    'c0000000-0000-0000-0000-000000000004'
+    'c0000000-0000-0000-0000-000000000002'
 );
+
+-- Resource 4 (WC-104): sensor 4 (electricity)
+UPDATE "device"."sensor"
+SET "production_resource_id" = 4
+WHERE "sensor_id" = 'c0000000-0000-0000-0000-000000000004';
 
 -- Payload schema for profile A (f0000000-0000-0000-0000-000000000001)
 -- Fully labeled — used by sensor 2 fallback path
