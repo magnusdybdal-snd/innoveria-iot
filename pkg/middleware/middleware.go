@@ -1,10 +1,12 @@
-package handlers
+// Package middleware provides reusable HTTP middleware for the innoveria-iot services.
+package middleware
 
 import (
 	"fmt"
+	"net/http"
+
 	"innoveria-iot/pkg/authctx"
 	"innoveria-iot/pkg/json"
-	"net/http"
 )
 
 // AdminGuard wraps a handler and returns 401 if the request has no valid auth context, or 403 if the caller is not an admin.
