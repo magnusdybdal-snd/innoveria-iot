@@ -27,19 +27,10 @@ import (
 // @Failure		404
 // @Failure		500
 // @Router		/sensors/{eui}/metrics [get]
+// 401/403 are enforced by AdminGuard when registered on the external router.
 func GetSensorMetrics(svc domain.SensorMetricService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-
-		auth, err := authctx.FromRequest(r)
-		if err != nil {
-			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
-			return
-		}
-		if !auth.IsAdmin() {
-			json.HandleError(w, http.StatusForbidden, fmt.Errorf("forbidden"), "forbidden")
-			return
-		}
 
 		eui := r.PathValue("eui")
 

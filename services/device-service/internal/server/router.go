@@ -69,7 +69,7 @@ func NewRouter(
 	mux.HandleFunc("PUT "+PAYLOAD_SCHEMA_ROUTE_PROFILE, handlers.PutPayloadSchemaLabels(payloadSchemaSvc))
 
 	// Sensor metric routes:
-	mux.HandleFunc("GET "+SENSOR_METRICS_ROUTE, handlers.GetSensorMetrics(sensorMetricSvc))
+	mux.HandleFunc("GET "+SENSOR_METRICS_ROUTE, handlers.AdminGuard(handlers.GetSensorMetrics(sensorMetricSvc)))
 	mux.HandleFunc("PUT "+SENSOR_METRICS_ROUTE, handlers.PutSensorMetrics(sensorMetricSvc))
 
 	// Swagger docs
