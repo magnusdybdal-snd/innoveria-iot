@@ -27,11 +27,11 @@ VALUES
     '2026-04-14 14:05:00+00', '2026-04-14 21:50:00+00',
     'finished', 2, '2026-04-14 13:00:00+00'
 ),
--- Order 3: live sensor demo — window covers 30 days before service startup
+-- Order 3: live sensor demo — window covers 30 days before and 7 days after service startup
 (
     'a0000000-0000-0000-0000-000000000001', 3, 'MO-2026-003', 'PART-003', 'Live Sensor Demo',
-    NOW() - INTERVAL '30 days', NOW(),
-    NOW() - INTERVAL '30 days', NOW(),
+    NOW() - INTERVAL '30 days', NOW() + INTERVAL '7 days',
+    NOW() - INTERVAL '30 days', NOW() + INTERVAL '7 days',
     'finished', 1, NOW() - INTERVAL '30 days'
 )
 ON CONFLICT DO NOTHING;
@@ -59,22 +59,22 @@ VALUES
 -- Op 30: WC-101 on order 3 — sensors 1 & 2 are mapped to resource ID 1
 (
     'a0000000-0000-0000-0000-000000000001', 30, 1, 3,
-    NOW() - INTERVAL '30 days', NOW(),
-    NOW() - INTERVAL '30 days', NOW(),
+    NOW() - INTERVAL '30 days', NOW() + INTERVAL '7 days',
+    NOW() - INTERVAL '30 days', NOW() + INTERVAL '7 days',
     'finished', 'finished', NOW() - INTERVAL '30 days'
 ),
 -- Op 31: WC-106 on order 3 — no sensors mapped (demos degraded state)
 (
     'a0000000-0000-0000-0000-000000000001', 31, 6, 3,
-    NOW() - INTERVAL '30 days', NOW(),
-    NOW() - INTERVAL '30 days', NOW(),
+    NOW() - INTERVAL '30 days', NOW() + INTERVAL '7 days',
+    NOW() - INTERVAL '30 days', NOW() + INTERVAL '7 days',
     'finished', 'finished', NOW() - INTERVAL '30 days'
 ),
 -- Op 32: WC-104 on order 3 — electricity sensor (Dev Sensor 4, EUI b000000000000004)
 (
     'a0000000-0000-0000-0000-000000000001', 32, 4, 3,
-    NOW() - INTERVAL '30 days', NOW(),
-    NOW() - INTERVAL '30 days', NOW(),
+    NOW() - INTERVAL '30 days', NOW() + INTERVAL '7 days',
+    NOW() - INTERVAL '30 days', NOW() + INTERVAL '7 days',
     'finished', 'finished', NOW() - INTERVAL '30 days'
 )
 ON CONFLICT DO NOTHING;
