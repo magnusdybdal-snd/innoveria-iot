@@ -283,7 +283,7 @@ export default function Companies() {
           )}
         </CategoryHeader>
         {!isLoading && !error && sorted.length === 0 && (
-          <NotFoundCard page="companies" isEmpty={true} />
+          <NotFoundCard page="companies" action="registered" />
         )}
       </PageContent>
       <AddCompany
