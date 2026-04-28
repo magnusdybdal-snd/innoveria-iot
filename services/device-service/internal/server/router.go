@@ -48,7 +48,7 @@ func NewRouter(
 	// Sensor Routes:
 	mux.HandleFunc("GET "+SENSOR_ROUTE, handlers.GetSensors(sensorSvc))
 	mux.HandleFunc("POST "+SENSOR_ROUTE, handlers.PostSensor(sensorSvc))
-	mux.HandleFunc("GET "+SENSOR_SAMPLE_EUI_ROUTE, handlers.GetSampleEUI(sensorSvc))
+	mux.HandleFunc("GET "+SENSOR_SAMPLE_EUI_ROUTE, middleware.AdminGuard(handlers.GetSampleEUI(sensorSvc)))
 	mux.HandleFunc("DELETE "+SENSOR_ROUTE_ID, handlers.DeleteSensor(sensorSvc))
 	mux.HandleFunc("PATCH "+SENSOR_ROUTE_ID, handlers.PatchSensor(sensorSvc))
 
