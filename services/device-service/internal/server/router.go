@@ -6,11 +6,22 @@ import (
 
 	"innoveria-iot/device-service/internal/domain"
 	"innoveria-iot/device-service/internal/handlers"
+	"innoveria-iot/pkg/middleware"
 
 	_ "innoveria-iot/device-service/docs"
 
 	httpSwagger "github.com/swaggo/http-swagger"
 )
+
+// NewInternalRouter creates and returns an HTTP ServerMux with all device service internal routes
+func NewInternalRouter(sensorMetricSvc domain.SensorMetricService) *http.ServeMux {
+	mux := http.NewServeMux()
+
+	// Sensor metric internal routes
+	mux.HandleFunc("GET "+SENSOR_METRICS_ROUTE, handlers.GetSensorMetrics(sensorMetricSvc))
+
+	return mux
+}
 
 // NewRouter creates and returns an HTTP ServeMux with all device service routes registered.
 func NewRouter(
@@ -59,7 +70,7 @@ func NewRouter(
 	mux.HandleFunc("PUT "+PAYLOAD_SCHEMA_ROUTE_PROFILE, handlers.PutPayloadSchemaLabels(payloadSchemaSvc))
 
 	// Sensor metric routes:
-	mux.HandleFunc("GET "+SENSOR_METRICS_ROUTE, handlers.GetSensorMetrics(sensorMetricSvc))
+	mux.HandleFunc("GET "+SENSOR_METRICS_ROUTE, middleware.AdminGuard(handlers.GetSensorMetrics(sensorMetricSvc)))
 	mux.HandleFunc("PUT "+SENSOR_METRICS_ROUTE, handlers.PutSensorMetrics(sensorMetricSvc))
 
 	// Sensor profile config routes:
