@@ -28,7 +28,7 @@ func MergeSensor(cs dto.ChirpstackSensor, db domain.Sensor) domain.Sensor {
 		GlobalChirpstackProfileID: db.GlobalChirpstackProfileID,
 		CreatedAt:                 db.CreatedAt,
 		UpdatedAt:                 db.UpdatedAt,
-		// Runetime from Chirpstack
+		// Runtime from Chirpstack
 		Status:     mapStatusSensor(cs.LastSeenAt),
 		LastSeenAt: cs.LastSeenAt.Format(time.RFC3339),
 	}
