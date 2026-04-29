@@ -81,7 +81,7 @@ export default function Sensors() {
     electricitySensor: boolean;
     factory: string;
     factoryArea: string;
-    productionResource: number | null;
+    productionResource: string | null;
     appKey: string;
     deviceProfile: string;
     voltage: number | null;
@@ -176,7 +176,7 @@ export default function Sensors() {
       electricitySensor?: boolean;
       factory?: string;
       factoryArea?: string;
-      productionResource?: number | null;
+      productionResource?: string | null;
       deviceProfile?: string;
       voltage?: number | null;
       description?: string;
@@ -190,11 +190,7 @@ export default function Sensors() {
       electricity_sensor: payload.electricitySensor,
       factory_id: payload.factory,
       factory_area_id: payload.factoryArea,
-      production_resource:
-        payload.productionResource !== undefined &&
-        payload.productionResource !== null
-          ? String(payload.productionResource)
-          : undefined,
+      production_resource: payload.productionResource ?? undefined,
       device_profile_id: payload.deviceProfile,
       voltage: payload.voltage ?? undefined,
       description: payload.description,

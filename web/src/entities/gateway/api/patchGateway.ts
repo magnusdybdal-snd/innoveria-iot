@@ -1,12 +1,7 @@
+import type { UpdateGatewayRequest } from "@/entities/gateway";
+
 import { apiRequest, serviceClient } from "@shared/api";
 import { API_ROUTES } from "@shared/api/routes";
-
-export interface UpdateGatewayRequest {
-  description?: string;
-  factory_area_id?: string;
-  factory_id?: string;
-  name?: string;
-}
 
 /**
  * Updates a gateway's fields by ID. Only provided fields are updated.

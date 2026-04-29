@@ -3,12 +3,14 @@ import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
+import axios from "axios";
 
 import { useFactories } from "@entities/factory";
 import { useFactoryAreas } from "@entities/factoryArea";
 import {
   deleteGateway,
   GatewayInfo,
+  patchGateway,
   postGateway,
   sortGateways,
   useGateways,
@@ -16,6 +18,7 @@ import {
   type SortDirection,
 } from "@entities/gateway";
 import { AddDevice } from "@features/addDevice";
+import { EditGateway } from "@features/editGateway";
 import { formatTimestamp } from "@shared/lib";
 import { CustomButton } from "@shared/ui/Button";
 import { CategoryHeader } from "@shared/ui/CategoryHeader";
@@ -54,6 +57,16 @@ export default function Gateways() {
   const { factoryAreas, error: areasError } =
     useFactoryAreas(selectedFactoryId);
   const [addError, setAddError] = useState<string | null>(null);
+
+  // Edit gateway
+  const [editingGateway, setEditingGateway] = useState<{
+    id: string;
+    name: string;
+    deviceEui: string;
+    factory: string;
+    factoryArea: string;
+  } | null>(null);
+  const [editError, setEditError] = useState<string | null>(null);
 
   // State for controlling success snackbar
   const { show, hide, snackbar } = useSnackbar();
@@ -131,6 +144,39 @@ export default function Gateways() {
       });
   };
 
+  const handleEditGateway = (
+    id: string,
+    payload: {
+      name?: string;
+      factory?: string;
+      factoryArea?: string;
+    },
+  ) => {
+    setEditError(null);
+
+    return patchGateway(id, {
+      name: payload.name,
+      factory_id: payload.factory,
+      factory_area_id: payload.factoryArea,
+    })
+      .then(() => {
+        refetch();
+        setEditingGateway(null);
+        show("Gateway updated successfully", SNACKBAR_SEVERITY.SUCCESS);
+      })
+      .catch((err: unknown) => {
+        console.error("Failed to update gateway:", err);
+
+        const message =
+          axios.isAxiosError(err) && err.response?.data?.message
+            ? (err.response.data.message as string)
+            : "Failed to update gateway.";
+
+        setEditError(message);
+        show("Failed to update gateway", SNACKBAR_SEVERITY.ERROR);
+      });
+  };
+
   const addButton = (
     <CustomButton onClick={handleClickOpenAdd}>Add gateway</CustomButton>
   );
@@ -188,11 +234,10 @@ export default function Gateways() {
           {sorted.map((gateway) => (
             <DeviceRow key={gateway.id}>
               <GatewayInfo
-                name={gateway.name}
-                status={gateway.status}
-                device_eui={gateway.gatewayEui}
+                gateway={gateway}
                 lastSeenAt={formatTimestamp(gateway.lastSeenAt)}
                 onDelete={() => handleDeleteGateway(gateway.id)}
+                onEdit={setEditingGateway}
               />
             </DeviceRow>
           ))}
@@ -209,6 +254,23 @@ export default function Gateways() {
         factoryAreaOptions={factoryAreas}
         onFactoryChange={setSelectedFactoryId}
       />
+      {editingGateway && (
+        <EditGateway
+          key={editingGateway.id}
+          open={true}
+          onClose={() => {
+            setEditingGateway(null);
+            setEditError(null);
+          }}
+          editOptions={addGatewayDetails}
+          factoryOptions={factories}
+          factoryAreaOptions={factoryAreas}
+          onFactoryChange={setSelectedFactoryId}
+          gateway={editingGateway}
+          onEdit={handleEditGateway}
+          submitError={editError}
+        />
+      )}
       <AppSnackbar
         open={snackbar?.open ?? false}
         message={snackbar?.message ?? ""}

@@ -7,105 +7,79 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import Typography from "@mui/material/Typography";
 
-import { ELECTRICITY_SENSOR } from "@shared/const";
 import { DeviceFormFields } from "@shared/ui/DeviceFormFields";
 
-export interface EditDeviceProps {
+export interface EditGatewayProps {
   open: boolean;
   onClose: () => void;
   editOptions: string[];
-  profileOptions?: { id: string; name: string }[];
   factoryOptions?: { id: string; name: string }[];
   factoryAreaOptions?: { id: string; name: string }[];
-  voltageOptions?: { id: string; name: string }[];
   onFactoryChange?: (factoryId: string) => void;
-  device: {
+  gateway: {
     id: string;
     name: string;
     deviceEui: string;
-    electricitySensor: boolean;
     factory: string;
     factoryArea: string;
-    productionResource: string | null;
-    appKey: string;
-    deviceProfile: string;
-    voltage: number | null;
-    description?: string;
   };
   onEdit: (
     deviceId: string,
     payload: {
       name?: string;
-      electricitySensor?: boolean;
       factory?: string;
       factoryArea?: string;
-      productionResource?: string | null;
-      appKey?: string;
-      deviceProfile?: string;
-      voltage?: number | null;
     },
   ) => void;
   submitError?: string | null;
 }
 
 const inputHints: Record<string, string> = {
-  Name: "Enter device name",
+  Name: "Enter gateway name",
   DeviceEUI: "16 characters (hex)",
-  "Production resource": "Enter production resource",
-  "Application key": "32 characters (hex)",
 };
 
 const inputLengthError: Record<string, string> = {
   DeviceEUI: "DeviceEUI must be 16 characters",
-  "Application key": "Application key must be 32 characters",
-  "Production resource": "Production resource must be a positive number",
 };
 
 /**
- * Modal dialog for editing an existing device, with input validation for DeviceEUI and Application key lengths.
+ * Modal dialog for editing an existing gateway, with input validation for DeviceEUI and Application key lengths.
  * @param props - Component props
  * @param props.open - Whether the dialog is visible
  * @param props.onClose - Called when the dialog should close without submitting
  * @param props.addOptions - Field names to render as inputs inside the dialog
- * @param props.profileOptions - Available sensor profiles for the dropdown
  * @param props.onAdd - Called with the validated sensor data when the user confirms
  * @param props.submitError - Error message to display if the submission fails
- * @returns The rendered add-device dialog
+ * @returns The rendered edit-gateway dialog
  */
-export function EditDevice(props: EditDeviceProps) {
+export function EditGateway(props: EditGatewayProps) {
   const {
     onClose,
     open,
-    device,
+    gateway,
     onEdit,
     editOptions,
-    profileOptions = [],
     factoryOptions = [],
     factoryAreaOptions = [],
     onFactoryChange,
-    voltageOptions = [],
     submitError,
   } = props;
   const [values, setValues] = useState<Record<string, string>>({});
   const [lengthErrors, setLengthErrors] = useState<Record<string, boolean>>({});
 
-  // Initialize form when device changes
+  // Initialize form when gateway changes
   useEffect(() => {
-    if (!device) return;
+    if (!gateway) return;
 
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setValues({
-      Name: device.name,
-      DeviceEUI: device.deviceEui,
-      "Electricity sensor": String(device.electricitySensor),
-      Factory: device.factory,
-      "Factory area": device.factoryArea,
-      "Production resource": device.productionResource?.toString() ?? "",
-      "Application key": device.appKey,
-      "Sensor profile": device.deviceProfile,
-      Voltage: device.voltage?.toString() ?? "",
+      Name: gateway.name,
+      DeviceEUI: gateway.deviceEui,
+      Factory: gateway.factory,
+      "Factory area": gateway.factoryArea,
     });
-  }, [device]);
+  }, [gateway]);
 
   const handleClose = () => {
     setLengthErrors({});
@@ -113,82 +87,42 @@ export function EditDevice(props: EditDeviceProps) {
   };
 
   const handleSave = () => {
-    const electricityEnabled = values[ELECTRICITY_SENSOR] === "true";
-
-    const productionResourceRaw = (values["Production resource"] ?? "").trim();
-    const productionResourceParsed = parseInt(productionResourceRaw, 10);
-
-    const productionResourceInvalid =
-      productionResourceRaw !== "" &&
-      (isNaN(productionResourceParsed) || productionResourceParsed <= 0);
-
     const newLengthErrors = {
       DeviceEUI: (values["DeviceEUI"] ?? "").length !== 16,
       "Application key": (values["Application key"] ?? "").length !== 32,
-      ProductionResource: productionResourceInvalid,
     };
 
     if (
       (editOptions.includes("DeviceEUI") && newLengthErrors.DeviceEUI) ||
       (editOptions.includes("Application key") &&
-        newLengthErrors["Application key"]) ||
-      (editOptions.includes("Production resource") &&
-        newLengthErrors.ProductionResource)
+        newLengthErrors["Application key"])
     ) {
       setLengthErrors(newLengthErrors);
       return;
     }
 
     // Build payload only with changed values
-    type EditDevicePayload = Parameters<EditDeviceProps["onEdit"]>[1];
-    const payload: EditDevicePayload = {};
+    type EditGatewayPayload = Parameters<EditGatewayProps["onEdit"]>[1];
+    const payload: EditGatewayPayload = {};
 
-    if (values["Name"] !== device.name && values["Name"].length > 0)
+    if (values["Name"] !== gateway.name && values["Name"].length > 0)
       payload.name = values["Name"];
 
-    if ((values["Electricity sensor"] === "true") !== device.electricitySensor)
-      payload.electricitySensor = values["Electricity sensor"] === "true";
-
-    if (values["Factory"] !== device.factory && values["Factory"].length > 0)
+    if (values["Factory"] !== gateway.factory && values["Factory"].length > 0)
       payload.factory = values["Factory"];
 
     if (
-      values["Factory area"] !== device.factoryArea &&
+      values["Factory area"] !== gateway.factoryArea &&
       values["Factory area"].length > 0
     )
       payload.factoryArea = values["Factory area"];
-
-    if (
-      productionResourceRaw !== "" &&
-      productionResourceParsed !== Number(device.productionResource)
-    ) {
-      payload.productionResource = String(productionResourceParsed);
-    }
-
-    if (
-      values["Application key"] !== device.appKey &&
-      values["Application key"].length > 0
-    )
-      payload.appKey = values["Application key"];
-
-    if (
-      values["Sensor profile"] !== device.deviceProfile &&
-      values["Sensor profile"].length > 0
-    )
-      payload.deviceProfile = values["Sensor profile"];
-
-    const voltageValue = electricityEnabled ? Number(values["Voltage"]) : null;
-
-    if (voltageValue !== device.voltage) {
-      payload.voltage = voltageValue;
-    }
 
     if (Object.keys(payload).length === 0) {
       onClose();
       return;
     }
 
-    onEdit(device.id, payload);
+    onEdit(gateway.id, payload);
   };
 
   return (
@@ -206,16 +140,14 @@ export function EditDevice(props: EditDeviceProps) {
         },
       }}
     >
-      <DialogTitle sx={{ color: "primary.main" }}>Edit device</DialogTitle>
+      <DialogTitle sx={{ color: "primary.main" }}>Edit gateway</DialogTitle>
 
       <DialogContent>
         <DeviceFormFields
           options={editOptions}
           values={values}
-          profileOptions={profileOptions}
           factoryOptions={factoryOptions}
           factoryAreaOptions={factoryAreaOptions}
-          voltageOptions={voltageOptions}
           lengthErrors={lengthErrors}
           lengthErrorMessages={inputLengthError}
           inputHints={inputHints}
@@ -231,6 +163,8 @@ export function EditDevice(props: EditDeviceProps) {
               setValues((prev) => ({ ...prev, [option]: value }));
             }
           }}
+          profileOptions={[]}
+          voltageOptions={[]}
         />
         {submitError && (
           <Typography color="error" mt={1}>
