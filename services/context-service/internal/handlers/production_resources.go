@@ -6,6 +6,7 @@ import (
 
 	"innoveria-iot/context-service/internal/domain"
 	"innoveria-iot/context-service/internal/handlers/dto"
+	"innoveria-iot/pkg/authctx"
 	"innoveria-iot/pkg/json"
 )
 
@@ -20,9 +21,12 @@ func GetProductionResources(svc domain.ContextService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
-		// TODO: replace with AUTH — use r.Header.Get("X-Auth-Company-Id") once
-		// the auth middleware is propagated to this service.
-		companyID := hardcodedCompanyID
+		auth, err := authctx.FromRequest(r)
+		if err != nil {
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
+			return
+		}
+		companyID := auth.CompanyID
 
 		resources, err := svc.GetProductionResources(ctx, companyID)
 		if err != nil {
