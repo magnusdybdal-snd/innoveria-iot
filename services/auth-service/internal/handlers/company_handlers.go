@@ -22,7 +22,7 @@ import (
 // @Accept json
 // @Produce json
 // @Param body body dto.CreateNewCompany true "Company payload"
-// @Success 201 {object} dto.RegisterCompanyResponse
+// @Success 201 {object} dto.CompanyResponse
 // @Failure 400
 // @Failure 500
 // @Router /companies [post]
