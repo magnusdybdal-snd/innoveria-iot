@@ -17,7 +17,7 @@ type Config struct {
 }
 
 func Load() *Config {
-	devices, err := strconv.Atoi(strings.TrimSpace(env.Get("Devices", "2")))
+	devices, err := strconv.Atoi(strings.TrimSpace(env.Get("Devices", "4")))
 	if err != nil {
 		log.Fatal("config loading failed")
 	}

@@ -28,12 +28,16 @@ func NewCollectionClient(baseURL string) *CollectionClient {
 }
 
 // GetMeasurements fetches sensor measurements for a device over a time range.
-func (c *CollectionClient) GetMeasurements(ctx context.Context, deviceEUI string, from, to time.Time) ([]domain.MeasurementReading, error) {
+func (c *CollectionClient) GetMeasurements(ctx context.Context, companyID, userID, role, deviceEUI string, from, to time.Time) ([]domain.MeasurementReading, error) {
 	url := fmt.Sprintf("%s/api/v1/collection/measurements?device_eui=%s&from=%s&to=%s",
 		c.baseURL, deviceEUI, from.Format(time.RFC3339), to.Format(time.RFC3339))
 
 	resp, err := httpclient.DoRequest[[]dto.MeasurementResponse](
-		c.client, ctx, url, http.MethodGet, nil, nil,
+		c.client, ctx, url, http.MethodGet, nil, map[string]string{
+			"X-Auth-Company-Id": companyID,
+			"X-Auth-User-Id":    userID,
+			"X-Auth-Role":       role,
+		},
 	)
 	if err != nil {
 		return nil, err

@@ -65,6 +65,7 @@ export interface SensorContext {
   deviceEui: string;
   metrics: SensorMetric[];
   measurements: Measurement[];
+  totalPowerWh: number | null;
 }
 
 export interface OperationContext {

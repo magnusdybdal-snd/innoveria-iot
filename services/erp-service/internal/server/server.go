@@ -35,6 +35,10 @@ func Run() error {
 		return fmt.Errorf("migrations: %w", err)
 	}
 
+	if err := db.RunSeeds(database.Pool); err != nil {
+		return fmt.Errorf("seeds: %w", err)
+	}
+
 	// repository init
 	ingestRepo := repository.NewIngestRepo(database)
 	reconcileRepo := repository.NewReconcileRepo(database)

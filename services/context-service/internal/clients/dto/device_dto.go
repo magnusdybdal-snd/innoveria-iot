@@ -6,6 +6,8 @@ type DeviceSensorResponse struct {
 	Name               string `json:"name"`
 	DeviceEUI          string `json:"device_eui"`
 	ProductionResource *int64 `json:"production_resource"`
+	ElectricitySensor  bool   `json:"electricity_sensor"`
+	Voltage            *int   `json:"voltage"`
 }
 
 // DeviceSensorListResponse mirrors the device-service SensorListResponse shape.

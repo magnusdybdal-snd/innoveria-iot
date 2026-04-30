@@ -11,7 +11,9 @@ func ToDeviceSensor(r dto.DeviceSensorResponse) domain.DeviceSensor {
 		ID:                 r.ID,
 		Name:               r.Name,
 		DeviceEUI:          r.DeviceEUI,
-		ProductionResource: r.ProductionResource, // *int64 from device-service
+		ProductionResource: r.ProductionResource,
+		ElectricitySensor:  r.ElectricitySensor,
+		Voltage:            r.Voltage,
 	}
 }
 

@@ -10,11 +10,13 @@ import (
 
 // Input holds all data a Calculator needs to compute context data for a single device.
 type Input struct {
-	Rule          domain.AggregationRule
-	Readings      []domain.MeasurementReading
-	BucketMinutes int
-	From          time.Time
-	To            time.Time
+	Rule              domain.AggregationRule
+	Readings          []domain.MeasurementReading
+	BucketMinutes     int
+	From              time.Time
+	To                time.Time
+	VoltageV          float64 // line voltage in volts; required for WattHourCalculator
+	CurrentPayloadKey string  // payload key that holds the RMS current value in amps
 }
 
 // Calculator computes a ContextData result from raw sensor readings.
@@ -26,10 +28,13 @@ type Calculator interface {
 
 // NewRegistry returns the map of explicitly registered context-type calculators.
 // Add new entries here when a context type needs specialised computation logic.
+//
+// WattHourCalculator is intentionally absent from the GetContextData path: that path
+// receives only device EUIs and cannot resolve the correct CurrentPayloadKey or per-sensor
+// voltage without fetching device metadata. Use GetOrderContext instead, which calls
+// buildSensorContext and wires both values correctly.
 func NewRegistry() map[string]Calculator {
-	return map[string]Calculator{
-		"watt_over_time": &WattHourCalculator{},
-	}
+	return map[string]Calculator{}
 }
 
 // buildBuckets divides the time window [from, to] into equal slices of bucketMins minutes.

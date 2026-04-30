@@ -15,5 +15,5 @@ type MeasurementReading struct {
 
 // CollectionClient defines the operations context-service needs from the collection service.
 type CollectionClient interface {
-	GetMeasurements(ctx context.Context, deviceEUI string, from, to time.Time) ([]MeasurementReading, error)
+	GetMeasurements(ctx context.Context, companyID, userID, role, deviceEUI string, from, to time.Time) ([]MeasurementReading, error)
 }

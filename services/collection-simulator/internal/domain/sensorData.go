@@ -19,9 +19,10 @@ type ChirpstackUpEvent struct {
 }
 
 type SensorObject struct {
-	Temperature float64 `json:"temperature"`
-	Humidity    float64 `json:"humidity"`
-	Battery     float64 `json:"battery"`
+	Temperature     float64 `json:"temperature"`
+	Humidity        float64 `json:"humidity"`
+	Battery         float64 `json:"battery"`
+	ElectricCurrent float64 `json:"electric_current"`
 }
 
 type DeviceInfo struct {

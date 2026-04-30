@@ -48,17 +48,19 @@ type OperationContext struct {
 
 // SensorContext holds a sensor, its metric definitions, and its raw measurements
 // within the order's actual time window.
+// PowerConsumptionWh is non-nil only for electricity sensors with a configured voltage.
 type SensorContext struct {
-	Sensor       DeviceSensor
-	Metrics      []SensorMetric
-	Measurements []MeasurementReading
+	Sensor             DeviceSensor
+	Metrics            []SensorMetric
+	Measurements       []MeasurementReading
+	PowerConsumptionWh *float64
 }
 
 // ContextService defines the context service interface for the context domain.
 type ContextService interface {
 	GetContextData(
 		ctx context.Context,
-		companyID string,
+		companyID, userID, role string,
 		deviceEUIs []string,
 		ruleID string,
 		from, to time.Time,

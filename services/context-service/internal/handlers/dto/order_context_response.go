@@ -21,12 +21,14 @@ type SensorMetricResponse struct {
 }
 
 // SensorContextResponse represents a sensor enriched with its metrics and measurements.
+// TotalPowerWh is non-null only for electricity sensors with a configured voltage.
 type SensorContextResponse struct {
 	ID           string                 `json:"id"`
 	Name         string                 `json:"name"`
 	DeviceEUI    string                 `json:"device_eui"`
 	Metrics      []SensorMetricResponse `json:"metrics"`
 	Measurements []MeasurementResponse  `json:"measurements"`
+	TotalPowerWh *float64               `json:"total_power_wh"`
 }
 
 // OperationContextResponse represents a manufacturing operation enriched with sensor data.
@@ -105,6 +107,7 @@ func MapOrderContextDomainToDTO(oc *domain.OrderContext) OrderContextResponse {
 				DeviceEUI:    sc.Sensor.DeviceEUI,
 				Metrics:      metrics,
 				Measurements: measurements,
+				TotalPowerWh: sc.PowerConsumptionWh,
 			}
 		}
 
