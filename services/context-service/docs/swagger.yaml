@@ -59,8 +59,6 @@ definitions:
     properties:
       aggregation_method:
         type: string
-      company_id:
-        type: string
       context_type:
         type: string
       is_active:
@@ -73,7 +71,6 @@ definitions:
         type: integer
     required:
     - aggregation_method
-    - company_id
     - context_type
     - measurement_type
     - name
@@ -233,11 +230,6 @@ paths:
   /data:
     get:
       parameters:
-      - description: Company ID
-        in: query
-        name: company_id
-        required: true
-        type: string
       - collectionFormat: multi
         description: Device EUI(s)
         in: query
@@ -276,6 +268,8 @@ paths:
             type: array
         "400":
           description: Bad Request
+        "401":
+          description: Unauthorized
         "404":
           description: Not Found
         "500":
@@ -294,6 +288,8 @@ paths:
             items:
               $ref: '#/definitions/dto.OrderSummaryResponse'
             type: array
+        "401":
+          description: Unauthorized
         "500":
           description: Internal Server Error
       summary: Get Orders
@@ -316,6 +312,8 @@ paths:
             $ref: '#/definitions/dto.OrderResponse'
         "400":
           description: Bad Request
+        "401":
+          description: Unauthorized
         "404":
           description: Not Found
         "500":
@@ -340,6 +338,8 @@ paths:
             $ref: '#/definitions/dto.OrderContextResponse'
         "400":
           description: Bad Request
+        "401":
+          description: Unauthorized
         "404":
           description: Not Found
         "500":
@@ -347,14 +347,24 @@ paths:
       summary: Get Order Context
       tags:
       - orders
+  /production-resources:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.ProductionResourceResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+      summary: Get Production Resources
+      tags:
+      - production-resources
   /rules:
     get:
-      parameters:
-      - description: Company ID
-        in: query
-        name: company_id
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -364,8 +374,8 @@ paths:
             items:
               $ref: '#/definitions/dto.AggregationRuleResponse'
             type: array
-        "400":
-          description: Bad Request
+        "401":
+          description: Unauthorized
         "500":
           description: Internal Server Error
       summary: Get Aggregation Rules
@@ -388,6 +398,8 @@ paths:
           description: Created
         "400":
           description: Bad Request
+        "401":
+          description: Unauthorized
         "409":
           description: Conflict
         "500":

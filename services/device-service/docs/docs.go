@@ -98,6 +98,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/dto.GatewayListResponse"
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
                     "500": {
                         "description": "Internal Server Error"
                     }
@@ -129,6 +132,9 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request"
                     },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
                     "500": {
                         "description": "Internal Server Error"
                     }
@@ -156,6 +162,12 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Not Found"
                     },
                     "500": {
                         "description": "Internal Server Error"
@@ -195,6 +207,12 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request"
                     },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
                     "500": {
                         "description": "Internal Server Error"
                     }
@@ -216,6 +234,12 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.MeasurementTypeListResponse"
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
                     },
                     "500": {
                         "description": "Internal Server Error"
@@ -248,6 +272,12 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request"
                     },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
                     "409": {
                         "description": "Conflict"
                     },
@@ -273,6 +303,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/dto.MeasurementTypeListResponse"
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
                     "500": {
                         "description": "Internal Server Error"
                     }
@@ -297,6 +333,12 @@ const docTemplate = `{
                 "responses": {
                     "204": {
                         "description": "No Content"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
                     },
                     "404": {
                         "description": "Not Found"
@@ -335,6 +377,12 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request"
                     },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
                     "500": {
                         "description": "Internal Server Error"
                     }
@@ -372,6 +420,12 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
                     },
                     "422": {
                         "description": "Unprocessable Entity"
@@ -507,6 +561,9 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request"
                     },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
                     "500": {
                         "description": "Internal Server Error"
                     }
@@ -537,6 +594,9 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     },
                     "500": {
                         "description": "Internal Server Error"
@@ -606,6 +666,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/dto.SensorMetricListResponse"
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
                     "404": {
                         "description": "Not Found"
                     },
@@ -647,6 +713,12 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request"
                     },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
                     "404": {
                         "description": "Not Found"
                     },
@@ -680,6 +752,12 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Not Found"
                     },
                     "500": {
                         "description": "Internal Server Error"
@@ -719,6 +797,12 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request"
                     },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
                     "500": {
                         "description": "Internal Server Error"
                     }
@@ -749,16 +833,12 @@ const docTemplate = `{
         "dto.CreateGatewayRequest": {
             "type": "object",
             "required": [
-                "company_id",
                 "factory_area_id",
                 "factory_id",
                 "gateway_eui",
                 "name"
             ],
             "properties": {
-                "company_id": {
-                    "type": "string"
-                },
                 "description": {
                     "type": "string"
                 },
@@ -801,7 +881,6 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "app_key",
-                "company_id",
                 "device_eui",
                 "device_profile_id",
                 "factory_area_id",
@@ -810,10 +889,6 @@ const docTemplate = `{
             ],
             "properties": {
                 "app_key": {
-                    "type": "string"
-                },
-                "company_id": {
-                    "description": "TODO: CompanyID should be extracted from auth",
                     "type": "string"
                 },
                 "description": {
@@ -1158,6 +1233,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "factory_id": {
+                    "type": "string"
+                },
+                "global_device_profile_id": {
                     "type": "string"
                 },
                 "id": {

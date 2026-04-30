@@ -73,7 +73,6 @@ export default function Companies() {
     setOpenAdd(false);
     setAddError(null);
   };
-  const addAdminUser = () => {};
   const handleAddCompany = (companyData: { name: string; address: string }) => {
     setAddError(null);
     postCompany({
@@ -134,7 +133,6 @@ export default function Companies() {
                 address={company.address}
                 created_at={formatTimestamp(company.createdAt)}
                 updated_at={formatTimestamp(company.updatedAt)}
-                addUser={addAdminUser}
               />
             </DeviceRow>
           ))}

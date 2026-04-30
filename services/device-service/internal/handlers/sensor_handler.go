@@ -9,6 +9,7 @@ import (
 
 	"innoveria-iot/device-service/internal/domain"
 	"innoveria-iot/device-service/internal/handlers/dto"
+	"innoveria-iot/pkg/authctx"
 	"innoveria-iot/pkg/json"
 
 	"github.com/google/uuid"
@@ -22,14 +23,19 @@ import (
 // @Param       production_resource_id    query    integer    false    "Production resource (ERP ProductionResource ID)"
 // @Success 	200 {object} dto.SensorListResponse
 // @Failure 	400
+// @Failure		401
 // @Failure 	500
 // @Router 		/sensors [get]
 func GetSensors(svc domain.SensorService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
+		auth, err := authctx.FromRequest(r)
+		if err != nil {
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
+			return
+		}
 
 		var data []domain.Sensor
-		var err error
 
 		productionResourceID := r.URL.Query().Get("production_resource_id")
 
@@ -39,9 +45,9 @@ func GetSensors(svc domain.SensorService) http.HandlerFunc {
 				json.HandleError(w, http.StatusBadRequest, fmt.Errorf("production_resource_id must be a positive integer"), "bad request")
 				return
 			}
-			data, err = svc.GetByProductionResourceID(ctx, prID)
+			data, err = svc.GetByProductionResourceID(ctx, auth.CompanyID, prID)
 		} else {
-			data, err = svc.GetAll(ctx)
+			data, err = svc.GetAll(ctx, auth.CompanyID)
 		}
 
 		// error check for both paths above in if/else
@@ -69,11 +75,17 @@ func GetSensors(svc domain.SensorService) http.HandlerFunc {
 // @Param		body   body   dto.CreateSensorRequest   true   "Sensor payload"
 // @Success		201
 // @Failure		400
+// @Failure		401
 // @Failure 	500
 // @Router		/sensors [post]
 func PostSensor(svc domain.SensorService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
+		auth, err := authctx.FromRequest(r)
+		if err != nil {
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
+			return
+		}
 
 		payload, err := json.Decode[dto.CreateSensorRequest](r)
 		if err != nil {
@@ -81,7 +93,6 @@ func PostSensor(svc domain.SensorService) http.HandlerFunc {
 			return
 		}
 
-		payload.CompanyID = strings.TrimSpace(payload.CompanyID)
 		payload.Name = strings.TrimSpace(payload.Name)
 		payload.DeviceEUI = strings.TrimSpace(payload.DeviceEUI)
 		payload.AppKey = strings.TrimSpace(payload.AppKey)
@@ -89,8 +100,8 @@ func PostSensor(svc domain.SensorService) http.HandlerFunc {
 		payload.FactoryID = strings.TrimSpace(payload.FactoryID)
 		payload.FactoryAreaID = strings.TrimSpace(payload.FactoryAreaID)
 
-		if payload.CompanyID == "" || payload.Name == "" || payload.DeviceEUI == "" || payload.AppKey == "" || payload.ChirpstackProfileID == "" || payload.FactoryID == "" || payload.FactoryAreaID == "" {
-			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("company_id, name, device_eui, app_key, device_profile_id, factory_id and factory_area_id are required"), "bad request")
+		if payload.Name == "" || payload.DeviceEUI == "" || payload.AppKey == "" || payload.ChirpstackProfileID == "" || payload.FactoryID == "" || payload.FactoryAreaID == "" {
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("name, device_eui, app_key, device_profile_id, factory_id and factory_area_id are required"), "bad request")
 			return
 		}
 
@@ -99,7 +110,7 @@ func PostSensor(svc domain.SensorService) http.HandlerFunc {
 			return
 		}
 
-		data := dto.MapCreateSensorDTOToDomain(payload)
+		data := dto.MapCreateSensorDTOToDomain(payload, auth.CompanyID)
 
 		if err := svc.Create(ctx, data); err != nil {
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
@@ -120,11 +131,18 @@ func PostSensor(svc domain.SensorService) http.HandlerFunc {
 // @Param		body   body   dto.UpdateSensorRequest   true   "Update payload"
 // @Success		204
 // @Failure		400
+// @Failure     401
+// @Failure		404
 // @Failure		500
 // @Router		/sensors/{id} [patch]
 func PatchSensor(svc domain.SensorService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
+		auth, err := authctx.FromRequest(r)
+		if err != nil {
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
+			return
+		}
 
 		id := r.PathValue("id")
 		if id == "" {
@@ -169,7 +187,11 @@ func PatchSensor(svc domain.SensorService) http.HandlerFunc {
 
 		data := dto.MapUpdateSensorDTOToDomain(payload)
 
-		if err := svc.Update(ctx, id, data); err != nil {
+		if err := svc.Update(ctx, auth.CompanyID, id, data); err != nil {
+			if errors.Is(err, domain.ErrNotFound) {
+				json.HandleError(w, http.StatusNotFound, err, "sensor not found")
+				return
+			}
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
 			return
 		}
@@ -231,11 +253,18 @@ func GetSampleEUI(svc domain.SensorService) http.HandlerFunc {
 // @Param		id		path	string		true	"SensorID"
 // @Success		204
 // @Failure		400
+// @Failure     401
+// @Failure		404
 // @Failure		500
 // @Router		/sensors/{id} [delete]
 func DeleteSensor(svc domain.SensorService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
+		auth, err := authctx.FromRequest(r)
+		if err != nil {
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
+			return
+		}
 
 		id := r.PathValue("id")
 		if id == "" {
@@ -248,7 +277,11 @@ func DeleteSensor(svc domain.SensorService) http.HandlerFunc {
 			return
 		}
 
-		if err := svc.Delete(ctx, id); err != nil {
+		if err := svc.Delete(ctx, auth.CompanyID, id); err != nil {
+			if errors.Is(err, domain.ErrNotFound) {
+				json.HandleError(w, http.StatusNotFound, err, "sensor not found")
+				return
+			}
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
 			return
 		}

@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"innoveria-iot/collection-service/internal/domain"
+	"innoveria-iot/pkg/authctx"
 	"innoveria-iot/pkg/json"
 )
 
@@ -20,10 +21,17 @@ import (
 // @Param		to			query	string	true	"End time (RFC3339, e.g. 2024-01-02T00:00:00Z)"
 // @Success		200	{array}		domain.SensorMeasurement
 // @Failure		400
+// @Failure		401
 // @Failure		500
 // @Router		/measurements [get]
 func HandleMeasurementsByTimeRange(svc domain.MeasurementService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		auth, err := authctx.FromRequest(r)
+		if err != nil {
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
+			return
+		}
+
 		q := r.URL.Query()
 
 		// Check for all query parameters
@@ -65,7 +73,7 @@ func HandleMeasurementsByTimeRange(svc domain.MeasurementService) http.HandlerFu
 		}
 
 		// Delegate to the service
-		measurements, err := svc.GetByTimeRange(r.Context(), deviceStr, from, to)
+		measurements, err := svc.GetByTimeRange(r.Context(), auth.CompanyID, deviceStr, from, to)
 		if err != nil {
 			json.HandleError(w, http.StatusInternalServerError, err, "failed to fetch measurements")
 			return

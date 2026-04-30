@@ -1,13 +1,37 @@
 /**
- * This file contains the types for the Company entity, as well as the API response types.
- * It defines the structure of the data returned by the API when fetching company information.
+ * This file contains the types for the User entity, as well as the API response types.
+ * It defines the structure of the data returned by the API when fetching user information.
  */
-export interface UserApiResponse {
+
+export type UserRole = "PLATFORM_ADMIN" | "FACTORY_WORKER";
+
+// Returned by GET /me — minimal profile used to identify and authorize the current session.
+export interface CurrentUserApiResponse {
+  id: string;
   companyId: string;
-  email: string;
   name: string;
-  role: string;
-  userId: string;
+  email: string;
+  role: UserRole;
+}
+
+// Returned by GET /users — full record used in the admin user management table.
+export interface UserApiResponse {
+  id: string;
+  companyId: string;
+  name: string;
+  email: string;
+  role: UserRole;
+  lastLoggedIn: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateUserRequest {
+  companyId: string;
+  name: string;
+  email: string;
+  password: string;
+  role: UserRole;
 }
 
 export interface LoginRequest {

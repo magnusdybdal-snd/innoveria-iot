@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
@@ -7,6 +7,7 @@ import axios from "axios";
 
 import { useFactories } from "@entities/factory";
 import { useFactoryAreas } from "@entities/factoryArea";
+import { useProductionResources } from "@entities/productionResource";
 import {
   deleteSensor,
   postSensor,
@@ -64,14 +65,25 @@ const voltageOptions = [
 export default function Sensors() {
   const { sensors, isLoading, refetch } = useSensors();
   const { factories } = useFactories();
-  const { factoryAreas } = useFactoryAreas();
+  const [selectedFactoryId, setSelectedFactoryId] = useState<
+    string | undefined
+  >();
+  const { factoryAreas, error: areasError } =
+    useFactoryAreas(selectedFactoryId);
   const { sensorProfiles } = useSensorProfiles();
+  const { productionResources } = useProductionResources();
   const [openAdd, setOpenAdd] = useState(false);
   const [addError, setAddError] = useState<string | null>(null);
   const [selectedSensor, setSelectedSensor] =
     useState<SensorApiResponse | null>(null);
 
   const { show, hide, snackbar } = useSnackbar();
+
+  useEffect(() => {
+    if (areasError)
+      show("Failed to load factory areas", SNACKBAR_SEVERITY.ERROR);
+  }, [areasError, show]);
+
   const [tabValue, setTabValue] = useState<number | string>(0);
 
   const handleTabChange = (
@@ -88,7 +100,8 @@ export default function Sensors() {
         refetch();
         show("Sensor deleted successfully", SNACKBAR_SEVERITY.SUCCESS);
       })
-      .catch(() => {
+      .catch((err: unknown) => {
+        console.error("Failed to delete sensor:", err);
         show("Failed to delete sensor.", SNACKBAR_SEVERITY.ERROR);
       });
   };
@@ -101,6 +114,7 @@ export default function Sensors() {
   const handleCloseAdd = () => {
     setOpenAdd(false);
     setAddError(null);
+    setSelectedFactoryId(undefined);
   };
 
   const handleAddSensor = (sensorData: {
@@ -116,7 +130,6 @@ export default function Sensors() {
   }): Promise<void> => {
     setAddError(null);
     return postSensor({
-      companyId: "a0000000-0000-0000-0000-000000000001", // TODO: replace with real company ID from auth
       electricitySensor: sensorData.electricitySensor,
       factoryId: sensorData.factory,
       factoryAreaId: sensorData.factoryArea,
@@ -133,13 +146,13 @@ export default function Sensors() {
         show("Sensor added successfully", SNACKBAR_SEVERITY.SUCCESS);
       })
       .catch((err: unknown) => {
+        console.error("Failed to add sensor:", err);
         const message =
           axios.isAxiosError(err) && err.response?.data?.message
             ? (err.response.data.message as string)
             : "Something went wrong adding sensor.";
         setAddError(message);
         show("Failed to add sensor.", SNACKBAR_SEVERITY.ERROR);
-        throw err;
       });
   };
 
@@ -272,6 +285,14 @@ export default function Sensors() {
         submitError={addError}
         factoryOptions={factories}
         factoryAreaOptions={factoryAreas}
+        onFactoryChange={setSelectedFactoryId}
+        productionResourceOptions={[
+          { id: "", name: "No machine" },
+          ...productionResources.map((r) => ({
+            id: String(r.id),
+            name: `${r.number} – ${r.description}`,
+          })),
+        ]}
       />
       <AppSnackbar
         open={snackbar?.open ?? false}

@@ -134,6 +134,15 @@ func (s *ContextServiceImpl) GetOrderByID(ctx context.Context, companyID string,
 	return order, nil
 }
 
+// GetProductionResources retrieves all ERP production resources (work centers) for the given company.
+func (s *ContextServiceImpl) GetProductionResources(ctx context.Context, companyID string) ([]domain.ERPProductionResource, error) {
+	resources, err := s.erpClient.GetProductionResources(ctx, companyID)
+	if err != nil {
+		return nil, fmt.Errorf("fetching production resources from ERP: %w", err)
+	}
+	return resources, nil
+}
+
 // GetOrderContext aggregates ERP order data with sensor and measurement context
 // for a single order identified by orderID.
 func (s *ContextServiceImpl) GetOrderContext(ctx context.Context, companyID string, orderID int64) (*domain.OrderContext, error) {

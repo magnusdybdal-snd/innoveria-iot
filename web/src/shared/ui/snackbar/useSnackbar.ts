@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 import { type SnackbarSeverity } from "./snackbar";
 
@@ -17,14 +17,16 @@ export function useSnackbar() {
   } | null>(null);
 
   // Opens the snackbar with the given message and severity.
-  const show = (message: string, severity: SnackbarSeverity) => {
+  const show = useCallback((message: string, severity: SnackbarSeverity) => {
     setSnackbar({ open: true, message, severity });
-  };
+  }, []);
 
   // Closes the snackbar by setting open:false, keeping message/severity
   // intact so MUI's exit animation renders the correct color and text.
-  const hide = () =>
-    setSnackbar((prev) => (prev ? { ...prev, open: false } : null));
+  const hide = useCallback(
+    () => setSnackbar((prev) => (prev ? { ...prev, open: false } : null)),
+    [],
+  );
 
   return { show, hide, snackbar };
 }

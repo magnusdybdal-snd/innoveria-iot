@@ -102,10 +102,10 @@ func mapGateway(from domain.Gateway) GatewayResponse {
 }
 
 // MapGatewayDTOToDomain maps a CreateGatewayRequest to a domain Gateway, setting defaults for State and Status.
-func MapGatewayDTOToDomain(from CreateGatewayRequest) domain.Gateway {
+func MapGatewayDTOToDomain(from CreateGatewayRequest, companyID string) domain.Gateway {
 	return domain.Gateway{
 		Id:            "", // converted later in db
-		CompanyId:     from.CompanyId,
+		CompanyId:     companyID,
 		GatewayEUI:    strings.ToLower(from.GatewayEUI),
 		Name:          from.Name,
 		Description:   from.Description,
@@ -142,9 +142,9 @@ func MapUpdateGatewayDTOToDomain(from UpdateGatewayRequest) domain.Gateway {
 }
 
 // MapCreateSensorDTOToDomain maps a CreateSensorRequest to a domain Sensor.
-func MapCreateSensorDTOToDomain(from CreateSensorRequest) domain.Sensor {
+func MapCreateSensorDTOToDomain(from CreateSensorRequest, companyID string) domain.Sensor {
 	return domain.Sensor{
-		CompanyID:           from.CompanyID,
+		CompanyID:           companyID,
 		Name:                from.Name,
 		Description:         from.Description,
 		ElectricitySensor:   &from.ElectricitySensor,
@@ -176,23 +176,24 @@ func MapSensorDomainToDTO(from []domain.Sensor) SensorListResponse {
 
 func mapSensor(from domain.Sensor) SensorResponse {
 	return SensorResponse{
-		ID:                  from.Id,
-		CompanyID:           from.CompanyID,
-		Name:                from.Name,
-		Description:         from.Description,
-		ElectricitySensor:   from.ElectricitySensor != nil && *from.ElectricitySensor,
-		Voltage:             from.Voltage,
-		DeviceEUI:           from.DeviceEUI,
-		AppKey:              from.AppKey,
-		State:               string(from.State),
-		FactoryID:           from.FactoryID,
-		FactoryAreaID:       from.FactoryAreaID,
-		ProductionResource:  from.ProductionResource,
-		ChirpstackProfileID: from.ChirpstackProfileID,
-		Status:              int(from.Status),
-		LastSeenAt:          from.LastSeenAt,
-		CreatedAt:           from.CreatedAt.Format(time.RFC3339),
-		UpdatedAt:           from.UpdatedAt.Format(time.RFC3339),
+		ID:                        from.Id,
+		CompanyID:                 from.CompanyID,
+		Name:                      from.Name,
+		Description:               from.Description,
+		ElectricitySensor:         from.ElectricitySensor != nil && *from.ElectricitySensor,
+		Voltage:                   from.Voltage,
+		DeviceEUI:                 from.DeviceEUI,
+		AppKey:                    from.AppKey,
+		State:                     string(from.State),
+		FactoryID:                 from.FactoryID,
+		FactoryAreaID:             from.FactoryAreaID,
+		ProductionResource:        from.ProductionResource,
+		ChirpstackProfileID:       from.ChirpstackProfileID,
+		GlobalChirpstackProfileID: from.GlobalChirpstackProfileID,
+		Status:                    int(from.Status),
+		LastSeenAt:                from.LastSeenAt,
+		CreatedAt:                 from.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:                 from.UpdatedAt.Format(time.RFC3339),
 	}
 }
 

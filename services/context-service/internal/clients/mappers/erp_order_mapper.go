@@ -5,6 +5,16 @@ import (
 	erpdto "innoveria-iot/pkg/erp/dto"
 )
 
+// ToERPProductionResource converts a shared ProductionResource DTO to its domain representation.
+func ToERPProductionResource(r erpdto.ProductionResource) domain.ERPProductionResource {
+	return domain.ERPProductionResource{
+		ID:          r.ID,
+		Number:      r.Number,
+		Description: r.Description,
+		Type:        string(r.Type),
+	}
+}
+
 // ToERPOrderSummary converts a shared OrderSummary DTO to its domain representation.
 // OrderNumber is used as the human-readable Name shown in order pickers.
 func ToERPOrderSummary(r erpdto.OrderSummary) domain.ERPOrderSummary {

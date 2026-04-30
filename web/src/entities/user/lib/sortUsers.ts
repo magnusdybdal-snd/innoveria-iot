@@ -1,7 +1,7 @@
 import type { UserApiResponse } from "@entities/user/model/userSchema.ts";
 
 export type SortDirection = "asc" | "desc";
-export type UserSortKey = "Company id" | "Email" | "Name" | "Role" | "User id";
+export type UserSortKey = "Name" | "Email" | "Role" | "Created at";
 
 /**
  * Returns a sorted copy of the user array based on the given column and direction.
@@ -18,16 +18,14 @@ export function sortUsers(
   if (!key) return users;
   return [...users].sort((a, b) => {
     let cmp = 0;
-    if (key === "Company id") {
-      cmp = a.companyId.localeCompare(b.companyId);
+    if (key === "Name") {
+      cmp = a.name.localeCompare(b.name);
     } else if (key === "Email") {
       cmp = a.email.localeCompare(b.email);
-    } else if (key === "Name") {
-      cmp = a.name.localeCompare(b.name);
     } else if (key === "Role") {
       cmp = a.role.localeCompare(b.role);
-    } else if (key === "User id") {
-      cmp = a.userId.localeCompare(b.userId);
+    } else if (key === "Created at") {
+      cmp = a.createdAt.localeCompare(b.createdAt);
     }
     return direction === "asc" ? cmp : -cmp;
   });

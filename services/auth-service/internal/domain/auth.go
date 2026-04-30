@@ -22,5 +22,6 @@ type AuthService interface {
 	// TODO: Add Register
 	Login(ctx context.Context, email, password, deviceInfo string, ip *netip.Addr) (LoginResult, string, error)
 	Refresh(ctx context.Context, rawRefreshToken string) (LoginResult, string, error)
+	Logout(ctx context.Context, rawRefreshToken string) error
 	Me(ctx context.Context, token string) (User, error)
 }
