@@ -54,7 +54,7 @@ func (c *erpClientImpl) GetProductionResources(ctx context.Context, companyID st
 	url := fmt.Sprintf("%s/api/v1/erp/production-resources", c.baseURL)
 	headers := map[string]string{"X-Auth-Company-Id": companyID}
 
-	resp, err := httpclient.DoRequest[[]dto.ERPProductionResourceResponse](
+	resp, err := httpclient.DoRequest[[]dto.ProductionResource](
 		c.client, ctx, url, http.MethodGet, nil, headers,
 	)
 	if err != nil {
