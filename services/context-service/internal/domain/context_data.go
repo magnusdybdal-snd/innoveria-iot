@@ -60,7 +60,7 @@ type SensorContext struct {
 type ContextService interface {
 	GetContextData(
 		ctx context.Context,
-		companyID string,
+		companyID, userID, role string,
 		deviceEUIs []string,
 		ruleID string,
 		from, to time.Time,

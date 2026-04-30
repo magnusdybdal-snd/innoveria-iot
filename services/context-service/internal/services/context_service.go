@@ -40,7 +40,7 @@ func NewContextServiceImpl(collectionClient domain.CollectionClient, erpClient d
 // bucketMins overrides the rule's default TimeBucketMinutes when greater than zero.
 func (s *ContextServiceImpl) GetContextData(
 	ctx context.Context,
-	companyID string,
+	companyID, userID, role string,
 	deviceEUIs []string,
 	ruleID string,
 	from, to time.Time,
@@ -72,8 +72,7 @@ func (s *ContextServiceImpl) GetContextData(
 
 	results := make([]domain.ContextData, 0, len(deviceEUIs))
 	for _, eui := range deviceEUIs {
-		// TODO: ensure that tenant scoping is applied in the collection (when ready)
-		readings, err := s.collectionClient.GetMeasurements(ctx, eui, from, to)
+		readings, err := s.collectionClient.GetMeasurements(ctx, companyID, userID, role, eui, from, to)
 		if err != nil {
 			return nil, fmt.Errorf("fetching measurements for device %s: %w", eui, err)
 		}
@@ -165,7 +164,7 @@ func (s *ContextServiceImpl) GetOrderContext(ctx context.Context, companyID, use
 	var wg sync.WaitGroup
 	for i, op := range found.Operations {
 		wg.Go(func() {
-			ops[i] = s.buildOperationContext(ctx, op, from, to)
+			ops[i] = s.buildOperationContext(ctx, companyID, userID, role, op, from, to)
 		})
 	}
 	wg.Wait()
@@ -175,10 +174,10 @@ func (s *ContextServiceImpl) GetOrderContext(ctx context.Context, companyID, use
 
 // buildOperationContext fetches sensors for an operation and enriches each with
 // metrics and measurements over the given time window.
-func (s *ContextServiceImpl) buildOperationContext(ctx context.Context, op domain.ERPOrderOperation, from, to time.Time) domain.OperationContext {
+func (s *ContextServiceImpl) buildOperationContext(ctx context.Context, companyID, userID, role string, op domain.ERPOrderOperation, from, to time.Time) domain.OperationContext {
 	productionResourceID := strconv.FormatInt(op.ProductionResource.ID, 10)
 
-	sensors, err := s.deviceClient.GetSensorsByProductionResourceID(ctx, productionResourceID)
+	sensors, err := s.deviceClient.GetSensorsByProductionResourceID(ctx, companyID, userID, role, productionResourceID)
 	if err != nil {
 		if errors.Is(err, domain.ErrNotFound) {
 			// No sensors mapped to this production resource — expected, not an error.
@@ -198,7 +197,7 @@ func (s *ContextServiceImpl) buildOperationContext(ctx context.Context, op domai
 
 	for j, sensor := range sensors {
 		wg.Go(func() {
-			sc, err := s.buildSensorContext(ctx, sensor, from, to)
+			sc, err := s.buildSensorContext(ctx, companyID, userID, role, sensor, from, to)
 			if err != nil {
 				mu.Lock()
 				if svcErr == nil {
@@ -222,13 +221,13 @@ func (s *ContextServiceImpl) buildOperationContext(ctx context.Context, op domai
 
 // buildSensorContext fetches metrics and measurements for a single sensor over the given time window.
 // For electricity sensors with a configured voltage, it also computes total energy consumption in Wh.
-func (s *ContextServiceImpl) buildSensorContext(ctx context.Context, sensor domain.DeviceSensor, from, to time.Time) (domain.SensorContext, error) {
+func (s *ContextServiceImpl) buildSensorContext(ctx context.Context, companyID, userID, role string, sensor domain.DeviceSensor, from, to time.Time) (domain.SensorContext, error) {
 	metrics, err := s.deviceClient.GetSensorMetrics(ctx, sensor.DeviceEUI)
 	if err != nil {
 		return domain.SensorContext{}, fmt.Errorf("fetching metrics for sensor %s: %w", sensor.DeviceEUI, err)
 	}
 
-	measurements, err := s.collectionClient.GetMeasurements(ctx, sensor.DeviceEUI, from, to)
+	measurements, err := s.collectionClient.GetMeasurements(ctx, companyID, userID, role, sensor.DeviceEUI, from, to)
 	if err != nil {
 		return domain.SensorContext{}, fmt.Errorf("fetching measurements for sensor %s: %w", sensor.DeviceEUI, err)
 	}

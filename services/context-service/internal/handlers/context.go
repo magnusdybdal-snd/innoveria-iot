@@ -86,7 +86,7 @@ func GetContextData(svc domain.ContextService) http.HandlerFunc {
 			}
 		}
 
-		results, err := svc.GetContextData(ctx, auth.CompanyID, deviceEUIs, ruleID, from, to, bucketMins)
+		results, err := svc.GetContextData(ctx, auth.CompanyID, auth.UserID, string(auth.Role), deviceEUIs, ruleID, from, to, bucketMins)
 		if err != nil {
 			if errors.Is(err, domain.ErrNotFound) {
 				json.HandleError(w, http.StatusNotFound, err, "rule not found")

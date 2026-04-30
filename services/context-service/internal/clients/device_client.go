@@ -14,25 +14,32 @@ import (
 
 // DeviceClient is an HTTP client for the device service.
 type DeviceClient struct {
-	baseURL string
-	client  *httpclient.Client
+	baseURL         string
+	internalBaseURL string
+	client          *httpclient.Client
 }
 
-// NewDeviceClient creates a new DeviceClient targeting the given base URL.
-func NewDeviceClient(baseURL string) *DeviceClient {
+// NewDeviceClient creates a new DeviceClient. baseURL targets the authenticated
+// public port (8080); internalBaseURL targets the unauthenticated internal port (9090).
+func NewDeviceClient(baseURL, internalBaseURL string) *DeviceClient {
 	return &DeviceClient{
-		baseURL: baseURL,
-		client:  httpclient.New(),
+		baseURL:         baseURL,
+		internalBaseURL: internalBaseURL,
+		client:          httpclient.New(),
 	}
 }
 
 // GetSensorsByProductionResourceID fetches all sensors assigned to the given
-// production resource ID.
-func (c *DeviceClient) GetSensorsByProductionResourceID(ctx context.Context, productionResourceID string) ([]domain.DeviceSensor, error) {
+// production resource ID, scoped to the given company.
+func (c *DeviceClient) GetSensorsByProductionResourceID(ctx context.Context, companyID, userID, role, productionResourceID string) ([]domain.DeviceSensor, error) {
 	url := fmt.Sprintf("%s/api/v1/device/sensors?production_resource_id=%s", c.baseURL, productionResourceID)
 
 	resp, err := httpclient.DoRequest[dto.DeviceSensorListResponse](
-		c.client, ctx, url, http.MethodGet, nil, nil,
+		c.client, ctx, url, http.MethodGet, nil, map[string]string{
+			"X-Auth-Company-Id": companyID,
+			"X-Auth-User-Id":    userID,
+			"X-Auth-Role":       role,
+		},
 	)
 	if err != nil {
 		var httpErr *httpclient.HTTPError
@@ -50,9 +57,9 @@ func (c *DeviceClient) GetSensorsByProductionResourceID(ctx context.Context, pro
 }
 
 // GetSensorMetrics fetches the payload-key → measurement type/unit mappings
-// for the given sensor EUI.
+// for the given sensor EUI. Uses the internal port (no auth required).
 func (c *DeviceClient) GetSensorMetrics(ctx context.Context, deviceEUI string) ([]domain.SensorMetric, error) {
-	url := fmt.Sprintf("%s/api/v1/device/sensors/%s/metrics", c.baseURL, deviceEUI)
+	url := fmt.Sprintf("%s/api/v1/device/sensors/%s/metrics", c.internalBaseURL, deviceEUI)
 
 	resp, err := httpclient.DoRequest[dto.SensorMetricListResponse](
 		c.client, ctx, url, http.MethodGet, nil, nil,

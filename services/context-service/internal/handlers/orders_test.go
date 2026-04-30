@@ -42,7 +42,7 @@ func (m *mockContextService) GetOrderContext(ctx context.Context, companyID, use
 }
 
 func (m *mockContextService) GetContextData(
-	_ context.Context, _ string, _ []string, _ string, _, _ time.Time, _ int,
+	_ context.Context, _, _, _ string, _ []string, _ string, _, _ time.Time, _ int,
 ) ([]domain.ContextData, error) {
 	m.t.Fatal("unexpected call to GetContextData")
 	return nil, nil

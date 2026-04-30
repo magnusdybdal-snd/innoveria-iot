@@ -40,7 +40,7 @@ func Run() error {
 		return fmt.Errorf("seeds: %w", err)
 	}
 	client := clients.NewCollectionClient(cfg.CollectionSvcURL)
-	deviceClient := clients.NewDeviceClient(cfg.DeviceSvcURL)
+	deviceClient := clients.NewDeviceClient(cfg.DeviceSvcURL, cfg.DeviceSvcInternalURL)
 
 	var erpClient domain.ERPClient
 	if cfg.UseMockERP {

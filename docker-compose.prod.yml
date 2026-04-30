@@ -227,6 +227,7 @@ services:
       - DB_NAME=${CONTEXT_DB_NAME}
       - DB_SSLMODE=${CONTEXT_DB_SSLMODE}
       - COLLECTION_SERVICE=${COLLECTION_SERVICE}
+      - DEVICE_SERVICE_INTERNAL=${DEVICE_SERVICE_INTERNAL}
     depends_on:
       - collection-service
       - context-db
