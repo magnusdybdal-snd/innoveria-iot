@@ -27,7 +27,7 @@ export interface CreateGatewayRequest {
 
 export interface UpdateGatewayRequest {
   description?: string;
-  factory_area_id?: string;
-  factory_id?: string;
+  factoryAreaId?: string;
+  factoryId?: string;
   name?: string;
 }

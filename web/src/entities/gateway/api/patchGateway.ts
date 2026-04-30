@@ -16,6 +16,11 @@ export const patchGateway = async (
     serviceClient,
     `${API_ROUTES.gateways}/${encodeURIComponent(gatewayId)}`,
     "PATCH",
-    payload,
+    {
+      description: payload.description,
+      factory_area_id: payload.factoryAreaId,
+      factory_id: payload.factoryId,
+      name: payload.name,
+    },
   );
 };
