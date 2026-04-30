@@ -26,13 +26,6 @@ const docTemplate = `{
                 "summary": "Get Context Data",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Company ID",
-                        "name": "company_id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
                         "type": "array",
                         "items": {
                             "type": "string"
@@ -84,6 +77,9 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request"
                     },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
                     "404": {
                         "description": "Not Found"
                     },
@@ -111,6 +107,9 @@ const docTemplate = `{
                                 "$ref": "#/definitions/dto.OrderSummaryResponse"
                             }
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     },
                     "500": {
                         "description": "Internal Server Error"
@@ -145,6 +144,9 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     },
                     "404": {
                         "description": "Not Found"
@@ -183,8 +185,36 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request"
                     },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
                     "404": {
                         "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/production-resources": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "production-resources"
+                ],
+                "summary": "Get Production Resources",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.ProductionResourceResponse"
+                            }
+                        }
                     },
                     "500": {
                         "description": "Internal Server Error"
@@ -201,15 +231,6 @@ const docTemplate = `{
                     "context"
                 ],
                 "summary": "Get Aggregation Rules",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Company ID",
-                        "name": "company_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -220,8 +241,8 @@ const docTemplate = `{
                             }
                         }
                     },
-                    "400": {
-                        "description": "Bad Request"
+                    "401": {
+                        "description": "Unauthorized"
                     },
                     "500": {
                         "description": "Internal Server Error"
@@ -256,6 +277,9 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     },
                     "409": {
                         "description": "Conflict"
@@ -387,7 +411,6 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "aggregation_method",
-                "company_id",
                 "context_type",
                 "measurement_type",
                 "name",
@@ -395,9 +418,6 @@ const docTemplate = `{
             ],
             "properties": {
                 "aggregation_method": {
-                    "type": "string"
-                },
-                "company_id": {
                     "type": "string"
                 },
                 "context_type": {

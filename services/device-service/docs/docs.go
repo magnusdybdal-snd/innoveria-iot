@@ -666,6 +666,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/dto.SensorMetricListResponse"
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
                     "404": {
                         "description": "Not Found"
                     },
@@ -1227,6 +1233,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "factory_id": {
+                    "type": "string"
+                },
+                "global_device_profile_id": {
                     "type": "string"
                 },
                 "id": {
