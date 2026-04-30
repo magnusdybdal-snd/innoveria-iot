@@ -39,6 +39,10 @@ func (c *erpClientImpl) GetOrders(ctx context.Context, companyID, userID, role s
 		c.client, ctx, url, http.MethodGet, nil, headers,
 	)
 	if err != nil {
+		var httpErr *httpclient.HTTPError
+		if errors.As(err, &httpErr) && httpErr.StatusCode == http.StatusUnauthorized {
+			return nil, domain.ErrUnauthorized
+		}
 		return nil, err
 	}
 
@@ -47,6 +51,29 @@ func (c *erpClientImpl) GetOrders(ctx context.Context, companyID, userID, role s
 		orders[i] = mappers.ToERPOrderSummary(o)
 	}
 	return orders, nil
+}
+
+// GetProductionResources fetches all production resources for the given company from the ERP service.
+func (c *erpClientImpl) GetProductionResources(ctx context.Context, companyID string) ([]domain.ERPProductionResource, error) {
+	url := fmt.Sprintf("%s/api/v1/erp/production-resources", c.baseURL)
+	headers := map[string]string{"X-Auth-Company-Id": companyID}
+
+	resp, err := httpclient.DoRequest[[]dto.ProductionResource](
+		c.client, ctx, url, http.MethodGet, nil, headers,
+	)
+	if err != nil {
+		var httpErr *httpclient.HTTPError
+		if errors.As(err, &httpErr) && httpErr.StatusCode == http.StatusUnauthorized {
+			return nil, domain.ErrUnauthorized
+		}
+		return nil, err
+	}
+
+	resources := make([]domain.ERPProductionResource, len(resp))
+	for i, r := range resp {
+		resources[i] = mappers.ToERPProductionResource(r)
+	}
+	return resources, nil
 }
 
 // GetOrderByID fetches a single order by ID from the ERP service, enriched with

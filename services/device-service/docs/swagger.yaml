@@ -14,8 +14,6 @@ definitions:
     type: object
   dto.CreateGatewayRequest:
     properties:
-      company_id:
-        type: string
       description:
         type: string
       factory_area_id:
@@ -27,7 +25,6 @@ definitions:
       name:
         type: string
     required:
-    - company_id
     - factory_area_id
     - factory_id
     - gateway_eui
@@ -51,9 +48,6 @@ definitions:
     properties:
       app_key:
         type: string
-      company_id:
-        description: 'TODO: CompanyID should be extracted from auth'
-        type: string
       description:
         type: string
       device_eui:
@@ -75,7 +69,6 @@ definitions:
         type: integer
     required:
     - app_key
-    - company_id
     - device_eui
     - device_profile_id
     - factory_area_id
@@ -291,6 +284,8 @@ definitions:
         type: string
       factory_id:
         type: string
+      global_device_profile_id:
+        type: string
       id:
         type: string
       last_seen_at:
@@ -408,6 +403,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.GatewayListResponse'
+        "401":
+          description: Unauthorized
         "500":
           description: Internal Server Error
       summary: List all gateways
@@ -428,6 +425,8 @@ paths:
           description: Created
         "400":
           description: Bad Request
+        "401":
+          description: Unauthorized
         "500":
           description: Internal Server Error
       summary: Create a gateway
@@ -446,6 +445,10 @@ paths:
           description: No Content
         "400":
           description: Bad Request
+        "401":
+          description: Unauthorized
+        "404":
+          description: Not Found
         "500":
           description: Internal Server Error
       summary: Delete a gateway
@@ -471,6 +474,10 @@ paths:
           description: No Content
         "400":
           description: Bad Request
+        "401":
+          description: Unauthorized
+        "404":
+          description: Not Found
         "500":
           description: Internal Server Error
       summary: Update a gateway
@@ -485,6 +492,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.MeasurementTypeListResponse'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
         "500":
           description: Internal Server Error
       summary: List active measurement types
@@ -505,6 +516,10 @@ paths:
           description: Created
         "400":
           description: Bad Request
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
         "409":
           description: Conflict
         "500":
@@ -523,6 +538,10 @@ paths:
       responses:
         "204":
           description: No Content
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
         "404":
           description: Not Found
         "500":
@@ -539,6 +558,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.MeasurementTypeListResponse'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
         "500":
           description: Internal Server Error
       summary: List all measurement types including deprecated
@@ -561,6 +584,10 @@ paths:
             $ref: '#/definitions/dto.PayloadSchemaListResponse'
         "400":
           description: Bad Request
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
         "500":
           description: Internal Server Error
       summary: Get payload schema for a profile
@@ -586,6 +613,10 @@ paths:
           description: No Content
         "400":
           description: Bad Request
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
         "422":
           description: Unprocessable Entity
         "500":
@@ -673,6 +704,8 @@ paths:
             $ref: '#/definitions/dto.SensorListResponse'
         "400":
           description: Bad Request
+        "401":
+          description: Unauthorized
         "500":
           description: Internal Server Error
       summary: Lists all sensors.
@@ -693,6 +726,8 @@ paths:
           description: Created
         "400":
           description: Bad Request
+        "401":
+          description: Unauthorized
         "500":
           description: Internal Server Error
       summary: Create a sensor
@@ -713,6 +748,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.SensorMetricListResponse'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
         "404":
           description: Not Found
         "500":
@@ -740,6 +779,10 @@ paths:
           description: No Content
         "400":
           description: Bad Request
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
         "404":
           description: Not Found
         "422":
@@ -762,6 +805,10 @@ paths:
           description: No Content
         "400":
           description: Bad Request
+        "401":
+          description: Unauthorized
+        "404":
+          description: Not Found
         "500":
           description: Internal Server Error
       summary: Delete a sensor
@@ -787,6 +834,10 @@ paths:
           description: No Content
         "400":
           description: Bad Request
+        "401":
+          description: Unauthorized
+        "404":
+          description: Not Found
         "500":
           description: Internal Server Error
       summary: Update a sensor

@@ -33,8 +33,6 @@ definitions:
     properties:
       address:
         type: string
-      company_id:
-        type: string
       name:
         type: string
     type: object
@@ -45,6 +43,19 @@ definitions:
       factory_id:
         type: string
       name:
+        type: string
+    type: object
+  dto.CreateUserRequest:
+    properties:
+      company_id:
+        type: string
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      role:
         type: string
     type: object
   dto.ERPAgentTokenResponse:
@@ -129,6 +140,43 @@ definitions:
       user_id:
         type: string
     type: object
+  dto.UpdateUserRequest:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+    type: object
+  dto.UserListResponse:
+    properties:
+      total_count:
+        type: integer
+      users:
+        items:
+          $ref: '#/definitions/dto.UserResponse'
+        type: array
+    type: object
+  dto.UserResponse:
+    properties:
+      company_id:
+        type: string
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      last_logged_in:
+        type: string
+      name:
+        type: string
+      role:
+        type: string
+      updated_at:
+        type: string
+    type: object
 host: localhost:8084
 info:
   contact: {}
@@ -145,6 +193,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.CompanyListResponse'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
         "500":
           description: Internal Server Error
       summary: Get all companies
@@ -210,6 +262,10 @@ paths:
             $ref: '#/definitions/dto.CompanyResponse'
         "400":
           description: Bad Request
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
         "404":
           description: Not Found
         "500":
@@ -254,6 +310,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.FactoryListResponse'
+        "401":
+          description: Unauthorized
         "500":
           description: Internal Server Error
       summary: Get all factories
@@ -278,6 +336,8 @@ paths:
             $ref: '#/definitions/dto.FactoryResponse'
         "400":
           description: Bad Request
+        "401":
+          description: Unauthorized
         "404":
           description: Not Found
         "500":
@@ -288,7 +348,7 @@ paths:
   /factories/{id}:
     delete:
       parameters:
-      - description: id
+      - description: Factory ID
         in: path
         name: id
         required: true
@@ -298,6 +358,8 @@ paths:
           description: No Content
         "400":
           description: Bad Request
+        "401":
+          description: Unauthorized
         "404":
           description: Not Found
         "500":
@@ -307,7 +369,7 @@ paths:
       - factories
     get:
       parameters:
-      - description: id
+      - description: Factory ID
         in: path
         name: id
         required: true
@@ -321,6 +383,8 @@ paths:
             $ref: '#/definitions/dto.FactoryResponse'
         "400":
           description: Bad Request
+        "401":
+          description: Unauthorized
         "404":
           description: Not Found
         "500":
@@ -330,6 +394,12 @@ paths:
       - factories
   /factory-areas:
     get:
+      parameters:
+      - description: Factory ID
+        in: query
+        name: factory_id
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -337,6 +407,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.FactoryAreaListResponse'
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
         "500":
           description: Internal Server Error
       summary: Get all factory areas
@@ -361,6 +435,8 @@ paths:
             $ref: '#/definitions/dto.FactoryAreaResponse'
         "400":
           description: Bad Request
+        "401":
+          description: Unauthorized
         "404":
           description: Not Found
         "500":
@@ -371,7 +447,7 @@ paths:
   /factory-areas/{id}:
     delete:
       parameters:
-      - description: id
+      - description: Factory area ID
         in: path
         name: id
         required: true
@@ -381,6 +457,8 @@ paths:
           description: No Content
         "400":
           description: Bad Request
+        "401":
+          description: Unauthorized
         "404":
           description: Not Found
         "500":
@@ -390,7 +468,7 @@ paths:
       - factory-areas
     get:
       parameters:
-      - description: id
+      - description: Factory area ID
         in: path
         name: id
         required: true
@@ -404,6 +482,8 @@ paths:
             $ref: '#/definitions/dto.FactoryAreaResponse'
         "400":
           description: Bad Request
+        "401":
+          description: Unauthorized
         "404":
           description: Not Found
         "500":
@@ -434,6 +514,17 @@ paths:
         "500":
           description: Internal Server Error
       summary: Login with email and password
+      tags:
+      - auth
+  /logout:
+    post:
+      description: Revokes the refresh_token cookie server-side and clears it.
+      responses:
+        "204":
+          description: No Content
+        "500":
+          description: Internal Server Error
+      summary: Logout
       tags:
       - auth
   /me:
@@ -471,4 +562,104 @@ paths:
       summary: Refresh access token
       tags:
       - auth
+  /users:
+    get:
+      parameters:
+      - description: Filter by company
+        in: query
+        name: company_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.UserListResponse'
+        "403":
+          description: Forbidden
+        "500":
+          description: Internal Server Error
+      summary: List users
+      tags:
+      - users
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: User payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.UserResponse'
+        "400":
+          description: Bad Request
+        "403":
+          description: Forbidden
+        "409":
+          description: Conflict
+        "500":
+          description: Internal Server Error
+      summary: Create a user
+      tags:
+      - users
+  /users/{id}:
+    delete:
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+        "403":
+          description: Forbidden
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Delete a user
+      tags:
+      - users
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Update payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateUserRequest'
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+        "403":
+          description: Forbidden
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Update a user
+      tags:
+      - users
 swagger: "2.0"

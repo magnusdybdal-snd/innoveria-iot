@@ -18,6 +18,7 @@ func NewRouter(
 	factorySvc domain.FactoryService,
 	factoryAreaSvc domain.FactoryAreaService,
 	authSvc domain.AuthService,
+	userSvc domain.UserService,
 	refreshTTL time.Duration,
 	enableSwagger bool,
 ) *http.ServeMux {
@@ -44,9 +45,16 @@ func NewRouter(
 	mux.HandleFunc("GET "+FACTORY_AREA_ID_ROUTE, handlers.GetOneFactoryArea(factoryAreaSvc))
 	mux.HandleFunc("DELETE "+FACTORY_AREA_ID_ROUTE, handlers.DeleteFactoryArea(factoryAreaSvc))
 
+	// Users
+	mux.HandleFunc("GET "+USER_ROUTE, handlers.GetUsers(userSvc))
+	mux.HandleFunc("POST "+USER_ROUTE, handlers.PostUser(userSvc))
+	mux.HandleFunc("PATCH "+USER_ID_ROUTE, handlers.PatchUser(userSvc))
+	mux.HandleFunc("DELETE "+USER_ID_ROUTE, handlers.DeleteUser(userSvc))
+
 	// Auth
 	mux.HandleFunc("POST "+LOGIN_ROUTE, handlers.PostLogin(authSvc, refreshTTL))
 	mux.HandleFunc("POST "+REFRESH_ROUTE, handlers.PostRefresh(authSvc, refreshTTL))
+	mux.HandleFunc("POST "+LOGOUT_ROUTE, handlers.PostLogout(authSvc))
 
 	// Me
 	mux.HandleFunc("GET "+ME_ROUTE, handlers.GetMe(authSvc))

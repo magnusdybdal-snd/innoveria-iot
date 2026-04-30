@@ -71,4 +71,9 @@ type ContextService interface {
 	GetOrderByID(ctx context.Context, companyID, userID, role string, orderID int64) (*ERPOrder, error)
 	// GetOrderContext aggregates ERP order data with sensor readings for a single order.
 	GetOrderContext(ctx context.Context, companyID, userID, role string, orderID int64) (*OrderContext, error)
+
+	// GetProductionResources returns all ERP production resources (work centers) for the given company.
+	//
+	// TODO: replace with AUTH — companyID should be read from the gateway-injected X-Auth-Company-Id header once auth middleware propagation is wired up.
+	GetProductionResources(ctx context.Context, companyID string) ([]ERPProductionResource, error)
 }

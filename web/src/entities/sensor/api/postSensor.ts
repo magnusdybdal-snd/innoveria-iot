@@ -4,13 +4,18 @@ import { API_ROUTES } from "@shared/api/routes";
 
 /**
  * Posts a new sensor to the API.
- * @param sensorData - An object containing the companyId, deviceEui, sensorProfileId, and name of the sensor to be created.
+ * @param sensorData - An object containing the data of the sensor to be created.
+ * @param sensorData.deviceEui - The EUI of the sensor device
+ * @param sensorData.sensorProfileId - ID of the sensor profile to apply
+ * @param sensorData.appKey - Application key for LoRaWAN activation
+ * @param sensorData.name - Display name of the sensor
+ * @param sensorData.factoryId - ID of the factory the sensor belongs to
+ * @param sensorData.factoryAreaId - ID of the factory area the sensor is located in
  */
 export const postSensor = async (
   sensorData: CreateSensorRequest,
 ): Promise<void> => {
   await apiRequest(serviceClient, API_ROUTES.sensors, "POST", {
-    company_id: sensorData.companyId,
     electricity_sensor: sensorData.electricitySensor,
     factory_id: sensorData.factoryId,
     factory_area_id: sensorData.factoryAreaId,

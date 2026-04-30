@@ -1,4 +1,7 @@
-import type { UserApiResponse } from "@entities/user/model/userSchema.ts";
+import type {
+  CurrentUserApiResponse,
+  UserRole,
+} from "@entities/user/model/userSchema.ts";
 import { apiRequest, serviceClient } from "@shared/api";
 import { API_ROUTES } from "@shared/api/routes";
 
@@ -11,10 +14,11 @@ type RawUserApiResponse = {
 };
 
 /**
- * Fetches user from the authentication-service via the API user.
- * @returns Array of UserApiResponse objects, or nothing if the request fails
+ * Fetches the currently authenticated user's profile from the auth service (/me).
+ * Throws if the request fails — callers are responsible for error handling.
+ * @returns The current user's minimal profile
  */
-export const getUser = async (): Promise<UserApiResponse> => {
+export const getUser = async (): Promise<CurrentUserApiResponse> => {
   try {
     const data = await apiRequest<RawUserApiResponse>(
       serviceClient,
@@ -26,8 +30,8 @@ export const getUser = async (): Promise<UserApiResponse> => {
       companyId: data.company_id,
       email: data.email,
       name: data.name,
-      role: data.role,
-      userId: data.user_id,
+      role: data.role as UserRole,
+      id: data.user_id,
     };
   } catch (error) {
     if (error instanceof Error) {

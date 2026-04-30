@@ -8,3 +8,4 @@ export { useFactories } from "./model/useFactories";
 export { deleteFactory } from "./api/deleteFactory";
 export { sortFactories, sortItems } from "./lib/sortFactory";
 export type { FactorySortKey, SortDirection } from "./lib/sortFactory";
+export { FactoryInfo } from "./ui/FactoryInfo";

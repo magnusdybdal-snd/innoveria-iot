@@ -281,6 +281,16 @@ export default function Companies() {
               </DeviceRow>
             ))
           )}
+          {sorted.map((company) => (
+            <DeviceRow key={company.companyId}>
+              <CompanyInfo
+                name={company.name}
+                address={company.address}
+                created_at={formatTimestamp(company.createdAt)}
+                updated_at={formatTimestamp(company.updatedAt)}
+              />
+            </DeviceRow>
+          ))}
         </CategoryHeader>
         {!isLoading && !error && sorted.length === 0 && (
           <NotFoundCard page="companies" action="registered" />

@@ -8,12 +8,14 @@ import (
 
 	"innoveria-iot/auth-service/internal/domain"
 	"innoveria-iot/auth-service/internal/handlers/dto"
+	"innoveria-iot/pkg/authctx"
 	"innoveria-iot/pkg/json"
 
 	"github.com/google/uuid"
 )
 
 // PostFactory handles factory creation requests.
+// The factory is created under the company of the authenticated user.
 //
 // @Summary Register a new factory
 // @Tags factories
@@ -22,6 +24,7 @@ import (
 // @Param body body dto.CreateNewFactory true "Factory payload"
 // @Success 201 {object} dto.FactoryResponse
 // @Failure 400
+// @Failure 401
 // @Failure 404
 // @Failure 500
 // @Router /factories [post]
@@ -29,28 +32,28 @@ func PostFactory(svc domain.FactoryService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
+		auth, err := authctx.FromRequest(r)
+		if err != nil {
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
+			return
+		}
+
 		payload, err := json.Decode[dto.CreateNewFactory](r)
 		if err != nil {
 			json.HandleError(w, http.StatusBadRequest, err, "bad request")
 			return
 		}
 
-		payload.CompanyID = strings.TrimSpace(payload.CompanyID)
 		payload.Name = strings.TrimSpace(payload.Name)
 		payload.Address = strings.TrimSpace(payload.Address)
 
-		factoryDomain := dto.MapCreateFactoryToDomain(payload)
-		if factoryDomain.CompanyID == "" || factoryDomain.Name == "" {
-			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("missing required fields"), "company_id and name are required")
+		if payload.Name == "" {
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("missing required fields"), "name is required")
 			return
 		}
 
-		if _, err := uuid.Parse(factoryDomain.CompanyID); err != nil {
-			json.HandleError(w, http.StatusBadRequest, err, "invalid company_id (uuid)")
-			return
-		}
+		factoryDomain := dto.MapCreateFactoryToDomain(payload, auth.CompanyID)
 
-		// error check for invalid input
 		factoryResp, err := svc.RegisterFactory(ctx, factoryDomain)
 		if err != nil {
 			switch {
@@ -69,19 +72,26 @@ func PostFactory(svc domain.FactoryService) http.HandlerFunc {
 	}
 }
 
-// GetAllFactories handles requests to fetch all factories.
+// GetAllFactories handles requests to fetch all factories belonging to the authenticated user's company.
 //
 // @Summary Get all factories
 // @Tags factories
 // @Produce json
 // @Success 200 {object} dto.FactoryListResponse
+// @Failure 401
 // @Failure 500
 // @Router /factories [get]
 func GetAllFactories(svc domain.FactoryService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
-		factories, err := svc.GetAllFactories(ctx)
+		auth, err := authctx.FromRequest(r)
+		if err != nil {
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
+			return
+		}
+
+		factories, err := svc.GetAllFactories(ctx, auth.CompanyID)
 		if err != nil {
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
 			return
@@ -94,14 +104,15 @@ func GetAllFactories(svc domain.FactoryService) http.HandlerFunc {
 	}
 }
 
-// GetOneFactory handles requests to fetch one factory by ID.
+// GetOneFactory handles requests to fetch one factory by ID, scoped to the authenticated user's company.
 //
 // @Summary Get one factory
 // @Tags factories
 // @Produce json
-// @Param id path string true "id"
+// @Param id path string true "Factory ID"
 // @Success 200 {object} dto.FactoryResponse
 // @Failure 400
+// @Failure 401
 // @Failure 404
 // @Failure 500
 // @Router /factories/{id} [get]
@@ -109,19 +120,24 @@ func GetOneFactory(svc domain.FactoryService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
+		auth, err := authctx.FromRequest(r)
+		if err != nil {
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
+			return
+		}
+
 		factoryID := r.PathValue("id")
 		if factoryID == "" {
 			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("missing id path parameter"), "id is required")
 			return
 		}
 
-		// Check for valid uuid
 		if _, err := uuid.Parse(factoryID); err != nil {
 			json.HandleError(w, http.StatusBadRequest, err, "invalid factory id (uuid)")
 			return
 		}
 
-		factory, err := svc.GetOneFactory(ctx, factoryID)
+		factory, err := svc.GetOneFactory(ctx, auth.CompanyID, factoryID)
 		if err != nil {
 			switch {
 			case errors.Is(err, domain.ErrFactoryNotFound):
@@ -139,32 +155,39 @@ func GetOneFactory(svc domain.FactoryService) http.HandlerFunc {
 	}
 }
 
-// DeleteFactory handles requests to delete a factory by ID.
+// DeleteFactory handles requests to delete a factory by ID, scoped to the authenticated user's company.
 //
 // @Summary Delete factory
 // @Tags factories
-// @Param id path string true "id"
+// @Param id path string true "Factory ID"
 // @Success 204
 // @Failure 400
+// @Failure 401
 // @Failure 404
 // @Failure 500
 // @Router /factories/{id} [delete]
 func DeleteFactory(svc domain.FactoryService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
+
+		auth, err := authctx.FromRequest(r)
+		if err != nil {
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
+			return
+		}
+
 		factoryID := r.PathValue("id")
 		if factoryID == "" {
 			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("missing id path parameter"), "id is required")
 			return
 		}
 
-		// Check for valid uuid
 		if _, err := uuid.Parse(factoryID); err != nil {
 			json.HandleError(w, http.StatusBadRequest, err, "invalid factory id (uuid)")
 			return
 		}
 
-		if err := svc.DeleteFactory(ctx, factoryID); err != nil {
+		if err := svc.DeleteFactory(ctx, auth.CompanyID, factoryID); err != nil {
 			switch {
 			case errors.Is(err, domain.ErrFactoryNotFound):
 				json.HandleError(w, http.StatusNotFound, err, "factory not found")

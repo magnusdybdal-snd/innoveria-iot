@@ -166,6 +166,20 @@ func (s *AuthServiceImpl) Refresh(ctx context.Context, refreshToken string) (dom
 	}, newRefreshToken, nil
 }
 
+// Logout revokes the refresh token so it can no longer be used to obtain new access tokens.
+func (s *AuthServiceImpl) Logout(ctx context.Context, rawRefreshToken string) error {
+	if rawRefreshToken == "" {
+		return nil
+	}
+	tokenHash := s.hashRefreshTokenHMAC(rawRefreshToken)
+	if err := s.refreshTokenRepo.RevokeByHash(ctx, tokenHash); err != nil {
+		slog.Error("logout failed: revoke refresh token", "error", err)
+		return err
+	}
+	slog.Info("refresh token revoked on logout")
+	return nil
+}
+
 // Me returns the authenticated user profile.
 // this is a protected route
 func (s *AuthServiceImpl) Me(ctx context.Context, userID string) (domain.User, error) {

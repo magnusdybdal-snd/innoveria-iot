@@ -8,11 +8,11 @@ import (
 
 	"innoveria-iot/device-service/internal/domain"
 	"innoveria-iot/device-service/internal/handlers/dto"
+	"innoveria-iot/pkg/authctx"
 	"innoveria-iot/pkg/json"
 )
 
-// GetPayloadSchemaByProfile returns all payload schema rows for a ChirpStack profile.
-// Admin only — enforcement is handled at the API gateway level.
+// GetPayloadSchemaByProfile returns all payload schema rows for a ChirpStack profile. Admin only.
 //
 // @Summary		Get payload schema for a profile
 // @Tags		payload-schema
@@ -20,11 +20,23 @@ import (
 // @Param		chirpstack_profile_id	path	string	true	"ChirpStack profile ID"
 // @Success		200	{object}	dto.PayloadSchemaListResponse
 // @Failure		400
+// @Failure		401
+// @Failure		403
 // @Failure		500
 // @Router		/payload-schema/{chirpstack_profile_id} [get]
 func GetPayloadSchemaByProfile(svc domain.PayloadSchemaService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
+
+		auth, err := authctx.FromRequest(r)
+		if err != nil {
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
+			return
+		}
+		if !auth.IsAdmin() {
+			json.HandleError(w, http.StatusForbidden, fmt.Errorf("forbidden"), "forbidden")
+			return
+		}
 
 		profileID := r.PathValue("chirpstack_profile_id")
 
@@ -43,8 +55,7 @@ func GetPayloadSchemaByProfile(svc domain.PayloadSchemaService) http.HandlerFunc
 	}
 }
 
-// PutPayloadSchemaLabels saves measurement type labels for a profile's payload schema rows.
-// Admin only — enforcement is handled at the API gateway level.
+// PutPayloadSchemaLabels saves measurement type labels for a profile's payload schema rows. Admin only.
 //
 // @Summary		Save payload schema labels for a profile
 // @Tags		payload-schema
@@ -53,12 +64,24 @@ func GetPayloadSchemaByProfile(svc domain.PayloadSchemaService) http.HandlerFunc
 // @Param		body					body	dto.SavePayloadSchemaLabelsRequest	true	"Labels to save"
 // @Success		204
 // @Failure		400
+// @Failure		401
+// @Failure		403
 // @Failure		422
 // @Failure		500
 // @Router		/payload-schema/{chirpstack_profile_id} [put]
 func PutPayloadSchemaLabels(svc domain.PayloadSchemaService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
+
+		auth, err := authctx.FromRequest(r)
+		if err != nil {
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
+			return
+		}
+		if !auth.IsAdmin() {
+			json.HandleError(w, http.StatusForbidden, fmt.Errorf("forbidden"), "forbidden")
+			return
+		}
 
 		profileID := r.PathValue("chirpstack_profile_id")
 

@@ -10,6 +10,7 @@ import (
 // Config holds all runtime configuration values for the device service.
 type Config struct {
 	Addr          string
+	InternalAddr  string
 	DB_url        string
 	EnableSwagger bool
 
@@ -28,7 +29,8 @@ func Load() *Config {
 	sslmode := env.Get("DB_SSLMODE", "disable")
 
 	return &Config{
-		Addr: ":" + env.Get("PORT", "8080"),
+		Addr:         ":" + env.Get("PORT", "8080"),
+		InternalAddr: ":" + env.Get("INTERNAL_PORT", "9090"),
 		DB_url: fmt.Sprintf(
 			"postgres://%s:%s@%s:%s/%s?sslmode=%s",
 			dbUser,

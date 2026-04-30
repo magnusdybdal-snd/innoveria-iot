@@ -21,6 +21,12 @@ func NewRouter(cfg *config.Config) *http.ServeMux {
 		Proxy routes microservice:
 	*/
 
+	// Block internal-only company mutation endpoints
+	mux.HandleFunc("POST "+AUTHENTICATION_ROUTE+"/companies", handlers.NotFound)
+	mux.HandleFunc("POST "+AUTHENTICATION_ROUTE+"/companies/", handlers.NotFound)
+	mux.HandleFunc("DELETE "+AUTHENTICATION_ROUTE+"/companies", handlers.NotFound)
+	mux.HandleFunc("DELETE "+AUTHENTICATION_ROUTE+"/companies/", handlers.NotFound)
+
 	// auth service
 	handlers.RegisterProxyService(mux, AUTHENTICATION_ROUTE, "auth-service", cfg.AuthSvcURL, []string{
 		"/companies",
@@ -28,7 +34,9 @@ func NewRouter(cfg *config.Config) *http.ServeMux {
 		"/factory-areas",
 		"/login",
 		"/refresh",
+		"/logout",
 		"/me",
+		"/users",
 	})
 
 	// Device service
@@ -37,6 +45,7 @@ func NewRouter(cfg *config.Config) *http.ServeMux {
 		"/sensors",
 		"/sensor-profiles",
 		"/sensor-groups",
+		"/sensor-profile-config",
 		"/measurement-types",
 		"/payload-schema",
 	})
@@ -45,6 +54,7 @@ func NewRouter(cfg *config.Config) *http.ServeMux {
 	handlers.RegisterProxyService(mux, COLLECTION_ROUTE, "collection-service", cfg.CollSvcURL, []string{
 		"/latest",
 		"/measurements",
+		"/payload-tags",
 	})
 
 	// Onboarding service

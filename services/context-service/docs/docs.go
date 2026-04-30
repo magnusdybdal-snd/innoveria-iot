@@ -197,6 +197,31 @@ const docTemplate = `{
                 }
             }
         },
+        "/production-resources": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "production-resources"
+                ],
+                "summary": "Get Production Resources",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.ProductionResourceResponse"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/rules": {
             "get": {
                 "produces": [

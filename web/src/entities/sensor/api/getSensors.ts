@@ -11,6 +11,7 @@ type RawSensor = {
   production_resource: string | null;
   last_seen_at: string;
   device_profile_id: string;
+  global_device_profile_id: string;
 };
 
 type RawSensorListApiResponse = {
@@ -38,6 +39,6 @@ export const getSensors = async (): Promise<SensorApiResponse[]> => {
     status: s.status,
     machine: s.production_resource ?? "",
     lastReading: s.last_seen_at,
-    sensorProfileId: s.device_profile_id,
+    sensorProfileId: s.global_device_profile_id,
   }));
 };

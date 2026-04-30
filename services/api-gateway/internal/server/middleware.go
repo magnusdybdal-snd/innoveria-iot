@@ -127,5 +127,9 @@ func isPublicPath(r *http.Request) bool {
 		return true
 	}
 
+	if r.Method == http.MethodPost && p == AUTHENTICATION_ROUTE+"/logout" {
+		return true
+	}
+
 	return false
 }

@@ -44,6 +44,7 @@ func (s *SensorServiceImpl) Create(ctx context.Context, payload domain.Sensor) e
 	if err != nil {
 		return fmt.Errorf("create sensor: ensure tenant profile: %w", err)
 	}
+	payload.GlobalChirpstackProfileID = payload.ChirpstackProfileID
 	payload.ChirpstackProfileID = tenantProfileID
 
 	// Post request to Chirpstack
@@ -80,9 +81,9 @@ func (s *SensorServiceImpl) Create(ctx context.Context, payload domain.Sensor) e
 
 // Update updates a sensor's metadata in Chirpstack first, then in the database.
 // If the database update fails, the Chirpstack update is reverted as a compensating transaction.
-func (s *SensorServiceImpl) Update(ctx context.Context, sensorID string, payload domain.Sensor) error {
-	// Verify that the sensor exists in the database.
-	sensor, err := s.sensorRepo.FindByID(ctx, sensorID)
+func (s *SensorServiceImpl) Update(ctx context.Context, companyID string, sensorID string, payload domain.Sensor) error {
+	// Verify that the sensor exists in the database and belongs to the caller's company.
+	sensor, err := s.sensorRepo.FindByID(ctx, companyID, sensorID)
 	if err != nil {
 		return fmt.Errorf("update sensor: sensor %s not found in database: %w", sensorID, err)
 	}
@@ -96,6 +97,7 @@ func (s *SensorServiceImpl) Update(ctx context.Context, sensorID string, payload
 	// Ensure a tenant-level copy of the selected profile exists, get its ID.
 	// Only needed when the caller is changing the profile.
 	if payload.ChirpstackProfileID != "" {
+		payload.GlobalChirpstackProfileID = payload.ChirpstackProfileID
 		tenantProfileID, err := s.sensorProfileService.EnsureTenantProfile(ctx, payload.ChirpstackProfileID, companycfg.ChirpstackTenantID)
 		if err != nil {
 			return fmt.Errorf("update sensor: ensure tenant profile: %w", err)
@@ -115,6 +117,7 @@ func (s *SensorServiceImpl) Update(ctx context.Context, sensorID string, payload
 	}
 	if payload.ChirpstackProfileID != "" {
 		sensor.ChirpstackProfileID = payload.ChirpstackProfileID
+		sensor.GlobalChirpstackProfileID = payload.GlobalChirpstackProfileID
 	}
 	if payload.FactoryID != "" {
 		sensor.FactoryID = payload.FactoryID
@@ -163,7 +166,7 @@ func (s *SensorServiceImpl) Update(ctx context.Context, sensorID string, payload
 		}
 
 		// If successfully updated in Chirpstack, try to update in database.
-		if err := s.sensorRepo.Update(ctx, sensorID, sensor); err != nil {
+		if err := s.sensorRepo.Update(ctx, companyID, sensorID, sensor); err != nil {
 			// Compensate: revert Chirpstack to old values.
 			oldReq := mappers.MapChirpstackSensorRequest(oldSensor, companycfg.ChirpstackApplicationID)
 			if compErr := s.cc.UpdateSensor(ctx, oldReq); compErr != nil {
@@ -174,7 +177,7 @@ func (s *SensorServiceImpl) Update(ctx context.Context, sensorID string, payload
 		}
 	} else {
 		// No Chirpstack fields changed — update DB only.
-		if err := s.sensorRepo.Update(ctx, sensorID, sensor); err != nil {
+		if err := s.sensorRepo.Update(ctx, companyID, sensorID, sensor); err != nil {
 			return fmt.Errorf("update sensor: update in database: %w", err)
 		}
 	}
@@ -185,10 +188,10 @@ func (s *SensorServiceImpl) Update(ctx context.Context, sensorID string, payload
 
 // GetAll retrieves all sensors belonging to a companyID from the database and merges the
 // response with the status from Chirpstack (status and last seen).
-func (s *SensorServiceImpl) GetAll(ctx context.Context) ([]domain.Sensor, error) {
+func (s *SensorServiceImpl) GetAll(ctx context.Context, companyID string) ([]domain.Sensor, error) {
 
 	// fetch all sensor belonging to the company in db
-	sensors, err := s.sensorRepo.FindAllByCompanyID(ctx, "a0000000-0000-0000-0000-000000000001") // TODO: replace with AUTH
+	sensors, err := s.sensorRepo.FindAllByCompanyID(ctx, companyID)
 	if err != nil {
 		return nil, fmt.Errorf("get all sensors: getting sensors from db: %w", err)
 	}
@@ -213,9 +216,9 @@ func (s *SensorServiceImpl) GetAll(ctx context.Context) ([]domain.Sensor, error)
 
 // GetByProductionResourceID  retrieves all sensors attatched to one production resource ID from the database and merges the
 // response with the status from Chirpstack (status and last seen).
-func (s *SensorServiceImpl) GetByProductionResourceID(ctx context.Context, productionResourceID int64) ([]domain.Sensor, error) {
+func (s *SensorServiceImpl) GetByProductionResourceID(ctx context.Context, companyID string, productionResourceID int64) ([]domain.Sensor, error) {
 
-	sensors, err := s.sensorRepo.FindByProductionResourceID(ctx, productionResourceID)
+	sensors, err := s.sensorRepo.FindByProductionResourceID(ctx, companyID, productionResourceID)
 	if err != nil {
 		return nil, fmt.Errorf("get sensors by production resource: %w", err)
 	}
@@ -237,6 +240,17 @@ func (s *SensorServiceImpl) GetByProductionResourceID(ctx context.Context, produ
 	return result, nil
 }
 
+// GetByID retrieves a single sensor by its ID, scoped to the caller's company.
+// Not yet wired to a handler or route.
+func (s *SensorServiceImpl) GetByID(ctx context.Context, companyID string, sensorID string) (domain.Sensor, error) {
+	sensor, err := s.sensorRepo.FindByID(ctx, companyID, sensorID)
+	if err != nil {
+		return domain.Sensor{}, fmt.Errorf("get sensor by id: %w", err)
+	}
+
+	return sensor, nil
+}
+
 // GetSampleEUI returns a single device EUI from any sensor registered on the given Chirpstack profile.
 func (s *SensorServiceImpl) GetSampleEUI(ctx context.Context, chirpstackProfileID string) (string, error) {
 	sensor, err := s.sensorRepo.FindOneByChirpstackProfileID(ctx, chirpstackProfileID)
@@ -249,9 +263,9 @@ func (s *SensorServiceImpl) GetSampleEUI(ctx context.Context, chirpstackProfileI
 // Delete removes a sensor from Chirpstack and then from the database.
 // If the database delete fails, the sensor is re-created in Chirpstack as a compensating
 // transaction to keep both systems in sync.
-func (s *SensorServiceImpl) Delete(ctx context.Context, deviceID string) error {
-	// Retrieve the sensors deviceEUI from the database.
-	sensor, err := s.sensorRepo.FindByID(ctx, deviceID)
+func (s *SensorServiceImpl) Delete(ctx context.Context, companyID string, deviceID string) error {
+	// Retrieve the sensor from the database, scoped to the caller's company.
+	sensor, err := s.sensorRepo.FindByID(ctx, companyID, deviceID)
 	if err != nil {
 		return fmt.Errorf("delete sensor: sensor %s not found in database: %w", deviceID, err)
 	}
@@ -268,7 +282,7 @@ func (s *SensorServiceImpl) Delete(ctx context.Context, deviceID string) error {
 	}
 
 	// If successfully deleted in Chirpstack, try to delete from database.
-	if err := s.sensorRepo.Delete(ctx, deviceID); err != nil {
+	if err := s.sensorRepo.Delete(ctx, companyID, deviceID); err != nil {
 		// Compensate: re-create in Chirpstack so systems stay in sync.
 		sensorReq := mappers.MapChirpstackSensorRequest(sensor, companycfg.ChirpstackApplicationID)
 		if compErr := s.cc.CreateSensor(ctx, sensorReq); compErr != nil {

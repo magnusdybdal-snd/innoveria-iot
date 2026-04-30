@@ -48,6 +48,11 @@ func (m *mockContextService) GetContextData(
 	return nil, nil
 }
 
+func (m *mockContextService) GetProductionResources(_ context.Context, _ string) ([]domain.ERPProductionResource, error) {
+	m.t.Fatal("unexpected call to GetProductionResources")
+	return nil, nil
+}
+
 // TestGetOrders_Success_Returns200 verifies that a successful service call returns 200 with the order list.
 func TestGetOrders_Success_Returns200(t *testing.T) {
 	svc := &mockContextService{

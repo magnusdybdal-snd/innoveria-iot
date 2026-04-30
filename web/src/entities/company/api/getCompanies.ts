@@ -26,13 +26,11 @@ export const getCompanies = async (): Promise<CompanyApiResponse[]> => {
     "GET",
   );
 
-  return (data.companies ?? []).map((s) => {
-    return {
-      companyId: s.id,
-      name: s.name,
-      address: s.address,
-      createdAt: s.created_at,
-      updatedAt: s.updated_at,
-    };
-  });
+  return (data.companies ?? []).map((s) => ({
+    companyId: s.id,
+    name: s.name,
+    address: s.address,
+    createdAt: s.created_at,
+    updatedAt: s.updated_at,
+  }));
 };
