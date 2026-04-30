@@ -27,7 +27,7 @@ type InfoAllProps = {
   name: string;
   status: number;
   sensorEui: string;
-  machine: string;
+  productionResource: string;
   lastReading: string;
   sensorProfile: string;
 };
@@ -38,7 +38,7 @@ type InfoAllProps = {
  * @param props.name - Human-readable sensor name
  * @param props.status - Numeric status code: 0 = online, 1 = warning, 2 = offline
  * @param props.sensorEui - LoRaWAN DevEUI identifier
- * @param props.machine - Name of the machine the sensor is attached to
+ * @param props.productionResource - Name of the machine the sensor is attached to
  * @param props.lastReading - ISO timestamp of the most recent reading
  * @param props.sensorProfile - Sensor profile ID
  * @returns A fragment of MUI Typography elements and a status indicator icon
@@ -47,7 +47,7 @@ function SensorAllInfo({
   name,
   status,
   sensorEui: euid,
-  machine,
+  productionResource,
   lastReading,
   sensorProfile,
 }: InfoAllProps) {
@@ -78,7 +78,7 @@ function SensorAllInfo({
       />
       <Typography>{name}</Typography>
       <Typography>{euid}</Typography>
-      <Typography>{machine}</Typography>
+      <Typography>{productionResource}</Typography>
       <Typography>{formatTimestamp(lastReading)}</Typography>
       <Typography>{sensorProfile}</Typography>
     </>
@@ -144,8 +144,8 @@ export function SensorAllInfoPopUp(props: AddDeviceProps) {
               status={sensor.status}
               lastReading={sensor.lastReading}
               sensorEui={sensor.deviceEui}
-              machine={sensor.productionResource}
-              sensorProfile={sensor.deviceProfileId}
+              productionResource={sensor.productionResource ?? ""}
+              sensorProfile={sensor.sensorProfile}
             />
           </DeviceRow>
         </CategoryHeader>
