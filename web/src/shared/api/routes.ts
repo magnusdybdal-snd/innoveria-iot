@@ -19,10 +19,12 @@ export const API_ROUTES = {
   contextOrders: `/v1/context/orders`,
   contextProductionResources: `/v1/context/production-resources`,
   user: `/v1/auth/me`,
+  users: `/v1/auth/users`,
   login: `/v1/auth/login`,
   refresh: `/v1/auth/refresh`,
   measurementTypes: `/v1/device/measurement-types`,
   measurementTypesAll: `/v1/device/measurement-types/all`,
   payloadSchema: `/v1/device/payload-schema/`,
   payloadTags: `/v1/collection/payload-tags?device_eui=`,
+  logout: `/v1/auth/logout`,
 };

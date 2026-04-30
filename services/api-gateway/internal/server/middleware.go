@@ -79,7 +79,7 @@ func authMiddleware(cfg *config.Config, next http.Handler) http.Handler {
 
 		userID, _ := claims["sub"].(string)
 		companyID, _ := claims["company_id"].(string)
-		// role, _ := claims["role"].(string) // TODO: handle RBAC
+		role, _ := claims["role"].(string)
 		if userID == "" {
 			json.HandleError(w, http.StatusUnauthorized, errors.New("invalid subject"), "unauthorized")
 			return
@@ -88,15 +88,19 @@ func authMiddleware(cfg *config.Config, next http.Handler) http.Handler {
 			json.HandleError(w, http.StatusUnauthorized, errors.New("invalid company"), "unauthorized")
 			return
 		}
+		if role == "" {
+			json.HandleError(w, http.StatusUnauthorized, errors.New("invalid role"), "unauthorized")
+			return
+		}
 
 		// Never trust inbound X-Auth-* from clients
 		r.Header.Del("X-Auth-User-Id")
 		r.Header.Del("X-Auth-Company-Id")
-		// r.Header.Del("X-Auth-Role")
+		r.Header.Del("X-Auth-Role")
 		// Inject trusted identity for upstream services
 		r.Header.Set("X-Auth-User-Id", userID)
 		r.Header.Set("X-Auth-Company-Id", companyID)
-		// r.Header.Set("X-Auth-Role", role)
+		r.Header.Set("X-Auth-Role", role)
 
 		next.ServeHTTP(w, r)
 	})
@@ -119,6 +123,10 @@ func isPublicPath(r *http.Request) bool {
 	}
 
 	if r.Method == http.MethodPost && p == AUTHENTICATION_ROUTE+"/refresh" {
+		return true
+	}
+
+	if r.Method == http.MethodPost && p == AUTHENTICATION_ROUTE+"/logout" {
 		return true
 	}
 

@@ -17,7 +17,7 @@ func setRefreshCookie(w http.ResponseWriter, token string, ttl time.Duration) {
 	http.SetCookie(w, &http.Cookie{
 		Name:     "refresh_token",
 		Value:    token,
-		Path:     "/api/v1/auth/refresh",
+		Path:     "/api/v1/auth",
 		HttpOnly: true,
 		Secure:   true,
 		SameSite: http.SameSiteLaxMode,
@@ -138,6 +138,38 @@ func PostRefresh(svc domain.AuthService, refreshTTL time.Duration) http.HandlerF
 		if err := json.Encode(w, http.StatusOK, resp); err != nil {
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
 		}
+	}
+}
+
+// PostLogout revokes the refresh token cookie and clears it from the browser.
+//
+// @Summary Logout
+// @Description Revokes the refresh_token cookie server-side and clears it.
+// @Tags auth
+// @Success 204
+// @Failure 500
+// @Router /logout [post]
+func PostLogout(svc domain.AuthService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		c, err := r.Cookie("refresh_token")
+		if err == nil && c.Value != "" {
+			if err := svc.Logout(r.Context(), c.Value); err != nil {
+				json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+				return
+			}
+		}
+
+		http.SetCookie(w, &http.Cookie{
+			Name:     "refresh_token",
+			Value:    "",
+			Path:     "/api/v1/auth",
+			HttpOnly: true,
+			Secure:   true,
+			SameSite: http.SameSiteLaxMode,
+			MaxAge:   -1,
+		})
+
+		w.WriteHeader(http.StatusNoContent)
 	}
 }
 

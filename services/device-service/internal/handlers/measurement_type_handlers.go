@@ -8,20 +8,33 @@ import (
 
 	"innoveria-iot/device-service/internal/domain"
 	"innoveria-iot/device-service/internal/handlers/dto"
+	"innoveria-iot/pkg/authctx"
 	"innoveria-iot/pkg/json"
 )
 
-// GetMeasurementTypes returns all active (non-deprecated) measurement types.
+// GetMeasurementTypes returns all active (non-deprecated) measurement types. Admin only.
 //
 // @Summary		List active measurement types
 // @Tags		measurement-types
 // @Produce		json
 // @Success		200	{object}	dto.MeasurementTypeListResponse
+// @Failure		401
+// @Failure		403
 // @Failure		500
 // @Router		/measurement-types [get]
 func GetMeasurementTypes(svc domain.MeasurementTypeService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
+
+		auth, err := authctx.FromRequest(r)
+		if err != nil {
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
+			return
+		}
+		if !auth.IsAdmin() {
+			json.HandleError(w, http.StatusForbidden, fmt.Errorf("forbidden"), "forbidden")
+			return
+		}
 
 		data, err := svc.ListActive(ctx)
 		if err != nil {
@@ -38,18 +51,29 @@ func GetMeasurementTypes(svc domain.MeasurementTypeService) http.HandlerFunc {
 	}
 }
 
-// GetAllMeasurementTypes returns all measurement types including deprecated.
-// Admin only — enforcement is handled at the API gateway level.
+// GetAllMeasurementTypes returns all measurement types including deprecated. Admin only.
 //
 // @Summary		List all measurement types including deprecated
 // @Tags		measurement-types
 // @Produce		json
 // @Success		200	{object}	dto.MeasurementTypeListResponse
+// @Failure		401
+// @Failure		403
 // @Failure		500
 // @Router		/measurement-types/all [get]
 func GetAllMeasurementTypes(svc domain.MeasurementTypeService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
+
+		auth, err := authctx.FromRequest(r)
+		if err != nil {
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
+			return
+		}
+		if !auth.IsAdmin() {
+			json.HandleError(w, http.StatusForbidden, fmt.Errorf("forbidden"), "forbidden")
+			return
+		}
 
 		data, err := svc.ListAll(ctx)
 		if err != nil {
@@ -66,7 +90,7 @@ func GetAllMeasurementTypes(svc domain.MeasurementTypeService) http.HandlerFunc 
 	}
 }
 
-// PostMeasurementType creates a new measurement type.
+// PostMeasurementType creates a new measurement type. Admin only.
 //
 // @Summary		Create a measurement type
 // @Tags		measurement-types
@@ -74,12 +98,24 @@ func GetAllMeasurementTypes(svc domain.MeasurementTypeService) http.HandlerFunc 
 // @Param		body	body	dto.CreateMeasurementTypeRequest	true	"Measurement type payload"
 // @Success		201
 // @Failure		400
+// @Failure		401
+// @Failure		403
 // @Failure		409
 // @Failure		500
 // @Router		/measurement-types [post]
 func PostMeasurementType(svc domain.MeasurementTypeService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
+
+		auth, err := authctx.FromRequest(r)
+		if err != nil {
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
+			return
+		}
+		if !auth.IsAdmin() {
+			json.HandleError(w, http.StatusForbidden, fmt.Errorf("forbidden"), "forbidden")
+			return
+		}
 
 		payload, err := json.Decode[dto.CreateMeasurementTypeRequest](r)
 		if err != nil {
@@ -110,18 +146,30 @@ func PostMeasurementType(svc domain.MeasurementTypeService) http.HandlerFunc {
 	}
 }
 
-// PatchDeprecateMeasurementType marks a measurement type as deprecated.
+// PatchDeprecateMeasurementType marks a measurement type as deprecated. Admin only.
 //
 // @Summary		Deprecate a measurement type
 // @Tags		measurement-types
 // @Param		slug	path	string	true	"Measurement type slug"
 // @Success		204
+// @Failure		401
+// @Failure		403
 // @Failure		404
 // @Failure		500
 // @Router		/measurement-types/{slug}/deprecate [patch]
 func PatchDeprecateMeasurementType(svc domain.MeasurementTypeService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
+
+		auth, err := authctx.FromRequest(r)
+		if err != nil {
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
+			return
+		}
+		if !auth.IsAdmin() {
+			json.HandleError(w, http.StatusForbidden, fmt.Errorf("forbidden"), "forbidden")
+			return
+		}
 
 		slug := r.PathValue("slug")
 

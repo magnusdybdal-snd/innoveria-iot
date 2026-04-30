@@ -17,26 +17,34 @@ import (
 // catching unexpected calls to the service.
 type mockSensorService struct {
 	t                           *testing.T
-	getAllFunc                  func(ctx context.Context) ([]domain.Sensor, error)
-	getByProductionResourceFunc func(ctx context.Context, productionResourceID int64) ([]domain.Sensor, error)
+	getAllFunc                  func(ctx context.Context, companyID string) ([]domain.Sensor, error)
+	getByIDFunc                 func(ctx context.Context, companyID string, sensorID string) (domain.Sensor, error)
+	getByProductionResourceFunc func(ctx context.Context, companyID string, productionResourceID int64) ([]domain.Sensor, error)
 	createFunc                  func(ctx context.Context, payload domain.Sensor) error
-	updateFunc                  func(ctx context.Context, deviceID string, payload domain.Sensor) error
-	deleteFunc                  func(ctx context.Context, deviceID string) error
+	updateFunc                  func(ctx context.Context, companyID string, deviceID string, payload domain.Sensor) error
+	deleteFunc                  func(ctx context.Context, companyID string, deviceID string) error
 	getSampleEUIFunc            func(ctx context.Context, chirpstackProfileID string) (string, error)
 }
 
-func (m *mockSensorService) GetAll(ctx context.Context) ([]domain.Sensor, error) {
+func (m *mockSensorService) GetAll(ctx context.Context, companyID string) ([]domain.Sensor, error) {
 	if m.getAllFunc == nil {
 		m.t.Fatal("unexpected call to GetAll")
 	}
-	return m.getAllFunc(ctx)
+	return m.getAllFunc(ctx, companyID)
 }
 
-func (m *mockSensorService) GetByProductionResourceID(ctx context.Context, productionResourceID int64) ([]domain.Sensor, error) {
+func (m *mockSensorService) GetByID(ctx context.Context, companyID string, sensorID string) (domain.Sensor, error) {
+	if m.getByIDFunc == nil {
+		m.t.Fatal("unexpected call to GetByID")
+	}
+	return m.getByIDFunc(ctx, companyID, sensorID)
+}
+
+func (m *mockSensorService) GetByProductionResourceID(ctx context.Context, companyID string, productionResourceID int64) ([]domain.Sensor, error) {
 	if m.getByProductionResourceFunc == nil {
 		m.t.Fatal("unexpected call to GetByProductionResourceID")
 	}
-	return m.getByProductionResourceFunc(ctx, productionResourceID)
+	return m.getByProductionResourceFunc(ctx, companyID, productionResourceID)
 }
 
 func (m *mockSensorService) Create(ctx context.Context, payload domain.Sensor) error {
@@ -46,18 +54,18 @@ func (m *mockSensorService) Create(ctx context.Context, payload domain.Sensor) e
 	return m.createFunc(ctx, payload)
 }
 
-func (m *mockSensorService) Update(ctx context.Context, deviceID string, payload domain.Sensor) error {
+func (m *mockSensorService) Update(ctx context.Context, companyID string, deviceID string, payload domain.Sensor) error {
 	if m.updateFunc == nil {
 		m.t.Fatal("unexpected call to Update")
 	}
-	return m.updateFunc(ctx, deviceID, payload)
+	return m.updateFunc(ctx, companyID, deviceID, payload)
 }
 
-func (m *mockSensorService) Delete(ctx context.Context, deviceID string) error {
+func (m *mockSensorService) Delete(ctx context.Context, companyID string, deviceID string) error {
 	if m.deleteFunc == nil {
 		m.t.Fatal("unexpected call to Delete")
 	}
-	return m.deleteFunc(ctx, deviceID)
+	return m.deleteFunc(ctx, companyID, deviceID)
 }
 
 func (m *mockSensorService) GetSampleEUI(ctx context.Context, chirpstackProfileID string) (string, error) {
@@ -65,6 +73,15 @@ func (m *mockSensorService) GetSampleEUI(ctx context.Context, chirpstackProfileI
 		m.t.Fatal("unexpected call to GetSampleEUI")
 	}
 	return m.getSampleEUIFunc(ctx, chirpstackProfileID)
+}
+
+// withAuth sets the auth headers that authctx.FromRequest requires on every request
+// routed through the API gateway. Tests use a fixed seed company and a regular user role.
+func withAuth(r *http.Request) *http.Request {
+	r.Header.Set("X-Auth-User-Id", "b0000000-0000-0000-0000-000000000001")
+	r.Header.Set("X-Auth-Company-Id", "a0000000-0000-0000-0000-000000000001")
+	r.Header.Set("X-Auth-Role", "FACTORY_WORKER")
+	return r
 }
 
 const validSensorBody = `{
@@ -85,12 +102,12 @@ const validSensorID = "c0000000-0000-0000-0000-000000000001"
 func TestGetSensors_NoFilter_Returns200(t *testing.T) {
 	svc := &mockSensorService{
 		t: t,
-		getAllFunc: func(_ context.Context) ([]domain.Sensor, error) {
+		getAllFunc: func(_ context.Context, _ string) ([]domain.Sensor, error) {
 			return []domain.Sensor{}, nil
 		},
 	}
 
-	req := httptest.NewRequest(http.MethodGet, "/api/v1/sensors", nil)
+	req := withAuth(httptest.NewRequest(http.MethodGet, "/api/v1/sensors", nil))
 	rec := httptest.NewRecorder()
 
 	handlers.GetSensors(svc).ServeHTTP(rec, req)
@@ -105,7 +122,7 @@ func TestGetSensors_NoFilter_Returns200(t *testing.T) {
 func TestGetSensors_ValidProductionResourceID_Returns200(t *testing.T) {
 	svc := &mockSensorService{
 		t: t,
-		getByProductionResourceFunc: func(_ context.Context, id int64) ([]domain.Sensor, error) {
+		getByProductionResourceFunc: func(_ context.Context, _ string, id int64) ([]domain.Sensor, error) {
 			if id != 1 {
 				t.Errorf("expected production resource ID 1, got %d", id)
 			}
@@ -113,7 +130,7 @@ func TestGetSensors_ValidProductionResourceID_Returns200(t *testing.T) {
 		},
 	}
 
-	req := httptest.NewRequest(http.MethodGet, "/api/v1/sensors?production_resource_id=1", nil)
+	req := withAuth(httptest.NewRequest(http.MethodGet, "/api/v1/sensors?production_resource_id=1", nil))
 	rec := httptest.NewRecorder()
 
 	handlers.GetSensors(svc).ServeHTTP(rec, req)
@@ -128,7 +145,7 @@ func TestGetSensors_ValidProductionResourceID_Returns200(t *testing.T) {
 func TestGetSensors_NonNumericProductionResourceID_Returns400(t *testing.T) {
 	svc := &mockSensorService{t: t}
 
-	req := httptest.NewRequest(http.MethodGet, "/api/v1/sensors?production_resource_id=not-a-number", nil)
+	req := withAuth(httptest.NewRequest(http.MethodGet, "/api/v1/sensors?production_resource_id=not-a-number", nil))
 	rec := httptest.NewRecorder()
 
 	handlers.GetSensors(svc).ServeHTTP(rec, req)
@@ -143,7 +160,7 @@ func TestGetSensors_NonNumericProductionResourceID_Returns400(t *testing.T) {
 func TestGetSensors_UUIDProductionResourceID_Returns400(t *testing.T) {
 	svc := &mockSensorService{t: t}
 
-	req := httptest.NewRequest(http.MethodGet, "/api/v1/sensors?production_resource_id=a0000000-0000-0000-0000-000000000001", nil)
+	req := withAuth(httptest.NewRequest(http.MethodGet, "/api/v1/sensors?production_resource_id=a0000000-0000-0000-0000-000000000001", nil))
 	rec := httptest.NewRecorder()
 
 	handlers.GetSensors(svc).ServeHTTP(rec, req)
@@ -160,7 +177,7 @@ func TestGetSensors_NonPositiveProductionResourceID_Returns400(t *testing.T) {
 
 	for _, id := range []string{"0", "-1", "-100"} {
 		t.Run("id="+id, func(t *testing.T) {
-			req := httptest.NewRequest(http.MethodGet, "/api/v1/sensors?production_resource_id="+id, nil)
+			req := withAuth(httptest.NewRequest(http.MethodGet, "/api/v1/sensors?production_resource_id="+id, nil))
 			rec := httptest.NewRecorder()
 
 			handlers.GetSensors(svc).ServeHTTP(rec, req)
@@ -176,12 +193,12 @@ func TestGetSensors_NonPositiveProductionResourceID_Returns400(t *testing.T) {
 func TestGetSensors_ServiceError_Returns500(t *testing.T) {
 	svc := &mockSensorService{
 		t: t,
-		getAllFunc: func(_ context.Context) ([]domain.Sensor, error) {
+		getAllFunc: func(_ context.Context, _ string) ([]domain.Sensor, error) {
 			return nil, errors.New("db error")
 		},
 	}
 
-	req := httptest.NewRequest(http.MethodGet, "/api/v1/sensors", nil)
+	req := withAuth(httptest.NewRequest(http.MethodGet, "/api/v1/sensors", nil))
 	rec := httptest.NewRecorder()
 
 	handlers.GetSensors(svc).ServeHTTP(rec, req)
@@ -202,7 +219,7 @@ func TestPostSensor_ValidBody_Returns201(t *testing.T) {
 		},
 	}
 
-	req := httptest.NewRequest(http.MethodPost, "/api/v1/sensors", strings.NewReader(validSensorBody))
+	req := withAuth(httptest.NewRequest(http.MethodPost, "/api/v1/sensors", strings.NewReader(validSensorBody)))
 	req.Header.Set("Content-Type", "application/json")
 	rec := httptest.NewRecorder()
 
@@ -217,7 +234,7 @@ func TestPostSensor_ValidBody_Returns201(t *testing.T) {
 func TestPostSensor_MalformedJSON_Returns400(t *testing.T) {
 	svc := &mockSensorService{t: t}
 
-	req := httptest.NewRequest(http.MethodPost, "/api/v1/sensors", strings.NewReader(`{not valid json`))
+	req := withAuth(httptest.NewRequest(http.MethodPost, "/api/v1/sensors", strings.NewReader(`{not valid json`)))
 	req.Header.Set("Content-Type", "application/json")
 	rec := httptest.NewRecorder()
 
@@ -236,8 +253,7 @@ func TestPostSensor_MissingRequiredFields_Returns400(t *testing.T) {
 		name string
 		body string
 	}{
-		{"missing company_id", `{"name":"S","device_eui":"b000000000000001","app_key":"00000000000000000000000000000001","device_profile_id":"f0000000-0000-0000-0000-000000000001","factory_id":"f1000000-0000-0000-0000-000000000001","factory_area_id":"a1000000-0000-0000-0000-000000000001"}`},
-		{"missing name", `{"company_id":"a0000000-0000-0000-0000-000000000001","device_eui":"b000000000000001","app_key":"00000000000000000000000000000001","device_profile_id":"f0000000-0000-0000-0000-000000000001","factory_id":"f1000000-0000-0000-0000-000000000001","factory_area_id":"a1000000-0000-0000-0000-000000000001"}`},
+		{"missing name", `{"device_eui":"b000000000000001","app_key":"00000000000000000000000000000001","device_profile_id":"f0000000-0000-0000-0000-000000000001","factory_id":"f1000000-0000-0000-0000-000000000001","factory_area_id":"a1000000-0000-0000-0000-000000000001"}`},
 		{"missing device_eui", `{"company_id":"a0000000-0000-0000-0000-000000000001","name":"S","app_key":"00000000000000000000000000000001","device_profile_id":"f0000000-0000-0000-0000-000000000001","factory_id":"f1000000-0000-0000-0000-000000000001","factory_area_id":"a1000000-0000-0000-0000-000000000001"}`},
 		{"missing app_key", `{"company_id":"a0000000-0000-0000-0000-000000000001","name":"S","device_eui":"b000000000000001","device_profile_id":"f0000000-0000-0000-0000-000000000001","factory_id":"f1000000-0000-0000-0000-000000000001","factory_area_id":"a1000000-0000-0000-0000-000000000001"}`},
 		{"missing device_profile_id", `{"company_id":"a0000000-0000-0000-0000-000000000001","name":"S","device_eui":"b000000000000001","app_key":"00000000000000000000000000000001","factory_id":"f1000000-0000-0000-0000-000000000001","factory_area_id":"a1000000-0000-0000-0000-000000000001"}`},
@@ -247,7 +263,7 @@ func TestPostSensor_MissingRequiredFields_Returns400(t *testing.T) {
 
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			req := httptest.NewRequest(http.MethodPost, "/api/v1/sensors", strings.NewReader(tc.body))
+			req := withAuth(httptest.NewRequest(http.MethodPost, "/api/v1/sensors", strings.NewReader(tc.body)))
 			req.Header.Set("Content-Type", "application/json")
 			rec := httptest.NewRecorder()
 
@@ -269,7 +285,7 @@ func TestPostSensor_ServiceError_Returns500(t *testing.T) {
 		},
 	}
 
-	req := httptest.NewRequest(http.MethodPost, "/api/v1/sensors", strings.NewReader(validSensorBody))
+	req := withAuth(httptest.NewRequest(http.MethodPost, "/api/v1/sensors", strings.NewReader(validSensorBody)))
 	req.Header.Set("Content-Type", "application/json")
 	rec := httptest.NewRecorder()
 
@@ -286,13 +302,13 @@ func TestPostSensor_ServiceError_Returns500(t *testing.T) {
 func TestPatchSensor_ValidBody_Returns204(t *testing.T) {
 	svc := &mockSensorService{
 		t: t,
-		updateFunc: func(_ context.Context, _ string, _ domain.Sensor) error {
+		updateFunc: func(_ context.Context, _, _ string, _ domain.Sensor) error {
 			return nil
 		},
 	}
 
 	body := `{"name":"Updated Name"}`
-	req := httptest.NewRequest(http.MethodPatch, "/api/v1/sensors/"+validSensorID, strings.NewReader(body))
+	req := withAuth(httptest.NewRequest(http.MethodPatch, "/api/v1/sensors/"+validSensorID, strings.NewReader(body)))
 	req.Header.Set("Content-Type", "application/json")
 	req.SetPathValue("id", validSensorID)
 	rec := httptest.NewRecorder()
@@ -308,7 +324,7 @@ func TestPatchSensor_ValidBody_Returns204(t *testing.T) {
 func TestPatchSensor_MissingID_Returns400(t *testing.T) {
 	svc := &mockSensorService{t: t}
 
-	req := httptest.NewRequest(http.MethodPatch, "/api/v1/sensors/", strings.NewReader(`{"name":"x"}`))
+	req := withAuth(httptest.NewRequest(http.MethodPatch, "/api/v1/sensors/", strings.NewReader(`{"name":"x"}`)))
 	req.Header.Set("Content-Type", "application/json")
 	rec := httptest.NewRecorder()
 
@@ -323,7 +339,7 @@ func TestPatchSensor_MissingID_Returns400(t *testing.T) {
 func TestPatchSensor_InvalidUUID_Returns400(t *testing.T) {
 	svc := &mockSensorService{t: t}
 
-	req := httptest.NewRequest(http.MethodPatch, "/api/v1/sensors/not-a-uuid", strings.NewReader(`{"name":"x"}`))
+	req := withAuth(httptest.NewRequest(http.MethodPatch, "/api/v1/sensors/not-a-uuid", strings.NewReader(`{"name":"x"}`)))
 	req.Header.Set("Content-Type", "application/json")
 	req.SetPathValue("id", "not-a-uuid")
 	rec := httptest.NewRecorder()
@@ -339,7 +355,7 @@ func TestPatchSensor_InvalidUUID_Returns400(t *testing.T) {
 func TestPatchSensor_NoFields_Returns400(t *testing.T) {
 	svc := &mockSensorService{t: t}
 
-	req := httptest.NewRequest(http.MethodPatch, "/api/v1/sensors/"+validSensorID, strings.NewReader(`{}`))
+	req := withAuth(httptest.NewRequest(http.MethodPatch, "/api/v1/sensors/"+validSensorID, strings.NewReader(`{}`)))
 	req.Header.Set("Content-Type", "application/json")
 	req.SetPathValue("id", validSensorID)
 	rec := httptest.NewRecorder()
@@ -358,14 +374,14 @@ func TestPatchSensor_SetsProductionResource_PassesValueToService(t *testing.T) {
 	var gotProductionResource *int64
 	svc := &mockSensorService{
 		t: t,
-		updateFunc: func(_ context.Context, _ string, payload domain.Sensor) error {
+		updateFunc: func(_ context.Context, _, _ string, payload domain.Sensor) error {
 			gotProductionResource = payload.ProductionResource
 			return nil
 		},
 	}
 
 	body := `{"production_resource": 42}`
-	req := httptest.NewRequest(http.MethodPatch, "/api/v1/sensors/"+validSensorID, strings.NewReader(body))
+	req := withAuth(httptest.NewRequest(http.MethodPatch, "/api/v1/sensors/"+validSensorID, strings.NewReader(body)))
 	req.Header.Set("Content-Type", "application/json")
 	req.SetPathValue("id", validSensorID)
 	rec := httptest.NewRecorder()
@@ -386,14 +402,14 @@ func TestPatchSensor_ClearsProductionResource_PassesZeroToService(t *testing.T) 
 	var gotProductionResource *int64
 	svc := &mockSensorService{
 		t: t,
-		updateFunc: func(_ context.Context, _ string, payload domain.Sensor) error {
+		updateFunc: func(_ context.Context, _, _ string, payload domain.Sensor) error {
 			gotProductionResource = payload.ProductionResource
 			return nil
 		},
 	}
 
 	body := `{"production_resource": 0}`
-	req := httptest.NewRequest(http.MethodPatch, "/api/v1/sensors/"+validSensorID, strings.NewReader(body))
+	req := withAuth(httptest.NewRequest(http.MethodPatch, "/api/v1/sensors/"+validSensorID, strings.NewReader(body)))
 	req.Header.Set("Content-Type", "application/json")
 	req.SetPathValue("id", validSensorID)
 	rec := httptest.NewRecorder()
@@ -414,7 +430,7 @@ func TestPatchSensor_NegativeProductionResource_Returns400(t *testing.T) {
 	svc := &mockSensorService{t: t}
 
 	body := `{"production_resource": -1}`
-	req := httptest.NewRequest(http.MethodPatch, "/api/v1/sensors/"+validSensorID, strings.NewReader(body))
+	req := withAuth(httptest.NewRequest(http.MethodPatch, "/api/v1/sensors/"+validSensorID, strings.NewReader(body)))
 	req.Header.Set("Content-Type", "application/json")
 	req.SetPathValue("id", validSensorID)
 	rec := httptest.NewRecorder()
@@ -430,13 +446,13 @@ func TestPatchSensor_NegativeProductionResource_Returns400(t *testing.T) {
 func TestPatchSensor_ServiceError_Returns500(t *testing.T) {
 	svc := &mockSensorService{
 		t: t,
-		updateFunc: func(_ context.Context, _ string, _ domain.Sensor) error {
+		updateFunc: func(_ context.Context, _, _ string, _ domain.Sensor) error {
 			return errors.New("db error")
 		},
 	}
 
 	body := `{"name":"Updated Name"}`
-	req := httptest.NewRequest(http.MethodPatch, "/api/v1/sensors/"+validSensorID, strings.NewReader(body))
+	req := withAuth(httptest.NewRequest(http.MethodPatch, "/api/v1/sensors/"+validSensorID, strings.NewReader(body)))
 	req.Header.Set("Content-Type", "application/json")
 	req.SetPathValue("id", validSensorID)
 	rec := httptest.NewRecorder()
@@ -454,12 +470,12 @@ func TestPatchSensor_ServiceError_Returns500(t *testing.T) {
 func TestDeleteSensor_ValidID_Returns204(t *testing.T) {
 	svc := &mockSensorService{
 		t: t,
-		deleteFunc: func(_ context.Context, _ string) error {
+		deleteFunc: func(_ context.Context, _, _ string) error {
 			return nil
 		},
 	}
 
-	req := httptest.NewRequest(http.MethodDelete, "/api/v1/sensors/"+validSensorID, nil)
+	req := withAuth(httptest.NewRequest(http.MethodDelete, "/api/v1/sensors/"+validSensorID, nil))
 	req.SetPathValue("id", validSensorID)
 	rec := httptest.NewRecorder()
 
@@ -474,7 +490,7 @@ func TestDeleteSensor_ValidID_Returns204(t *testing.T) {
 func TestDeleteSensor_MissingID_Returns400(t *testing.T) {
 	svc := &mockSensorService{t: t}
 
-	req := httptest.NewRequest(http.MethodDelete, "/api/v1/sensors/", nil)
+	req := withAuth(httptest.NewRequest(http.MethodDelete, "/api/v1/sensors/", nil))
 	rec := httptest.NewRecorder()
 
 	handlers.DeleteSensor(svc).ServeHTTP(rec, req)
@@ -488,7 +504,7 @@ func TestDeleteSensor_MissingID_Returns400(t *testing.T) {
 func TestDeleteSensor_InvalidUUID_Returns400(t *testing.T) {
 	svc := &mockSensorService{t: t}
 
-	req := httptest.NewRequest(http.MethodDelete, "/api/v1/sensors/not-a-uuid", nil)
+	req := withAuth(httptest.NewRequest(http.MethodDelete, "/api/v1/sensors/not-a-uuid", nil))
 	req.SetPathValue("id", "not-a-uuid")
 	rec := httptest.NewRecorder()
 
@@ -503,12 +519,12 @@ func TestDeleteSensor_InvalidUUID_Returns400(t *testing.T) {
 func TestDeleteSensor_ServiceError_Returns500(t *testing.T) {
 	svc := &mockSensorService{
 		t: t,
-		deleteFunc: func(_ context.Context, _ string) error {
+		deleteFunc: func(_ context.Context, _, _ string) error {
 			return errors.New("db error")
 		},
 	}
 
-	req := httptest.NewRequest(http.MethodDelete, "/api/v1/sensors/"+validSensorID, nil)
+	req := withAuth(httptest.NewRequest(http.MethodDelete, "/api/v1/sensors/"+validSensorID, nil))
 	req.SetPathValue("id", validSensorID)
 	rec := httptest.NewRecorder()
 

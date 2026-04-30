@@ -1,3 +1,9 @@
+export interface CreateFactoryAreaRequest {
+  factoryId: string;
+  name: string;
+  description?: string;
+}
+
 export interface FactoryAreaListApiResponse {
   totalCount: number;
   factoryAreas: FactoryAreaApiResponse[];

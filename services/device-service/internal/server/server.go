@@ -64,12 +64,28 @@ func Run() error {
 		ReadHeaderTimeout: 5 * time.Second,
 		IdleTimeout:       120 * time.Second,
 	}
+	// Setting up mux and internal http server
+	internalMux := NewInternalRouter(sensorMetricSvc)
+	internalServer := &http.Server{
+		Addr:              cfg.InternalAddr,
+		Handler:           internalMux,
+		ReadHeaderTimeout: 5 * time.Second,
+		IdleTimeout:       120 * time.Second,
+	}
+
 	// main startup function
-	serverErrors := make(chan error, 1)
+	serverErrors := make(chan error, 2)
 	go func() {
-		slog.Info("device-service listning")
-		err := server.ListenAndServe()
-		serverErrors <- err
+		slog.Info("device-service server listening", "addr", cfg.Addr)
+		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			serverErrors <- err
+		}
+	}()
+	go func() {
+		slog.Info("device-service internal server listening", "addr", cfg.InternalAddr)
+		if err := internalServer.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			serverErrors <- err
+		}
 	}()
 
 	shutdown := make(chan os.Signal, 1)
@@ -78,12 +94,6 @@ func Run() error {
 	// Handles server startup errors and graceful shutdown
 	select {
 	case err := <-serverErrors:
-		if err == nil {
-			return nil
-		}
-		if errors.Is(err, http.ErrServerClosed) {
-			return nil
-		}
 		return fmt.Errorf("listen %w", err)
 	case sig := <-shutdown:
 		slog.Info("device-service shutting down", "signal", sig.String())
@@ -93,6 +103,12 @@ func Run() error {
 		if err := server.Shutdown(ctx); err != nil {
 			slog.Error("device-service shutdown error", "err", err)
 			err := server.Close()
+			return fmt.Errorf("shutdown: %w", err)
+		}
+
+		if err := internalServer.Shutdown(ctx); err != nil {
+			slog.Error("device-service shutdown error", "err", err)
+			err := internalServer.Close()
 			return fmt.Errorf("shutdown: %w", err)
 		}
 	}

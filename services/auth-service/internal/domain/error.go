@@ -13,4 +13,6 @@ var (
 	ErrUnauthorized = errors.New("unauthorized")
 	// ErrUserNotFound trigger when there is no user in db
 	ErrUserNotFound = errors.New("user not found")
+	// ErrUserAlreadyExists triggers when a user with the same email already exists
+	ErrUserAlreadyExists = errors.New("user already exists")
 )
