@@ -39,7 +39,7 @@ func GetOrderByID(svc domain.ContextService) http.HandlerFunc {
 			return
 		}
 
-		order, err := svc.GetOrderByID(ctx, auth.CompanyID, orderID)
+		order, err := svc.GetOrderByID(ctx, auth.CompanyID, auth.UserID, string(auth.Role), orderID)
 		if err != nil {
 			if errors.Is(err, domain.ErrNotFound) {
 				json.HandleError(w, http.StatusNotFound, err, "order not found")
@@ -83,7 +83,7 @@ func GetOrderContext(svc domain.ContextService) http.HandlerFunc {
 			return
 		}
 
-		orderCtx, err := svc.GetOrderContext(ctx, auth.CompanyID, orderID)
+		orderCtx, err := svc.GetOrderContext(ctx, auth.CompanyID, auth.UserID, string(auth.Role), orderID)
 		if err != nil {
 			if errors.Is(err, domain.ErrNotFound) {
 				json.HandleError(w, http.StatusNotFound, err, "order not found")
@@ -117,7 +117,7 @@ func GetOrders(svc domain.ContextService) http.HandlerFunc {
 			return
 		}
 
-		orders, err := svc.GetOrders(ctx, auth.CompanyID)
+		orders, err := svc.GetOrders(ctx, auth.CompanyID, auth.UserID, string(auth.Role))
 		if err != nil {
 			if errors.Is(err, domain.ErrUnauthorized) {
 				json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")

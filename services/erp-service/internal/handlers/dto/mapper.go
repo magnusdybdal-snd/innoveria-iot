@@ -12,13 +12,13 @@ import (
 )
 
 // MapMonitorOrderOperationToDomain maps Monitor order operations into domain entities.
-func MapMonitorOrderOperationToDomain(from []dto.ManufacturingOrderOperation) []domain.OrderOperation {
+func MapMonitorOrderOperationToDomain(from []dto.ManufacturingOrderOperation, companyID string) []domain.OrderOperation {
 	to := make([]domain.OrderOperation, 0, len(from))
 	receivedAt := time.Now().UTC()
 
 	for _, item := range from {
 		to = append(to, domain.OrderOperation{
-			CompanyID:                "a0000000-0000-0000-0000-000000000001", // TODO: Change this. Its hardcoded to innoveria for now, which ofc is bad
+			CompanyID:                companyID,
 			ID:                       item.ID,
 			ProductionResourceID:     item.WorkCenterId,
 			OrderID:                  item.ManufacturingOrderId,
@@ -36,13 +36,13 @@ func MapMonitorOrderOperationToDomain(from []dto.ManufacturingOrderOperation) []
 }
 
 // MapMonitorOrderToDomain maps Monitor manufacturing orders into domain entities.
-func MapMonitorOrderToDomain(from []dto.ManufacturingOrder) []domain.Order {
+func MapMonitorOrderToDomain(from []dto.ManufacturingOrder, companyID string) []domain.Order {
 	to := make([]domain.Order, 0, len(from))
 	receivedAt := time.Now().UTC()
 
 	for _, item := range from {
 		to = append(to, domain.Order{
-			CompanyID:         "a0000000-0000-0000-0000-000000000001", // TODO: change this
+			CompanyID:         companyID,
 			ID:                item.ID,
 			OrderNumber:       item.OrderNumber,
 			PartID:            item.PartID,
@@ -61,13 +61,13 @@ func MapMonitorOrderToDomain(from []dto.ManufacturingOrder) []domain.Order {
 }
 
 // MapMonitorOrderReportToDomain maps Monitor operation reportings into domain entities.
-func MapMonitorOrderReportToDomain(from []dto.ManufacturingOrderOperationReporting) []domain.OrderReport {
+func MapMonitorOrderReportToDomain(from []dto.ManufacturingOrderOperationReporting, companyID string) []domain.OrderReport {
 	to := make([]domain.OrderReport, 0, len(from))
 	receivedAt := time.Now().UTC()
 
 	for _, item := range from {
 		to = append(to, domain.OrderReport{
-			CompanyID:            "a0000000-0000-0000-0000-000000000001", // TODO: change this
+			CompanyID:            companyID,
 			ID:                   item.ID,
 			OrderOperationID:     item.OperationId,
 			ProductionResourceID: item.WorkCenterId,
@@ -84,14 +84,14 @@ func MapMonitorOrderReportToDomain(from []dto.ManufacturingOrderOperationReporti
 }
 
 // MapMonitorWorkcenterToDomain maps Monitor work centers into production resources.
-func MapMonitorWorkcenterToDomain(from []dto.WorkCenter) []domain.ProductionResource {
+func MapMonitorWorkcenterToDomain(from []dto.WorkCenter, companyID string) []domain.ProductionResource {
 	to := make([]domain.ProductionResource, 0, len(from))
 	receivedAt := time.Now().UTC()
 
 	for _, item := range from {
 		description := item.Description
 		to = append(to, domain.ProductionResource{
-			CompanyID:   "a0000000-0000-0000-0000-000000000001",
+			CompanyID:   companyID,
 			ID:          item.ID,
 			Number:      item.Number,
 			Description: description,

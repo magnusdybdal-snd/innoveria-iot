@@ -12,14 +12,16 @@ import (
 
 // Config holds auth-service runtime configuration.
 type Config struct {
-	Addr               string
-	DB_URL             string
-	JWT_SECRET         string
-	RefreshPepper      string
-	JWTIssuer          string
-	JWTAccessTTL       time.Duration
-	JWTRefreshTokenTTL time.Duration
-	EnableSwagger      bool
+	Addr                 string
+	DB_URL               string
+	JWT_SECRET           string
+	ERP_AGENT_JWT_SECRET string
+	RefreshPepper        string
+	JWTIssuer            string
+	JWTAccessTTL         time.Duration
+	JWTRefreshTokenTTL   time.Duration
+	ERPAgentTokenTTL     time.Duration
+	EnableSwagger        bool
 }
 
 // Load reads configuration from environment variables.
@@ -49,9 +51,21 @@ func Load() *Config {
 		os.Exit(1)
 	}
 
+	erpAgentSecret, err := env.Required("ERP_AGENT_JWT_SECRET")
+	if err != nil {
+		slog.Error("invalid erp agent jwt secret", "error", err)
+		os.Exit(1)
+	}
+
 	refreshPepper, err := env.Required("REFRESH_PEPPER")
 	if err != nil {
 		slog.Error("invalid refresh pepper", "error", err)
+		os.Exit(1)
+	}
+
+	erpAgentTokenTTL, err := time.ParseDuration(env.Get("ERP_AGENT_TOKEN_TTL", "8760h"))
+	if err != nil {
+		slog.Error("invalid ERP_AGENT_TOKEN_TTL", "error", err)
 		os.Exit(1)
 	}
 
@@ -66,11 +80,13 @@ func Load() *Config {
 			dbName,
 			sslmode,
 		),
-		JWT_SECRET:         jwtSecret,     // jwt secret loading
-		RefreshPepper:      refreshPepper, // jwt refresh loading
-		JWTIssuer:          env.Get("JWT_ISSUER", "auth-service"),
-		JWTAccessTTL:       jwtAccessTTL,
-		JWTRefreshTokenTTL: jwtRefreshTTL,
-		EnableSwagger:      env.GetBool("ENABLE_SWAGGER", false),
+		JWT_SECRET:           jwtSecret, // jwt secret loading
+		ERP_AGENT_JWT_SECRET: erpAgentSecret,
+		RefreshPepper:        refreshPepper, // jwt refresh loading
+		JWTIssuer:            env.Get("JWT_ISSUER", "auth-service"),
+		JWTAccessTTL:         jwtAccessTTL,
+		JWTRefreshTokenTTL:   jwtRefreshTTL,
+		ERPAgentTokenTTL:     erpAgentTokenTTL,
+		EnableSwagger:        env.GetBool("ENABLE_SWAGGER", false),
 	}
 }

@@ -195,6 +195,7 @@ services:
     environment:
       - GO_ENV=development
       - JWT_SECRET=secret
+      - ERP_AGENT_JWT_SECRET=secret
       - REFRESH_PEPPER=secret
       - ENABLE_SWAGGER=true
       - CORS_ALLOWED_ORIGINS=http://localhost:3000
@@ -269,6 +270,7 @@ services:
       - ./pkg:/pkg
     environment:
       - GO_ENV=development
+      - ERP_AGENT_JWT_SECRET=secret
     depends_on:
       - erp-db
 
@@ -302,6 +304,8 @@ services:
       - MONITOR_ERP_USERNAME=test
       - MONITOR_ERP_PASSWORD=1234
       - MONITOR_ERP_FORCE_RELOGIN=false
+    depends_on:
+      - erp-service # only in dev mode, as erp agent service will exit on 401
 
 #
 # Docker data volumes

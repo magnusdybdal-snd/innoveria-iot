@@ -8,6 +8,8 @@ import (
 	"innoveria-iot/pkg/roles"
 )
 
+// TODO: Add roles here
+
 const (
 	headerUserID    = "X-Auth-User-Id"
 	headerCompanyID = "X-Auth-Company-Id"
@@ -40,7 +42,6 @@ func FromRequest(r *http.Request) (Auth, error) {
 	if companyID == "" {
 		return Auth{}, fmt.Errorf("authctx: missing %s header", headerCompanyID)
 	}
-
 	role := r.Header.Get(headerRole)
 	if role == "" {
 		return Auth{}, fmt.Errorf("authctx: missing %s header", headerRole)

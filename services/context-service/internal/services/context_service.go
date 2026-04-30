@@ -115,10 +115,8 @@ func (s *ContextServiceImpl) GetContextData(
 }
 
 // GetOrders retrieves a slim list of ERP orders for populating the order picker.
-//
-// TODO: replace with AUTH — use X-Auth-Company-Id header once auth middleware propagation is wired up end-to-end.
-func (s *ContextServiceImpl) GetOrders(ctx context.Context, companyID string) ([]domain.ERPOrderSummary, error) {
-	orders, err := s.erpClient.GetOrders(ctx, companyID)
+func (s *ContextServiceImpl) GetOrders(ctx context.Context, companyID, userID, role string) ([]domain.ERPOrderSummary, error) {
+	orders, err := s.erpClient.GetOrders(ctx, companyID, userID, role)
 	if err != nil {
 		return nil, fmt.Errorf("fetching orders from ERP: %w", err)
 	}
@@ -126,8 +124,8 @@ func (s *ContextServiceImpl) GetOrders(ctx context.Context, companyID string) ([
 }
 
 // GetOrderByID retrieves a single ERP order with full detail.
-func (s *ContextServiceImpl) GetOrderByID(ctx context.Context, companyID string, orderID int64) (*domain.ERPOrder, error) {
-	order, err := s.erpClient.GetOrderByID(ctx, companyID, orderID)
+func (s *ContextServiceImpl) GetOrderByID(ctx context.Context, companyID, userID, role string, orderID int64) (*domain.ERPOrder, error) {
+	order, err := s.erpClient.GetOrderByID(ctx, companyID, userID, role, orderID)
 	if err != nil {
 		return nil, fmt.Errorf("fetching order from ERP: %w", err)
 	}
@@ -145,8 +143,8 @@ func (s *ContextServiceImpl) GetProductionResources(ctx context.Context, company
 
 // GetOrderContext aggregates ERP order data with sensor and measurement context
 // for a single order identified by orderID.
-func (s *ContextServiceImpl) GetOrderContext(ctx context.Context, companyID string, orderID int64) (*domain.OrderContext, error) {
-	found, err := s.erpClient.GetOrderByID(ctx, companyID, orderID)
+func (s *ContextServiceImpl) GetOrderContext(ctx context.Context, companyID, userID, role string, orderID int64) (*domain.OrderContext, error) {
+	found, err := s.erpClient.GetOrderByID(ctx, companyID, userID, role, orderID)
 	if err != nil {
 		return nil, fmt.Errorf("fetching order from ERP: %w", err)
 	}

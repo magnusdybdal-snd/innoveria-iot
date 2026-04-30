@@ -16,7 +16,7 @@ type RawCompanyListApiResponse = {
 };
 
 /**
- * Fetches all companies from the collection-service via the API company.
+ * Fetches all companies from the auth-service API.
  * @returns Array of CompanyApiResponse objects
  */
 export const getCompanies = async (): Promise<CompanyApiResponse[]> => {
