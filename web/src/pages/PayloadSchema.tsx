@@ -366,7 +366,11 @@ export default function PayloadSchema() {
                       Save
                     </Button>
                     {!isLoadingKeys && payloadKeys.length === 0 && (
-                      <NotFoundCard page="measure types" />
+                      <NotFoundCard
+                        page="readings"
+                        action="available"
+                        extra=" — deploy a sensor and wait for its first transmission"
+                      />
                     )}
                   </>
                 ) : null}

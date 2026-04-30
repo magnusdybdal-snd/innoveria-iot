@@ -7,14 +7,9 @@ import (
 
 	"innoveria-iot/context-service/internal/domain"
 	"innoveria-iot/context-service/internal/handlers/dto"
+	"innoveria-iot/pkg/authctx"
 	"innoveria-iot/pkg/json"
 )
-
-// hardcodedCompanyID is a temporary placeholder used while auth middleware
-// propagation is not yet wired up end-to-end.
-//
-// TODO: replace with AUTH — read company ID from r.Header.Get("X-Auth-Company-Id") once the gateway injects trusted headers into this service.
-const hardcodedCompanyID = "a0000000-0000-0000-0000-000000000001"
 
 // GetOrderByID returns a single ERP order with full detail (operations, production resources, reports).
 // @Summary		Get Order By ID
@@ -23,12 +18,19 @@ const hardcodedCompanyID = "a0000000-0000-0000-0000-000000000001"
 // @Param		id	path	int	true	"ERP Order ID"
 // @Success		200	{object}	dto.OrderResponse
 // @Failure		400
+// @Failure		401
 // @Failure		404
 // @Failure		500
 // @Router		/orders/{id} [get]
 func GetOrderByID(svc domain.ContextService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
+
+		auth, err := authctx.FromRequest(r)
+		if err != nil {
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
+			return
+		}
 
 		idStr := r.PathValue("id")
 		orderID, err := strconv.ParseInt(idStr, 10, 64)
@@ -37,9 +39,7 @@ func GetOrderByID(svc domain.ContextService) http.HandlerFunc {
 			return
 		}
 
-		companyID := hardcodedCompanyID
-
-		order, err := svc.GetOrderByID(ctx, companyID, orderID)
+		order, err := svc.GetOrderByID(ctx, auth.CompanyID, orderID)
 		if err != nil {
 			if errors.Is(err, domain.ErrNotFound) {
 				json.HandleError(w, http.StatusNotFound, err, "order not found")
@@ -62,12 +62,19 @@ func GetOrderByID(svc domain.ContextService) http.HandlerFunc {
 // @Param		id	path	int	true	"ERP Order ID"
 // @Success		200	{object}	dto.OrderContextResponse
 // @Failure		400
+// @Failure		401
 // @Failure		404
 // @Failure		500
 // @Router		/orders/{id}/context [get]
 func GetOrderContext(svc domain.ContextService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
+
+		auth, err := authctx.FromRequest(r)
+		if err != nil {
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
+			return
+		}
 
 		idStr := r.PathValue("id")
 		orderID, err := strconv.ParseInt(idStr, 10, 64)
@@ -76,11 +83,7 @@ func GetOrderContext(svc domain.ContextService) http.HandlerFunc {
 			return
 		}
 
-		// TODO: replace with AUTH — use r.Header.Get("X-Auth-Company-Id") once
-		// the auth middleware is propagated to this service.
-		companyID := hardcodedCompanyID
-
-		orderCtx, err := svc.GetOrderContext(ctx, companyID, orderID)
+		orderCtx, err := svc.GetOrderContext(ctx, auth.CompanyID, orderID)
 		if err != nil {
 			if errors.Is(err, domain.ErrNotFound) {
 				json.HandleError(w, http.StatusNotFound, err, "order not found")
@@ -101,18 +104,25 @@ func GetOrderContext(svc domain.ContextService) http.HandlerFunc {
 // @Tags		orders
 // @Produce		json
 // @Success		200	{array}		dto.OrderSummaryResponse
+// @Failure		401
 // @Failure		500
 // @Router		/orders [get]
 func GetOrders(svc domain.ContextService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
-		// TODO: replace with AUTH — use r.Header.Get("X-Auth-Company-Id") once
-		// the auth middleware is propagated to this service.
-		companyID := hardcodedCompanyID
-
-		orders, err := svc.GetOrders(ctx, companyID)
+		auth, err := authctx.FromRequest(r)
 		if err != nil {
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
+			return
+		}
+
+		orders, err := svc.GetOrders(ctx, auth.CompanyID)
+		if err != nil {
+			if errors.Is(err, domain.ErrUnauthorized) {
+				json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
+				return
+			}
 			json.HandleError(w, http.StatusInternalServerError, err, "failed to fetch orders")
 			return
 		}

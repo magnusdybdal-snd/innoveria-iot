@@ -7,6 +7,7 @@ import axios from "axios";
 
 import { useFactories } from "@entities/factory";
 import { useFactoryAreas } from "@entities/factoryArea";
+import { useProductionResources } from "@entities/productionResource";
 import {
   deleteSensor,
   postSensor,
@@ -72,6 +73,7 @@ export default function Sensors() {
   const { factoryAreas, error: areasError } =
     useFactoryAreas(selectedFactoryId);
   const { sensorProfiles } = useSensorProfiles();
+  const { productionResources } = useProductionResources();
   const [openAdd, setOpenAdd] = useState(false);
   const [addError, setAddError] = useState<string | null>(null);
   const [editingSensor, setEditingSensor] = useState<{
@@ -346,6 +348,13 @@ export default function Sensors() {
         factoryOptions={factories}
         factoryAreaOptions={factoryAreas}
         onFactoryChange={setSelectedFactoryId}
+        productionResourceOptions={[
+          { id: "", name: "No machine" },
+          ...productionResources.map((r) => ({
+            id: String(r.id),
+            name: `${r.number} – ${r.description}`,
+          })),
+        ]}
       />
       {editingSensor && (
         <EditSensor

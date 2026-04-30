@@ -20,6 +20,7 @@ type RawSensor = {
   company_id: string;
   state: string;
   created_at: string;
+  global_device_profile_id: string;
 };
 
 type RawSensorListApiResponse = {
@@ -57,5 +58,6 @@ export const getSensors = async (): Promise<SensorApiResponse[]> => {
     companyId: s.company_id,
     state: s.state,
     createdAt: s.created_at,
+    sensorProfileId: s.global_device_profile_id,
   }));
 };

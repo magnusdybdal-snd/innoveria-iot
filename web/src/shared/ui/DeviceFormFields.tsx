@@ -12,6 +12,7 @@ interface DeviceFormFieldsProps {
   profileOptions: { id: string; name: string }[];
   factoryOptions: { id: string; name: string }[];
   factoryAreaOptions: { id: string; name: string }[];
+  productionResourceOptions: { id: string; name: string }[];
   voltageOptions: { id: string; name: string }[];
   lengthErrors: Record<string, boolean>;
   lengthErrorMessages: Record<string, string>;
@@ -23,6 +24,7 @@ const dropdownOptions: Record<string, string> = {
   "Sensor profile": "profileOptions",
   Factory: "factoryOptions",
   "Factory area": "factoryAreaOptions",
+  "Production resource": "productionResourceOptions",
   Voltage: "voltageOptions",
 };
 const checkBoxes: string[] = [ELECTRICITY_SENSOR];
@@ -44,6 +46,7 @@ const fieldSx = {
  * @param props.profileOptions - Sensor profile choices for the dropdown
  * @param props.factoryOptions - Factory choices for the dropdown
  * @param props.factoryAreaOptions - Factory area choices for the dropdown
+ * @param props.productionResourceOptions - Production resource (work center) choices for the dropdown
  * @param props.voltageOptions - Voltage choices for the dropdown
  * @param props.lengthErrors - Map of field name to whether it has a length error
  * @param props.lengthErrorMessages - Map of field name to its error message
@@ -57,6 +60,7 @@ export function DeviceFormFields({
   profileOptions,
   factoryOptions,
   factoryAreaOptions,
+  productionResourceOptions,
   voltageOptions,
   lengthErrors,
   lengthErrorMessages,
@@ -67,6 +71,7 @@ export function DeviceFormFields({
     profileOptions,
     factoryOptions,
     factoryAreaOptions,
+    productionResourceOptions,
     voltageOptions,
   };
 
@@ -74,7 +79,6 @@ export function DeviceFormFields({
     Name: 100,
     DeviceEUI: 16,
     "Application key": 32,
-    "Production resource": 19, // Max length for 64-bit integer in decimal
   };
 
   return (
@@ -124,9 +128,6 @@ export function DeviceFormFields({
                 let value = e.target.value;
                 if (option === "DeviceEUI" || option === "Application key") {
                   value = value.replace(/[^a-fA-F0-9]/g, "");
-                }
-                if (option === "Production resource") {
-                  value = value.replace(/[^0-9]/g, "");
                 }
                 onChange(option, value);
               }}

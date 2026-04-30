@@ -349,34 +349,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/payload-schema/drafts": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "payload-schema"
-                ],
-                "summary": "List profiles with unlabeled payload schema rows",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/dto.DraftProfilesResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "500": {
-                        "description": "Internal Server Error"
-                    }
-                }
-            }
-        },
         "/payload-schema/{chirpstack_profile_id}": {
             "get": {
                 "produces": [
@@ -533,12 +505,6 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request"
                     },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
                     "500": {
                         "description": "Internal Server Error"
                     }
@@ -629,6 +595,9 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request"
                     },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
                     "500": {
                         "description": "Internal Server Error"
                     }
@@ -696,6 +665,12 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.SensorMetricListResponse"
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
                     },
                     "404": {
                         "description": "Not Found"
@@ -938,40 +913,10 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "production_resource": {
-<<<<<<< HEAD
-                    "description": "Optional — ERP ProductionResource ID",
-                    "type": "integer"
-=======
                     "description": "Optional — int64 ERP production resource ID",
                     "type": "integer"
-                }
-            }
-        },
-        "dto.DiscoverPayloadKeysRequest": {
-            "type": "object",
-            "required": [
-                "payload_keys"
-            ],
-            "properties": {
-                "payload_keys": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            }
-        },
-        "dto.DraftProfilesResponse": {
-            "type": "object",
-            "properties": {
-                "profile_ids": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
->>>>>>> origin/dev
                 },
-                "total_count": {
+                "voltage": {
                     "type": "integer"
                 }
             }
@@ -1290,6 +1235,9 @@ const docTemplate = `{
                 "factory_id": {
                     "type": "string"
                 },
+                "global_device_profile_id": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "string"
                 },
@@ -1346,7 +1294,7 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "factory_area_id": {
-                    "description": "Optional — omit if not applicable",
+                    "description": "Optional — UUID, omit if service not yet available",
                     "type": "string"
                 },
                 "factory_id": {
@@ -1356,7 +1304,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "production_resource": {
-                    "description": "Optional — ERP ProductionResource ID",
+                    "description": "Optional — int64 ERP production resource ID",
                     "type": "integer"
                 },
                 "voltage": {

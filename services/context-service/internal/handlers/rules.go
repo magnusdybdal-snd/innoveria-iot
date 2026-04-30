@@ -7,6 +7,7 @@ import (
 
 	"innoveria-iot/context-service/internal/domain"
 	"innoveria-iot/context-service/internal/handlers/dto"
+	"innoveria-iot/pkg/authctx"
 	"innoveria-iot/pkg/json"
 
 	"github.com/google/uuid"
@@ -16,22 +17,21 @@ import (
 // @Summary 		Get Aggregation Rules
 // @Tags 			context
 // @Produce 		json
-// @Param 			company_id query string true "Company ID"
 // @Success 		200 {array} dto.AggregationRuleResponse
-// @Failure 		400
+// @Failure 		401
 // @Failure 		500
 // @Router 			/rules [get]
 func GetRules(svc domain.RuleService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		companyID := r.URL.Query().Get("company_id")
 
-		if companyID == "" {
-			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("missing company_id query parameter"), "company_id is required")
+		auth, err := authctx.FromRequest(r)
+		if err != nil {
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
 			return
 		}
 
-		rules, err := svc.GetRules(ctx, companyID)
+		rules, err := svc.GetRules(ctx, auth.CompanyID)
 		if err != nil {
 			if errors.Is(err, domain.ErrDatabase) {
 				json.HandleError(w, http.StatusInternalServerError, err, "database error")
@@ -71,6 +71,7 @@ func GetRules(svc domain.RuleService) http.HandlerFunc {
 // @Param 			rule body dto.CreateAggregationRuleRequest true "Aggregation Rule to create"
 // @Success 		201
 // @Failure 		400
+// @Failure 		401
 // @Failure 		409
 // @Failure 		500
 // @Router 			/rules [post]
@@ -78,14 +79,15 @@ func CreateRule(svc domain.RuleService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
-		req, err := json.Decode[dto.CreateAggregationRuleRequest](r)
+		auth, err := authctx.FromRequest(r)
 		if err != nil {
-			json.HandleError(w, http.StatusBadRequest, err, "invalid request body")
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
 			return
 		}
 
-		if _, err := uuid.Parse(req.CompanyID); err != nil {
-			json.HandleError(w, http.StatusBadRequest, err, "invalid company_id (uuid)")
+		req, err := json.Decode[dto.CreateAggregationRuleRequest](r)
+		if err != nil {
+			json.HandleError(w, http.StatusBadRequest, err, "invalid request body")
 			return
 		}
 
@@ -105,7 +107,7 @@ func CreateRule(svc domain.RuleService) http.HandlerFunc {
 		}
 
 		rule := domain.AggregationRule{
-			CompanyID:         req.CompanyID,
+			CompanyID:         auth.CompanyID,
 			Name:              req.Name,
 			ContextType:       req.ContextType,
 			MeasurementType:   req.MeasurementType,

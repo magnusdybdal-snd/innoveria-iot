@@ -12,33 +12,33 @@ import (
 
 const (
 	createSensorQuery = `
-		INSERT INTO device.sensor (company_id, device_eui, app_key, name, description, electricity_sensor, voltage, state, factory_id, factory_area_id, production_resource_id, chirpstack_profile_id)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
-		RETURNING sensor_id, company_id, device_eui, app_key, name, description, electricity_sensor, voltage, state, factory_id, factory_area_id, production_resource_id, chirpstack_profile_id, created_at, updated_at
+		INSERT INTO device.sensor (company_id, device_eui, app_key, name, description, electricity_sensor, voltage, state, factory_id, factory_area_id, production_resource_id, chirpstack_profile_id, global_chirpstack_profile_id)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+		RETURNING sensor_id, company_id, device_eui, app_key, name, description, electricity_sensor, voltage, state, factory_id, factory_area_id, production_resource_id, chirpstack_profile_id, global_chirpstack_profile_id, created_at, updated_at
 	`
 
 	findSensorByIDQuery = `
-		SELECT sensor_id, company_id, device_eui, app_key, name, description, electricity_sensor, voltage, state, factory_id, factory_area_id, production_resource_id, chirpstack_profile_id, created_at, updated_at
+		SELECT sensor_id, company_id, device_eui, app_key, name, description, electricity_sensor, voltage, state, factory_id, factory_area_id, production_resource_id, chirpstack_profile_id, global_chirpstack_profile_id, created_at, updated_at
 		FROM device.sensor
 		WHERE company_id = $1 AND sensor_id = $2
 	`
 
 	findAllSensorsByCompanyIDQuery = `
-		SELECT sensor_id, company_id, device_eui, app_key, name, description, electricity_sensor, voltage, state, factory_id, factory_area_id, production_resource_id, chirpstack_profile_id, created_at, updated_at
+		SELECT sensor_id, company_id, device_eui, app_key, name, description, electricity_sensor, voltage, state, factory_id, factory_area_id, production_resource_id, chirpstack_profile_id, global_chirpstack_profile_id, created_at, updated_at
 		FROM device.sensor
 		WHERE company_id = $1
 		ORDER BY created_at ASC
 	`
 
 	findByProductionResourceIDQuery = `
-		SELECT sensor_id, company_id, device_eui, app_key, name, description, electricity_sensor, voltage, state, factory_id, factory_area_id, production_resource_id, chirpstack_profile_id, created_at, updated_at
+		SELECT sensor_id, company_id, device_eui, app_key, name, description, electricity_sensor, voltage, state, factory_id, factory_area_id, production_resource_id, chirpstack_profile_id, global_chirpstack_profile_id, created_at, updated_at
 		FROM device.sensor
 		WHERE company_id = $1 AND production_resource_id = $2
 		ORDER BY created_at ASC
 	`
 
 	findSensorByEUIQuery = `
-		SELECT sensor_id, company_id, device_eui, app_key, name, description, electricity_sensor, voltage, state, factory_id, factory_area_id, production_resource_id, chirpstack_profile_id, created_at, updated_at
+		SELECT sensor_id, company_id, device_eui, app_key, name, description, electricity_sensor, voltage, state, factory_id, factory_area_id, production_resource_id, chirpstack_profile_id, global_chirpstack_profile_id, created_at, updated_at
 		FROM device.sensor
 		WHERE device_eui = $1
 	`
@@ -51,7 +51,7 @@ const (
 
 	updateSensorQuery = `
 		UPDATE device.sensor
-		SET name = $3, description = $4, electricity_sensor = $5, voltage = $6, factory_id = $7, factory_area_id = $8, chirpstack_profile_id = $9, updated_at = now()
+		SET name = $3, description = $4, electricity_sensor = $5, voltage = $6, factory_id = $7, factory_area_id = $8, chirpstack_profile_id = $9, production_resource_id = $10, global_chirpstack_profile_id = $11, updated_at = now()
 		WHERE company_id = $1 AND sensor_id = $2
 	`
 
@@ -61,9 +61,9 @@ const (
 	`
 
 	findOneByChirpstackProfileIDQuery = `
-		SELECT sensor_id, company_id, device_eui, app_key, name, description, electricity_sensor, voltage, state, factory_id, factory_area_id, production_resource_id, chirpstack_profile_id, created_at, updated_at
+		SELECT sensor_id, company_id, device_eui, app_key, name, description, electricity_sensor, voltage, state, factory_id, factory_area_id, production_resource_id, chirpstack_profile_id, global_chirpstack_profile_id, created_at, updated_at
 		FROM device.sensor
-		WHERE chirpstack_profile_id = $1
+		WHERE global_chirpstack_profile_id = $1
 		LIMIT 1
 	`
 )
@@ -96,6 +96,7 @@ func (r *SensorRepository) Create(ctx context.Context, sensor domain.Sensor) (do
 		sensor.FactoryAreaID,
 		sensor.ProductionResource,
 		sensor.ChirpstackProfileID,
+		sensor.GlobalChirpstackProfileID,
 	).Scan(
 		&out.Id,
 		&out.CompanyID,
@@ -110,6 +111,7 @@ func (r *SensorRepository) Create(ctx context.Context, sensor domain.Sensor) (do
 		&out.FactoryAreaID,
 		&out.ProductionResource,
 		&out.ChirpstackProfileID,
+		&out.GlobalChirpstackProfileID,
 		&out.CreatedAt,
 		&out.UpdatedAt,
 	)
@@ -138,6 +140,7 @@ func (r *SensorRepository) FindByID(ctx context.Context, companyID string, senso
 		&out.FactoryAreaID,
 		&out.ProductionResource,
 		&out.ChirpstackProfileID,
+		&out.GlobalChirpstackProfileID,
 		&out.CreatedAt,
 		&out.UpdatedAt,
 	)
@@ -182,6 +185,7 @@ func (r *SensorRepository) FindAllByCompanyID(ctx context.Context, companyID str
 			&sensor.FactoryAreaID,
 			&sensor.ProductionResource,
 			&sensor.ChirpstackProfileID,
+			&sensor.GlobalChirpstackProfileID,
 			&sensor.CreatedAt,
 			&sensor.UpdatedAt,
 		)
@@ -230,6 +234,7 @@ func (r *SensorRepository) FindByProductionResourceID(ctx context.Context, compa
 			&sensor.FactoryAreaID,
 			&sensor.ProductionResource,
 			&sensor.ChirpstackProfileID,
+			&sensor.GlobalChirpstackProfileID,
 			&sensor.CreatedAt,
 			&sensor.UpdatedAt,
 		)
@@ -266,6 +271,7 @@ func (r *SensorRepository) FindByEUI(ctx context.Context, deviceEUI string) (dom
 		&out.FactoryAreaID,
 		&out.ProductionResource,
 		&out.ChirpstackProfileID,
+		&out.GlobalChirpstackProfileID,
 		&out.CreatedAt,
 		&out.UpdatedAt,
 	)
@@ -299,6 +305,7 @@ func (r *SensorRepository) FindOneByChirpstackProfileID(ctx context.Context, chi
 		&out.FactoryAreaID,
 		&out.ProductionResource,
 		&out.ChirpstackProfileID,
+		&out.GlobalChirpstackProfileID,
 		&out.CreatedAt,
 		&out.UpdatedAt,
 	)
@@ -344,6 +351,7 @@ func (r *SensorRepository) Update(ctx context.Context, companyID string, sensorI
 		payload.FactoryAreaID,
 		payload.ChirpstackProfileID,
 		payload.ProductionResource,
+		payload.GlobalChirpstackProfileID,
 	)
 
 	if err != nil {

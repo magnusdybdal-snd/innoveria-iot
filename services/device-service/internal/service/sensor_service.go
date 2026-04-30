@@ -44,6 +44,7 @@ func (s *SensorServiceImpl) Create(ctx context.Context, payload domain.Sensor) e
 	if err != nil {
 		return fmt.Errorf("create sensor: ensure tenant profile: %w", err)
 	}
+	payload.GlobalChirpstackProfileID = payload.ChirpstackProfileID
 	payload.ChirpstackProfileID = tenantProfileID
 
 	// Post request to Chirpstack
@@ -96,6 +97,7 @@ func (s *SensorServiceImpl) Update(ctx context.Context, companyID string, sensor
 	// Ensure a tenant-level copy of the selected profile exists, get its ID.
 	// Only needed when the caller is changing the profile.
 	if payload.ChirpstackProfileID != "" {
+		payload.GlobalChirpstackProfileID = payload.ChirpstackProfileID
 		tenantProfileID, err := s.sensorProfileService.EnsureTenantProfile(ctx, payload.ChirpstackProfileID, companycfg.ChirpstackTenantID)
 		if err != nil {
 			return fmt.Errorf("update sensor: ensure tenant profile: %w", err)
@@ -115,6 +117,7 @@ func (s *SensorServiceImpl) Update(ctx context.Context, companyID string, sensor
 	}
 	if payload.ChirpstackProfileID != "" {
 		sensor.ChirpstackProfileID = payload.ChirpstackProfileID
+		sensor.GlobalChirpstackProfileID = payload.GlobalChirpstackProfileID
 	}
 	if payload.FactoryID != "" {
 		sensor.FactoryID = payload.FactoryID
