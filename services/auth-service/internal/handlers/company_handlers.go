@@ -3,6 +3,7 @@ package handlers
 import (
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"strings"
 
@@ -45,14 +46,14 @@ func PostCompany(svc domain.CompanyService) http.HandlerFunc {
 			return
 		}
 
-		companyResp, err := svc.RegisterCompany(ctx, companyDomain)
+		result, err := svc.RegisterCompany(ctx, companyDomain)
 		if err != nil {
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
 			return
 		}
 
 		// Maps from domain to DTO
-		resp := dto.MapCompanyFromDomain(companyResp)
+		resp := dto.MapCompanyFromDomain(result)
 		if err := json.Encode(w, http.StatusCreated, resp); err != nil {
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
 		}
@@ -189,5 +190,62 @@ func DeleteCompany(svc domain.CompanyService) http.HandlerFunc {
 		}
 
 		w.WriteHeader(http.StatusNoContent)
+	}
+}
+
+// PostCompanyERPAgentToken handles requests to issue a new ERP agent token for a company.
+//
+// @Summary Issue ERP agent token
+// @Tags companies
+// @Produce json
+// @Param id path string true "id"
+// @Success 200 {object} dto.ERPAgentTokenResponse
+// @Failure 400
+// @Failure 401
+// @Failure 403
+// @Failure 404
+// @Failure 500
+// @Router /companies/{id}/erp-agent-token [post]
+func PostCompanyERPAgentToken(svc domain.CompanyService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+
+		auth, err := authctx.FromRequest(r)
+		if err != nil {
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
+			return
+		}
+
+		if !auth.IsAdmin() {
+			json.HandleError(w, http.StatusForbidden, fmt.Errorf("forbidden"), "forbidden")
+			return
+		}
+
+		companyID := r.PathValue("id")
+		if companyID == "" {
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("missing id path parameter"), "id is required")
+			return
+		}
+		slog.Info("test", "id", companyID)
+		if _, err := uuid.Parse(companyID); err != nil {
+			json.HandleError(w, http.StatusBadRequest, err, "invalid company id (uuid)")
+			return
+		}
+
+		token, err := svc.IssueERPAgentToken(ctx, companyID)
+		if err != nil {
+			switch {
+			case errors.Is(err, domain.ErrCompanyNotFound):
+				json.HandleError(w, http.StatusNotFound, err, "company not found")
+			default:
+				json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			}
+			return
+		}
+
+		resp := dto.MapERPAgentTokenResponse(token)
+		if err := json.Encode(w, http.StatusOK, resp); err != nil {
+			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+		}
 	}
 }

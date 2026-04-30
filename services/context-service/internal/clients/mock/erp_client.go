@@ -187,7 +187,7 @@ var mockOrders = []domain.ERPOrder{
 }
 
 // GetOrders returns a slim summary list derived from the mock orders.
-func (c *ERPClient) GetOrders(_ context.Context, _ string) ([]domain.ERPOrderSummary, error) {
+func (c *ERPClient) GetOrders(_ context.Context, _, _, _ string) ([]domain.ERPOrderSummary, error) {
 	summaries := make([]domain.ERPOrderSummary, len(mockOrders))
 	for i, o := range mockOrders {
 		summaries[i] = domain.ERPOrderSummary{ID: o.ID, Name: o.OrderNumber}
@@ -210,8 +210,8 @@ func (c *ERPClient) GetProductionResources(_ context.Context, _ string) ([]domai
 	return result, nil
 }
 
-// GetOrderByID returns a single mock order by ID. companyID is accepted but not used.
-func (c *ERPClient) GetOrderByID(_ context.Context, _ string, orderID int64) (*domain.ERPOrder, error) {
+// GetOrderByID returns a single mock order by ID. Auth params are accepted but not used.
+func (c *ERPClient) GetOrderByID(_ context.Context, _, _, _ string, orderID int64) (*domain.ERPOrder, error) {
 	for i := range mockOrders {
 		if mockOrders[i].ID == orderID {
 			return &mockOrders[i], nil

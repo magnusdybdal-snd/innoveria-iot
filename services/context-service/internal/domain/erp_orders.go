@@ -16,13 +16,11 @@ type ERPOrderSummary struct {
 type ERPClient interface {
 	// GetOrders returns a slim list of orders for the given company, suitable
 	// for populating a dropdown or order list in the UI.
-	GetOrders(ctx context.Context, companyID string) ([]ERPOrderSummary, error)
+	GetOrders(ctx context.Context, companyID, userID, role string) ([]ERPOrderSummary, error)
 
 	// GetOrderByID returns a single order by its ID, enriched with operations
 	// and production resources. Returns ErrNotFound if no order matches.
-	//
-	// TODO: erp-service GET /orders/{id} endpoint shape is not yet finalised.
-	GetOrderByID(ctx context.Context, companyID string, orderID int64) (*ERPOrder, error)
+	GetOrderByID(ctx context.Context, companyID, userID, role string, orderID int64) (*ERPOrder, error)
 
 	// GetProductionResources returns all production resources (work centers) for the given company.
 	GetProductionResources(ctx context.Context, companyID string) ([]ERPProductionResource, error)

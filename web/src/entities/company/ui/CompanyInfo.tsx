@@ -7,17 +7,19 @@ type InfoProps = {
   created_at: string;
   updated_at: string;
   onViewUsers?: () => void;
+  onShowApiToken?: () => void;
 };
 
 /**
- * Displays a single company row's data: name, address, date created, date updated, and a link to its users.
+ * Displays a single company row's data: name, address, date created, and date updated.
  * @param props - Component props
  * @param props.name - Display name of the company
  * @param props.address - Main address of company office
  * @param props.created_at - Date the company was added
  * @param props.updated_at - Date of most recent change/addition/deletion related to company
  * @param props.onViewUsers - Optional callback to drill down into the company's users; omit to hide the button
- * @returns A set of grid-aligned cells with an optional users button
+ * @param props.onShowApiToken - Optional callback to show API token actions for this company
+ * @returns A set of grid-aligned cells with optional action buttons
  */
 export function CompanyInfo({
   name,
@@ -25,6 +27,7 @@ export function CompanyInfo({
   created_at,
   updated_at,
   onViewUsers,
+  onShowApiToken,
 }: InfoProps) {
   return (
     <>
@@ -40,6 +43,16 @@ export function CompanyInfo({
           }}
         >
           Users
+        </OutlinedButton>
+      )}
+      {onShowApiToken && (
+        <OutlinedButton
+          onClick={(e) => {
+            e.stopPropagation();
+            onShowApiToken();
+          }}
+        >
+          Show API token
         </OutlinedButton>
       )}
     </>

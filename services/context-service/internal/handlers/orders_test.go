@@ -15,30 +15,30 @@ import (
 
 type mockContextService struct {
 	t                *testing.T
-	getOrdersFunc    func(ctx context.Context, companyID string) ([]domain.ERPOrderSummary, error)
-	getOrderByIDFunc func(ctx context.Context, companyID string, orderID int64) (*domain.ERPOrder, error)
-	getOrderCtxFunc  func(ctx context.Context, companyID string, orderID int64) (*domain.OrderContext, error)
+	getOrdersFunc    func(ctx context.Context, companyID, userID, role string) ([]domain.ERPOrderSummary, error)
+	getOrderByIDFunc func(ctx context.Context, companyID, userID, role string, orderID int64) (*domain.ERPOrder, error)
+	getOrderCtxFunc  func(ctx context.Context, companyID, userID, role string, orderID int64) (*domain.OrderContext, error)
 }
 
-func (m *mockContextService) GetOrders(ctx context.Context, companyID string) ([]domain.ERPOrderSummary, error) {
+func (m *mockContextService) GetOrders(ctx context.Context, companyID, userID, role string) ([]domain.ERPOrderSummary, error) {
 	if m.getOrdersFunc == nil {
 		m.t.Fatal("unexpected call to GetOrders")
 	}
-	return m.getOrdersFunc(ctx, companyID)
+	return m.getOrdersFunc(ctx, companyID, userID, role)
 }
 
-func (m *mockContextService) GetOrderByID(ctx context.Context, companyID string, orderID int64) (*domain.ERPOrder, error) {
+func (m *mockContextService) GetOrderByID(ctx context.Context, companyID, userID, role string, orderID int64) (*domain.ERPOrder, error) {
 	if m.getOrderByIDFunc == nil {
 		m.t.Fatal("unexpected call to GetOrderByID")
 	}
-	return m.getOrderByIDFunc(ctx, companyID, orderID)
+	return m.getOrderByIDFunc(ctx, companyID, userID, role, orderID)
 }
 
-func (m *mockContextService) GetOrderContext(ctx context.Context, companyID string, orderID int64) (*domain.OrderContext, error) {
+func (m *mockContextService) GetOrderContext(ctx context.Context, companyID, userID, role string, orderID int64) (*domain.OrderContext, error) {
 	if m.getOrderCtxFunc == nil {
 		m.t.Fatal("unexpected call to GetOrderContext")
 	}
-	return m.getOrderCtxFunc(ctx, companyID, orderID)
+	return m.getOrderCtxFunc(ctx, companyID, userID, role, orderID)
 }
 
 func (m *mockContextService) GetContextData(
@@ -57,7 +57,7 @@ func (m *mockContextService) GetProductionResources(_ context.Context, _ string)
 func TestGetOrders_Success_Returns200(t *testing.T) {
 	svc := &mockContextService{
 		t: t,
-		getOrdersFunc: func(_ context.Context, _ string) ([]domain.ERPOrderSummary, error) {
+		getOrdersFunc: func(_ context.Context, _, _, _ string) ([]domain.ERPOrderSummary, error) {
 			return []domain.ERPOrderSummary{
 				{ID: 1, Name: "MO-2026-001"},
 				{ID: 2, Name: "MO-2026-002"},
@@ -96,7 +96,7 @@ func TestGetOrders_Success_Returns200(t *testing.T) {
 func TestGetOrders_EmptyList_Returns200(t *testing.T) {
 	svc := &mockContextService{
 		t: t,
-		getOrdersFunc: func(_ context.Context, _ string) ([]domain.ERPOrderSummary, error) {
+		getOrdersFunc: func(_ context.Context, _, _, _ string) ([]domain.ERPOrderSummary, error) {
 			return []domain.ERPOrderSummary{}, nil
 		},
 	}
@@ -123,7 +123,7 @@ func TestGetOrders_EmptyList_Returns200(t *testing.T) {
 func TestGetOrders_ServiceError_Returns500(t *testing.T) {
 	svc := &mockContextService{
 		t: t,
-		getOrdersFunc: func(_ context.Context, _ string) ([]domain.ERPOrderSummary, error) {
+		getOrdersFunc: func(_ context.Context, _, _, _ string) ([]domain.ERPOrderSummary, error) {
 			return nil, errors.New("erp unavailable")
 		},
 	}
