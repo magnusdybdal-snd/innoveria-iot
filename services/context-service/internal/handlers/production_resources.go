@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/google/uuid"
 	"innoveria-iot/context-service/internal/domain"
 	"innoveria-iot/context-service/internal/handlers/dto"
 	"innoveria-iot/pkg/authctx"
@@ -26,9 +27,13 @@ func GetProductionResources(svc domain.ContextService) http.HandlerFunc {
 			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
 			return
 		}
-		companyID := auth.CompanyID
+		companyID, err := uuid.Parse(auth.CompanyID)
+		if err != nil {
+			json.HandleError(w, http.StatusBadRequest, err, "invalid company id")
+			return
+		}
 
-		resources, err := svc.GetProductionResources(ctx, companyID)
+		resources, err := svc.GetProductionResources(ctx, companyID.String())
 		if err != nil {
 			if errors.Is(err, domain.ErrUnauthorized) {
 				json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
