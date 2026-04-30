@@ -6,6 +6,7 @@ import (
 
 	"innoveria-iot/erp-service/internal/domain"
 	handlerdto "innoveria-iot/erp-service/internal/handlers/dto"
+	"innoveria-iot/pkg/authctx"
 	"innoveria-iot/pkg/json"
 )
 
@@ -19,13 +20,13 @@ func GetOrderSummaryHandler(svc domain.OrderService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
-		companyID, err := authCompanyIDFromHeader(r)
+		auth, err := authctx.FromRequest(r)
 		if err != nil {
 			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
 			return
 		}
 
-		result, err := svc.GetOrderSummary(ctx, companyID)
+		result, err := svc.GetOrderSummary(ctx, auth.CompanyID)
 		if err != nil {
 			status, message, cause := MapDomainError(err)
 			json.HandleError(w, status, cause, message)
@@ -49,7 +50,7 @@ func GetOneOrderHandler(svc domain.OrderService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
-		companyID, err := authCompanyIDFromHeader(r)
+		auth, err := authctx.FromRequest(r)
 		if err != nil {
 			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
 			return
@@ -62,7 +63,7 @@ func GetOneOrderHandler(svc domain.OrderService) http.HandlerFunc {
 			return
 		}
 
-		result, err := svc.GetOne(ctx, idInt, companyID)
+		result, err := svc.GetOne(ctx, idInt, auth.CompanyID)
 		if err != nil {
 			status, message, cause := MapDomainError(err)
 			json.HandleError(w, status, cause, message)
