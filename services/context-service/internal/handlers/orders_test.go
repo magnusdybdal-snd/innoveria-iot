@@ -48,6 +48,11 @@ func (m *mockContextService) GetContextData(
 	return nil, nil
 }
 
+func (m *mockContextService) GetProductionResources(_ context.Context, _ string) ([]domain.ERPProductionResource, error) {
+	m.t.Fatal("unexpected call to GetProductionResources")
+	return nil, nil
+}
+
 // TestGetOrders_Success_Returns200 verifies that a successful service call returns 200 with the order list.
 func TestGetOrders_Success_Returns200(t *testing.T) {
 	svc := &mockContextService{
@@ -60,7 +65,7 @@ func TestGetOrders_Success_Returns200(t *testing.T) {
 		},
 	}
 
-	req := httptest.NewRequest(http.MethodGet, "/api/v1/context/orders", nil)
+	req := withAuthHeaders(httptest.NewRequest(http.MethodGet, "/api/v1/context/orders", nil))
 	rec := httptest.NewRecorder()
 
 	handlers.GetOrders(svc).ServeHTTP(rec, req)
@@ -96,7 +101,7 @@ func TestGetOrders_EmptyList_Returns200(t *testing.T) {
 		},
 	}
 
-	req := httptest.NewRequest(http.MethodGet, "/api/v1/context/orders", nil)
+	req := withAuthHeaders(httptest.NewRequest(http.MethodGet, "/api/v1/context/orders", nil))
 	rec := httptest.NewRecorder()
 
 	handlers.GetOrders(svc).ServeHTTP(rec, req)
@@ -123,7 +128,7 @@ func TestGetOrders_ServiceError_Returns500(t *testing.T) {
 		},
 	}
 
-	req := httptest.NewRequest(http.MethodGet, "/api/v1/context/orders", nil)
+	req := withAuthHeaders(httptest.NewRequest(http.MethodGet, "/api/v1/context/orders", nil))
 	rec := httptest.NewRecorder()
 
 	handlers.GetOrders(svc).ServeHTTP(rec, req)

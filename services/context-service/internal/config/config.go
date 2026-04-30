@@ -31,7 +31,7 @@ func Load() *Config {
 		CollectionSvcURL: env.Get("COLLECTION_SERVICE", "http://collection-service:8080"),
 		ERPSvcURL:        env.Get("ERP_SERVICE", "http://erp-service:8080"),
 		DeviceSvcURL:     env.Get("DEVICE_SERVICE", "http://device-service:8080"),
-		UseMockERP:       env.GetBool("USE_MOCK_ERP", true),
+		UseMockERP:       env.GetBool("USE_MOCK_ERP", false),
 		DB_URL: fmt.Sprintf(
 			"postgres://%s:%s@%s:%s/%s?sslmode=%s",
 			dbUser,

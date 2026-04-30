@@ -17,6 +17,7 @@ export const API_ROUTES = {
   contextRules: `/v1/context/rules`,
   contextData: `/v1/context/data`,
   contextOrders: `/v1/context/orders`,
+  contextProductionResources: `/v1/context/production-resources`,
   user: `/v1/auth/me`,
   users: `/v1/auth/users`,
   login: `/v1/auth/login`,

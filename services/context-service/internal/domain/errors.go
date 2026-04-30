@@ -10,3 +10,6 @@ var ErrDatabase = errors.New("database error")
 
 // ErrConflict is returned when a resource already exists and cannot be duplicated.
 var ErrConflict = errors.New("conflict")
+
+// ErrUnauthorized is returned when the caller lacks permission to access a resource.
+var ErrUnauthorized = errors.New("unauthorized")

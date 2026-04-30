@@ -77,4 +77,8 @@ type ContextService interface {
 	//
 	// TODO: replace with AUTH — companyID should be read from the gateway-injected X-Auth-Company-Id header once auth middleware propagation is wired up.
 	GetOrderContext(ctx context.Context, companyID string, orderID int64) (*OrderContext, error)
+	// GetProductionResources returns all ERP production resources (work centers) for the given company.
+	//
+	// TODO: replace with AUTH — companyID should be read from the gateway-injected X-Auth-Company-Id header once auth middleware propagation is wired up.
+	GetProductionResources(ctx context.Context, companyID string) ([]ERPProductionResource, error)
 }

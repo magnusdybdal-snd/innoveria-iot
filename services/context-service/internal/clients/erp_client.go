@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"innoveria-iot/context-service/internal/clients/dto"
 	"innoveria-iot/context-service/internal/clients/mappers"
 	"innoveria-iot/context-service/internal/domain"
+	"innoveria-iot/pkg/erp/dto"
 	"innoveria-iot/pkg/httpclient"
 )
 
@@ -27,17 +27,18 @@ func NewERPClient(baseURL string) domain.ERPClient {
 }
 
 // GetOrders fetches the slim order list for the given company from the ERP service.
-//
-// TODO: the route /api/v1/erp/orders does not exist on the erp-service yet.
-// Update the URL and query parameters once the GET endpoint is implemented.
 func (c *erpClientImpl) GetOrders(ctx context.Context, companyID string) ([]domain.ERPOrderSummary, error) {
 	url := fmt.Sprintf("%s/api/v1/erp/orders", c.baseURL)
 	headers := map[string]string{"X-Auth-Company-Id": companyID}
 
-	resp, err := httpclient.DoRequest[[]dto.ERPOrderSummaryResponse](
+	resp, err := httpclient.DoRequest[[]dto.OrderSummary](
 		c.client, ctx, url, http.MethodGet, nil, headers,
 	)
 	if err != nil {
+		var httpErr *httpclient.HTTPError
+		if errors.As(err, &httpErr) && httpErr.StatusCode == http.StatusUnauthorized {
+			return nil, domain.ErrUnauthorized
+		}
 		return nil, err
 	}
 
@@ -48,16 +49,36 @@ func (c *erpClientImpl) GetOrders(ctx context.Context, companyID string) ([]doma
 	return orders, nil
 }
 
+// GetProductionResources fetches all production resources for the given company from the ERP service.
+func (c *erpClientImpl) GetProductionResources(ctx context.Context, companyID string) ([]domain.ERPProductionResource, error) {
+	url := fmt.Sprintf("%s/api/v1/erp/production-resources", c.baseURL)
+	headers := map[string]string{"X-Auth-Company-Id": companyID}
+
+	resp, err := httpclient.DoRequest[[]dto.ProductionResource](
+		c.client, ctx, url, http.MethodGet, nil, headers,
+	)
+	if err != nil {
+		var httpErr *httpclient.HTTPError
+		if errors.As(err, &httpErr) && httpErr.StatusCode == http.StatusUnauthorized {
+			return nil, domain.ErrUnauthorized
+		}
+		return nil, err
+	}
+
+	resources := make([]domain.ERPProductionResource, len(resp))
+	for i, r := range resp {
+		resources[i] = mappers.ToERPProductionResource(r)
+	}
+	return resources, nil
+}
+
 // GetOrderByID fetches a single order by ID from the ERP service, enriched with
 // its operations and production resources.
-//
-// TODO: the route /api/v1/erp/orders/{id} does not exist on the erp-service yet.
-// Update the URL once the GET endpoint is implemented.
 func (c *erpClientImpl) GetOrderByID(ctx context.Context, companyID string, orderID int64) (*domain.ERPOrder, error) {
 	url := fmt.Sprintf("%s/api/v1/erp/orders/%d", c.baseURL, orderID)
 	headers := map[string]string{"X-Auth-Company-Id": companyID}
 
-	resp, err := httpclient.DoRequest[dto.ERPOrderResponse](
+	resp, err := httpclient.DoRequest[dto.OrderAggregate](
 		c.client, ctx, url, http.MethodGet, nil, headers,
 	)
 	if err != nil {

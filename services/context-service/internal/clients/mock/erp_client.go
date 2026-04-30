@@ -195,6 +195,21 @@ func (c *ERPClient) GetOrders(_ context.Context, _ string) ([]domain.ERPOrderSum
 	return summaries, nil
 }
 
+// GetProductionResources returns the unique production resources referenced across all mock orders.
+func (c *ERPClient) GetProductionResources(_ context.Context, _ string) ([]domain.ERPProductionResource, error) {
+	seen := make(map[int64]struct{})
+	var result []domain.ERPProductionResource
+	for _, o := range mockOrders {
+		for _, op := range o.Operations {
+			if _, ok := seen[op.ProductionResource.ID]; !ok {
+				seen[op.ProductionResource.ID] = struct{}{}
+				result = append(result, op.ProductionResource)
+			}
+		}
+	}
+	return result, nil
+}
+
 // GetOrderByID returns a single mock order by ID. companyID is accepted but not used.
 func (c *ERPClient) GetOrderByID(_ context.Context, _ string, orderID int64) (*domain.ERPOrder, error) {
 	for i := range mockOrders {
