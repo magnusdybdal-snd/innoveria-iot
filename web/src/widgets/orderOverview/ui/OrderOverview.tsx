@@ -35,6 +35,20 @@ export function OrderOverview({ operations }: OrderOverviewProps) {
     .flatMap((op) => op.operation.reports ?? [])
     .reduce((sum, r) => sum + r.quantity, 0);
 
+  const totalWh = operations
+    .flatMap((op) => op.sensors)
+    .map((s) => s.totalPowerWh)
+    .filter((wh): wh is number => wh !== null)
+    .reduce((sum, wh) => sum + wh, 0);
+  const hasEnergyData = operations.some((op) =>
+    op.sensors.some((s) => s.totalPowerWh !== null),
+  );
+  const totalKwh = hasEnergyData ? (totalWh / 1000).toFixed(2) : "—";
+  const perPartKwh =
+    hasEnergyData && totalQuantity > 0
+      ? (totalWh / 1000 / totalQuantity).toFixed(2)
+      : "—";
+
   return (
     <>
       <Typography variant="h5" fontWeight={500} sx={{ mb: 2 }}>
@@ -61,19 +75,27 @@ export function OrderOverview({ operations }: OrderOverviewProps) {
           label="Parts produced"
           value={String(totalQuantity)}
         />
-        {/* Power totals placeholder — TODO: wire up once backend aggregation is available */}
         <OrderOverviewStat
           label="Total power"
-          value="—"
+          value={totalKwh}
           unit="kWh"
-          tooltip="Power totals will be available in a future update"
+          tooltip={
+            !hasEnergyData
+              ? "No electricity sensors with a configured voltage found on this order"
+              : undefined
+          }
         />
-        {/* Per-part consumption placeholder — TODO: wire up once context-service exposes parts produced */}
         <OrderOverviewStat
           label="Per part"
-          value="—"
+          value={perPartKwh}
           unit="kWh/part"
-          tooltip="Per-part consumption will be available in a future update"
+          tooltip={
+            !hasEnergyData
+              ? "No electricity sensors with a configured voltage found on this order"
+              : totalQuantity === 0
+                ? "No parts reported for this order yet"
+                : undefined
+          }
         />
       </Box>
     </>
