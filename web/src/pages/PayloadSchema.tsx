@@ -225,7 +225,7 @@ export default function PayloadSchema() {
   }, [sensor, perInstallation]);
 
   const filteredSensors = sensors.filter((sensor) => {
-    return sensor.sensorProfile === profile;
+    return sensor.sensorProfileId === profile;
   });
 
   const filteredSensorOptions = filteredSensors.map((s) => ({
