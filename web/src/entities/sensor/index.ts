@@ -5,6 +5,7 @@ export type {
   SensorReadingApiResponse,
   CreateSensorRequest,
   SensorProfileApiResponse,
+  UpdateSensorRequest,
 } from "./model/sensorSchema";
 export {
   getSensors,
@@ -17,6 +18,7 @@ export {
   getSensorProfileConfig,
   putSensorProfileConfig,
   putSensorMetrics,
+  patchSensor,
 } from "./api";
 export { SensorMainInfo, SensorAllInfoPopUp, SensorsGenInfo } from "./ui";
 export { sortSensors } from "./lib/sortSensors";

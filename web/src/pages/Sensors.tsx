@@ -10,6 +10,7 @@ import { useFactoryAreas } from "@entities/factoryArea";
 import { useProductionResources } from "@entities/productionResource";
 import {
   deleteSensor,
+  patchSensor,
   postSensor,
   SensorAllInfoPopUp,
   SensorMainInfo,
@@ -22,6 +23,7 @@ import {
   type SortDirection,
 } from "@entities/sensor";
 import { AddDevice } from "@features/addDevice";
+import { EditSensor } from "@features/editDevice";
 import { formatTimestamp } from "@shared/lib";
 import { CustomButton } from "@shared/ui/Button";
 import { CategoryHeader } from "@shared/ui/CategoryHeader";
@@ -74,6 +76,19 @@ export default function Sensors() {
   const { productionResources } = useProductionResources();
   const [openAdd, setOpenAdd] = useState(false);
   const [addError, setAddError] = useState<string | null>(null);
+  const [editingSensor, setEditingSensor] = useState<{
+    id: string;
+    name: string;
+    deviceEui: string;
+    electricitySensor: boolean;
+    factory: string;
+    factoryArea: string;
+    productionResource: string | null;
+    appKey: string;
+    deviceProfile: string;
+    voltage: number | null;
+  } | null>(null);
+  const [editError, setEditError] = useState<string | null>(null);
   const [selectedSensor, setSelectedSensor] =
     useState<SensorApiResponse | null>(null);
 
@@ -125,7 +140,7 @@ export default function Sensors() {
     factoryArea: string;
     productionResource: number | null;
     appKey: string;
-    senProf: string;
+    deviceProfile: string;
     voltage: number | null;
   }): Promise<void> => {
     setAddError(null);
@@ -134,7 +149,7 @@ export default function Sensors() {
       factoryId: sensorData.factory,
       factoryAreaId: sensorData.factoryArea,
       deviceEui: sensorData.deviceEui,
-      sensorProfileId: sensorData.senProf,
+      sensorProfile: sensorData.deviceProfile,
       productionResource: sensorData.productionResource,
       appKey: sensorData.appKey,
       name: sensorData.name,
@@ -153,6 +168,52 @@ export default function Sensors() {
             : "Something went wrong adding sensor.";
         setAddError(message);
         show("Failed to add sensor.", SNACKBAR_SEVERITY.ERROR);
+      });
+  };
+
+  const handleEditSensor = (
+    id: string,
+    payload: {
+      name?: string;
+      electricitySensor?: boolean;
+      factory?: string;
+      factoryArea?: string;
+      productionResource?: string | null;
+      deviceProfile?: string;
+      voltage?: number | null;
+      description?: string;
+      appKey?: string;
+    },
+  ) => {
+    return; //TODO: Remove when sensor edit is fixed
+    setEditError(null);
+
+    return patchSensor(id, {
+      name: payload.name,
+      electricity_sensor: payload.electricitySensor,
+      factory_id: payload.factory,
+      factory_area_id: payload.factoryArea,
+      production_resource: payload.productionResource ?? undefined,
+      device_profile_id: payload.deviceProfile,
+      voltage: payload.voltage ?? undefined,
+      description: payload.description,
+      app_key: payload.appKey,
+    })
+      .then(() => {
+        refetch();
+        setEditingSensor(null);
+        show("Sensor updated successfully", SNACKBAR_SEVERITY.SUCCESS);
+      })
+      .catch((err: unknown) => {
+        console.error("Failed to update sensor:", err);
+
+        const message =
+          axios.isAxiosError(err) && err.response?.data?.message
+            ? (err.response.data.message as string)
+            : "Failed to update sensor.";
+
+        setEditError(message);
+        show("Failed to update sensor", SNACKBAR_SEVERITY.ERROR);
       });
   };
 
@@ -251,11 +312,12 @@ export default function Sensors() {
           {filteredSensors.map((sensor) => (
             <DeviceRow key={sensor.id}>
               <SensorMainInfo
-                name={sensor.name}
+                sensor={sensor}
                 status={sensor.status}
                 lastReading={formatTimestamp(sensor.lastReading)}
                 onClick={() => handleRowClick(sensor)}
                 onDelete={() => handleDeleteSensor(sensor.id)}
+                onEdit={setEditingSensor}
               />
             </DeviceRow>
           ))}
@@ -294,6 +356,25 @@ export default function Sensors() {
           })),
         ]}
       />
+      {editingSensor && (
+        <EditSensor
+          key={editingSensor.id}
+          open={true}
+          onClose={() => {
+            setEditingSensor(null);
+            setEditError(null);
+          }}
+          editOptions={addSensorDetails}
+          profileOptions={sensorProfiles}
+          factoryOptions={factories}
+          factoryAreaOptions={factoryAreas}
+          voltageOptions={voltageOptions}
+          onFactoryChange={setSelectedFactoryId}
+          sensor={editingSensor}
+          onEdit={handleEditSensor}
+          submitError={editError}
+        />
+      )}
       <AppSnackbar
         open={snackbar?.open ?? false}
         message={snackbar?.message ?? ""}

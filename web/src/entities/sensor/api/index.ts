@@ -8,3 +8,4 @@ export { deleteSensor } from "./deleteSensor.ts";
 export { getSensorProfileConfig } from "./getSensorProfileConfig.ts";
 export { putSensorMetrics } from "./putSensorMetrics.ts";
 export { putSensorProfileConfig } from "./putSensorProfileConfig.ts";
+export { patchSensor } from "./patchSensor.ts";

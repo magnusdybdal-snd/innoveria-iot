@@ -6,14 +6,20 @@ import { useTheme } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 
 import { DeleteConfirmation } from "@shared/ui/DeleteConfirmation";
-import { RenameDialog } from "@shared/ui/RenameDialog";
+
+import type { GatewayApiResponse } from "../model/gatewaySchema";
 
 type InfoProps = {
-  name: string;
-  status: number;
-  device_eui: string;
+  gateway: GatewayApiResponse;
   lastSeenAt: string;
   onDelete: () => void;
+  onEdit: (sensor: {
+    id: string;
+    name: string;
+    deviceEui: string;
+    factory: string;
+    factoryArea: string;
+  }) => void;
 };
 
 /**
@@ -21,35 +27,20 @@ type InfoProps = {
  * Includes an ActionMenu for renaming (local state only) and deleting the gateway.
  * Opens a Dialog to collect the new name on rename.
  * @param props - Component props
- * @param props.name - Display name of the gateway
- * @param props.status - Numeric status code: 0 = online, 1 = warning, 2 = offline
- * @param props.device_eui
- * @param props.lastSeenAt
- * @param props.onDelete
+ * @param props.gateway - Gateway to be edited
+ * @param props.lastSeenAt - Timestamp or relative time of the most recent gateway reading
+ * @param props.onDelete - Called when the user clicks "Delete" to remove the sensor
+ * @param props.onEdit - Called when the user clicks "Edit" to edit the sensor
  * @returns A set of grid-aligned cells with an action menu and rename dialog
  */
 export function GatewayInfo({
-  name,
-  status,
-  device_eui,
+  gateway,
   lastSeenAt,
   onDelete,
+  onEdit,
 }: InfoProps) {
   const theme = useTheme();
-  const [currentName, setCurrentName] = useState(name);
-  const [editOpen, setEditOpen] = useState(false);
-  const [editValue, setEditValue] = useState(name);
   const [deleteOpen, setDeleteOpen] = useState(false);
-
-  const handleEditOpen = () => {
-    setEditValue(currentName);
-    setEditOpen(true);
-  };
-
-  const handleEditSave = () => {
-    setCurrentName(editValue);
-    setEditOpen(false);
-  };
 
   const handleDeleteConfirm = () => {
     onDelete();
@@ -57,7 +48,17 @@ export function GatewayInfo({
   };
 
   const menuItems = [
-    { label: "Rename", onClick: handleEditOpen },
+    {
+      label: "Edit",
+      onClick: () =>
+        onEdit({
+          id: gateway.id,
+          name: gateway.name,
+          deviceEui: gateway.gatewayEui,
+          factory: gateway.factory,
+          factoryArea: gateway.factoryArea,
+        }),
+    },
     { label: "Delete", onClick: () => setDeleteOpen(true) },
   ];
 
@@ -78,25 +79,16 @@ export function GatewayInfo({
     <>
       <CircleIcon
         sx={{
-          color: statusColor(Number(status)),
+          color: statusColor(Number(gateway.status)),
           fontSize: 14,
           alignSelf: "center",
           filter: "drop-shadow(0 0 1px grey)",
         }}
       />
-      <Typography>{currentName}</Typography>
-      <Typography>{device_eui}</Typography>
+      <Typography>{gateway.name}</Typography>
+      <Typography>{gateway.gatewayEui}</Typography>
       <Typography>{lastSeenAt}</Typography>
       <ActionMenu items={menuItems} />
-      <RenameDialog
-        open={editOpen}
-        value={editValue}
-        onChange={setEditValue}
-        onClose={() => setEditOpen(false)}
-        onSave={handleEditSave}
-        label="Gateway name"
-        title="Rename gateway"
-      />
       <DeleteConfirmation
         open={deleteOpen}
         onClose={() => setDeleteOpen(false)}

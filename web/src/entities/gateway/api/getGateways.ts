@@ -14,6 +14,8 @@ type RawGatewayApiResponse = {
   name: string;
   status: number;
   last_seen_at: string;
+  factory_id: string;
+  factory_area_id: string;
 };
 /**
  * Fetches all gateways from the collection-service via the API gateway.
@@ -33,5 +35,7 @@ export const getGateways = async (): Promise<GatewayApiResponse[]> => {
     name: a.name,
     status: a.status,
     lastSeenAt: a.last_seen_at,
+    factory: a.factory_id,
+    factoryArea: a.factory_area_id,
   }));
 };

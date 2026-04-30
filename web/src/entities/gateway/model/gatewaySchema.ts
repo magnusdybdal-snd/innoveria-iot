@@ -9,6 +9,8 @@ export interface GatewayApiResponse {
   name: string;
   status: number;
   lastSeenAt: string; // RFC1123 - directly parsable in JS.
+  factory: string;
+  factoryArea: string;
 }
 
 export interface GatewayListApiResponse {
@@ -21,4 +23,11 @@ export interface CreateGatewayRequest {
   name: string;
   factoryId: string;
   factoryAreaId: string;
+}
+
+export interface UpdateGatewayRequest {
+  description?: string;
+  factoryAreaId?: string;
+  factoryId?: string;
+  name?: string;
 }

@@ -33,13 +33,15 @@ export function sortSensors(
         cmp = a.status - b.status;
         break;
       case "Machine":
-        cmp = a.machine.localeCompare(b.machine);
+        cmp = (a.productionResource ?? "").localeCompare(
+          b.productionResource ?? "",
+        );
         break;
       case "Last reading":
         cmp = a.lastReading.localeCompare(b.lastReading);
         break;
       case "Sensor profile":
-        cmp = a.sensorProfileId.localeCompare(b.sensorProfileId);
+        cmp = a.sensorProfile.localeCompare(b.sensorProfile);
         break;
     }
     return direction === "asc" ? cmp : -cmp;

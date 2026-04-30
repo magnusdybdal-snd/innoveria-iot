@@ -12,10 +12,19 @@ export interface SensorApiResponse {
   deviceEui: string;
   name: string;
   factory: string;
+  factoryArea: string;
   status: number;
-  machine: string;
   lastReading: string;
-  sensorProfileId: string;
+  updatedAt: string;
+  sensorProfile: string;
+  productionResource: string | null;
+  appKey: string;
+  voltage: number | null;
+  electricitySensor: boolean;
+  description: string;
+  companyId: string;
+  state: string;
+  createdAt: string;
 }
 
 export interface SensorReadingApiResponse {
@@ -36,7 +45,7 @@ export interface CreateSensorRequest {
   deviceEui: string;
   productionResource: number | null;
   appKey: string;
-  sensorProfileId: string;
+  sensorProfile: string;
   name: string;
   voltage: number | null;
 }
@@ -84,4 +93,16 @@ export interface SensorMetricApiResponse {
   measurementType: string;
   payloadKey: string;
   unit: string;
+}
+
+export interface UpdateSensorRequest {
+  description?: string;
+  device_profile_id?: string;
+  electricity_sensor?: boolean;
+  factory_area_id?: string;
+  factory_id?: string;
+  name?: string;
+  app_key?: string;
+  production_resource?: string;
+  voltage?: number;
 }
