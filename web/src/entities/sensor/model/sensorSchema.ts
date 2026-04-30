@@ -16,7 +16,7 @@ export interface SensorApiResponse {
   status: number;
   lastReading: string;
   updatedAt: string;
-  deviceProfileId: string;
+  sensorProfile: string;
   productionResource: string | null;
   appKey: string;
   voltage: number | null;
@@ -45,7 +45,7 @@ export interface CreateSensorRequest {
   deviceEui: string;
   productionResource: number | null;
   appKey: string;
-  deviceProfile: string;
+  sensorProfile: string;
   name: string;
   voltage: number | null;
 }

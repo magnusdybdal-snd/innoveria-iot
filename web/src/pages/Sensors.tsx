@@ -22,7 +22,7 @@ import {
 } from "@entities/sensor";
 import { patchSensor } from "@entities/sensor/api/patchSensor.ts";
 import { AddDevice } from "@features/addDevice";
-import { EditDevice } from "@features/editDevice";
+import { EditSensor } from "@features/editDevice";
 import { formatTimestamp } from "@shared/lib";
 import { CustomButton } from "@shared/ui/Button";
 import { CategoryHeader } from "@shared/ui/CategoryHeader";
@@ -147,7 +147,7 @@ export default function Sensors() {
       factoryId: sensorData.factory,
       factoryAreaId: sensorData.factoryArea,
       deviceEui: sensorData.deviceEui,
-      deviceProfile: sensorData.deviceProfile,
+      sensorProfile: sensorData.deviceProfile,
       productionResource: sensorData.productionResource,
       appKey: sensorData.appKey,
       name: sensorData.name,
@@ -183,6 +183,7 @@ export default function Sensors() {
       appKey?: string;
     },
   ) => {
+    return; //TODO: Remove when sensor edit is fixed
     setEditError(null);
 
     return patchSensor(id, {
@@ -347,7 +348,7 @@ export default function Sensors() {
         onFactoryChange={setSelectedFactoryId}
       />
       {editingSensor && (
-        <EditDevice
+        <EditSensor
           key={editingSensor.id}
           open={true}
           onClose={() => {
@@ -360,7 +361,7 @@ export default function Sensors() {
           factoryAreaOptions={factoryAreas}
           voltageOptions={voltageOptions}
           onFactoryChange={setSelectedFactoryId}
-          device={editingSensor}
+          sensor={editingSensor}
           onEdit={handleEditSensor}
           submitError={editError}
         />

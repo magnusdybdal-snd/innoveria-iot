@@ -48,7 +48,7 @@ export const getSensors = async (): Promise<SensorApiResponse[]> => {
     status: s.status,
     productionResource: s.production_resource ?? "",
     lastReading: s.last_seen_at,
-    deviceProfileId: s.device_profile_id,
+    sensorProfile: s.device_profile_id,
     appKey: s.app_key,
     voltage: s.voltage,
     electricitySensor: s.electricity_sensor,

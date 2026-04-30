@@ -10,7 +10,7 @@ import Typography from "@mui/material/Typography";
 import { ELECTRICITY_SENSOR } from "@shared/const";
 import { DeviceFormFields } from "@shared/ui/DeviceFormFields";
 
-export interface EditDeviceProps {
+export interface EditSensorProps {
   open: boolean;
   onClose: () => void;
   editOptions: string[];
@@ -19,7 +19,7 @@ export interface EditDeviceProps {
   factoryAreaOptions?: { id: string; name: string }[];
   voltageOptions?: { id: string; name: string }[];
   onFactoryChange?: (factoryId: string) => void;
-  device: {
+  sensor: {
     id: string;
     name: string;
     deviceEui: string;
@@ -62,7 +62,7 @@ const inputLengthError: Record<string, string> = {
 };
 
 /**
- * Modal dialog for editing an existing device, with input validation for DeviceEUI and Application key lengths.
+ * Modal dialog for editing an existing sensor, with input validation for DeviceEUI and Application key lengths.
  * @param props - Component props
  * @param props.open - Whether the dialog is visible
  * @param props.onClose - Called when the dialog should close without submitting
@@ -70,13 +70,13 @@ const inputLengthError: Record<string, string> = {
  * @param props.profileOptions - Available sensor profiles for the dropdown
  * @param props.onAdd - Called with the validated sensor data when the user confirms
  * @param props.submitError - Error message to display if the submission fails
- * @returns The rendered add-device dialog
+ * @returns The rendered add-sensor dialog
  */
-export function EditDevice(props: EditDeviceProps) {
+export function EditSensor(props: EditSensorProps) {
   const {
     onClose,
     open,
-    device,
+    sensor,
     onEdit,
     editOptions,
     profileOptions = [],
@@ -89,23 +89,23 @@ export function EditDevice(props: EditDeviceProps) {
   const [values, setValues] = useState<Record<string, string>>({});
   const [lengthErrors, setLengthErrors] = useState<Record<string, boolean>>({});
 
-  // Initialize form when device changes
+  // Initialize form when sensor changes
   useEffect(() => {
-    if (!device) return;
+    if (!sensor) return;
 
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setValues({
-      Name: device.name,
-      DeviceEUI: device.deviceEui,
-      "Electricity sensor": String(device.electricitySensor),
-      Factory: device.factory,
-      "Factory area": device.factoryArea,
-      "Production resource": device.productionResource?.toString() ?? "",
-      "Application key": device.appKey,
-      "Sensor profile": device.deviceProfile,
-      Voltage: device.voltage?.toString() ?? "",
+      Name: sensor.name,
+      DeviceEUI: sensor.deviceEui,
+      "Electricity sensor": String(sensor.electricitySensor),
+      Factory: sensor.factory,
+      "Factory area": sensor.factoryArea,
+      "Production resource": sensor.productionResource?.toString() ?? "",
+      "Application key": sensor.appKey,
+      "Sensor profile": sensor.deviceProfile,
+      Voltage: sensor.voltage?.toString() ?? "",
     });
-  }, [device]);
+  }, [sensor]);
 
   const handleClose = () => {
     setLengthErrors({});
@@ -140,46 +140,46 @@ export function EditDevice(props: EditDeviceProps) {
     }
 
     // Build payload only with changed values
-    type EditDevicePayload = Parameters<EditDeviceProps["onEdit"]>[1];
-    const payload: EditDevicePayload = {};
+    type EditSensorPayload = Parameters<EditSensorProps["onEdit"]>[1];
+    const payload: EditSensorPayload = {};
 
-    if (values["Name"] !== device.name && values["Name"].length > 0)
+    if (values["Name"] !== sensor.name && values["Name"].length > 0)
       payload.name = values["Name"];
 
-    if ((values["Electricity sensor"] === "true") !== device.electricitySensor)
+    if ((values["Electricity sensor"] === "true") !== sensor.electricitySensor)
       payload.electricitySensor = values["Electricity sensor"] === "true";
 
-    if (values["Factory"] !== device.factory && values["Factory"].length > 0)
+    if (values["Factory"] !== sensor.factory && values["Factory"].length > 0)
       payload.factory = values["Factory"];
 
     if (
-      values["Factory area"] !== device.factoryArea &&
+      values["Factory area"] !== sensor.factoryArea &&
       values["Factory area"].length > 0
     )
       payload.factoryArea = values["Factory area"];
 
     if (
       productionResourceRaw !== "" &&
-      productionResourceParsed !== Number(device.productionResource)
+      String(productionResourceParsed) !== sensor.productionResource
     ) {
       payload.productionResource = String(productionResourceParsed);
     }
 
     if (
-      values["Application key"] !== device.appKey &&
+      values["Application key"] !== sensor.appKey &&
       values["Application key"].length > 0
     )
       payload.appKey = values["Application key"];
 
     if (
-      values["Sensor profile"] !== device.deviceProfile &&
+      values["Sensor profile"] !== sensor.deviceProfile &&
       values["Sensor profile"].length > 0
     )
       payload.deviceProfile = values["Sensor profile"];
 
     const voltageValue = electricityEnabled ? Number(values["Voltage"]) : null;
 
-    if (voltageValue !== device.voltage) {
+    if (voltageValue !== sensor.voltage) {
       payload.voltage = voltageValue;
     }
 
@@ -188,7 +188,7 @@ export function EditDevice(props: EditDeviceProps) {
       return;
     }
 
-    onEdit(device.id, payload);
+    onEdit(sensor.id, payload);
   };
 
   return (
@@ -206,7 +206,7 @@ export function EditDevice(props: EditDeviceProps) {
         },
       }}
     >
-      <DialogTitle sx={{ color: "primary.main" }}>Edit device</DialogTitle>
+      <DialogTitle sx={{ color: "primary.main" }}>Edit sensor</DialogTitle>
 
       <DialogContent>
         <DeviceFormFields

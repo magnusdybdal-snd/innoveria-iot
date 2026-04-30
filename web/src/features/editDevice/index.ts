@@ -1,2 +1,2 @@
-export { EditDevice } from "./ui";
-export type { EditDeviceProps } from "./ui";
+export { EditSensor } from "./ui";
+export type { EditSensorProps } from "./ui";

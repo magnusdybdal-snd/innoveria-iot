@@ -74,7 +74,7 @@ export function SensorMainInfo({
             ? sensor.productionResource
             : null,
           appKey: sensor.appKey,
-          deviceProfile: sensor.deviceProfileId,
+          deviceProfile: sensor.sensorProfile,
           voltage: sensor.voltage,
         }),
     },

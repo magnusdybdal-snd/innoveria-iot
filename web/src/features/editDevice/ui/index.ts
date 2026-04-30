@@ -1,2 +1,2 @@
-export { EditDevice } from "./EditDevice.tsx";
-export type { EditDeviceProps } from "./EditDevice.tsx";
+export { EditSensor } from "./EditSensor.tsx";
+export type { EditSensorProps } from "./EditSensor.tsx";
