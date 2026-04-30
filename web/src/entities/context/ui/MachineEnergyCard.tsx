@@ -222,6 +222,9 @@ export function MachineEnergyCard({
     .filter((wh): wh is number => wh !== null)
     .reduce((sum, wh) => sum + wh, 0);
   const hasEnergyData = sensors.some((s) => s.totalPowerWh !== null);
+  const hasElectricitySensor = sensors.some((s) =>
+    s.metrics.some(isPowerMetric),
+  );
   const sensorState = resolveSensorState(sensors, degraded);
   const sensorGroups = buildChartData(operationContext);
   const hasCharts = sensorGroups.length > 0;
@@ -262,25 +265,27 @@ export function MachineEnergyCard({
       {/* Operation status chip */}
       <Box sx={{ mb: 1.5 }}></Box>
 
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1.5 }}>
-        <Typography variant="body2" sx={{ opacity: 0.7 }}>
-          Energy:
-        </Typography>
-        {hasEnergyData ? (
-          <Typography variant="body1" fontWeight={600}>
-            {(totalWh / 1000).toFixed(2)}
+      {hasElectricitySensor && (
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1.5 }}>
+          <Typography variant="body2" sx={{ opacity: 0.7 }}>
+            Energy:
           </Typography>
-        ) : (
-          <Tooltip title="Energy totals require an electricity sensor with a configured voltage">
+          {hasEnergyData ? (
             <Typography variant="body1" fontWeight={600}>
-              —
+              {(totalWh / 1000).toFixed(2)}
             </Typography>
-          </Tooltip>
-        )}
-        <Typography variant="body2" sx={{ opacity: 0.5 }}>
-          kWh
-        </Typography>
-      </Box>
+          ) : (
+            <Tooltip title="Energy totals require a configured voltage on the electricity sensor">
+              <Typography variant="body1" fontWeight={600}>
+                —
+              </Typography>
+            </Tooltip>
+          )}
+          <Typography variant="body2" sx={{ opacity: 0.5 }}>
+            kWh
+          </Typography>
+        </Box>
+      )}
 
       {/* One collapsible section per sensor — label shown only when multiple sensors exist */}
       {hasCharts &&
