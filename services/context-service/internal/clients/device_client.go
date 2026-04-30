@@ -65,6 +65,10 @@ func (c *DeviceClient) GetSensorMetrics(ctx context.Context, deviceEUI string) (
 		c.client, ctx, url, http.MethodGet, nil, nil,
 	)
 	if err != nil {
+		var httpErr *httpclient.HTTPError
+		if errors.As(err, &httpErr) && httpErr.StatusCode == http.StatusNotFound {
+			return []domain.SensorMetric{}, nil
+		}
 		return nil, err
 	}
 

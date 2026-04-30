@@ -242,6 +242,7 @@ services:
       - ./pkg:/pkg
     environment:
       - GO_ENV=development
+      - DEVICE_SERVICE=http://device-service:8080
       - DEVICE_SERVICE_INTERNAL=http://device-service:9090
     depends_on:
       - collection-service

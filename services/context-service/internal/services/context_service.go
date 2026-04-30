@@ -93,14 +93,16 @@ func (s *ContextServiceImpl) GetContextData(
 		}
 
 		result, err := calc.Calculate(calculators.Input{
-			Rule:              rule,
-			Readings:          readings,
-			BucketMinutes:     effectiveBucketMins,
-			From:              from,
-			To:                to,
+			Rule:          rule,
+			Readings:      readings,
+			BucketMinutes: effectiveBucketMins,
+			From:          from,
+			To:            to,
+			// TODO: GetContextData has no per-sensor metadata (ElectricitySensor, Voltage, metrics).
+			// WattHourCalculator is removed from the registry so watt_over_time rules fall
+			// through to GenericAggregationCalculator here. Use GetOrderContext for Wh calculations.
 			CurrentPayloadKey: rule.MeasurementType,
-			// TODO: look up per-sensor voltage when GetContextData callers need it.
-			VoltageV: 230.0,
+			VoltageV:          230.0,
 		})
 		if err != nil {
 			return nil, fmt.Errorf("calculating context for device %s: %w", eui, err)
@@ -199,6 +201,7 @@ func (s *ContextServiceImpl) buildOperationContext(ctx context.Context, companyI
 		wg.Go(func() {
 			sc, err := s.buildSensorContext(ctx, companyID, userID, role, sensor, from, to)
 			if err != nil {
+				slog.Error("failed to build sensor context", "device_eui", sensor.DeviceEUI, "error", err)
 				mu.Lock()
 				if svcErr == nil {
 					svcErr = err
@@ -251,7 +254,7 @@ func (s *ContextServiceImpl) buildSensorContext(ctx context.Context, companyID, 
 					CurrentPayloadKey: currentKey,
 				})
 				if err != nil {
-					slog.Error("Wh calculation failed for sensor", "device_eui", sensor.DeviceEUI, "error", err)
+					return domain.SensorContext{}, fmt.Errorf("calculating Wh for sensor %s: %w", sensor.DeviceEUI, err)
 				} else {
 					sc.PowerConsumptionWh = &result.Value
 				}
