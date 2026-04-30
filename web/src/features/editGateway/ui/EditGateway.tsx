@@ -165,6 +165,7 @@ export function EditGateway(props: EditGatewayProps) {
           }}
           profileOptions={[]}
           voltageOptions={[]}
+          productionResourceOptions={[]}
         />
         {submitError && (
           <Typography color="error" mt={1}>
