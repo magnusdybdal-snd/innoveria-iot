@@ -231,6 +231,7 @@ export function EditSensor(props: EditSensorProps) {
               setValues((prev) => ({ ...prev, [option]: value }));
             }
           }}
+          productionResourceOptions={[]}
         />
         {submitError && (
           <Typography color="error" mt={1}>
