@@ -27,9 +27,13 @@ func NewERPClient(baseURL string) domain.ERPClient {
 }
 
 // GetOrders fetches the slim order list for the given company from the ERP service.
-func (c *erpClientImpl) GetOrders(ctx context.Context, companyID string) ([]domain.ERPOrderSummary, error) {
+func (c *erpClientImpl) GetOrders(ctx context.Context, companyID, userID, role string) ([]domain.ERPOrderSummary, error) {
 	url := fmt.Sprintf("%s/api/v1/erp/orders", c.baseURL)
-	headers := map[string]string{"X-Auth-Company-Id": companyID}
+	headers := map[string]string{
+		"X-Auth-Company-Id": companyID,
+		"X-Auth-User-Id":    userID,
+		"X-Auth-Role":       role,
+	}
 
 	resp, err := httpclient.DoRequest[[]dto.OrderSummary](
 		c.client, ctx, url, http.MethodGet, nil, headers,
@@ -47,9 +51,13 @@ func (c *erpClientImpl) GetOrders(ctx context.Context, companyID string) ([]doma
 
 // GetOrderByID fetches a single order by ID from the ERP service, enriched with
 // its operations and production resources.
-func (c *erpClientImpl) GetOrderByID(ctx context.Context, companyID string, orderID int64) (*domain.ERPOrder, error) {
+func (c *erpClientImpl) GetOrderByID(ctx context.Context, companyID, userID, role string, orderID int64) (*domain.ERPOrder, error) {
 	url := fmt.Sprintf("%s/api/v1/erp/orders/%d", c.baseURL, orderID)
-	headers := map[string]string{"X-Auth-Company-Id": companyID}
+	headers := map[string]string{
+		"X-Auth-Company-Id": companyID,
+		"X-Auth-User-Id":    userID,
+		"X-Auth-Role":       role,
+	}
 
 	resp, err := httpclient.DoRequest[dto.OrderAggregate](
 		c.client, ctx, url, http.MethodGet, nil, headers,
