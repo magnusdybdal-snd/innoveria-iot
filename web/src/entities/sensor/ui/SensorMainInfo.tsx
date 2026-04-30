@@ -29,9 +29,6 @@ type InfoMainProps = {
   }) => void;
 };
 
-{
-  /*Format for main single sensor info*/
-}
 /**
  * Renders the primary sensor row cells: status indicator, name, last reading, and an action menu.
  * @param root0 - Component props
