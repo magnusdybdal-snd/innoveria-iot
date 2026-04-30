@@ -10,6 +10,7 @@ import { useFactoryAreas } from "@entities/factoryArea";
 import { useProductionResources } from "@entities/productionResource";
 import {
   deleteSensor,
+  patchSensor,
   postSensor,
   SensorAllInfoPopUp,
   SensorMainInfo,
@@ -21,7 +22,6 @@ import {
   type SensorSortKey,
   type SortDirection,
 } from "@entities/sensor";
-import { patchSensor } from "@entities/sensor/api/patchSensor.ts";
 import { AddDevice } from "@features/addDevice";
 import { EditSensor } from "@features/editDevice";
 import { formatTimestamp } from "@shared/lib";

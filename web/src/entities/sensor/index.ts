@@ -18,6 +18,7 @@ export {
   getSensorProfileConfig,
   putSensorProfileConfig,
   putSensorMetrics,
+  patchSensor,
 } from "./api";
 export { SensorMainInfo, SensorAllInfoPopUp, SensorsGenInfo } from "./ui";
 export { sortSensors } from "./lib/sortSensors";
