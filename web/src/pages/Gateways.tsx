@@ -156,8 +156,8 @@ export default function Gateways() {
 
     return patchGateway(id, {
       name: payload.name,
-      factory_id: payload.factory,
-      factory_area_id: payload.factoryArea,
+      factoryId: payload.factory,
+      factoryAreaId: payload.factoryArea,
     })
       .then(() => {
         refetch();
