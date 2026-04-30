@@ -2,9 +2,8 @@ export type {
   GatewayApiResponse,
   GatewayListApiResponse,
   CreateGatewayRequest,
-  UpdateGatewayRequest,
 } from "./model/gatewaySchema";
-export { getGateways, postGateway, deleteGateway, patchGateway } from "./api";
+export { getGateways, postGateway, deleteGateway } from "./api";
 export { useGateways } from "./model/useGateways";
 export { GatewayInfo } from "./ui";
 export { sortGateways } from "./lib/sortGateways";

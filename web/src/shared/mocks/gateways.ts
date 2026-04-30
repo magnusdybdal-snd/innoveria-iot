@@ -8,8 +8,6 @@ export const mockGateways: GatewayApiResponse[] = [
     status: 0,
     gatewayEui: "A1B2C3D4E5F6",
     lastSeenAt: "Thu, 05 Mar 2026 10:00:00 GMT",
-    factory: "Factory A",
-    factoryArea: "Area A",
   },
   {
     id: "2",
@@ -18,8 +16,6 @@ export const mockGateways: GatewayApiResponse[] = [
     status: 2,
     gatewayEui: "B2C3D4E5F6A1",
     lastSeenAt: "Thu, 05 Mar 2026 09:00:00 GMT",
-    factory: "Factory A",
-    factoryArea: "Area B",
   },
   {
     id: "3",
@@ -28,7 +24,5 @@ export const mockGateways: GatewayApiResponse[] = [
     status: 1,
     gatewayEui: "B2D3D5E5A6A1",
     lastSeenAt: "Mon, 02 Mar 2026 10:00:00 GMT",
-    factory: "Factory B",
-    factoryArea: "Area A",
   },
 ];
