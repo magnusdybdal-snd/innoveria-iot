@@ -3,6 +3,7 @@ package handlers
 import (
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"strings"
 
@@ -225,7 +226,7 @@ func PostCompanyERPAgentToken(svc domain.CompanyService) http.HandlerFunc {
 			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("missing id path parameter"), "id is required")
 			return
 		}
-
+		slog.Info("test", "id", companyID)
 		if _, err := uuid.Parse(companyID); err != nil {
 			json.HandleError(w, http.StatusBadRequest, err, "invalid company id (uuid)")
 			return
