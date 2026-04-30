@@ -1,2 +1,2 @@
 export { EditGateway } from "./ui";
-export type { EditDeviceProps } from "./ui";
+export type { EditGatewayProps } from "./ui";
