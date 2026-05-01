@@ -14,15 +14,7 @@ import type {
   UpdateGatewayRequest,
 } from "@entities/gateway";
 import { DropDownSelect } from "@shared/ui/DropDownSelect";
-
-const fieldSx = {
-  "& .MuiOutlinedInput-root": {
-    color: "primary.main",
-    "& fieldset": { borderColor: "primary.main" },
-    "&:hover fieldset": { borderColor: "primary.main" },
-    "&.Mui-focused fieldset": { borderColor: "primary.main" },
-  },
-};
+import { fieldSx } from "@shared/ui/fieldSx";
 
 export interface EditGatewayProps {
   open: boolean;

@@ -12,15 +12,7 @@ import Typography from "@mui/material/Typography";
 
 import type { SensorApiResponse, UpdateSensorRequest } from "@entities/sensor";
 import { DropDownSelect } from "@shared/ui/DropDownSelect";
-
-const fieldSx = {
-  "& .MuiOutlinedInput-root": {
-    color: "primary.main",
-    "& fieldset": { borderColor: "primary.main" },
-    "&:hover fieldset": { borderColor: "primary.main" },
-    "&.Mui-focused fieldset": { borderColor: "primary.main" },
-  },
-};
+import { fieldSx } from "@shared/ui/fieldSx";
 
 export interface EditSensorProps {
   open: boolean;
