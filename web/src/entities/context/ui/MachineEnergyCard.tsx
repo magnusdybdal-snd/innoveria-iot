@@ -131,7 +131,7 @@ function buildChartData(
             value: Math.round(b.value * v * 10) / 10,
           }));
           unit = "W";
-          label = label.replace(/current/i, "Power");
+          label = label.replace(/\bcurrent\b/i, "Power");
         }
 
         const entry: MetricChartData = {
