@@ -208,11 +208,13 @@ function getAllSensorReadings(
  * Groups with no chart data are omitted.
  * @param operationContext - The operation context containing sensors and measurements
  * @param measurementTypes - All known measurement types for label resolution
+ * @param showWatts - When true, amps buckets are multiplied by the sensor's configured voltage
  * @returns Array of per-sensor chart groups
  */
 function buildChartData(
   operationContext: OperationContext,
   measurementTypes: MeasurementTypeApiResponse[],
+  showWatts: boolean,
 ): SensorChartGroup[] {
   return operationContext.sensors
     .map((sensor) => {
@@ -220,16 +222,26 @@ function buildChartData(
       const secondaryCharts: MetricChartData[] = [];
 
       for (const metric of sensor.metrics) {
-        const buckets = measurementsToBuckets(
+        let buckets = measurementsToBuckets(
           sensor.measurements,
           metric.payloadKey,
         );
         if (buckets.length === 0) continue;
 
+        let unit = metric.unit;
+        if (showWatts && metric.unit === "A" && sensor.voltage !== null) {
+          const v = sensor.voltage;
+          buckets = buckets.map((b) => ({
+            ...b,
+            value: Math.round(b.value * v * 10) / 10,
+          }));
+          unit = "W";
+        }
+
         const entry: MetricChartData = {
           id: `${sensor.id}:${metric.payloadKey}`,
           payloadKey: metric.payloadKey,
-          unit: metric.unit,
+          unit,
           label: resolveLabel(metric.measurementType, measurementTypes),
           buckets,
         };
@@ -357,6 +369,7 @@ export function MachineEnergyCard({
   aggregationMethod,
 }: MachineEnergyCardProps) {
   const { operation, sensors, degraded } = operationContext;
+  const [showWatts, setShowWatts] = useState(true);
   const hasAnySchema = sensors.some((s) => s.metrics.length > 0);
   const sensorReadingGroups = getAllSensorReadings(
     sensors,
@@ -364,8 +377,11 @@ export function MachineEnergyCard({
     aggregationMethod,
   );
   const sensorState = resolveSensorState(sensors, degraded);
-  const sensorGroups = buildChartData(operationContext, measurementTypes);
-  const [showWatts, setShowWatts] = useState(true);
+  const sensorGroups = buildChartData(
+    operationContext,
+    measurementTypes,
+    showWatts,
+  );
 
   const hasWattsConversion = sensorReadingGroups.some((g) =>
     g.readings.some((r) => r.wattsValue !== undefined),
