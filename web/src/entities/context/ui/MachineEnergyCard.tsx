@@ -369,11 +369,14 @@ export function MachineEnergyCard({
               )}
               <Box sx={{ pl: showSensorLabel ? 1.5 : 0 }}>
                 {readingGroup?.readings.map((r) => {
-                  const isWatts = showWatts && r.wattsValue !== undefined;
-                  const displayValue = isWatts ? r.wattsValue : r.value;
-                  const displayUnit = isWatts ? "W" : r.unit;
+                  const displayValue =
+                    showWatts && r.wattsValue !== undefined
+                      ? r.wattsValue
+                      : r.value;
+                  const displayUnit =
+                    showWatts && r.wattsValue !== undefined ? "W" : r.unit;
                   const displayLabel =
-                    isWatts && r.wattsLabel ? r.wattsLabel : r.label;
+                    showWatts && r.wattsLabel ? r.wattsLabel : r.label;
                   return (
                     <Box
                       key={r.payloadKey}
