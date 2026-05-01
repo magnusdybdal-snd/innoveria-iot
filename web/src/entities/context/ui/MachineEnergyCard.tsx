@@ -376,7 +376,7 @@ export function MachineEnergyCard({
                     isWatts && r.wattsLabel ? r.wattsLabel : r.label;
                   return (
                     <Box
-                      key={r.label}
+                      key={r.payloadKey}
                       sx={{
                         display: "flex",
                         alignItems: "center",

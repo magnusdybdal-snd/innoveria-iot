@@ -7,6 +7,8 @@ export type AggregationMethod = "latest" | "min" | "max" | "avg" | "sum";
 
 /** A single resolved metric reading ready to display. */
 export interface MetricReading {
+  /** Stable key from the payload schema — use this as the React list key. */
+  payloadKey: string;
   label: string;
   value: string;
   unit: string;
@@ -104,6 +106,7 @@ export function getAllSensorReadings(
       }
 
       readings.push({
+        payloadKey: metric.payloadKey,
         label: mt?.displayName ?? formatStatus(metric.measurementType),
         value: displayValue,
         unit: metric.unit ?? mt?.defaultUnit ?? "",
