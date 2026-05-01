@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
@@ -82,6 +82,16 @@ export default function Sensors() {
   );
   const { sensorProfiles } = useSensorProfiles();
   const { productionResources } = useProductionResources();
+  const productionResourceOptions = useMemo(
+    () => [
+      { id: "", name: "No machine" },
+      ...productionResources.map((r) => ({
+        id: String(r.id),
+        name: `${r.number} – ${r.description}`,
+      })),
+    ],
+    [productionResources],
+  );
   const [openAdd, setOpenAdd] = useState(false);
   const [addError, setAddError] = useState<string | null>(null);
   const [selectedSensor, setSelectedSensor] =
@@ -329,13 +339,7 @@ export default function Sensors() {
         factoryOptions={factories}
         factoryAreaOptions={factoryAreas}
         onFactoryChange={setSelectedFactoryId}
-        productionResourceOptions={[
-          { id: "", name: "No machine" },
-          ...productionResources.map((r) => ({
-            id: String(r.id),
-            name: `${r.number} – ${r.description}`,
-          })),
-        ]}
+        productionResourceOptions={productionResourceOptions}
       />
       {editingSensor && (
         <EditSensor
@@ -351,13 +355,7 @@ export default function Sensors() {
           factoryAreaOptions={editFactoryAreas}
           sensorProfileOptions={sensorProfiles}
           onErrorClear={() => setEditError(null)}
-          productionResourceOptions={[
-            { id: "", name: "No machine" },
-            ...productionResources.map((r) => ({
-              id: String(r.id),
-              name: `${r.number} – ${r.description}`,
-            })),
-          ]}
+          productionResourceOptions={productionResourceOptions}
           voltageOptions={voltageOptions}
           onFactoryChange={setEditSelectedFactoryId}
           submitError={editError}
