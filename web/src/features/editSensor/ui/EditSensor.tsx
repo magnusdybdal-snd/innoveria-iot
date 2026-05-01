@@ -83,6 +83,7 @@ export function EditSensor({
     sensor.productionResource != null ? String(sensor.productionResource) : "",
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [nameError, setNameError] = useState(false);
 
   const handleClose = () => {
     setName(sensor.name);
@@ -97,6 +98,7 @@ export function EditSensor({
         ? String(sensor.productionResource)
         : "",
     );
+    setNameError(false);
     onClose();
   };
 
@@ -107,6 +109,10 @@ export function EditSensor({
   };
 
   const handleSave = async () => {
+    if (name.trim() === "") {
+      setNameError(true);
+      return;
+    }
     const payload: UpdateSensorRequest = {};
 
     if (name.trim() !== sensor.name) payload.name = name.trim();
@@ -165,8 +171,13 @@ export function EditSensor({
             </Typography>
             <TextField
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => {
+                setName(e.target.value);
+                if (nameError) setNameError(false);
+              }}
               fullWidth
+              error={nameError}
+              helperText={nameError ? "Name is required" : undefined}
               slotProps={{ htmlInput: { maxLength: 50 } }}
               sx={fieldSx}
             />

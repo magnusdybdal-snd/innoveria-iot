@@ -64,12 +64,14 @@ export function EditGateway({
   const [factoryId, setFactoryId] = useState(gateway.factoryId);
   const [factoryAreaId, setFactoryAreaId] = useState(gateway.factoryAreaId);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [nameError, setNameError] = useState(false);
 
   const handleClose = () => {
     setName(gateway.name);
     setDescription(gateway.description ?? "");
     setFactoryId(gateway.factoryId);
     setFactoryAreaId(gateway.factoryAreaId);
+    setNameError(false);
     onClose();
   };
 
@@ -80,6 +82,10 @@ export function EditGateway({
   };
 
   const handleSave = async () => {
+    if (name.trim() === "") {
+      setNameError(true);
+      return;
+    }
     const payload: UpdateGatewayRequest = {};
     if (name.trim() !== gateway.name) payload.name = name.trim();
     if (description.trim() !== (gateway.description ?? ""))
@@ -125,8 +131,13 @@ export function EditGateway({
             </Typography>
             <TextField
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => {
+                setName(e.target.value);
+                if (nameError) setNameError(false);
+              }}
               fullWidth
+              error={nameError}
+              helperText={nameError ? "Name is required" : undefined}
               slotProps={{ htmlInput: { maxLength: 50 } }}
               sx={fieldSx}
             />
