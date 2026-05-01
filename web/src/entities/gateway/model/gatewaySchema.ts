@@ -7,6 +7,9 @@ export interface GatewayApiResponse {
   companyId: string;
   gatewayEui: string;
   name: string;
+  description: string | null;
+  factoryId: string;
+  factoryAreaId: string;
   status: number;
   lastSeenAt: string; // RFC1123 - directly parsable in JS.
 }
@@ -21,4 +24,11 @@ export interface CreateGatewayRequest {
   name: string;
   factoryId: string;
   factoryAreaId: string;
+}
+
+export interface UpdateGatewayRequest {
+  name?: string;
+  description?: string;
+  factoryId?: string;
+  factoryAreaId?: string;
 }
