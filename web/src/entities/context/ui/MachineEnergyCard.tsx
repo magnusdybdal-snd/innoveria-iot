@@ -236,6 +236,7 @@ function buildChartData(
         if (buckets.length === 0) continue;
 
         let unit = metric.unit;
+        let label = resolveLabel(metric.measurementType, measurementTypes);
         if (showWatts && metric.unit === "A" && sensor.voltage !== null) {
           const v = sensor.voltage;
           buckets = buckets.map((b) => ({
@@ -243,13 +244,14 @@ function buildChartData(
             value: Math.round(b.value * v * 10) / 10,
           }));
           unit = "W";
+          label = label.replace(/current/i, "Power");
         }
 
         const entry: MetricChartData = {
           id: `${sensor.id}:${metric.payloadKey}`,
           payloadKey: metric.payloadKey,
           unit,
-          label: resolveLabel(metric.measurementType, measurementTypes),
+          label,
           buckets,
         };
 
