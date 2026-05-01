@@ -71,6 +71,7 @@ type RawSensorContext = {
   metrics: RawSensorMetric[];
   measurements: RawMeasurement[];
   total_power_wh: number | null;
+  voltage: number | null;
 };
 
 type RawOperationContext = {
@@ -133,6 +134,7 @@ const toSensorContext = (s: RawSensorContext): SensorContext => ({
   metrics: s.metrics.map(toSensorMetric),
   measurements: s.measurements.map(toMeasurement),
   totalPowerWh: s.total_power_wh,
+  voltage: s.voltage,
 });
 
 const toOperationContext = (op: RawOperationContext): OperationContext => ({

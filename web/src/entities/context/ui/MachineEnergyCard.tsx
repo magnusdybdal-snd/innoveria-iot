@@ -7,6 +7,8 @@ import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import Collapse from "@mui/material/Collapse";
 import IconButton from "@mui/material/IconButton";
+import ToggleButton from "@mui/material/ToggleButton";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 
@@ -99,6 +101,8 @@ interface MetricReading {
   label: string;
   value: string;
   unit: string;
+  /** Computed watts value (A × V). Present only when unit is "A" and a voltage metric exists in the same payload. */
+  wattsValue?: string;
 }
 
 /** All readable metric values for one sensor. */
@@ -165,12 +169,19 @@ function getAllSensorReadings(
       );
 
       let displayValue: string;
+      let wattsValue: string | undefined;
+
       if (typeof latestRaw === "number") {
         const numericValues = sorted
           .map((m) => m.payload[metric.payloadKey])
           .filter((v): v is number => typeof v === "number");
         const result = aggregate(numericValues, method);
         displayValue = String(Math.round(result * 10) / 10);
+
+        // Special case: if the metric is a current (A), attempt to find a voltage metric in the same payload to compute watts
+        if (metric.unit === "A" && sensor.voltage !== null) {
+          wattsValue = String(Math.round(result * sensor.voltage * 10) / 10);
+        }
       } else {
         displayValue = String(latestRaw);
       }
@@ -179,6 +190,7 @@ function getAllSensorReadings(
         label: mt?.displayName ?? formatStatus(metric.measurementType),
         value: displayValue,
         unit: metric.unit ?? mt?.defaultUnit ?? "",
+        wattsValue,
       });
     }
 
@@ -353,6 +365,11 @@ export function MachineEnergyCard({
   );
   const sensorState = resolveSensorState(sensors, degraded);
   const sensorGroups = buildChartData(operationContext, measurementTypes);
+  const [showWatts, setShowWatts] = useState(true);
+
+  const hasWattsConversion = sensorReadingGroups.some((g) =>
+    g.readings.some((r) => r.wattsValue !== undefined),
+  );
 
   const activeSensorIds = new Set([
     ...sensorReadingGroups.map((g) => g.sensorId),
@@ -371,7 +388,7 @@ export function MachineEnergyCard({
         flex: "1 1 320px",
       }}
     >
-      {/* Header row: machine name + sensor state */}
+      {/* Header row: machine name + optional A/W toggle + sensor state */}
       <Box
         sx={{
           display: "flex",
@@ -383,7 +400,22 @@ export function MachineEnergyCard({
         <Typography variant="h6" fontWeight={600}>
           {operation.productionResource.number}
         </Typography>
-        <SensorStateIndicator state={sensorState} />
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          {hasWattsConversion && (
+            <ToggleButtonGroup
+              value={showWatts ? "W" : "A"}
+              exclusive
+              size="small"
+              onChange={(_, v: "A" | "W" | null) => {
+                if (v !== null) setShowWatts(v === "W");
+              }}
+            >
+              <ToggleButton value="W">W</ToggleButton>
+              <ToggleButton value="A">A</ToggleButton>
+            </ToggleButtonGroup>
+          )}
+          <SensorStateIndicator state={sensorState} />
+        </Box>
       </Box>
 
       {/* Production resource description */}
@@ -423,29 +455,37 @@ export function MachineEnergyCard({
                   {sensor.name}
                 </Typography>
               )}
-              {readingGroup?.readings.map((r) => (
-                <Box
-                  key={r.label}
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 1,
-                    mb: 0.5,
-                  }}
-                >
-                  <Typography variant="body2" sx={{ opacity: 0.7 }}>
-                    {r.label}:
-                  </Typography>
-                  <Typography variant="body1" fontWeight={600}>
-                    {r.value}
-                  </Typography>
-                  {r.unit && (
-                    <Typography variant="body2" sx={{ opacity: 0.5 }}>
-                      {r.unit}
+              {readingGroup?.readings.map((r) => {
+                const displayValue =
+                  showWatts && r.wattsValue !== undefined
+                    ? r.wattsValue
+                    : r.value;
+                const displayUnit =
+                  showWatts && r.wattsValue !== undefined ? "W" : r.unit;
+                return (
+                  <Box
+                    key={r.label}
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1,
+                      mb: 0.5,
+                    }}
+                  >
+                    <Typography variant="body2" sx={{ opacity: 0.7 }}>
+                      {r.label}:
                     </Typography>
-                  )}
-                </Box>
-              ))}
+                    <Typography variant="body1" fontWeight={600}>
+                      {displayValue}
+                    </Typography>
+                    {displayUnit && (
+                      <Typography variant="body2" sx={{ opacity: 0.5 }}>
+                        {displayUnit}
+                      </Typography>
+                    )}
+                  </Box>
+                );
+              })}
               {chartGroup && (
                 <SensorChartSection group={chartGroup} showLabel={false} />
               )}
