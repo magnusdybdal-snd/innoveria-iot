@@ -9,13 +9,17 @@ import { useFactoryAreas } from "@entities/factoryArea";
 import {
   deleteGateway,
   GatewayInfo,
+  patchGateway,
   postGateway,
   sortGateways,
   useGateways,
+  type GatewayApiResponse,
   type GatewaySortKey,
   type SortDirection,
+  type UpdateGatewayRequest,
 } from "@entities/gateway";
 import { AddDevice } from "@features/addDevice";
+import { EditGateway } from "@features/editGateway";
 import { formatTimestamp } from "@shared/lib";
 import { CustomButton } from "@shared/ui/Button";
 import { CategoryHeader } from "@shared/ui/CategoryHeader";
@@ -53,7 +57,17 @@ export default function Gateways() {
   >();
   const { factoryAreas, error: areasError } =
     useFactoryAreas(selectedFactoryId);
+  const [editSelectedFactoryId, setEditSelectedFactoryId] = useState<
+    string | undefined
+  >();
+  const { factoryAreas: editFactoryAreas } = useFactoryAreas(
+    editSelectedFactoryId,
+  );
   const [addError, setAddError] = useState<string | null>(null);
+  const [editingGateway, setEditGateway] = useState<GatewayApiResponse | null>(
+    null,
+  );
+  const [editError, setEditError] = useState<string | null>(null);
 
   // State for controlling success snackbar
   const { show, hide, snackbar } = useSnackbar();
@@ -131,6 +145,22 @@ export default function Gateways() {
       });
   };
 
+  const handleEditGateway = (id: string, payload: UpdateGatewayRequest) => {
+    setEditError(null);
+    return patchGateway(id, payload)
+      .then(() => {
+        refetch();
+        setEditGateway(null);
+        show("Gateway updated successfully", SNACKBAR_SEVERITY.SUCCESS);
+      })
+      .catch((err: unknown) => {
+        console.error("Failed to edit gateway:", err);
+        setEditError("Failed to update gateway. Please try again.");
+        show("Failed to update gateway", SNACKBAR_SEVERITY.ERROR);
+        throw err; // re-throw to allow handling in EditGateway component if needed (e.g. to display error message there)
+      });
+  };
+
   const addButton = (
     <CustomButton onClick={handleClickOpenAdd}>Add gateway</CustomButton>
   );
@@ -193,6 +223,7 @@ export default function Gateways() {
                 device_eui={gateway.gatewayEui}
                 lastSeenAt={formatTimestamp(gateway.lastSeenAt)}
                 onDelete={() => handleDeleteGateway(gateway.id)}
+                onEdit={() => setEditGateway(gateway)}
               />
             </DeviceRow>
           ))}
@@ -209,6 +240,22 @@ export default function Gateways() {
         factoryAreaOptions={factoryAreas}
         onFactoryChange={setSelectedFactoryId}
       />
+      {editingGateway && (
+        <EditGateway
+          open={!!editingGateway}
+          gateway={editingGateway}
+          onClose={() => {
+            setEditGateway(null);
+            setEditError(null);
+            setEditSelectedFactoryId(undefined);
+          }}
+          onEdit={handleEditGateway}
+          factoryOptions={factories}
+          factoryAreaOptions={editFactoryAreas}
+          onFactoryChange={setEditSelectedFactoryId}
+          submitError={editError}
+        />
+      )}
       <AppSnackbar
         open={snackbar?.open ?? false}
         message={snackbar?.message ?? ""}
