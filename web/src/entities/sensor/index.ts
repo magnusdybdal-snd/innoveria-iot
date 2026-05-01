@@ -4,10 +4,12 @@ export type {
   SensorListApiResponse,
   SensorReadingApiResponse,
   CreateSensorRequest,
+  UpdateSensorRequest,
   SensorProfileApiResponse,
 } from "./model/sensorSchema";
 export {
   getSensors,
+  patchSensor,
   getDeviceEUI,
   getSensorProfiles,
   fetchSensorReading,
