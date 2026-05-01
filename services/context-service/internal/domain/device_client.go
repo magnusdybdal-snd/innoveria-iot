@@ -7,11 +7,7 @@ type DeviceClient interface {
 	// GetSensorsByProductionResourceID returns all sensors assigned to the given
 	// production resource, scoped to the given company. companyID, userID and role
 	// are forwarded as auth headers to device-service.
-	//
-	// TODO: verify — device-service stores ERPProductionResource.ID (int64) as a
-	// string in the production_resource field. Double-check this mapping when the
-	// real device-service integration is live.
-	GetSensorsByProductionResourceID(ctx context.Context, companyID, userID, role, productionResourceID string) ([]DeviceSensor, error)
+	GetSensorsByProductionResourceID(ctx context.Context, companyID, userID, role string, productionResourceID int64) ([]DeviceSensor, error)
 
 	// GetSensorMetrics returns the payload-key → measurement type/unit mappings
 	// for the given sensor EUI. Returns an empty slice if the sensor exists but

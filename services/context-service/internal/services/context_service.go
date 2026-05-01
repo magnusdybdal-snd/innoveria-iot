@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
-	"strconv"
 	"time"
 
 	"sync"
@@ -177,16 +176,14 @@ func (s *ContextServiceImpl) GetOrderContext(ctx context.Context, companyID, use
 // buildOperationContext fetches sensors for an operation and enriches each with
 // metrics and measurements over the given time window.
 func (s *ContextServiceImpl) buildOperationContext(ctx context.Context, companyID, userID, role string, op domain.ERPOrderOperation, from, to time.Time) domain.OperationContext {
-	productionResourceID := strconv.FormatInt(op.ProductionResource.ID, 10)
-
-	sensors, err := s.deviceClient.GetSensorsByProductionResourceID(ctx, companyID, userID, role, productionResourceID)
+	sensors, err := s.deviceClient.GetSensorsByProductionResourceID(ctx, companyID, userID, role, op.ProductionResource.ID)
 	if err != nil {
 		if errors.Is(err, domain.ErrNotFound) {
 			// No sensors mapped to this production resource — expected, not an error.
 			return domain.OperationContext{Operation: op, Sensors: []domain.SensorContext{}}
 		}
 		// Technical failure (timeout, 5xx) — return partial data but mark as degraded.
-		slog.Error("failed to fetch sensors for production resource, returning degraded operation", "production_resource_id", productionResourceID, "error", err)
+		slog.Error("failed to fetch sensors for production resource, returning degraded operation", "production_resource_id", op.ProductionResource.ID, "error", err)
 		return domain.OperationContext{Operation: op, Sensors: []domain.SensorContext{}, Degraded: true}
 	}
 
@@ -215,7 +212,7 @@ func (s *ContextServiceImpl) buildOperationContext(ctx context.Context, companyI
 	wg.Wait()
 
 	if svcErr != nil {
-		slog.Error("failed to build sensor context for operation, returning degraded operation", "production_resource_id", productionResourceID, "error", svcErr)
+		slog.Error("failed to build sensor context for operation, returning degraded operation", "production_resource_id", op.ProductionResource.ID, "error", svcErr)
 		return domain.OperationContext{Operation: op, Sensors: []domain.SensorContext{}, Degraded: true}
 	}
 
