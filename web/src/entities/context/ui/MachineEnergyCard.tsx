@@ -103,6 +103,8 @@ interface MetricReading {
   unit: string;
   /** Computed watts value (A × V). Present only when unit is "A" and a voltage metric exists in the same payload. */
   wattsValue?: string;
+  /** Label to show when displaying watts instead of amps. */
+  wattsLabel?: string;
 }
 
 /** All readable metric values for one sensor. */
@@ -170,6 +172,7 @@ function getAllSensorReadings(
 
       let displayValue: string;
       let wattsValue: string | undefined;
+      let wattsLabel: string | undefined;
 
       if (typeof latestRaw === "number") {
         const numericValues = sorted
@@ -181,6 +184,9 @@ function getAllSensorReadings(
         // Special case: if the metric is a current (A), attempt to find a voltage metric in the same payload to compute watts
         if (metric.unit === "A" && sensor.voltage !== null) {
           wattsValue = String(Math.round(result * sensor.voltage * 10) / 10);
+          const baseLabel =
+            mt?.displayName ?? formatStatus(metric.measurementType);
+          wattsLabel = baseLabel.replace(/current/i, "Power");
         }
       } else {
         displayValue = String(latestRaw);
@@ -191,6 +197,7 @@ function getAllSensorReadings(
         value: displayValue,
         unit: metric.unit ?? mt?.defaultUnit ?? "",
         wattsValue,
+        wattsLabel,
       });
     }
 
@@ -472,12 +479,11 @@ export function MachineEnergyCard({
                 </Typography>
               )}
               {readingGroup?.readings.map((r) => {
-                const displayValue =
-                  showWatts && r.wattsValue !== undefined
-                    ? r.wattsValue
-                    : r.value;
-                const displayUnit =
-                  showWatts && r.wattsValue !== undefined ? "W" : r.unit;
+                const isWatts = showWatts && r.wattsValue !== undefined;
+                const displayValue = isWatts ? r.wattsValue : r.value;
+                const displayUnit = isWatts ? "W" : r.unit;
+                const displayLabel =
+                  isWatts && r.wattsLabel ? r.wattsLabel : r.label;
                 return (
                   <Box
                     key={r.label}
@@ -489,7 +495,7 @@ export function MachineEnergyCard({
                     }}
                   >
                     <Typography variant="body2" sx={{ opacity: 0.7 }}>
-                      {r.label}:
+                      {displayLabel}:
                     </Typography>
                     <Typography variant="body1" fontWeight={600}>
                       {displayValue}
