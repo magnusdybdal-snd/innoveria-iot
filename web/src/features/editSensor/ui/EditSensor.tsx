@@ -33,6 +33,7 @@ export interface EditSensorProps {
   productionResourceOptions: { id: string; name: string }[];
   voltageOptions: { id: string; name: string }[];
   onFactoryChange: (factoryId: string) => void;
+  onErrorClear?: () => void;
   submitError?: string | null;
 }
 
@@ -50,6 +51,7 @@ export interface EditSensorProps {
  * @param props.productionResourceOptions - Available production resources for the dropdown
  * @param props.voltageOptions - Available voltage options shown when electricity sensor is enabled
  * @param props.onFactoryChange - Called when the factory selection changes, to reload factory areas
+ * @param props.onErrorClear
  * @param props.submitError - Optional server-side error message to display
  * @returns The rendered edit-sensor dialog
  */
@@ -64,6 +66,7 @@ export function EditSensor({
   productionResourceOptions,
   voltageOptions,
   onFactoryChange,
+  onErrorClear,
   submitError,
 }: EditSensorProps) {
   const [name, setName] = useState(sensor.name);
@@ -106,6 +109,7 @@ export function EditSensor({
     setFactoryId(newFactoryId);
     setFactoryAreaId("");
     onFactoryChange(newFactoryId);
+    onErrorClear?.();
   };
 
   const handleSave = async () => {
@@ -174,6 +178,7 @@ export function EditSensor({
               onChange={(e) => {
                 setName(e.target.value);
                 if (nameError) setNameError(false);
+                onErrorClear?.();
               }}
               fullWidth
               error={nameError}
@@ -188,7 +193,10 @@ export function EditSensor({
             </Typography>
             <TextField
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={(e) => {
+                setDescription(e.target.value);
+                onErrorClear?.();
+              }}
               fullWidth
               multiline
               maxRows={6}
@@ -213,7 +221,10 @@ export function EditSensor({
             <DropDownSelect
               options={factoryAreaOptions}
               value={factoryAreaId}
-              onChange={setFactoryAreaId}
+              onChange={(v) => {
+                setFactoryAreaId(v);
+                onErrorClear?.();
+              }}
             />
           </Box>
           <Box>
@@ -223,7 +234,10 @@ export function EditSensor({
             <DropDownSelect
               options={sensorProfileOptions}
               value={sensorProfileId}
-              onChange={setSensorProfileId}
+              onChange={(v) => {
+                setSensorProfileId(v);
+                onErrorClear?.();
+              }}
             />
           </Box>
           <Box>
@@ -233,7 +247,10 @@ export function EditSensor({
             <DropDownSelect
               options={productionResourceOptions}
               value={productionResource}
-              onChange={setProductionResource}
+              onChange={(v) => {
+                setProductionResource(v);
+                onErrorClear?.();
+              }}
             />
           </Box>
           <Box display="flex" alignItems="center" gap={1}>
@@ -245,6 +262,7 @@ export function EditSensor({
               onChange={(_, checked) => {
                 setElectricitySensor(checked);
                 if (!checked) setVoltage("");
+                onErrorClear?.();
               }}
               slotProps={{ input: { "aria-label": "electricity sensor" } }}
             />
@@ -257,7 +275,10 @@ export function EditSensor({
               <DropDownSelect
                 options={voltageOptions}
                 value={voltage}
-                onChange={setVoltage}
+                onChange={(v) => {
+                  setVoltage(v);
+                  onErrorClear?.();
+                }}
               />
             </Box>
           )}

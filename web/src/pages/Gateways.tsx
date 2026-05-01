@@ -264,6 +264,7 @@ export default function Gateways() {
           factoryOptions={factories}
           factoryAreaOptions={editFactoryAreas}
           onFactoryChange={setEditSelectedFactoryId}
+          onErrorClear={() => setEditError(null)}
           submitError={editError}
         />
       )}

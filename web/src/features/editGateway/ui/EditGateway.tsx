@@ -32,6 +32,7 @@ export interface EditGatewayProps {
   factoryOptions: { id: string; name: string }[];
   factoryAreaOptions: { id: string; name: string }[];
   onFactoryChange: (factoryId: string) => void;
+  onErrorClear?: () => void;
   submitError?: string | null;
 }
 
@@ -46,6 +47,7 @@ export interface EditGatewayProps {
  * @param props.factoryOptions - Available factories for the dropdown
  * @param props.factoryAreaOptions - Available factory areas for the dropdown (filtered by selected factory)
  * @param props.onFactoryChange - Called when the factory selection changes, to reload factory areas
+ * @param props.onErrorClear
  * @param props.submitError - Optional server-side error message to display
  * @returns The rendered edit-gateway dialog
  */
@@ -57,6 +59,7 @@ export function EditGateway({
   factoryOptions,
   factoryAreaOptions,
   onFactoryChange,
+  onErrorClear,
   submitError,
 }: EditGatewayProps) {
   const [name, setName] = useState(gateway.name);
@@ -79,6 +82,7 @@ export function EditGateway({
     setFactoryId(newFactoryId);
     setFactoryAreaId("");
     onFactoryChange(newFactoryId);
+    onErrorClear?.();
   };
 
   const handleSave = async () => {
@@ -134,6 +138,7 @@ export function EditGateway({
               onChange={(e) => {
                 setName(e.target.value);
                 if (nameError) setNameError(false);
+                onErrorClear?.();
               }}
               fullWidth
               error={nameError}
@@ -148,7 +153,10 @@ export function EditGateway({
             </Typography>
             <TextField
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={(e) => {
+                setDescription(e.target.value);
+                onErrorClear?.();
+              }}
               fullWidth
               multiline
               maxRows={6}
@@ -173,7 +181,10 @@ export function EditGateway({
             <DropDownSelect
               options={factoryAreaOptions}
               value={factoryAreaId}
-              onChange={setFactoryAreaId}
+              onChange={(v) => {
+                setFactoryAreaId(v);
+                onErrorClear?.();
+              }}
             />
           </Box>
           {submitError && <Typography color="error">{submitError}</Typography>}

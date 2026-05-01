@@ -350,6 +350,7 @@ export default function Sensors() {
           factoryOptions={factories}
           factoryAreaOptions={editFactoryAreas}
           sensorProfileOptions={sensorProfiles}
+          onErrorClear={() => setEditError(null)}
           productionResourceOptions={[
             { id: "", name: "No machine" },
             ...productionResources.map((r) => ({
