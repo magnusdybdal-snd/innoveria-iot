@@ -76,7 +76,7 @@ export function OrderOverview({ operations }: OrderOverviewProps) {
           value={String(totalQuantity)}
         />
         <OrderOverviewStat
-          label="Total power"
+          label="Total energy"
           value={totalKwh}
           unit="kWh"
           tooltip={
