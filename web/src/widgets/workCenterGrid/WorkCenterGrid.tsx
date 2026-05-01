@@ -3,6 +3,7 @@ import Typography from "@mui/material/Typography";
 
 import type { OperationContext } from "@entities/context/model/contextSchema";
 import { MachineEnergyCard } from "@entities/context/ui/MachineEnergyCard";
+import { useMeasurementTypes } from "@entities/measurementType";
 
 /** Props for the `WorkCenterGrid` component. */
 interface WorkCenterGridProps {
@@ -18,6 +19,8 @@ interface WorkCenterGridProps {
  * @returns The rendered machine grid, or null when the list is empty
  */
 export function WorkCenterGrid({ operations }: WorkCenterGridProps) {
+  const { measurementTypes } = useMeasurementTypes();
+
   if (operations.length === 0) {
     return (
       <Typography variant="body2" sx={{ mt: 3, opacity: 0.6 }}>
@@ -36,6 +39,7 @@ export function WorkCenterGrid({ operations }: WorkCenterGridProps) {
           <MachineEnergyCard
             key={opCtx.operation.id}
             operationContext={opCtx}
+            measurementTypes={measurementTypes}
           />
         ))}
       </Box>

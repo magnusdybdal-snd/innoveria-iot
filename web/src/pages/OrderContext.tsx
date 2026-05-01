@@ -6,11 +6,12 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 
 import {
-  MachineCard,
+  MachineEnergyCard,
   useOrderContext,
   useOrders,
   type OrderSummary,
 } from "@entities/context";
+import { useMeasurementTypes } from "@entities/measurementType";
 import { DropDownSelect } from "@shared/ui/DropDownSelect";
 import { LoadingIndicator } from "@shared/ui/LoadingIndicator";
 import { PageContent } from "@shared/ui/PageContent";
@@ -34,6 +35,8 @@ export default function OrderContext() {
     isLoading: isContextLoading,
     error: contextError,
   } = useOrderContext(selectedOrder ? selectedOrder.id : null);
+
+  const { measurementTypes } = useMeasurementTypes();
 
   const orderOptions = orders.map((o) => ({
     id: String(o.id),
@@ -128,9 +131,10 @@ export default function OrderContext() {
               ) : (
                 <Box sx={{ mt: 3, display: "flex", flexWrap: "wrap", gap: 2 }}>
                   {orderContext?.operations.map((opCtx) => (
-                    <MachineCard
+                    <MachineEnergyCard
                       key={opCtx.operation.id}
                       operationContext={opCtx}
+                      measurementTypes={measurementTypes}
                     />
                   ))}
                 </Box>
