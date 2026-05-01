@@ -130,6 +130,8 @@ export function EditGateway({
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               fullWidth
+              multiline
+              maxRows={6}
               sx={fieldSx}
             />
           </Box>

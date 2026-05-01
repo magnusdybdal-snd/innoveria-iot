@@ -118,6 +118,8 @@ export function DeviceFormFields({
                 lengthErrors[option] ? lengthErrorMessages[option] : ""
               }
               error={!!lengthErrors[option]}
+              multiline={option === "Description"}
+              maxRows={option === "Description" ? 6 : undefined}
               value={typeof values[option] === "string" ? values[option] : ""}
               slotProps={{
                 htmlInput: {
