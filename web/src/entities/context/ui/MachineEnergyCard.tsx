@@ -91,6 +91,9 @@ function resolveLabel(
   );
 }
 
+/** How to reduce multiple measurements for a single metric into one display value. */
+export type AggregationMethod = "latest" | "min" | "max" | "avg" | "sum";
+
 /** A single resolved metric reading ready to display. */
 interface MetricReading {
   label: string;
@@ -106,42 +109,75 @@ interface SensorReadingGroup {
 }
 
 /**
- * Collects the latest reading for every schema-defined metric across all sensors.
- * Each sensor becomes a group; metrics with no matching payload value are omitted.
+ * Reduces an array of numeric values to a single number using the chosen method.
+ * @param values - Non-empty array of finite numbers
+ * @param method - Aggregation method to apply
+ * @returns The aggregated value
+ */
+function aggregate(values: number[], method: AggregationMethod): number {
+  switch (method) {
+    case "min":
+      return Math.min(...values);
+    case "max":
+      return Math.max(...values);
+    case "avg":
+      return values.reduce((s, v) => s + v, 0) / values.length;
+    case "sum":
+      return values.reduce((s, v) => s + v, 0);
+    case "latest":
+    default:
+      return values[0];
+  }
+}
+
+/**
+ * Collects a reading for every schema-defined metric across all sensors,
+ * aggregating values across the full measurements window.
+ * Non-numeric payload values always fall back to the latest raw value.
  * Groups with no readable values are omitted.
  * @param sensors - Sensor contexts for the operation
  * @param measurementTypes - All known measurement types for label resolution
+ * @param method - How to aggregate numeric values across measurements
  * @returns Per-sensor reading groups, in sensor order
  */
 function getAllSensorReadings(
   sensors: SensorContext[],
   measurementTypes: MeasurementTypeApiResponse[],
+  method: AggregationMethod,
 ): SensorReadingGroup[] {
   const groups: SensorReadingGroup[] = [];
 
   for (const sensor of sensors) {
     if (sensor.metrics.length === 0) continue;
 
-    const latest = [...sensor.measurements].sort(
+    const sorted = [...sensor.measurements].sort(
       (a, b) =>
         new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
-    )[0];
+    );
 
     const readings: MetricReading[] = [];
     for (const metric of sensor.metrics) {
-      const raw = latest?.payload[metric.payloadKey];
-      if (raw === undefined || raw === null) continue;
+      const latestRaw = sorted[0]?.payload[metric.payloadKey];
+      if (latestRaw === undefined || latestRaw === null) continue;
 
       const mt = measurementTypes.find(
         (m) => m.slug === metric.measurementType,
       );
-      const value =
-        typeof raw === "number"
-          ? String(Math.round(raw * 10) / 10)
-          : String(raw);
+
+      let displayValue: string;
+      if (typeof latestRaw === "number") {
+        const numericValues = sorted
+          .map((m) => m.payload[metric.payloadKey])
+          .filter((v): v is number => typeof v === "number");
+        const result = aggregate(numericValues, method);
+        displayValue = String(Math.round(result * 10) / 10);
+      } else {
+        displayValue = String(latestRaw);
+      }
+
       readings.push({
         label: mt?.displayName ?? formatStatus(metric.measurementType),
-        value,
+        value: displayValue,
         unit: metric.unit ?? mt?.defaultUnit ?? "",
       });
     }
@@ -289,6 +325,8 @@ interface MachineEnergyCardProps {
   operationContext: OperationContext;
   /** All known measurement types, used to resolve display labels and units. */
   measurementTypes: MeasurementTypeApiResponse[];
+  /** How to reduce multiple measurements for each metric into one display value. */
+  aggregationMethod: AggregationMethod;
 }
 
 /**
@@ -297,19 +335,30 @@ interface MachineEnergyCardProps {
  * initial render cost low when many cards are shown simultaneously.
  * @param props - Component props
  * @param props.operationContext - The operation context to render
- * @param props.measurementTypes
+ * @param props.measurementTypes - All known measurement types for label and unit resolution
+ * @param props.aggregationMethod - How to reduce multiple measurements into one display value
  * @returns The rendered machine energy card
  */
 export function MachineEnergyCard({
   operationContext,
   measurementTypes,
+  aggregationMethod,
 }: MachineEnergyCardProps) {
   const { operation, sensors, degraded } = operationContext;
   const hasAnySchema = sensors.some((s) => s.metrics.length > 0);
-  const sensorReadingGroups = getAllSensorReadings(sensors, measurementTypes);
+  const sensorReadingGroups = getAllSensorReadings(
+    sensors,
+    measurementTypes,
+    aggregationMethod,
+  );
   const sensorState = resolveSensorState(sensors, degraded);
   const sensorGroups = buildChartData(operationContext, measurementTypes);
-  const hasCharts = sensorGroups.length > 0;
+
+  const activeSensorIds = new Set([
+    ...sensorReadingGroups.map((g) => g.sensorId),
+    ...sensorGroups.map((g) => g.sensorId),
+  ]);
+  const showSensorLabel = activeSensorIds.size > 1;
 
   return (
     <Card
@@ -356,22 +405,25 @@ export function MachineEnergyCard({
             No schema defined
           </Typography>
         </Box>
-      ) : sensorReadingGroups.length > 0 ? (
-        <Box sx={{ mb: 1.5 }}>
-          {sensorReadingGroups.map((group) => (
-            <Box
-              key={group.sensorId}
-              sx={{ mb: sensorReadingGroups.length > 1 ? 1 : 0 }}
-            >
-              {sensorReadingGroups.length > 1 && (
+      ) : (
+        sensors.map((sensor) => {
+          const readingGroup = sensorReadingGroups.find(
+            (g) => g.sensorId === sensor.id,
+          );
+          const chartGroup = sensorGroups.find((g) => g.sensorId === sensor.id);
+          if (!readingGroup && !chartGroup) return null;
+
+          return (
+            <Box key={sensor.id} sx={{ mb: showSensorLabel ? 1.5 : 0 }}>
+              {showSensorLabel && (
                 <Typography
                   variant="caption"
                   sx={{ opacity: 0.5, display: "block", mb: 0.5 }}
                 >
-                  {group.sensorName}
+                  {sensor.name}
                 </Typography>
               )}
-              {group.readings.map((r) => (
+              {readingGroup?.readings.map((r) => (
                 <Box
                   key={r.label}
                   sx={{
@@ -394,20 +446,13 @@ export function MachineEnergyCard({
                   )}
                 </Box>
               ))}
+              {chartGroup && (
+                <SensorChartSection group={chartGroup} showLabel={false} />
+              )}
             </Box>
-          ))}
-        </Box>
-      ) : null}
-
-      {/* One collapsible section per sensor — label shown only when multiple sensors exist */}
-      {hasCharts &&
-        sensorGroups.map((group) => (
-          <SensorChartSection
-            key={group.sensorId}
-            group={group}
-            showLabel={sensorGroups.length > 1}
-          />
-        ))}
+          );
+        })
+      )}
     </Card>
   );
 }

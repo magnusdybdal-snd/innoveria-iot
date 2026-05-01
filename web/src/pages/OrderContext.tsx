@@ -135,6 +135,7 @@ export default function OrderContext() {
                       key={opCtx.operation.id}
                       operationContext={opCtx}
                       measurementTypes={measurementTypes}
+                      aggregationMethod="latest"
                     />
                   ))}
                 </Box>

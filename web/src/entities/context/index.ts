@@ -39,5 +39,5 @@ export {
   SensorStateIndicator,
   resolveSensorState,
 } from "./ui";
-export type { SensorState } from "./ui";
+export type { SensorState, AggregationMethod } from "./ui";
 export { toMinutes, BUCKET_UNIT_OPTIONS } from "./lib";

@@ -1,6 +1,7 @@
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 
+import type { AggregationMethod } from "@entities/context";
 import type { OperationContext } from "@entities/context/model/contextSchema";
 import { MachineEnergyCard } from "@entities/context/ui/MachineEnergyCard";
 import { useMeasurementTypes } from "@entities/measurementType";
@@ -9,6 +10,8 @@ import { useMeasurementTypes } from "@entities/measurementType";
 interface WorkCenterGridProps {
   /** List of operation contexts to render as machine energy cards. */
   operations: OperationContext[];
+  /** How to aggregate sensor readings across the measurements window. Defaults to latest. */
+  aggregationMethod?: AggregationMethod;
 }
 
 /**
@@ -16,9 +19,13 @@ interface WorkCenterGridProps {
  * card grid where each card represents one operation context.
  * @param props - Component props
  * @param props.operations - Operation contexts to display
+ * @param props.aggregationMethod - How to aggregate sensor readings. Defaults to "latest".
  * @returns The rendered machine grid, or null when the list is empty
  */
-export function WorkCenterGrid({ operations }: WorkCenterGridProps) {
+export function WorkCenterGrid({
+  operations,
+  aggregationMethod = "latest",
+}: WorkCenterGridProps) {
   const { measurementTypes } = useMeasurementTypes();
 
   if (operations.length === 0) {
@@ -40,6 +47,7 @@ export function WorkCenterGrid({ operations }: WorkCenterGridProps) {
             key={opCtx.operation.id}
             operationContext={opCtx}
             measurementTypes={measurementTypes}
+            aggregationMethod={aggregationMethod}
           />
         ))}
       </Box>

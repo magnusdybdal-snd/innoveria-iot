@@ -1,13 +1,26 @@
+import { useState } from "react";
+
+import Box from "@mui/material/Box";
+import ToggleButton from "@mui/material/ToggleButton";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import Typography from "@mui/material/Typography";
 import { useParams } from "react-router";
 
-import { useOrderContext } from "@entities/context";
+import { useOrderContext, type AggregationMethod } from "@entities/context";
 import { LoadingIndicator } from "@shared/ui/LoadingIndicator";
 import { PageContent } from "@shared/ui/PageContent";
 import { SubPageHeader } from "@shared/ui/SubPageHeader";
 import { OrderHeader } from "@widgets/orderHeader";
 import { OrderOverview } from "@widgets/orderOverview";
 import { WorkCenterGrid } from "@widgets/workCenterGrid";
+
+const AGGREGATION_OPTIONS: { value: AggregationMethod; label: string }[] = [
+  { value: "latest", label: "Latest" },
+  { value: "min", label: "Min" },
+  { value: "max", label: "Max" },
+  { value: "avg", label: "Avg" },
+  { value: "sum", label: "Sum" },
+];
 
 /**
  * Page displaying a single ERP order with its operations and sensor data.
@@ -20,6 +33,8 @@ export default function OrderDetail() {
   const orderId = Number.isInteger(parsed) && parsed > 0 ? parsed : null;
 
   const { orderContext, isLoading, error } = useOrderContext(orderId);
+  const [aggregationMethod, setAggregationMethod] =
+    useState<AggregationMethod>("latest");
 
   return (
     <div className="flex h-screen">
@@ -46,7 +61,35 @@ export default function OrderDetail() {
           <>
             <OrderHeader order={orderContext.order} />
             <OrderOverview operations={orderContext.operations} />
-            <WorkCenterGrid operations={orderContext.operations} />
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "flex-end",
+                mt: 2,
+                mb: 1,
+                px: 2,
+              }}
+            >
+              <ToggleButtonGroup
+                value={aggregationMethod}
+                exclusive
+                size="small"
+                onChange={(_, v: AggregationMethod | null) => {
+                  if (v !== null) setAggregationMethod(v);
+                }}
+              >
+                {AGGREGATION_OPTIONS.map((opt) => (
+                  <ToggleButton key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </ToggleButton>
+                ))}
+              </ToggleButtonGroup>
+            </Box>
+            <WorkCenterGrid
+              operations={orderContext.operations}
+              aggregationMethod={aggregationMethod}
+            />
           </>
         )}
       </PageContent>
