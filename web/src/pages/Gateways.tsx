@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
+import axios from "axios";
 
 import { useFactories } from "@entities/factory";
 import { useFactoryAreas } from "@entities/factoryArea";
@@ -158,7 +159,11 @@ export default function Gateways() {
       })
       .catch((err: unknown) => {
         console.error("Failed to edit gateway:", err);
-        setEditError("Failed to update gateway. Please try again.");
+        const message =
+          axios.isAxiosError(err) && err.response?.data?.message
+            ? (err.response.data.message as string)
+            : "Failed to update gateway. Please try again.";
+        setEditError(message);
         show("Failed to update gateway", SNACKBAR_SEVERITY.ERROR);
       });
   };

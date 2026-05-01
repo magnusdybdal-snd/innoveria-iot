@@ -185,7 +185,11 @@ export default function Sensors() {
       })
       .catch((err: unknown) => {
         console.error("Failed to update sensor:", err);
-        setEditError("Failed to update sensor.");
+        const message =
+          axios.isAxiosError(err) && err.response?.data?.message
+            ? (err.response.data.message as string)
+            : "Failed to update sensor.";
+        setEditError(message);
         show("Failed to update sensor.", SNACKBAR_SEVERITY.ERROR);
       });
   };
