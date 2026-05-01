@@ -91,41 +91,67 @@ function resolveLabel(
   );
 }
 
+/** A single resolved metric reading ready to display. */
+interface MetricReading {
+  label: string;
+  value: string;
+  unit: string;
+}
+
+/** All readable metric values for one sensor. */
+interface SensorReadingGroup {
+  sensorId: string;
+  sensorName: string;
+  readings: MetricReading[];
+}
+
 /**
- * Derives the primary metric display value from the first sensor that has both a
- * defined schema and a latest measurement.
- * @param sensors - Sensor contexts to search
+ * Collects the latest reading for every schema-defined metric across all sensors.
+ * Each sensor becomes a group; metrics with no matching payload value are omitted.
+ * Groups with no readable values are omitted.
+ * @param sensors - Sensor contexts for the operation
  * @param measurementTypes - All known measurement types for label resolution
- * @returns Display object or null if no displayable data exists
+ * @returns Per-sensor reading groups, in sensor order
  */
-function getPrimaryMetricDisplay(
+function getAllSensorReadings(
   sensors: SensorContext[],
   measurementTypes: MeasurementTypeApiResponse[],
-): { label: string; value: string; unit: string } | null {
-  for (const sensor of sensors) {
-    const metric = sensor.metrics[0];
-    if (!metric) continue; // no schema defined for this sensor, skip to next
-    if (sensor.measurements.length === 0) continue; // no data points at all, noting to display
+): SensorReadingGroup[] {
+  const groups: SensorReadingGroup[] = [];
 
-    // Get the most recent measurement for this metric and extract the raw value
-    const sorted = [...sensor.measurements].sort(
+  for (const sensor of sensors) {
+    if (sensor.metrics.length === 0) continue;
+
+    const latest = [...sensor.measurements].sort(
       (a, b) =>
         new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
-    );
-    const raw = sorted[0].payload[metric.payloadKey];
-    if (raw === undefined || raw === null) continue;
+    )[0];
 
-    // Resolve the display label and unit, preferring measurement type info but falling back to metric info
-    const mt = measurementTypes.find((m) => m.slug === metric.measurementType);
-    const value =
-      typeof raw === "number" ? String(Math.round(raw * 10) / 10) : String(raw); // round numbers to 1 decimal place for cleaner display, leave non-numeric values as-is
-    return {
-      label: mt?.displayName ?? formatStatus(metric.measurementType),
-      value,
-      unit: metric.unit ?? mt?.defaultUnit ?? "",
-    };
+    const readings: MetricReading[] = [];
+    for (const metric of sensor.metrics) {
+      const raw = latest?.payload[metric.payloadKey];
+      if (raw === undefined || raw === null) continue;
+
+      const mt = measurementTypes.find(
+        (m) => m.slug === metric.measurementType,
+      );
+      const value =
+        typeof raw === "number"
+          ? String(Math.round(raw * 10) / 10)
+          : String(raw);
+      readings.push({
+        label: mt?.displayName ?? formatStatus(metric.measurementType),
+        value,
+        unit: metric.unit ?? mt?.defaultUnit ?? "",
+      });
+    }
+
+    if (readings.length > 0) {
+      groups.push({ sensorId: sensor.id, sensorName: sensor.name, readings });
+    }
   }
-  return null;
+
+  return groups;
 }
 
 /**
@@ -280,7 +306,7 @@ export function MachineEnergyCard({
 }: MachineEnergyCardProps) {
   const { operation, sensors, degraded } = operationContext;
   const hasAnySchema = sensors.some((s) => s.metrics.length > 0);
-  const primaryDisplay = getPrimaryMetricDisplay(sensors, measurementTypes);
+  const sensorReadingGroups = getAllSensorReadings(sensors, measurementTypes);
   const sensorState = resolveSensorState(sensors, degraded);
   const sensorGroups = buildChartData(operationContext, measurementTypes);
   const hasCharts = sensorGroups.length > 0;
@@ -330,19 +356,46 @@ export function MachineEnergyCard({
             No schema defined
           </Typography>
         </Box>
-      ) : hasAnySchema ? (
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1.5 }}>
-          <Typography variant="body2" sx={{ opacity: 0.7 }}>
-            {primaryDisplay?.label ?? "—"}:
-          </Typography>
-          <Typography variant="body1" fontWeight={600}>
-            {primaryDisplay?.value ?? "—"}
-          </Typography>
-          {primaryDisplay?.unit && (
-            <Typography variant="body2" sx={{ opacity: 0.5 }}>
-              {primaryDisplay.unit}
-            </Typography>
-          )}
+      ) : sensorReadingGroups.length > 0 ? (
+        <Box sx={{ mb: 1.5 }}>
+          {sensorReadingGroups.map((group) => (
+            <Box
+              key={group.sensorId}
+              sx={{ mb: sensorReadingGroups.length > 1 ? 1 : 0 }}
+            >
+              {sensorReadingGroups.length > 1 && (
+                <Typography
+                  variant="caption"
+                  sx={{ opacity: 0.5, display: "block", mb: 0.5 }}
+                >
+                  {group.sensorName}
+                </Typography>
+              )}
+              {group.readings.map((r) => (
+                <Box
+                  key={r.label}
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                    mb: 0.5,
+                  }}
+                >
+                  <Typography variant="body2" sx={{ opacity: 0.7 }}>
+                    {r.label}:
+                  </Typography>
+                  <Typography variant="body1" fontWeight={600}>
+                    {r.value}
+                  </Typography>
+                  {r.unit && (
+                    <Typography variant="body2" sx={{ opacity: 0.5 }}>
+                      {r.unit}
+                    </Typography>
+                  )}
+                </Box>
+              ))}
+            </Box>
+          ))}
         </Box>
       ) : null}
 
