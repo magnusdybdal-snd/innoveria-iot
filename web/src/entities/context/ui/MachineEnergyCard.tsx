@@ -121,6 +121,7 @@ interface SensorReadingGroup {
  * @returns The aggregated value
  */
 function aggregate(values: number[], method: AggregationMethod): number {
+  if (values.length === 0) return 0;
   switch (method) {
     case "min":
       return Math.min(...values);
