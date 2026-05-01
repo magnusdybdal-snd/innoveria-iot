@@ -53,6 +53,7 @@ export interface CreateSensorRequest {
   appKey: string;
   sensorProfileId: string;
   name: string;
+  description?: string;
   voltage: number | null;
 }
 

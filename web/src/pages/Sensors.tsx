@@ -42,6 +42,7 @@ const sensorMainDetails: string[] = ["Status", "Name", "Last reading"];
 const addSensorDetails: string[] = [
   "Name",
   "DeviceEUI",
+  "Description",
   "Factory",
   "Factory area",
   "Production resource",
@@ -133,6 +134,7 @@ export default function Sensors() {
   const handleAddSensor = (sensorData: {
     name: string;
     deviceEui: string;
+    description: string;
     electricitySensor: boolean;
     factory: string;
     factoryArea: string;
@@ -151,6 +153,7 @@ export default function Sensors() {
       productionResource: sensorData.productionResource,
       appKey: sensorData.appKey,
       name: sensorData.name,
+      description: sensorData.description || undefined,
       voltage: sensorData.voltage,
     })
       .then(() => {
