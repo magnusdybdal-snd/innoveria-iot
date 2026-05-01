@@ -160,7 +160,6 @@ export default function Gateways() {
         console.error("Failed to edit gateway:", err);
         setEditError("Failed to update gateway. Please try again.");
         show("Failed to update gateway", SNACKBAR_SEVERITY.ERROR);
-        throw err; // re-throw to allow handling in EditGateway component if needed (e.g. to display error message there)
       });
   };
 

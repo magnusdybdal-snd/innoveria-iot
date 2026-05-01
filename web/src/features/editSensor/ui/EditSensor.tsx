@@ -82,6 +82,7 @@ export function EditSensor({
   const [productionResource, setProductionResource] = useState(
     sensor.productionResource != null ? String(sensor.productionResource) : "",
   );
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleClose = () => {
     setName(sensor.name);
@@ -105,7 +106,7 @@ export function EditSensor({
     onFactoryChange(newFactoryId);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const payload: UpdateSensorRequest = {};
 
     if (name.trim() !== sensor.name) payload.name = name.trim();
@@ -132,7 +133,14 @@ export function EditSensor({
       return;
     }
 
-    onEdit(sensor.id, payload).catch(() => {});
+    setIsSubmitting(true);
+    try {
+      await onEdit(sensor.id, payload);
+    } catch {
+      // parent already sets submitError and shows snackbar
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -261,6 +269,7 @@ export function EditSensor({
             color: "primary.contrastText",
           }}
           onClick={handleSave}
+          disabled={isSubmitting}
           autoFocus
         >
           Save

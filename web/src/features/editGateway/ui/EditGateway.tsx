@@ -63,6 +63,7 @@ export function EditGateway({
   const [description, setDescription] = useState(gateway.description ?? "");
   const [factoryId, setFactoryId] = useState(gateway.factoryId);
   const [factoryAreaId, setFactoryAreaId] = useState(gateway.factoryAreaId);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleClose = () => {
     setName(gateway.name);
@@ -78,7 +79,7 @@ export function EditGateway({
     onFactoryChange(newFactoryId);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const payload: UpdateGatewayRequest = {};
     if (name.trim() !== gateway.name) payload.name = name.trim();
     if (description.trim() !== (gateway.description ?? ""))
@@ -92,7 +93,14 @@ export function EditGateway({
       return;
     }
 
-    onEdit(gateway.id, payload).catch(() => {});
+    setIsSubmitting(true);
+    try {
+      await onEdit(gateway.id, payload);
+    } catch {
+      // parent already sets submitError and shows snackbar
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -176,6 +184,7 @@ export function EditGateway({
             color: "primary.contrastText",
           }}
           onClick={handleSave}
+          disabled={isSubmitting}
           autoFocus
         >
           Save

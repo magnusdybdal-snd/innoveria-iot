@@ -28,7 +28,7 @@ type CategoryHeaderProps = {
  * @param props - Component props
  * @param props.categories - Ordered list of column label strings
  * @param props.columns - Total column count for the grid template; defaults to categories.length if omitted
- * @param props.gridTemplateColumns
+ * @param props.gridTemplateColumns - Custom CSS grid-template-columns string; overrides the auto-generated template when provided
  * @param props.children - Data rows to render inside the grid
  * @param props.sortableColumns - Subset of category labels that are clickable for sorting
  * @param props.sortConfig - Currently active sort key and direction

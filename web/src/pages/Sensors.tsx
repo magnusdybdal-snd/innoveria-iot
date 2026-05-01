@@ -187,7 +187,6 @@ export default function Sensors() {
         console.error("Failed to update sensor:", err);
         setEditError("Failed to update sensor.");
         show("Failed to update sensor.", SNACKBAR_SEVERITY.ERROR);
-        throw err;
       });
   };
 
