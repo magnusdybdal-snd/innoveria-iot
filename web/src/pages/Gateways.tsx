@@ -38,6 +38,7 @@ const sortableColumns: GatewaySortKey[] = ["Status", "Name", "Last seen"];
 const addGatewayDetails: string[] = [
   "Name",
   "DeviceEUI",
+  "Description",
   "Factory",
   "Factory area",
 ];
@@ -121,6 +122,7 @@ export default function Gateways() {
   const handleAddGateway = (gatewayData: {
     name: string;
     deviceEui: string;
+    description: string;
     factory: string;
     factoryArea: string;
   }) => {
@@ -128,6 +130,7 @@ export default function Gateways() {
     return postGateway({
       gatewayEui: gatewayData.deviceEui,
       name: gatewayData.name,
+      description: gatewayData.description || undefined,
       factoryId: gatewayData.factory,
       factoryAreaId: gatewayData.factoryArea,
     })
@@ -208,7 +211,7 @@ export default function Gateways() {
         </Box>
         <CategoryHeader
           categories={gatewayDetails}
-          columns={gatewayDetails.length + 1}
+          columns={gatewayDetails.length + 2}
           sortableColumns={sortableColumns}
           sortConfig={sortConfig}
           onSort={handleSort}
@@ -222,6 +225,7 @@ export default function Gateways() {
                 status={gateway.status}
                 device_eui={gateway.gatewayEui}
                 lastSeenAt={formatTimestamp(gateway.lastSeenAt)}
+                description={gateway.description}
                 onDelete={() => handleDeleteGateway(gateway.id)}
                 onEdit={() => {
                   setEditSelectedFactoryId(gateway.factoryId);
