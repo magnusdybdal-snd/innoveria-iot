@@ -478,39 +478,41 @@ export function MachineEnergyCard({
                   {sensor.name}
                 </Typography>
               )}
-              {readingGroup?.readings.map((r) => {
-                const isWatts = showWatts && r.wattsValue !== undefined;
-                const displayValue = isWatts ? r.wattsValue : r.value;
-                const displayUnit = isWatts ? "W" : r.unit;
-                const displayLabel =
-                  isWatts && r.wattsLabel ? r.wattsLabel : r.label;
-                return (
-                  <Box
-                    key={r.label}
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 1,
-                      mb: 0.5,
-                    }}
-                  >
-                    <Typography variant="body2" sx={{ opacity: 0.7 }}>
-                      {displayLabel}:
-                    </Typography>
-                    <Typography variant="body1" fontWeight={600}>
-                      {displayValue}
-                    </Typography>
-                    {displayUnit && (
-                      <Typography variant="body2" sx={{ opacity: 0.5 }}>
-                        {displayUnit}
+              <Box sx={{ pl: showSensorLabel ? 1.5 : 0 }}>
+                {readingGroup?.readings.map((r) => {
+                  const isWatts = showWatts && r.wattsValue !== undefined;
+                  const displayValue = isWatts ? r.wattsValue : r.value;
+                  const displayUnit = isWatts ? "W" : r.unit;
+                  const displayLabel =
+                    isWatts && r.wattsLabel ? r.wattsLabel : r.label;
+                  return (
+                    <Box
+                      key={r.label}
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                        mb: 0.5,
+                      }}
+                    >
+                      <Typography variant="body2" sx={{ opacity: 0.7 }}>
+                        {displayLabel}:
                       </Typography>
-                    )}
-                  </Box>
-                );
-              })}
-              {chartGroup && (
-                <SensorChartSection group={chartGroup} showLabel={false} />
-              )}
+                      <Typography variant="body1" fontWeight={600}>
+                        {displayValue}
+                      </Typography>
+                      {displayUnit && (
+                        <Typography variant="body2" sx={{ opacity: 0.5 }}>
+                          {displayUnit}
+                        </Typography>
+                      )}
+                    </Box>
+                  );
+                })}
+                {chartGroup && (
+                  <SensorChartSection group={chartGroup} showLabel={false} />
+                )}
+              </Box>
             </Box>
           );
         })
