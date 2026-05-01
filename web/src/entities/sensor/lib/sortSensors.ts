@@ -33,7 +33,7 @@ export function sortSensors(
         cmp = a.status - b.status;
         break;
       case "Machine":
-        cmp = a.machine.localeCompare(b.machine);
+        cmp = (a.productionResource ?? 0) - (b.productionResource ?? 0);
         break;
       case "Last reading":
         cmp = a.lastReading.localeCompare(b.lastReading);
