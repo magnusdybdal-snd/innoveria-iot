@@ -278,7 +278,7 @@ export default function Sensors() {
         </Box>
         <CategoryHeader
           categories={sensorMainDetails}
-          columns={sensorMainDetails.length + 3}
+          gridTemplateColumns="auto 55ch auto auto max-content auto"
           sortableColumns={sortableColumns}
           sortConfig={sortConfig}
           onSort={handleSort}

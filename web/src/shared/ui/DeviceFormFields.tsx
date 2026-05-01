@@ -76,7 +76,8 @@ export function DeviceFormFields({
   };
 
   const maxLengths: Record<string, number> = {
-    Name: 100,
+    Name: 50,
+    Description: 500,
     DeviceEUI: 16,
     "Application key": 32,
   };

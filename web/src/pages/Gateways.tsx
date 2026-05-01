@@ -211,7 +211,7 @@ export default function Gateways() {
         </Box>
         <CategoryHeader
           categories={gatewayDetails}
-          columns={gatewayDetails.length + 2}
+          gridTemplateColumns="auto 55ch auto auto auto auto"
           sortableColumns={sortableColumns}
           sortConfig={sortConfig}
           onSort={handleSort}

@@ -119,6 +119,7 @@ export function EditGateway({
               value={name}
               onChange={(e) => setName(e.target.value)}
               fullWidth
+              slotProps={{ htmlInput: { maxLength: 50 } }}
               sx={fieldSx}
             />
           </Box>
@@ -132,6 +133,7 @@ export function EditGateway({
               fullWidth
               multiline
               maxRows={6}
+              slotProps={{ htmlInput: { maxLength: 500 } }}
               sx={fieldSx}
             />
           </Box>
