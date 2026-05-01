@@ -223,7 +223,10 @@ export default function Gateways() {
                 device_eui={gateway.gatewayEui}
                 lastSeenAt={formatTimestamp(gateway.lastSeenAt)}
                 onDelete={() => handleDeleteGateway(gateway.id)}
-                onEdit={() => setEditGateway(gateway)}
+                onEdit={() => {
+                  setEditSelectedFactoryId(gateway.factoryId);
+                  setEditGateway(gateway);
+                }}
               />
             </DeviceRow>
           ))}
