@@ -1,4 +1,5 @@
 import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 
 import type { AggregationMethod } from "@entities/context";
@@ -26,7 +27,20 @@ export function WorkCenterGrid({
   operations,
   aggregationMethod = "latest",
 }: WorkCenterGridProps) {
-  const { measurementTypes } = useMeasurementTypes();
+  const { measurementTypes, error, refetch } = useMeasurementTypes();
+
+  if (error) {
+    return (
+      <Box sx={{ mt: 3 }}>
+        <Typography variant="body2" sx={{ color: "error.main", mb: 1 }}>
+          Failed to load measurement types. {error.message}
+        </Typography>
+        <Button variant="outlined" size="small" onClick={refetch}>
+          Retry
+        </Button>
+      </Box>
+    );
+  }
 
   if (operations.length === 0) {
     return (

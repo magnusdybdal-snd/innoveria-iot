@@ -36,7 +36,11 @@ export default function OrderContext() {
     error: contextError,
   } = useOrderContext(selectedOrder ? selectedOrder.id : null);
 
-  const { measurementTypes } = useMeasurementTypes();
+  const {
+    measurementTypes,
+    error: measurementTypesError,
+    refetch: refetchMeasurementTypes,
+  } = useMeasurementTypes();
 
   const orderOptions = orders.map((o) => ({
     id: String(o.id),
@@ -128,6 +132,23 @@ export default function OrderContext() {
                 <Typography variant="body2" sx={{ mt: 3, color: "error.main" }}>
                   Failed to load sensor data. Please try again.
                 </Typography>
+              ) : measurementTypesError ? (
+                <Box sx={{ mt: 3 }}>
+                  <Typography
+                    variant="body2"
+                    sx={{ color: "error.main", mb: 1 }}
+                  >
+                    Failed to load measurement types.{" "}
+                    {measurementTypesError.message}
+                  </Typography>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={refetchMeasurementTypes}
+                  >
+                    Retry
+                  </Button>
+                </Box>
               ) : (
                 <Box sx={{ mt: 3, display: "flex", flexWrap: "wrap", gap: 2 }}>
                   {orderContext?.operations.map((opCtx) => (
