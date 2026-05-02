@@ -26,7 +26,7 @@ import { BucketLineChart } from "@entities/context/ui/BucketLineChart";
 import { resolveSensorState } from "@entities/context/ui/sensorState";
 import { SensorStateIndicator } from "@entities/context/ui/SensorStateIndicator";
 import type { MeasurementTypeApiResponse } from "@entities/measurementType";
-import { formatStatus } from "@shared/lib";
+import { formatStatus, formatTimestamp } from "@shared/lib";
 
 /**
  * Converts raw measurements for a single payload key into the `BucketResponse`
@@ -337,8 +337,19 @@ export function MachineEnergyCard({
         </Typography>
       )}
 
-      {/* Operation status chip */}
-      <Box sx={{ mb: 1.5 }}></Box>
+      {/* Operation time window */}
+      <Typography
+        variant="caption"
+        sx={{ opacity: 0.6, display: "block", mb: 1.5 }}
+      >
+        {operation.actualStartDate
+          ? formatTimestamp(operation.actualStartDate)
+          : "Not started"}
+        {" → "}
+        {operation.actualFinishDate
+          ? formatTimestamp(operation.actualFinishDate)
+          : "Running"}
+      </Typography>
 
       {sensors.length > 0 && !hasAnySchema ? (
         <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, mb: 1.5 }}>
