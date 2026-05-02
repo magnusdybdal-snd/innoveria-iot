@@ -1,6 +1,5 @@
 import Context from "@/pages/Context";
 import Factories from "@/pages/Factories";
-import OrderContext from "@/pages/OrderContext";
 import OrderDetail from "@/pages/OrderDetail";
 import OrderList from "@/pages/OrderList";
 import Rules from "@/pages/Rules";
@@ -32,7 +31,6 @@ export default function AppRoutes() {
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
           <Route path="/Dashboard/Context" element={<Context />} />
-          <Route path="/Dashboard/Context/Orders" element={<OrderContext />} />
           <Route path="/Dashboard/Context/OrderList" element={<OrderList />} />
           <Route
             path="/Dashboard/Context/OrderList/:id"
