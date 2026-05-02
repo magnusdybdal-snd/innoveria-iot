@@ -151,21 +151,10 @@ func (s *ContextServiceImpl) GetOrderContext(ctx context.Context, companyID, use
 
 	ops := make([]domain.OperationContext, len(found.Operations))
 
-	// Guard: if the order has no actual time window, return operations without sensor data.
-	if found.ActualStartDate == nil || found.ActualFinishDate == nil {
-		for i, op := range found.Operations {
-			ops[i] = domain.OperationContext{Operation: op, Sensors: []domain.SensorContext{}}
-		}
-		return &domain.OrderContext{Order: *found, Operations: ops}, nil
-	}
-
-	from := *found.ActualStartDate
-	to := *found.ActualFinishDate
-
 	var wg sync.WaitGroup
 	for i, op := range found.Operations {
 		wg.Go(func() {
-			ops[i] = s.buildOperationContext(ctx, companyID, userID, role, op, from, to)
+			ops[i] = s.buildOperationContext(ctx, companyID, userID, role, op)
 		})
 	}
 	wg.Wait()
@@ -174,8 +163,20 @@ func (s *ContextServiceImpl) GetOrderContext(ctx context.Context, companyID, use
 }
 
 // buildOperationContext fetches sensors for an operation and enriches each with
-// metrics and measurements over the given time window.
-func (s *ContextServiceImpl) buildOperationContext(ctx context.Context, companyID, userID, role string, op domain.ERPOrderOperation, from, to time.Time) domain.OperationContext {
+// metrics and measurements scoped to the operation's own actual time window.
+// When the operation has no actual start date it has not yet begun and sensor contexts are empty.
+// When the operation has started but has no actual finish date (still running or never closed),
+// time.Now() is used as the end so energy keeps accumulating and the fault remains visible.
+func (s *ContextServiceImpl) buildOperationContext(ctx context.Context, companyID, userID, role string, op domain.ERPOrderOperation) domain.OperationContext {
+	if op.ActualStartDate == nil {
+		return domain.OperationContext{Operation: op, Sensors: []domain.SensorContext{}}
+	}
+	from := *op.ActualStartDate
+	to := time.Now().UTC()
+	if op.ActualFinishDate != nil {
+		to = *op.ActualFinishDate
+	}
+
 	sensors, err := s.deviceClient.GetSensorsByProductionResourceID(ctx, companyID, userID, role, op.ProductionResource.ID)
 	if err != nil {
 		if errors.Is(err, domain.ErrNotFound) {
