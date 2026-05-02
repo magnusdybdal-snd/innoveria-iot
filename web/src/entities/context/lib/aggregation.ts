@@ -69,10 +69,12 @@ export function getAllSensorReadings(
   for (const sensor of sensors) {
     if (sensor.metrics.length === 0) continue;
 
-    const sorted = [...sensor.measurements].sort(
-      (a, b) =>
-        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
-    );
+    const sorted = [...sensor.measurements]
+      .filter((m) => Number.isFinite(new Date(m.timestamp).getTime()))
+      .sort(
+        (a, b) =>
+          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+      );
 
     const readings: MetricReading[] = [];
     for (const metric of sensor.metrics) {
