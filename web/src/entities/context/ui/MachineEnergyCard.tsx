@@ -1,14 +1,21 @@
 import { useState } from "react";
 
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import Collapse from "@mui/material/Collapse";
 import IconButton from "@mui/material/IconButton";
+import ToggleButton from "@mui/material/ToggleButton";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 
+import {
+  getAllSensorReadings,
+  type AggregationMethod,
+} from "@entities/context/lib/aggregation";
 import type {
   BucketResponse,
   Measurement,
@@ -18,6 +25,7 @@ import type {
 import { BucketLineChart } from "@entities/context/ui/BucketLineChart";
 import { resolveSensorState } from "@entities/context/ui/sensorState";
 import { SensorStateIndicator } from "@entities/context/ui/SensorStateIndicator";
+import type { MeasurementTypeApiResponse } from "@entities/measurementType";
 import { formatStatus } from "@shared/lib";
 
 /**
@@ -73,14 +81,34 @@ function isPowerMetric(metric: SensorMetric): boolean {
 }
 
 /**
+ * Returns the display name for a measurement type slug, falling back to a formatted slug.
+ * @param slug - The measurement type slug from a sensor metric
+ * @param measurementTypes - All known measurement types
+ * @returns Display label string
+ */
+function resolveLabel(
+  slug: string,
+  measurementTypes: MeasurementTypeApiResponse[],
+): string {
+  return (
+    measurementTypes.find((m) => m.slug === slug)?.displayName ??
+    formatStatus(slug)
+  );
+}
+
+/**
  * Builds chart data grouped per sensor for an operation context.
  * Each sensor produces its own group with power and secondary chart arrays.
  * Groups with no chart data are omitted.
  * @param operationContext - The operation context containing sensors and measurements
+ * @param measurementTypes - All known measurement types for label resolution
+ * @param showWatts - When true, amps buckets are multiplied by the sensor's configured voltage
  * @returns Array of per-sensor chart groups
  */
 function buildChartData(
   operationContext: OperationContext,
+  measurementTypes: MeasurementTypeApiResponse[],
+  showWatts: boolean,
 ): SensorChartGroup[] {
   return operationContext.sensors
     .map((sensor) => {
@@ -88,17 +116,29 @@ function buildChartData(
       const secondaryCharts: MetricChartData[] = [];
 
       for (const metric of sensor.metrics) {
-        const buckets = measurementsToBuckets(
+        let buckets = measurementsToBuckets(
           sensor.measurements,
           metric.payloadKey,
         );
         if (buckets.length === 0) continue;
 
+        let unit = metric.unit;
+        let label = resolveLabel(metric.measurementType, measurementTypes);
+        if (showWatts && metric.unit === "A" && sensor.voltage !== null) {
+          const v = sensor.voltage;
+          buckets = buckets.map((b) => ({
+            ...b,
+            value: Math.round(b.value * v * 10) / 10,
+          }));
+          unit = "W";
+          label = label.replace(/\bcurrent\b/i, "Power");
+        }
+
         const entry: MetricChartData = {
           id: `${sensor.id}:${metric.payloadKey}`,
           payloadKey: metric.payloadKey,
-          unit: metric.unit,
-          label: formatStatus(metric.payloadKey),
+          unit,
+          label,
           buckets,
         };
 
@@ -203,6 +243,10 @@ function SensorChartSection({ group, showLabel }: SensorChartSectionProps) {
 interface MachineEnergyCardProps {
   /** The operation context containing sensor data for this work center. */
   operationContext: OperationContext;
+  /** All known measurement types, used to resolve display labels and units. */
+  measurementTypes: MeasurementTypeApiResponse[];
+  /** How to reduce multiple measurements for each metric into one display value. */
+  aggregationMethod: AggregationMethod;
 }
 
 /**
@@ -211,23 +255,39 @@ interface MachineEnergyCardProps {
  * initial render cost low when many cards are shown simultaneously.
  * @param props - Component props
  * @param props.operationContext - The operation context to render
+ * @param props.measurementTypes - All known measurement types for label and unit resolution
+ * @param props.aggregationMethod - How to reduce multiple measurements into one display value
  * @returns The rendered machine energy card
  */
 export function MachineEnergyCard({
   operationContext,
+  measurementTypes,
+  aggregationMethod,
 }: MachineEnergyCardProps) {
   const { operation, sensors, degraded } = operationContext;
-  const totalWh = sensors
-    .map((s) => s.totalPowerWh)
-    .filter((wh): wh is number => wh !== null)
-    .reduce((sum, wh) => sum + wh, 0);
-  const hasEnergyData = sensors.some((s) => s.totalPowerWh !== null);
-  const hasElectricitySensor = sensors.some((s) =>
-    s.metrics.some(isPowerMetric),
+  const [showWatts, setShowWatts] = useState(true);
+  const hasAnySchema = sensors.some((s) => s.metrics.length > 0);
+  const sensorReadingGroups = getAllSensorReadings(
+    sensors,
+    measurementTypes,
+    aggregationMethod,
   );
   const sensorState = resolveSensorState(sensors, degraded);
-  const sensorGroups = buildChartData(operationContext);
-  const hasCharts = sensorGroups.length > 0;
+  const sensorGroups = buildChartData(
+    operationContext,
+    measurementTypes,
+    showWatts,
+  );
+
+  const hasWattsConversion = sensorReadingGroups.some((g) =>
+    g.readings.some((r) => r.wattsValue !== undefined),
+  );
+
+  const activeSensorIds = new Set([
+    ...sensorReadingGroups.map((g) => g.sensorId),
+    ...sensorGroups.map((g) => g.sensorId),
+  ]);
+  const showSensorLabel = activeSensorIds.size > 1;
 
   return (
     <Card
@@ -240,7 +300,7 @@ export function MachineEnergyCard({
         flex: "1 1 320px",
       }}
     >
-      {/* Header row: machine name + sensor state */}
+      {/* Header row: machine name + optional A/W toggle + sensor state */}
       <Box
         sx={{
           display: "flex",
@@ -252,7 +312,22 @@ export function MachineEnergyCard({
         <Typography variant="h6" fontWeight={600}>
           {operation.productionResource.number}
         </Typography>
-        <SensorStateIndicator state={sensorState} />
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          {hasWattsConversion && (
+            <ToggleButtonGroup
+              value={showWatts ? "W" : "A"}
+              exclusive
+              size="small"
+              onChange={(_, v: "A" | "W" | null) => {
+                if (v !== null) setShowWatts(v === "W");
+              }}
+            >
+              <ToggleButton value="W">W</ToggleButton>
+              <ToggleButton value="A">A</ToggleButton>
+            </ToggleButtonGroup>
+          )}
+          <SensorStateIndicator state={sensorState} />
+        </Box>
       </Box>
 
       {/* Production resource description */}
@@ -265,37 +340,75 @@ export function MachineEnergyCard({
       {/* Operation status chip */}
       <Box sx={{ mb: 1.5 }}></Box>
 
-      {hasElectricitySensor && (
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1.5 }}>
-          <Typography variant="body2" sx={{ opacity: 0.7 }}>
-            Energy:
-          </Typography>
-          {hasEnergyData ? (
-            <Typography variant="body1" fontWeight={600}>
-              {(totalWh / 1000).toFixed(2)}
-            </Typography>
-          ) : (
-            <Tooltip title="Energy totals require a configured voltage on the electricity sensor">
-              <Typography variant="body1" fontWeight={600}>
-                —
-              </Typography>
-            </Tooltip>
-          )}
-          <Typography variant="body2" sx={{ opacity: 0.5 }}>
-            kWh
+      {sensors.length > 0 && !hasAnySchema ? (
+        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, mb: 1.5 }}>
+          <Tooltip title="No payload schema defined for this sensor">
+            <ErrorOutlineIcon fontSize="small" color="error" />
+          </Tooltip>
+          <Typography variant="body2" sx={{ color: "error.main" }}>
+            No schema defined
           </Typography>
         </Box>
-      )}
+      ) : (
+        sensors.map((sensor) => {
+          const readingGroup = sensorReadingGroups.find(
+            (g) => g.sensorId === sensor.id,
+          );
+          const chartGroup = sensorGroups.find((g) => g.sensorId === sensor.id);
+          if (!readingGroup && !chartGroup) return null;
 
-      {/* One collapsible section per sensor — label shown only when multiple sensors exist */}
-      {hasCharts &&
-        sensorGroups.map((group) => (
-          <SensorChartSection
-            key={group.sensorId}
-            group={group}
-            showLabel={sensorGroups.length > 1}
-          />
-        ))}
+          return (
+            <Box key={sensor.id} sx={{ mb: showSensorLabel ? 1.5 : 0 }}>
+              {showSensorLabel && (
+                <Typography
+                  variant="caption"
+                  sx={{ opacity: 0.5, display: "block", mb: 0.5 }}
+                >
+                  {sensor.name}
+                </Typography>
+              )}
+              <Box sx={{ pl: showSensorLabel ? 1.5 : 0 }}>
+                {readingGroup?.readings.map((r) => {
+                  const displayValue =
+                    showWatts && r.wattsValue !== undefined
+                      ? r.wattsValue
+                      : r.value;
+                  const displayUnit =
+                    showWatts && r.wattsValue !== undefined ? "W" : r.unit;
+                  const displayLabel =
+                    showWatts && r.wattsLabel ? r.wattsLabel : r.label;
+                  return (
+                    <Box
+                      key={r.payloadKey}
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                        mb: 0.5,
+                      }}
+                    >
+                      <Typography variant="body2" sx={{ opacity: 0.7 }}>
+                        {displayLabel}:
+                      </Typography>
+                      <Typography variant="body1" fontWeight={600}>
+                        {displayValue}
+                      </Typography>
+                      {displayUnit && (
+                        <Typography variant="body2" sx={{ opacity: 0.5 }}>
+                          {displayUnit}
+                        </Typography>
+                      )}
+                    </Box>
+                  );
+                })}
+                {chartGroup && (
+                  <SensorChartSection group={chartGroup} showLabel={false} />
+                )}
+              </Box>
+            </Box>
+          );
+        })
+      )}
     </Card>
   );
 }

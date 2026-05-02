@@ -40,4 +40,14 @@ export {
   resolveSensorState,
 } from "./ui";
 export type { SensorState } from "./ui";
-export { toMinutes, BUCKET_UNIT_OPTIONS } from "./lib";
+export {
+  toMinutes,
+  BUCKET_UNIT_OPTIONS,
+  aggregate,
+  getAllSensorReadings,
+} from "./lib";
+export type {
+  AggregationMethod,
+  MetricReading,
+  SensorReadingGroup,
+} from "./lib";

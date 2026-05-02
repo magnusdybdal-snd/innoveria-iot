@@ -66,6 +66,8 @@ export interface SensorContext {
   metrics: SensorMetric[];
   measurements: Measurement[];
   totalPowerWh: number | null;
+  /** Configured line voltage (V) for electricity sensors; null for all others. */
+  voltage: number | null;
 }
 
 export interface OperationContext {

@@ -31,8 +31,8 @@ func NewDeviceClient(baseURL, internalBaseURL string) *DeviceClient {
 
 // GetSensorsByProductionResourceID fetches all sensors assigned to the given
 // production resource ID, scoped to the given company.
-func (c *DeviceClient) GetSensorsByProductionResourceID(ctx context.Context, companyID, userID, role, productionResourceID string) ([]domain.DeviceSensor, error) {
-	url := fmt.Sprintf("%s/api/v1/device/sensors?production_resource_id=%s", c.baseURL, productionResourceID)
+func (c *DeviceClient) GetSensorsByProductionResourceID(ctx context.Context, companyID, userID, role string, productionResourceID int64) ([]domain.DeviceSensor, error) {
+	url := fmt.Sprintf("%s/api/v1/device/sensors?production_resource_id=%d", c.baseURL, productionResourceID)
 
 	resp, err := httpclient.DoRequest[dto.DeviceSensorListResponse](
 		c.client, ctx, url, http.MethodGet, nil, map[string]string{
