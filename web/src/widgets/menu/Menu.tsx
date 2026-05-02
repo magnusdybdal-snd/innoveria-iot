@@ -5,6 +5,7 @@ import {
   type ReactNode,
 } from "react";
 
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import BusinessIcon from "@mui/icons-material/Business";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
@@ -54,6 +55,7 @@ interface MenuProps {
 
 const pageSymbol: Map<string, ComponentType<SvgIconProps>> = new Map([
   ["Home", HomeIcon],
+  ["Admin", AdminPanelSettingsIcon],
   ["Dashboard views", SpaceDashboardIcon],
   ["Devices", MemoryIcon],
   ["Gateways", RouterIcon],
