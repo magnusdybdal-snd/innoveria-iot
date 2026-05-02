@@ -36,9 +36,9 @@ export function aggregate(values: number[], method: AggregationMethod): number {
   if (values.length === 0) return 0;
   switch (method) {
     case "min":
-      return Math.min(...values);
+      return values.reduce((a, b) => (b < a ? b : a));
     case "max":
-      return Math.max(...values);
+      return values.reduce((a, b) => (b > a ? b : a));
     case "avg":
       return values.reduce((s, v) => s + v, 0) / values.length;
     case "sum":
