@@ -5,6 +5,8 @@ import {
   type ReactNode,
 } from "react";
 
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
+import AssignmentIcon from "@mui/icons-material/Assignment";
 import BusinessIcon from "@mui/icons-material/Business";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -16,6 +18,7 @@ import NoteAltIcon from "@mui/icons-material/NoteAlt";
 import PeopleIcon from "@mui/icons-material/People";
 import RouterIcon from "@mui/icons-material/Router";
 import RuleIcon from "@mui/icons-material/Rule";
+import SensorsIcon from "@mui/icons-material/Sensors";
 import SettingsRemoteIcon from "@mui/icons-material/SettingsRemote";
 import SpaceDashboardIcon from "@mui/icons-material/SpaceDashboard";
 import StraightenIcon from "@mui/icons-material/Straighten";
@@ -52,6 +55,7 @@ interface MenuProps {
 
 const pageSymbol: Map<string, ComponentType<SvgIconProps>> = new Map([
   ["Home", HomeIcon],
+  ["Admin", AdminPanelSettingsIcon],
   ["Dashboard views", SpaceDashboardIcon],
   ["Devices", MemoryIcon],
   ["Gateways", RouterIcon],
@@ -63,6 +67,8 @@ const pageSymbol: Map<string, ComponentType<SvgIconProps>> = new Map([
   ["Payload schema", NoteAltIcon],
   ["Users", PeopleIcon],
   ["Context rules", RuleIcon],
+  ["Sensor Data", SensorsIcon],
+  ["Context", AssignmentIcon],
 ]);
 
 const roles: Map<string, string> = new Map([
