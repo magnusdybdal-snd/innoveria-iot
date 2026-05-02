@@ -30,7 +30,7 @@ export default function AppRoutes() {
       <Route element={<ProtectedRoute />}>
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
-          <Route path="/Dashboard/Context" element={<Context />} />
+          <Route path="/Dashboard/Context/SensorData" element={<Context />} />
           <Route path="/Dashboard/Context/OrderList" element={<OrderList />} />
           <Route
             path="/Dashboard/Context/OrderList/:id"

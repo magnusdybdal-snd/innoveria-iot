@@ -7,9 +7,9 @@ const subPages: Map<string, SubPage[]> = new Map([
   [
     "Dashboard views",
     [
-      { name: "Context dashboard", path: "/Dashboard/Context" },
+      { name: "Sensor Data", path: "/Dashboard/Context/SensorData" },
       { name: "Context rules", path: "/Dashboard/Rules" },
-      { name: "Orders", path: "/Dashboard/Context/OrderList" },
+      { name: "Context", path: "/Dashboard/Context/OrderList" },
     ],
   ],
   [
