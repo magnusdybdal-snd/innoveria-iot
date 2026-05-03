@@ -43,7 +43,7 @@ export interface EditSensorProps {
  * @param props.productionResourceOptions - Available production resources for the dropdown
  * @param props.voltageOptions - Available voltage options shown when electricity sensor is enabled
  * @param props.onFactoryChange - Called when the factory selection changes, to reload factory areas
- * @param props.onErrorClear
+ * @param props.onErrorClear - Called on any field change to clear a previously displayed server-side error
  * @param props.submitError - Optional server-side error message to display
  * @returns The rendered edit-sensor dialog
  */
