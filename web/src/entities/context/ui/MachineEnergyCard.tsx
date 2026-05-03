@@ -342,13 +342,17 @@ export function MachineEnergyCard({
         variant="caption"
         sx={{ opacity: 0.6, display: "block", mb: 1.5 }}
       >
-        {operation.actualStartDate
-          ? formatTimestamp(operation.actualStartDate)
-          : "Not started"}
-        {" → "}
-        {operation.actualFinishDate
-          ? formatTimestamp(operation.actualFinishDate)
-          : "Running"}
+        {operation.actualStartDate ? (
+          <>
+            {formatTimestamp(operation.actualStartDate)}
+            {" → "}
+            {operation.actualFinishDate
+              ? formatTimestamp(operation.actualFinishDate)
+              : "Running"}
+          </>
+        ) : (
+          "Not started"
+        )}
       </Typography>
 
       {sensors.length > 0 && !hasAnySchema ? (
