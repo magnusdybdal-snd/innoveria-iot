@@ -17,10 +17,16 @@ export const patchGateway = async (
     `${API_ROUTES.gateways}/${gatewayId}`,
     "PATCH",
     {
-      name: gatewayData.name,
-      description: gatewayData.description,
-      factory_id: gatewayData.factoryId,
-      factory_area_id: gatewayData.factoryAreaId,
+      ...(gatewayData.name !== undefined && { name: gatewayData.name }),
+      ...(gatewayData.description !== undefined && {
+        description: gatewayData.description,
+      }),
+      ...(gatewayData.factoryId !== undefined && {
+        factory_id: gatewayData.factoryId,
+      }),
+      ...(gatewayData.factoryAreaId !== undefined && {
+        factory_area_id: gatewayData.factoryAreaId,
+      }),
     },
   );
 };

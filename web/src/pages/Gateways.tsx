@@ -149,7 +149,10 @@ export default function Gateways() {
       });
   };
 
-  const handleEditGateway = (id: string, payload: UpdateGatewayRequest) => {
+  const handleEditGateway = (
+    id: string,
+    payload: UpdateGatewayRequest,
+  ): Promise<void> => {
     setEditError(null);
     return patchGateway(id, payload)
       .then(() => {

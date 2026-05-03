@@ -17,14 +17,22 @@ export const patchSensor = async (
     `${API_ROUTES.sensors}/${sensorId}`,
     "PATCH",
     {
-      name: data.name,
-      description: data.description,
-      factory_id: data.factoryId,
-      factory_area_id: data.factoryAreaId,
-      device_profile_id: data.sensorProfileId,
-      electricity_sensor: data.electricitySensor,
-      voltage: data.voltage,
-      production_resource: data.productionResource,
+      ...(data.name !== undefined && { name: data.name }),
+      ...(data.description !== undefined && { description: data.description }),
+      ...(data.factoryId !== undefined && { factory_id: data.factoryId }),
+      ...(data.factoryAreaId !== undefined && {
+        factory_area_id: data.factoryAreaId,
+      }),
+      ...(data.sensorProfileId !== undefined && {
+        device_profile_id: data.sensorProfileId,
+      }),
+      ...(data.electricitySensor !== undefined && {
+        electricity_sensor: data.electricitySensor,
+      }),
+      ...(data.voltage !== undefined && { voltage: data.voltage }),
+      ...(data.productionResource !== undefined && {
+        production_resource: data.productionResource,
+      }),
     },
   );
 };
