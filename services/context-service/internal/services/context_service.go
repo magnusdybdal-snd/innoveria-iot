@@ -183,6 +183,9 @@ func (s *ContextServiceImpl) buildOperationContext(ctx context.Context, companyI
 			// No sensors mapped to this production resource — expected, not an error.
 			return domain.OperationContext{Operation: op, Sensors: []domain.SensorContext{}}
 		}
+		if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
+			return domain.OperationContext{Operation: op, Sensors: []domain.SensorContext{}}
+		}
 		// Technical failure (timeout, 5xx) — return partial data but mark as degraded.
 		slog.Error("failed to fetch sensors for production resource, returning degraded operation", "production_resource_id", op.ProductionResource.ID, "error", err)
 		return domain.OperationContext{Operation: op, Sensors: []domain.SensorContext{}, Degraded: true}
@@ -190,9 +193,10 @@ func (s *ContextServiceImpl) buildOperationContext(ctx context.Context, companyI
 
 	sensorContexts := make([]domain.SensorContext, len(sensors))
 	var (
-		wg     sync.WaitGroup
-		mu     sync.Mutex
-		svcErr error
+		wg         sync.WaitGroup
+		mu         sync.Mutex
+		svcErr     error
+		failedEUIs []string
 	)
 
 	for j, sensor := range sensors {
@@ -204,6 +208,7 @@ func (s *ContextServiceImpl) buildOperationContext(ctx context.Context, companyI
 				if svcErr == nil {
 					svcErr = err
 				}
+				failedEUIs = append(failedEUIs, sensor.DeviceEUI)
 				mu.Unlock()
 				return
 			}
@@ -213,7 +218,10 @@ func (s *ContextServiceImpl) buildOperationContext(ctx context.Context, companyI
 	wg.Wait()
 
 	if svcErr != nil {
-		slog.Error("failed to build sensor context for operation, returning degraded operation", "production_resource_id", op.ProductionResource.ID, "error", svcErr)
+		if errors.Is(svcErr, context.Canceled) || errors.Is(svcErr, context.DeadlineExceeded) {
+			return domain.OperationContext{Operation: op, Sensors: []domain.SensorContext{}}
+		}
+		slog.Error("failed to build sensor context for operation, returning degraded operation", "production_resource_id", op.ProductionResource.ID, "failed_device_euis", failedEUIs, "error", svcErr)
 		return domain.OperationContext{Operation: op, Sensors: []domain.SensorContext{}, Degraded: true}
 	}
 
