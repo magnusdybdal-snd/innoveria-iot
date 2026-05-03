@@ -1,4 +1,5 @@
 export { getSensors } from "./getSensors.ts";
+export { patchSensor } from "./patchSensor.ts";
 export { getDeviceEUI } from "./getDeviceEUI.ts";
 export { getSensorProfiles } from "./getSensorProfiles.ts";
 export { fetchSensorReading } from "./getSensorReading.ts";

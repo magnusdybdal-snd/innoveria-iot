@@ -16,6 +16,7 @@ export const postGateway = async (
   await apiRequest(serviceClient, API_ROUTES.gateways, "POST", {
     gateway_eui: gatewayData.gatewayEui,
     name: gatewayData.name,
+    description: gatewayData.description,
     factory_id: gatewayData.factoryId,
     factory_area_id: gatewayData.factoryAreaId,
   });

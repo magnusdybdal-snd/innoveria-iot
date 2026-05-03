@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
@@ -10,6 +10,7 @@ import { useFactoryAreas } from "@entities/factoryArea";
 import { useProductionResources } from "@entities/productionResource";
 import {
   deleteSensor,
+  patchSensor,
   postSensor,
   SensorAllInfoPopUp,
   SensorMainInfo,
@@ -20,8 +21,10 @@ import {
   type SensorApiResponse,
   type SensorSortKey,
   type SortDirection,
+  type UpdateSensorRequest,
 } from "@entities/sensor";
 import { AddDevice } from "@features/addDevice";
+import { EditSensor } from "@features/editSensor";
 import { formatTimestamp } from "@shared/lib";
 import { CustomButton } from "@shared/ui/Button";
 import { CategoryHeader } from "@shared/ui/CategoryHeader";
@@ -39,6 +42,7 @@ const sensorMainDetails: string[] = ["Status", "Name", "Last reading"];
 const addSensorDetails: string[] = [
   "Name",
   "DeviceEUI",
+  "Description",
   "Factory",
   "Factory area",
   "Production resource",
@@ -70,12 +74,32 @@ export default function Sensors() {
   >();
   const { factoryAreas, error: areasError } =
     useFactoryAreas(selectedFactoryId);
+  const [editSelectedFactoryId, setEditSelectedFactoryId] = useState<
+    string | undefined
+  >();
+  const { factoryAreas: editFactoryAreas } = useFactoryAreas(
+    editSelectedFactoryId,
+  );
   const { sensorProfiles } = useSensorProfiles();
   const { productionResources } = useProductionResources();
+  const productionResourceOptions = useMemo(
+    () => [
+      { id: "", name: "No machine" },
+      ...productionResources.map((r) => ({
+        id: String(r.id),
+        name: `${r.number} – ${r.description}`,
+      })),
+    ],
+    [productionResources],
+  );
   const [openAdd, setOpenAdd] = useState(false);
   const [addError, setAddError] = useState<string | null>(null);
   const [selectedSensor, setSelectedSensor] =
     useState<SensorApiResponse | null>(null);
+  const [editingSensor, setEditingSensor] = useState<SensorApiResponse | null>(
+    null,
+  );
+  const [editError, setEditError] = useState<string | null>(null);
 
   const { show, hide, snackbar } = useSnackbar();
 
@@ -120,6 +144,7 @@ export default function Sensors() {
   const handleAddSensor = (sensorData: {
     name: string;
     deviceEui: string;
+    description: string;
     electricitySensor: boolean;
     factory: string;
     factoryArea: string;
@@ -138,6 +163,7 @@ export default function Sensors() {
       productionResource: sensorData.productionResource,
       appKey: sensorData.appKey,
       name: sensorData.name,
+      description: sensorData.description || undefined,
       voltage: sensorData.voltage,
     })
       .then(() => {
@@ -153,6 +179,28 @@ export default function Sensors() {
             : "Something went wrong adding sensor.";
         setAddError(message);
         show("Failed to add sensor.", SNACKBAR_SEVERITY.ERROR);
+      });
+  };
+
+  const handleEditSensor = (
+    id: string,
+    payload: UpdateSensorRequest,
+  ): Promise<void> => {
+    setEditError(null);
+    return patchSensor(id, payload)
+      .then(() => {
+        refetch();
+        setEditingSensor(null);
+        show("Sensor updated successfully", SNACKBAR_SEVERITY.SUCCESS);
+      })
+      .catch((err: unknown) => {
+        console.error("Failed to update sensor:", err);
+        const message =
+          axios.isAxiosError(err) && err.response?.data?.message
+            ? (err.response.data.message as string)
+            : "Failed to update sensor.";
+        setEditError(message);
+        show("Failed to update sensor.", SNACKBAR_SEVERITY.ERROR);
       });
   };
 
@@ -243,7 +291,7 @@ export default function Sensors() {
         </Box>
         <CategoryHeader
           categories={sensorMainDetails}
-          columns={sensorMainDetails.length + 2}
+          gridTemplateColumns="auto 55ch auto auto max-content auto"
           sortableColumns={sortableColumns}
           sortConfig={sortConfig}
           onSort={handleSort}
@@ -254,8 +302,13 @@ export default function Sensors() {
                 name={sensor.name}
                 status={sensor.status}
                 lastReading={formatTimestamp(sensor.lastReading)}
+                description={sensor.description}
                 onClick={() => handleRowClick(sensor)}
                 onDelete={() => handleDeleteSensor(sensor.id)}
+                onEdit={() => {
+                  setEditSelectedFactoryId(sensor.factory);
+                  setEditingSensor(sensor);
+                }}
               />
             </DeviceRow>
           ))}
@@ -286,14 +339,28 @@ export default function Sensors() {
         factoryOptions={factories}
         factoryAreaOptions={factoryAreas}
         onFactoryChange={setSelectedFactoryId}
-        productionResourceOptions={[
-          { id: "", name: "No machine" },
-          ...productionResources.map((r) => ({
-            id: String(r.id),
-            name: `${r.number} – ${r.description}`,
-          })),
-        ]}
+        productionResourceOptions={productionResourceOptions}
       />
+      {editingSensor && (
+        <EditSensor
+          open={!!editingSensor}
+          sensor={editingSensor}
+          onClose={() => {
+            setEditingSensor(null);
+            setEditError(null);
+            setEditSelectedFactoryId(undefined);
+          }}
+          onEdit={handleEditSensor}
+          factoryOptions={factories}
+          factoryAreaOptions={editFactoryAreas}
+          sensorProfileOptions={sensorProfiles}
+          onErrorClear={() => setEditError(null)}
+          productionResourceOptions={productionResourceOptions}
+          voltageOptions={voltageOptions}
+          onFactoryChange={setEditSelectedFactoryId}
+          submitError={editError}
+        />
+      )}
       <AppSnackbar
         open={snackbar?.open ?? false}
         message={snackbar?.message ?? ""}

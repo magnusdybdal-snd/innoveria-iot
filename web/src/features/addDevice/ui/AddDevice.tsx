@@ -23,6 +23,7 @@ export interface AddDeviceProps {
   onAdd: (sensor: {
     name: string;
     deviceEui: string;
+    description: string;
     electricitySensor: boolean;
     factory: string;
     factoryArea: string;
@@ -89,6 +90,7 @@ export function AddDevice(props: AddDeviceProps) {
         (option) =>
           option !== ELECTRICITY_SENSOR &&
           option !== "Production resource" &&
+          option !== "Description" &&
           (option !== VOLTAGE || electricityEnabled),
       )
       .every((option) => (values[option] ?? "").trim() !== "");
@@ -118,6 +120,7 @@ export function AddDevice(props: AddDeviceProps) {
       .onAdd({
         name: values["Name"],
         deviceEui: values["DeviceEUI"],
+        description: values["Description"] ?? "",
         electricitySensor: values["Electricity sensor"] === "true",
         factory: values["Factory"],
         factoryArea: values["Factory area"],

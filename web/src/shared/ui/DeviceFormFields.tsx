@@ -76,7 +76,8 @@ export function DeviceFormFields({
   };
 
   const maxLengths: Record<string, number> = {
-    Name: 100,
+    Name: 50,
+    Description: 500,
     DeviceEUI: 16,
     "Application key": 32,
   };
@@ -118,6 +119,8 @@ export function DeviceFormFields({
                 lengthErrors[option] ? lengthErrorMessages[option] : ""
               }
               error={!!lengthErrors[option]}
+              multiline={option === "Description"}
+              maxRows={option === "Description" ? 6 : undefined}
               value={typeof values[option] === "string" ? values[option] : ""}
               slotProps={{
                 htmlInput: {

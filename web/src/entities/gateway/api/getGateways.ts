@@ -12,6 +12,9 @@ type RawGatewayApiResponse = {
   company_id: string;
   gateway_eui: string;
   name: string;
+  description: string | null;
+  factory_id: string;
+  factory_area_id: string;
   status: number;
   last_seen_at: string;
 };
@@ -31,6 +34,9 @@ export const getGateways = async (): Promise<GatewayApiResponse[]> => {
     companyId: a.company_id,
     gatewayEui: a.gateway_eui,
     name: a.name,
+    description: a.description,
+    factoryId: a.factory_id,
+    factoryAreaId: a.factory_area_id,
     status: a.status,
     lastSeenAt: a.last_seen_at,
   }));

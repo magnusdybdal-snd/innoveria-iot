@@ -6,9 +6,13 @@ type RawSensor = {
   id: string;
   device_eui: string;
   name: string;
+  description: string | null;
   factory_id: string;
+  factory_area_id: string;
   status: number;
-  production_resource: string | null;
+  production_resource: number | null;
+  electricity_sensor: boolean;
+  voltage: number | null;
   last_seen_at: string;
   device_profile_id: string;
   global_device_profile_id: string;
@@ -35,9 +39,13 @@ export const getSensors = async (): Promise<SensorApiResponse[]> => {
     id: s.id,
     deviceEui: s.device_eui,
     name: s.name,
+    description: s.description,
     factory: s.factory_id,
+    factoryAreaId: s.factory_area_id,
     status: s.status,
-    machine: s.production_resource ?? "",
+    productionResource: s.production_resource,
+    electricitySensor: s.electricity_sensor,
+    voltage: s.voltage,
     lastReading: s.last_seen_at,
     sensorProfileId: s.global_device_profile_id,
   }));

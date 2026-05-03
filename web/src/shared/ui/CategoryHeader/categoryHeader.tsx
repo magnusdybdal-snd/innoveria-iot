@@ -13,6 +13,7 @@ type SortDirection = "asc" | "desc";
 type CategoryHeaderProps = {
   categories: string[];
   columns?: number;
+  gridTemplateColumns?: string;
   children?: ReactNode;
   sortableColumns?: string[];
   sortConfig?: { key: string | null; direction: SortDirection };
@@ -27,6 +28,7 @@ type CategoryHeaderProps = {
  * @param props - Component props
  * @param props.categories - Ordered list of column label strings
  * @param props.columns - Total column count for the grid template; defaults to categories.length if omitted
+ * @param props.gridTemplateColumns - Custom CSS grid-template-columns string; overrides the auto-generated template when provided
  * @param props.children - Data rows to render inside the grid
  * @param props.sortableColumns - Subset of category labels that are clickable for sorting
  * @param props.sortConfig - Currently active sort key and direction
@@ -37,6 +39,7 @@ type CategoryHeaderProps = {
 export function CategoryHeader({
   categories,
   columns,
+  gridTemplateColumns,
   children,
   sortableColumns = [],
   sortConfig,
@@ -45,13 +48,15 @@ export function CategoryHeader({
 }: CategoryHeaderProps) {
   // Creates number of columns based on string[] passed as parameter
   // First category is made to fit the object through "auto"
-  const templateColumns = fit
-    ? `repeat(${columns ?? categories.length}, max-content)`
-    : columns
-      ? `auto ${Array(columns - 1)
-          .fill("1fr")
-          .join(" ")}`
-      : `repeat(${categories.length}, 1fr)`;
+  const templateColumns = gridTemplateColumns
+    ? gridTemplateColumns
+    : fit
+      ? `repeat(${columns ?? categories.length}, max-content)`
+      : columns
+        ? `auto ${Array(columns - 1)
+            .fill("1fr")
+            .join(" ")}`
+        : `repeat(${categories.length}, 1fr)`;
 
   return (
     <Box

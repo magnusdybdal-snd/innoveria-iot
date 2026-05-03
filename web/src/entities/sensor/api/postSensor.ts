@@ -25,6 +25,6 @@ export const postSensor = async (
     app_key: sensorData.appKey,
     name: sensorData.name,
     voltage: sensorData.voltage,
-    description: "hardcoded description", //TODO: remove hardcoded when description is added to form"
+    description: sensorData.description,
   });
 };

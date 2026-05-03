@@ -1,13 +1,7 @@
 import type { SensorApiResponse } from "@entities/sensor/model/sensorSchema";
 
 export type SortDirection = "asc" | "desc";
-export type SensorSortKey =
-  | "Name"
-  | "Status"
-  | "Factory"
-  | "Machine"
-  | "Last reading"
-  | "Sensor profile";
+export type SensorSortKey = "Name" | "Status" | "Factory" | "Last reading";
 
 // Sorting sensors based on Key (SensorSortKey)
 /**
@@ -32,14 +26,8 @@ export function sortSensors(
       case "Status":
         cmp = a.status - b.status;
         break;
-      case "Machine":
-        cmp = a.machine.localeCompare(b.machine);
-        break;
       case "Last reading":
         cmp = a.lastReading.localeCompare(b.lastReading);
-        break;
-      case "Sensor profile":
-        cmp = a.sensorProfileId.localeCompare(b.sensorProfileId);
         break;
     }
     return direction === "asc" ? cmp : -cmp;

@@ -3,19 +3,24 @@ import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
+import axios from "axios";
 
 import { useFactories } from "@entities/factory";
 import { useFactoryAreas } from "@entities/factoryArea";
 import {
   deleteGateway,
   GatewayInfo,
+  patchGateway,
   postGateway,
   sortGateways,
   useGateways,
+  type GatewayApiResponse,
   type GatewaySortKey,
   type SortDirection,
+  type UpdateGatewayRequest,
 } from "@entities/gateway";
 import { AddDevice } from "@features/addDevice";
+import { EditGateway } from "@features/editGateway";
 import { formatTimestamp } from "@shared/lib";
 import { CustomButton } from "@shared/ui/Button";
 import { CategoryHeader } from "@shared/ui/CategoryHeader";
@@ -34,6 +39,7 @@ const sortableColumns: GatewaySortKey[] = ["Status", "Name", "Last seen"];
 const addGatewayDetails: string[] = [
   "Name",
   "DeviceEUI",
+  "Description",
   "Factory",
   "Factory area",
 ];
@@ -53,7 +59,17 @@ export default function Gateways() {
   >();
   const { factoryAreas, error: areasError } =
     useFactoryAreas(selectedFactoryId);
+  const [editSelectedFactoryId, setEditSelectedFactoryId] = useState<
+    string | undefined
+  >();
+  const { factoryAreas: editFactoryAreas } = useFactoryAreas(
+    editSelectedFactoryId,
+  );
   const [addError, setAddError] = useState<string | null>(null);
+  const [editingGateway, setEditGateway] = useState<GatewayApiResponse | null>(
+    null,
+  );
+  const [editError, setEditError] = useState<string | null>(null);
 
   // State for controlling success snackbar
   const { show, hide, snackbar } = useSnackbar();
@@ -107,6 +123,7 @@ export default function Gateways() {
   const handleAddGateway = (gatewayData: {
     name: string;
     deviceEui: string;
+    description: string;
     factory: string;
     factoryArea: string;
   }) => {
@@ -114,6 +131,7 @@ export default function Gateways() {
     return postGateway({
       gatewayEui: gatewayData.deviceEui,
       name: gatewayData.name,
+      description: gatewayData.description || undefined,
       factoryId: gatewayData.factory,
       factoryAreaId: gatewayData.factoryArea,
     })
@@ -128,6 +146,28 @@ export default function Gateways() {
           "Failed to add gateway. The EUI may already be registered.", // TODO: throw non-hardcoded error messages - based on actual error
         );
         show("Failed to add gateway", SNACKBAR_SEVERITY.ERROR);
+      });
+  };
+
+  const handleEditGateway = (
+    id: string,
+    payload: UpdateGatewayRequest,
+  ): Promise<void> => {
+    setEditError(null);
+    return patchGateway(id, payload)
+      .then(() => {
+        refetch();
+        setEditGateway(null);
+        show("Gateway updated successfully", SNACKBAR_SEVERITY.SUCCESS);
+      })
+      .catch((err: unknown) => {
+        console.error("Failed to edit gateway:", err);
+        const message =
+          axios.isAxiosError(err) && err.response?.data?.message
+            ? (err.response.data.message as string)
+            : "Failed to update gateway. Please try again.";
+        setEditError(message);
+        show("Failed to update gateway", SNACKBAR_SEVERITY.ERROR);
       });
   };
 
@@ -178,7 +218,7 @@ export default function Gateways() {
         </Box>
         <CategoryHeader
           categories={gatewayDetails}
-          columns={gatewayDetails.length + 1}
+          gridTemplateColumns="auto 55ch auto auto auto auto"
           sortableColumns={sortableColumns}
           sortConfig={sortConfig}
           onSort={handleSort}
@@ -192,7 +232,12 @@ export default function Gateways() {
                 status={gateway.status}
                 device_eui={gateway.gatewayEui}
                 lastSeenAt={formatTimestamp(gateway.lastSeenAt)}
+                description={gateway.description}
                 onDelete={() => handleDeleteGateway(gateway.id)}
+                onEdit={() => {
+                  setEditSelectedFactoryId(gateway.factoryId);
+                  setEditGateway(gateway);
+                }}
               />
             </DeviceRow>
           ))}
@@ -209,6 +254,23 @@ export default function Gateways() {
         factoryAreaOptions={factoryAreas}
         onFactoryChange={setSelectedFactoryId}
       />
+      {editingGateway && (
+        <EditGateway
+          open={!!editingGateway}
+          gateway={editingGateway}
+          onClose={() => {
+            setEditGateway(null);
+            setEditError(null);
+            setEditSelectedFactoryId(undefined);
+          }}
+          onEdit={handleEditGateway}
+          factoryOptions={factories}
+          factoryAreaOptions={editFactoryAreas}
+          onFactoryChange={setEditSelectedFactoryId}
+          onErrorClear={() => setEditError(null)}
+          submitError={editError}
+        />
+      )}
       <AppSnackbar
         open={snackbar?.open ?? false}
         message={snackbar?.message ?? ""}
