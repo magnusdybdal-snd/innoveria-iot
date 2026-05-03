@@ -7,7 +7,7 @@
  * Formats an ISO 8601 or RFC1123 timestamp into a human-readable local date and time string.
  * Returns "Never" for zero-value timestamps (0001-01-01), and "Unknown" if the date is invalid.
  * @param timestamp - The raw timestamp string from the API
- * @returns A formatted date/time string, e.g. "09.03.2026, 15:42"
+ * @returns A formatted date/time string in Norwegian format, e.g. "09.03.2026, 15:42"
  */
 export function formatTimestamp(timestamp: string): string {
   const date = new Date(timestamp);
@@ -17,7 +17,8 @@ export function formatTimestamp(timestamp: string): string {
   // Zero-value timestamp from Go backends
   if (date.getFullYear() === 1) return "Never";
 
-  return date.toLocaleString(undefined, {
+  // nb-NO enforces Norwegian date format (DD.MM.YYYY, HH:MM) regardless of browser locale.
+  return date.toLocaleString("nb-NO", {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",

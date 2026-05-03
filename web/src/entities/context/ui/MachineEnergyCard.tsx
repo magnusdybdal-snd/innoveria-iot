@@ -165,6 +165,10 @@ interface SensorChartSectionProps {
   group: SensorChartGroup;
   /** Whether to show the sensor EUI label (only needed when multiple sensors exist). */
   showLabel: boolean;
+  /** Operation actual start — passed to charts to anchor the left x-axis edge. */
+  from: Date;
+  /** Operation actual end (or now if still running) — anchors the right x-axis edge. */
+  to: Date;
 }
 
 /**
@@ -173,9 +177,16 @@ interface SensorChartSectionProps {
  * @param props - Component props
  * @param props.group - The sensor chart group to render
  * @param props.showLabel - Whether to display the sensor EUI as a section label
+ * @param props.from
+ * @param props.to
  * @returns The rendered sensor chart section
  */
-function SensorChartSection({ group, showLabel }: SensorChartSectionProps) {
+function SensorChartSection({
+  group,
+  showLabel,
+  from,
+  to,
+}: SensorChartSectionProps) {
   const [expanded, setExpanded] = useState(false);
 
   return (
@@ -218,6 +229,8 @@ function SensorChartSection({ group, showLabel }: SensorChartSectionProps) {
               <BucketLineChart
                 buckets={chart.buckets}
                 unit={chart.unit ?? undefined}
+                from={from}
+                to={to}
               />
             </Box>
           ))}
@@ -230,6 +243,8 @@ function SensorChartSection({ group, showLabel }: SensorChartSectionProps) {
               <BucketLineChart
                 buckets={chart.buckets}
                 unit={chart.unit ?? undefined}
+                from={from}
+                to={to}
               />
             </Box>
           ))}
@@ -265,6 +280,12 @@ export function MachineEnergyCard({
   aggregationMethod,
 }: MachineEnergyCardProps) {
   const { operation, sensors, degraded } = operationContext;
+  const operationFrom = operation.actualStartDate
+    ? new Date(operation.actualStartDate)
+    : undefined;
+  const operationTo = operation.actualFinishDate
+    ? new Date(operation.actualFinishDate)
+    : new Date();
   const [showWatts, setShowWatts] = useState(true);
   const hasAnySchema = sensors.some((s) => s.metrics.length > 0);
   const sensorReadingGroups = getAllSensorReadings(
@@ -416,8 +437,13 @@ export function MachineEnergyCard({
                     </Box>
                   );
                 })}
-                {chartGroup && (
-                  <SensorChartSection group={chartGroup} showLabel={false} />
+                {chartGroup && operationFrom && (
+                  <SensorChartSection
+                    group={chartGroup}
+                    showLabel={false}
+                    from={operationFrom}
+                    to={operationTo}
+                  />
                 )}
               </Box>
             </Box>
