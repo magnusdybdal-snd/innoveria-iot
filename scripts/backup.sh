@@ -5,33 +5,50 @@ set -euo pipefail
 # Run via cron, e.g.:  0 2 * * * /path/to/scripts/backup.sh
 #
 # Requires: docker compose up (all db services must be running).
-# Credentials are read from .env in the project root (production).
-# Dev fallback: hardcoded defaults matching docker-compose.yml.
+# Everything is auto-detected from the running containers — no flags needed.
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
-ENV_FILE="$PROJECT_DIR/.env"
 
 BACKUP_DIR="${BACKUP_DIR:-$PROJECT_DIR/backups}"
 RETENTION_DAYS=7
 TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
 
 # ---------------------------------------------------------------------------
-# Load credentials — .env in production, dev defaults as fallback
-# Compose file is auto-detected: prod if .env exists, dev otherwise.
-# Override with: COMPOSE_FILE=docker-compose.prod.yml ./scripts/backup.sh
+# Auto-detect compose project name and compose file from running containers.
+# Both are stored as Docker labels on every container compose manages.
+# ---------------------------------------------------------------------------
+CONTAINER_ID=$(docker ps -q --filter "name=collection-db" | head -1)
+if [[ -n "$CONTAINER_ID" ]]; then
+  COMPOSE_PROJECT_NAME="${COMPOSE_PROJECT_NAME:-$(docker inspect "$CONTAINER_ID" \
+    --format '{{index .Config.Labels "com.docker.compose.project"}}' 2>/dev/null)}"
+  DETECTED_COMPOSE_FILE=$(docker inspect "$CONTAINER_ID" \
+    --format '{{index .Config.Labels "com.docker.compose.project.config_files"}}' 2>/dev/null || true)
+else
+  COMPOSE_PROJECT_NAME="${COMPOSE_PROJECT_NAME:-}"
+  DETECTED_COMPOSE_FILE=""
+fi
+
+# Derive which compose file and env file to use from what's actually running.
+if [[ "$DETECTED_COMPOSE_FILE" == *"prod"* ]]; then
+  COMPOSE_FILE="${COMPOSE_FILE:-docker-compose.prod.yml}"
+  ENV_FILE="${PROJECT_DIR}/.env.production"
+else
+  COMPOSE_FILE="${COMPOSE_FILE:-docker-compose.yml}"
+  ENV_FILE="${PROJECT_DIR}/.env"
+fi
+
+export COMPOSE_FILE COMPOSE_PROJECT_NAME
+
+# ---------------------------------------------------------------------------
+# Load credentials — env file if present, dev defaults as fallback.
 # ---------------------------------------------------------------------------
 if [[ -f "$ENV_FILE" ]]; then
   set -o allexport
   # shellcheck source=/dev/null
   source <(grep -E '^[A-Z_]+=.+' "$ENV_FILE")
   set +o allexport
-  COMPOSE_FILE="${COMPOSE_FILE:-docker-compose.prod.yml}"
-else
-  COMPOSE_FILE="${COMPOSE_FILE:-docker-compose.yml}"
 fi
-
-export COMPOSE_FILE
 
 COLLECTION_DB_USER="${COLLECTION_DB_USER:-collection}"
 COLLECTION_DB_PASSWORD="${COLLECTION_DB_PASSWORD:-collection}"

@@ -19,7 +19,6 @@ BACKUP_FILE="${2:?}"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
-ENV_FILE="$PROJECT_DIR/.env"
 
 if [[ ! -f "$BACKUP_FILE" ]]; then
   echo "ERROR: backup file not found: $BACKUP_FILE" >&2
@@ -27,19 +26,38 @@ if [[ ! -f "$BACKUP_FILE" ]]; then
 fi
 
 # ---------------------------------------------------------------------------
-# Load credentials — .env in production, dev defaults as fallback
+# Auto-detect compose project name and compose file from running containers.
+# ---------------------------------------------------------------------------
+CONTAINER_ID=$(docker ps -q --filter "name=collection-db" | head -1)
+if [[ -n "$CONTAINER_ID" ]]; then
+  COMPOSE_PROJECT_NAME="${COMPOSE_PROJECT_NAME:-$(docker inspect "$CONTAINER_ID" \
+    --format '{{index .Config.Labels "com.docker.compose.project"}}' 2>/dev/null)}"
+  DETECTED_COMPOSE_FILE=$(docker inspect "$CONTAINER_ID" \
+    --format '{{index .Config.Labels "com.docker.compose.project.config_files"}}' 2>/dev/null || true)
+else
+  COMPOSE_PROJECT_NAME="${COMPOSE_PROJECT_NAME:-}"
+  DETECTED_COMPOSE_FILE=""
+fi
+
+if [[ "$DETECTED_COMPOSE_FILE" == *"prod"* ]]; then
+  COMPOSE_FILE="${COMPOSE_FILE:-docker-compose.prod.yml}"
+  ENV_FILE="${PROJECT_DIR}/.env.production"
+else
+  COMPOSE_FILE="${COMPOSE_FILE:-docker-compose.yml}"
+  ENV_FILE="${PROJECT_DIR}/.env"
+fi
+
+export COMPOSE_FILE COMPOSE_PROJECT_NAME
+
+# ---------------------------------------------------------------------------
+# Load credentials — env file if present, dev defaults as fallback.
 # ---------------------------------------------------------------------------
 if [[ -f "$ENV_FILE" ]]; then
   set -o allexport
   # shellcheck source=/dev/null
   source <(grep -E '^[A-Z_]+=.+' "$ENV_FILE")
   set +o allexport
-  COMPOSE_FILE="${COMPOSE_FILE:-docker-compose.prod.yml}"
-else
-  COMPOSE_FILE="${COMPOSE_FILE:-docker-compose.yml}"
 fi
-
-export COMPOSE_FILE
 
 # ---------------------------------------------------------------------------
 # Database definitions per service
