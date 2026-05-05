@@ -41,12 +41,15 @@ func Load() (*Config, error) {
 	}
 
 	var jwtToken string
-	if goEnv == "development" {
-		jwtToken = "dev"
-	} else {
+	if goEnv == "production" {
 		jwtToken, err = env.Required("JWT_TOKEN")
 		if err != nil {
 			return nil, err
+		}
+	} else {
+		jwtToken = env.Get("JWT_TOKEN", "dev")
+		if jwtToken == "dev" {
+			slog.Warn("JWT_TOKEN is not set; using insecure development default token")
 		}
 	}
 
