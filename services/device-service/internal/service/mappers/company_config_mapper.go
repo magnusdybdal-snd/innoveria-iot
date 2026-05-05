@@ -5,7 +5,7 @@ import "innoveria-iot/device-service/internal/chirpstackrest/dto"
 // MapCreateChirpstackTenant maps a company name to a CreateChirpstackTenant request.
 func MapCreateChirpstackTenant(name string) dto.CreateChirpstackTenant {
 	return dto.CreateChirpstackTenant{
-		Tenant: dto.TenantPayload{Name: name},
+		Tenant: dto.TenantPayload{Name: name, CanHaveGateways: true},
 	}
 }
 

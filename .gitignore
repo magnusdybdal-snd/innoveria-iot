@@ -45,6 +45,7 @@ tmp/
 docker-data/
 volumes/
 data/
+backups/
 
 docker-compose.override.yml
 
