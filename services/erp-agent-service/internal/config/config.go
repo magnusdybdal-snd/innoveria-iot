@@ -48,6 +48,9 @@ func Load() (*Config, error) {
 		}
 	} else {
 		jwtToken = env.Get("JWT_TOKEN", "dev")
+		if jwtToken == "dev" {
+			slog.Warn("JWT_TOKEN is not set; using insecure development default token")
+		}
 	}
 
 	useMockMonitor := env.GetBool("MOCK_MONITOR", goEnv == "development")
