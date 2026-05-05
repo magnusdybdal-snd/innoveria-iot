@@ -21,6 +21,7 @@ interface BucketLineChartProps {
  * @param props - Component props
  * @param props.buckets - Array of time buckets to plot
  * @param props.unit - Optional unit label shown on the value axis
+ * @param props.area - Whether to render a filled area under the line (default false)
  * @param props.from - Operation actual start date — anchors the left x-axis edge
  * @param props.to - Operation actual end date (or now if still running) — anchors the right x-axis edge
  * @returns Line chart with period start labels on the x-axis and bucket values on the y-axis
@@ -28,6 +29,7 @@ interface BucketLineChartProps {
 export function BucketLineChart({
   buckets,
   unit,
+  area = false,
   from,
   to,
 }: BucketLineChartProps) {
@@ -66,7 +68,7 @@ export function BucketLineChart({
         {
           data: values,
           color: "#fe8019",
-          area: true,
+          area,
           showMark: false,
           // TODO: add valueFormatter with unit derived from sensor field type (e.g. temperature → °C, humidity → %)
         },

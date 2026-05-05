@@ -169,6 +169,8 @@ interface SensorChartSectionProps {
   from: Date;
   /** Operation actual end (or now if still running) — anchors the right x-axis edge. */
   to: Date;
+  /** Whether to render charts with a filled area under the line. */
+  filled: boolean;
 }
 
 /**
@@ -179,6 +181,7 @@ interface SensorChartSectionProps {
  * @param props.showLabel - Whether to display the sensor EUI as a section label
  * @param props.from
  * @param props.to
+ * @param props.filled - Whether to render charts with a filled area under the line
  * @returns The rendered sensor chart section
  */
 function SensorChartSection({
@@ -186,6 +189,7 @@ function SensorChartSection({
   showLabel,
   from,
   to,
+  filled,
 }: SensorChartSectionProps) {
   const [expanded, setExpanded] = useState(false);
 
@@ -229,6 +233,7 @@ function SensorChartSection({
               <BucketLineChart
                 buckets={chart.buckets}
                 unit={chart.unit ?? undefined}
+                area={filled}
                 from={from}
                 to={to}
               />
@@ -243,6 +248,7 @@ function SensorChartSection({
               <BucketLineChart
                 buckets={chart.buckets}
                 unit={chart.unit ?? undefined}
+                area={filled}
                 from={from}
                 to={to}
               />
@@ -287,6 +293,7 @@ export function MachineEnergyCard({
     ? new Date(operation.actualFinishDate)
     : new Date();
   const [showWatts, setShowWatts] = useState(true);
+  const [showFilled, setShowFilled] = useState(false);
   const hasAnySchema = sensors.some((s) => s.metrics.length > 0);
   const sensorReadingGroups = getAllSensorReadings(
     sensors,
@@ -345,6 +352,19 @@ export function MachineEnergyCard({
             >
               <ToggleButton value="W">W</ToggleButton>
               <ToggleButton value="A">A</ToggleButton>
+            </ToggleButtonGroup>
+          )}
+          {sensorGroups.length > 0 && (
+            <ToggleButtonGroup
+              value={showFilled ? "filled" : "line"}
+              exclusive
+              size="small"
+              onChange={(_, v: "filled" | "line" | null) => {
+                if (v !== null) setShowFilled(v === "filled");
+              }}
+            >
+              <ToggleButton value="line">Line</ToggleButton>
+              <ToggleButton value="filled">Filled</ToggleButton>
             </ToggleButtonGroup>
           )}
           <SensorStateIndicator state={sensorState} />
@@ -443,6 +463,7 @@ export function MachineEnergyCard({
                     showLabel={false}
                     from={operationFrom}
                     to={operationTo}
+                    filled={showFilled}
                   />
                 )}
               </Box>
