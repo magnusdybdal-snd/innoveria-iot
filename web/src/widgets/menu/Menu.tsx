@@ -118,6 +118,9 @@ export default function Menu(menuProps: MenuProps) {
               display: "none", // Chrome, Safari, Edge
             },
             scrollbarWidth: "none", // Firefox
+
+            backgroundColor: "primary.light",
+            color: "primary.main",
           },
         }}
         variant="permanent"
