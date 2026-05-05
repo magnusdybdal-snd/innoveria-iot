@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
+import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Checkbox from "@mui/material/Checkbox";
 import Dialog from "@mui/material/Dialog";
@@ -11,6 +12,7 @@ import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 
 import type { CreateRuleRequest } from "@entities/context/model/contextSchema";
+import { getMeasurementTypesAll } from "@entities/measurementType";
 import { DropDownSelect } from "@shared/ui/DropDownSelect";
 
 const AGGREGATION_METHOD_OPTIONS = [
@@ -31,7 +33,8 @@ interface AddRuleProps {
 interface FormState {
   name: string;
   contextType: string;
-  measurementType: string; // TODO: replace with dropdown from GET /v1/device/measurement-types once endpoint is implemented
+  /** Measurement type slug (must exist in configured vocabulary). */
+  measurementType: string;
   aggregationMethod: string;
   timeBucketMinutes: string;
   isActive: boolean;
@@ -67,6 +70,51 @@ export function AddRule({
   const [fieldErrors, setFieldErrors] = useState<
     Partial<Record<keyof FormState, string>>
   >({});
+
+  const [measurementTypes, setMeasurementTypes] = useState<
+    { slug: string; displayName: string }[]
+  >([]);
+  const [measurementTypesError, setMeasurementTypesError] = useState<
+    string | null
+  >(null);
+  const [measurementTypesLoaded, setMeasurementTypesLoaded] = useState(false);
+  const [prevOpen, setPrevOpen] = useState(open);
+
+  // Avoid setState-in-effect lint: reset and fetch during render when the dialog opens.
+  if (prevOpen !== open) {
+    setPrevOpen(open);
+    if (open) {
+      setMeasurementTypesLoaded(false);
+      setMeasurementTypes([]);
+      setMeasurementTypesError(null);
+    }
+  }
+
+  if (open && !measurementTypesLoaded) {
+    setMeasurementTypesLoaded(true);
+    getMeasurementTypesAll()
+      .then((types) => {
+        setMeasurementTypes(types);
+      })
+      .catch((err: unknown) => {
+        setMeasurementTypes([]);
+        setMeasurementTypesError(
+          err instanceof Error
+            ? err.message
+            : "Failed to load measurement types.",
+        );
+      });
+  }
+
+  const measurementTypeOptions = useMemo(() => {
+    return measurementTypes
+      .slice()
+      .sort((a, b) => a.displayName.localeCompare(b.displayName))
+      .map((mt) => ({
+        id: mt.slug,
+        name: `${mt.displayName} (${mt.slug})`,
+      }));
+  }, [measurementTypes]);
 
   const set = <K extends keyof FormState>(key: K, value: FormState[K]) => {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -162,19 +210,30 @@ export function AddRule({
           error={!!fieldErrors.contextType}
           helperText={fieldErrors.contextType}
         />
-        <TextField
-          label="Measurement type"
-          fullWidth
-          sx={textFieldSx}
-          value={form.measurementType}
-          onChange={(e) => set("measurementType", e.target.value)}
-          error={!!fieldErrors.measurementType}
-          helperText={fieldErrors.measurementType}
-        />
+        <Box sx={{ mb: 2 }}>
+          <DropDownSelect
+            label="Measurement type"
+            size="small"
+            options={measurementTypeOptions}
+            value={form.measurementType}
+            onChange={(value) => set("measurementType", value)}
+          />
+        </Box>
+        {fieldErrors.measurementType && (
+          <Typography variant="caption" color="error" sx={{ mt: 0.5, mb: 2 }}>
+            {fieldErrors.measurementType}
+          </Typography>
+        )}
+        {measurementTypesError && (
+          <Typography variant="caption" color="error" sx={{ mt: 0.5, mb: 2 }}>
+            {measurementTypesError}
+          </Typography>
+        )}
         <Typography variant="body2" sx={{ mb: 0.5, color: "primary.main" }}>
           Aggregation method
         </Typography>
         <DropDownSelect
+          size="small"
           options={AGGREGATION_METHOD_OPTIONS}
           value={form.aggregationMethod}
           onChange={(value) => set("aggregationMethod", value)}

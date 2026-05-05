@@ -10,6 +10,10 @@ interface DropDownSelectProps {
   options: Option[];
   value: string;
   onChange: (value: string) => void;
+  /** Optional TextField label (renders inside the input). */
+  label?: string;
+  /** Optional sizing to match surrounding MUI fields. */
+  size?: "small" | "medium";
 }
 
 const autocompleteSx = {
@@ -31,12 +35,16 @@ const autocompleteSx = {
  * @param props.options - Items to display in the dropdown
  * @param props.value - Currently selected item id
  * @param props.onChange - Called with the selected item id on change
+ * @param props.label - Optional input label
+ * @param props.size - Optional MUI input size
  * @returns The rendered autocomplete select element
  */
 export function DropDownSelect({
   options,
   value,
   onChange,
+  label,
+  size = "medium",
 }: DropDownSelectProps) {
   const selected = options.find((o) => o.id === value) ?? null;
 
@@ -44,6 +52,7 @@ export function DropDownSelect({
     <Autocomplete
       sx={autocompleteSx}
       fullWidth
+      size={size}
       options={options}
       getOptionKey={(option) => option.id}
       getOptionLabel={(option) => option.name}
@@ -52,7 +61,7 @@ export function DropDownSelect({
       onChange={(_, newValue) => {
         onChange(newValue?.id ?? "");
       }}
-      renderInput={(params) => <TextField {...params} />}
+      renderInput={(params) => <TextField {...params} label={label} />}
     />
   );
 }

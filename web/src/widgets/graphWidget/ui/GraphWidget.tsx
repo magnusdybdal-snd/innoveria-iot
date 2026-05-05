@@ -13,9 +13,11 @@ import {
   getContextData,
   getRules,
   toMinutes,
+  type AggregationRule,
   type BucketUnit,
   type ContextDataResponse,
 } from "@entities/context";
+import { getMeasurementTypes } from "@entities/measurementType";
 import { getSensors } from "@entities/sensor";
 import { toLocalDateTimeString } from "@shared/lib";
 import {
@@ -69,22 +71,50 @@ export function GraphWidget({ defaultConfig, onDelete }: GraphWidgetProps) {
   const [deviceOptions, setDeviceOptions] = useState<
     { id: string; name: string }[]
   >([]);
-  const [ruleOptions, setRuleOptions] = useState<
+  const [rules, setRules] = useState<AggregationRule[]>([]);
+  const [measurementTypeOptions, setMeasurementTypeOptions] = useState<
     { id: string; name: string }[]
   >([]);
+  const [measurementTypesError, setMeasurementTypesError] = useState<
+    string | null
+  >(null);
   const [optionsError, setOptionsError] = useState<string | null>(null);
 
   useEffect(() => {
     Promise.all([getSensors(), getRules(COMPANY_ID)])
-      .then(([sensors, rules]) => {
+      .then(([sensors, loadedRules]) => {
         setDeviceOptions(
           sensors.map((s) => ({ id: s.deviceEui, name: s.name })),
         );
-        setRuleOptions(rules.map((r) => ({ id: r.id, name: r.name })));
+        setRules(loadedRules);
       })
       .catch((err: unknown) => {
         setOptionsError(
           err instanceof Error ? err.message : "Failed to load options.",
+        );
+      });
+
+    // Measurement types are optional for rule filtering; rule selection must still work
+    // even if this fails (unfiltered fallback).
+    getMeasurementTypes()
+      .then((measurementTypes) => {
+        setMeasurementTypeOptions(
+          measurementTypes
+            .slice()
+            .sort((a, b) => a.displayName.localeCompare(b.displayName))
+            .map((mt) => ({
+              id: mt.slug,
+              name: `${mt.displayName} (${mt.slug})`,
+            })),
+        );
+        setMeasurementTypesError(null);
+      })
+      .catch((err: unknown) => {
+        setMeasurementTypeOptions([]);
+        setMeasurementTypesError(
+          err instanceof Error
+            ? err.message
+            : "Failed to load measurement types.",
         );
       });
   }, []);
@@ -197,7 +227,9 @@ export function GraphWidget({ defaultConfig, onDelete }: GraphWidgetProps) {
         onCancel={handleSettingsCancel}
         onConfirm={handleSettingsConfirm}
         deviceOptions={deviceOptions}
-        ruleOptions={ruleOptions}
+        rules={rules}
+        measurementTypeOptions={measurementTypeOptions}
+        measurementTypesError={measurementTypesError}
         optionsError={optionsError}
       />
     </Card>

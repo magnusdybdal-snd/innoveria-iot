@@ -1,3 +1,5 @@
+import { useMemo } from "react";
+
 import Autocomplete from "@mui/material/Autocomplete";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -12,7 +14,12 @@ import Select from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 
-import { BUCKET_UNIT_OPTIONS, type BucketUnit } from "@entities/context";
+import {
+  BUCKET_UNIT_OPTIONS,
+  type AggregationRule,
+  type BucketUnit,
+} from "@entities/context";
+import { DropDownSelect } from "@shared/ui/DropDownSelect";
 import type { GraphWidgetConfig } from "@widgets/graphWidget/model/types";
 
 interface GraphWidgetSettingsProps {
@@ -22,7 +29,9 @@ interface GraphWidgetSettingsProps {
   onCancel: () => void;
   onConfirm: (config: GraphWidgetConfig) => void;
   deviceOptions: { id: string; name: string }[];
-  ruleOptions: { id: string; name: string }[];
+  rules: AggregationRule[];
+  measurementTypeOptions: { id: string; name: string }[];
+  measurementTypesError: string | null;
   optionsError: string | null;
 }
 
@@ -36,7 +45,9 @@ interface GraphWidgetSettingsProps {
  * @param props.onCancel - Called when the user cancels; draft is discarded by the parent
  * @param props.onConfirm - Called with the committed config when the user confirms
  * @param props.deviceOptions - Available device options for the device selector
- * @param props.ruleOptions - Available aggregation rule options for the rule selector
+ * @param props.rules - Available aggregation rules for the rule selector
+ * @param props.measurementTypeOptions - Measurement type options (label includes slug)
+ * @param props.measurementTypesError - Non-null when measurement types failed to load
  * @param props.optionsError - Error message if device/rule options failed to load
  * @returns The rendered settings dialog
  */
@@ -47,12 +58,37 @@ export function GraphWidgetSettings({
   onCancel,
   onConfirm,
   deviceOptions,
-  ruleOptions,
+  rules,
+  measurementTypeOptions,
+  measurementTypesError,
   optionsError,
 }: GraphWidgetSettingsProps) {
   const selectedDevice =
     deviceOptions.find((o) => o.id === draft.deviceEui) ?? null;
-  const selectedRule = ruleOptions.find((o) => o.id === draft.ruleId) ?? null;
+
+  const measurementTypeNameBySlug = useMemo(() => {
+    return new Map(measurementTypeOptions.map((o) => [o.id, o.name]));
+  }, [measurementTypeOptions]);
+
+  const ruleOptions = useMemo(() => {
+    // If measurement types failed to load, fall back to rule.name only.
+    if (measurementTypesError) {
+      return rules.map((r) => ({
+        id: r.id,
+        name: `${r.name} (${r.aggregationMethod})`,
+      }));
+    }
+
+    return rules.map((r) => {
+      const mtLabel =
+        measurementTypeNameBySlug.get(r.measurementType) ?? r.measurementType;
+      return {
+        id: r.id,
+        // Required: include measurement type label/slug + aggregation method in the label.
+        name: `${mtLabel} - ${r.aggregationMethod}`,
+      };
+    });
+  }, [measurementTypeNameBySlug, measurementTypesError, rules]);
 
   return (
     <Dialog
@@ -102,16 +138,13 @@ export function GraphWidgetSettings({
             )}
           />
 
-          {/* Rule */}
-          <Autocomplete
+          {/* Aggregation rule */}
+          <DropDownSelect
+            label="Aggregation rule"
             size="small"
             options={ruleOptions}
-            getOptionLabel={(o) => o.name}
-            value={selectedRule}
-            onChange={(_, v) => onChange({ ...draft, ruleId: v?.id ?? "" })}
-            renderInput={(params) => (
-              <TextField {...params} label="Aggregation rule" size="small" />
-            )}
+            value={draft.ruleId}
+            onChange={(value) => onChange({ ...draft, ruleId: value })}
           />
 
           {/* From */}
@@ -192,6 +225,16 @@ export function GraphWidgetSettings({
             sx={{ mt: 1, display: "block" }}
           >
             {optionsError}
+          </Typography>
+        )}
+
+        {measurementTypesError && (
+          <Typography
+            variant="caption"
+            color="error"
+            sx={{ mt: 1, display: "block" }}
+          >
+            Measurement types failed to load. Showing all rules.
           </Typography>
         )}
       </DialogContent>
