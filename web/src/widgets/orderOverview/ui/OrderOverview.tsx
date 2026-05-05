@@ -69,6 +69,7 @@ export function OrderOverview({ operations }: OrderOverviewProps) {
           label="Degraded sensors"
           value={String(degradedCount)}
           valueColor={degradedCount > 0 ? "warning.main" : undefined}
+          infoTooltip="A degraded sensor means the system could not retrieve data for that sensor during this operation — readings may be incomplete or unavailable"
         />
         <OrderOverviewStat label="Total sensors" value={String(totalSensors)} />
         <OrderOverviewStat

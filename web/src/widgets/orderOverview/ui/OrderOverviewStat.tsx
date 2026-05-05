@@ -1,3 +1,4 @@
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import Card from "@mui/material/Card";
 import Tooltip from "@mui/material/Tooltip";
@@ -15,6 +16,8 @@ interface OrderOverviewStatProps {
   valueColor?: string;
   /** If set, wraps the value in a Tooltip — used for placeholder `—` values. */
   tooltip?: string;
+  /** If set, shows an info icon with this text as the Tooltip. */
+  infoTooltip?: string;
   /** If set, shows a warning triangle with this text as the Tooltip. */
   warningTooltip?: string;
 }
@@ -28,6 +31,7 @@ interface OrderOverviewStatProps {
  * @param props.unit - Unit of measurement shown below the value
  * @param props.valueColor - MUI color token applied to the value typography
  * @param props.tooltip - Tooltip text wrapping the value for unavailable data
+ * @param props.infoTooltip - If set, renders an InfoOutlinedIcon with this tooltip
  * @param props.warningTooltip - If set, renders a WarningAmberIcon with this tooltip
  * @returns The rendered stat tile card
  */
@@ -37,6 +41,7 @@ export function OrderOverviewStat({
   unit,
   valueColor,
   tooltip,
+  infoTooltip,
   warningTooltip,
 }: OrderOverviewStatProps) {
   const valueNode = (
@@ -86,6 +91,12 @@ export function OrderOverviewStat({
           <WarningAmberIcon
             sx={{ color: "warning.main", fontSize: 18, mt: 0.5 }}
           />
+        </Tooltip>
+      )}
+
+      {infoTooltip && (
+        <Tooltip title={infoTooltip}>
+          <InfoOutlinedIcon sx={{ fontSize: 16, mt: 0.5, opacity: 0.5 }} />
         </Tooltip>
       )}
     </Card>
