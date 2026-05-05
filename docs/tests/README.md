@@ -151,11 +151,7 @@ Fill in the values from k6 output and `docker stats` for each scenario.
 
 # Integration Tests
 
-Two kinds of integration tests, each targeting different concerns.
-
----
-
-## Option A — Go tests (tagged, no live stack needed)
+## Go tests (tagged, no live stack needed)
 
 Tests in `services/context-service/internal/handlers/integration_test.go` are tagged `//go:build integration` so they are **never run by CI** (`go test ./...`). They wire real service and client code against `httptest` stubs — no database or Docker required.
 
