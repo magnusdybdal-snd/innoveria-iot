@@ -39,9 +39,9 @@ export default function AppRoutes() {
           <Route path="/Dashboard/Rules" element={<Rules />} />
           <Route path="/Devices/Sensors" element={<Sensors />} />
           <Route path="/Devices/Gateways" element={<Gateways />} />
+          <Route path="/Organization/Factories" element={<Factories />} />
           <Route element={<AdminRoute />}>
             <Route path="/Admin/Companies" element={<Companies />} />
-            <Route path="/Admin/Factories" element={<Factories />} />
             <Route path="/Admin/Measurement" element={<MeasurementTypes />} />
             <Route path="/Admin/PayloadSchema" element={<PayloadSchema />} />
             <Route path="/Admin/Users" element={<Users />} />
