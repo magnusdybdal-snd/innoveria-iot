@@ -8,6 +8,7 @@ import {
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import BusinessIcon from "@mui/icons-material/Business";
+import CorporateFareIcon from "@mui/icons-material/CorporateFare";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import FactoryIcon from "@mui/icons-material/Factory";
@@ -55,6 +56,7 @@ interface MenuProps {
 
 const pageSymbol: Map<string, ComponentType<SvgIconProps>> = new Map([
   ["Home", HomeIcon],
+  ["Organization", CorporateFareIcon],
   ["Admin", AdminPanelSettingsIcon],
   ["Dashboard views", SpaceDashboardIcon],
   ["Devices", MemoryIcon],
