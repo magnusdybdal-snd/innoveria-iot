@@ -12,7 +12,10 @@ const NAV_SECTIONS: NavCardProps[] = [
     label: "Dashboard",
     description: "Monitor live sensor context and production order status.",
     icon: <SpaceDashboardIcon fontSize="small" />,
-    pages: [{ name: "Sensor Data", path: "/Dashboard/Context/SensorData" }],
+    pages: [
+      { name: "Sensor Data", path: "/Dashboard/Context/SensorData" },
+      { name: "Context (order list)", path: "/Dashboard/Context/OrderList" },
+    ],
   },
   {
     label: "Devices",
