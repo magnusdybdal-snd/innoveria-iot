@@ -2,18 +2,19 @@
 package server
 
 import (
-	"innoveria-iot/collection-service/internal/domain"
-	"innoveria-iot/collection-service/internal/handlers"
-	"innoveria-iot/pkg/middleware"
 	"net/http"
 
 	_ "innoveria-iot/collection-service/docs"
+	"innoveria-iot/collection-service/internal/clients"
+	"innoveria-iot/collection-service/internal/domain"
+	"innoveria-iot/collection-service/internal/handlers"
+	"innoveria-iot/pkg/middleware"
 
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 // NewRouter registers all HTTP routes and returns the configured ServeMux.
-func NewRouter(svc domain.MeasurementService, tenantMappingSvc domain.TenantMappingService, enableSwagger bool) *http.ServeMux {
+func NewRouter(svc domain.MeasurementService, tenantMappingSvc domain.TenantMappingService, deviceClient *clients.DeviceClient, enableSwagger bool) *http.ServeMux {
 	mux := http.NewServeMux()
 
 	// Routes:
@@ -25,6 +26,9 @@ func NewRouter(svc domain.MeasurementService, tenantMappingSvc domain.TenantMapp
 
 	// Payload tags
 	mux.HandleFunc("GET "+PAYLOAD_TAGS, middleware.AdminGuard(handlers.HandlePayloadTags(svc)))
+
+	// Export
+	mux.HandleFunc("GET "+EXPORT_MEASUREMENTS, handlers.HandleExportMeasurements(svc, deviceClient))
 
 	// Company config routes:
 	mux.HandleFunc("POST "+COMPANY_CONFIG_ROUTE, handlers.PostTenantMapping(tenantMappingSvc))

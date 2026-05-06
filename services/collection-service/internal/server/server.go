@@ -11,6 +11,7 @@ import (
 	"syscall"
 	"time"
 
+	"innoveria-iot/collection-service/internal/clients"
 	"innoveria-iot/collection-service/internal/config"
 	"innoveria-iot/collection-service/internal/db"
 	"innoveria-iot/collection-service/internal/mqtt"
@@ -60,7 +61,8 @@ func Run() error {
 		return fmt.Errorf("mqtt subscribe: %w", err)
 	}
 
-	mux := NewRouter(svc, tenantMappingSvc, cfg.EnableSwagger)
+	deviceClient := clients.NewDeviceClient(cfg.DeviceSvcInternalURL)
+	mux := NewRouter(svc, tenantMappingSvc, deviceClient, cfg.EnableSwagger)
 	server := &http.Server{
 		Addr:              cfg.Addr,
 		Handler:           mux,
