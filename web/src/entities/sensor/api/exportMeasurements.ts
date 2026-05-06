@@ -28,12 +28,14 @@ export const exportMeasurements = async (
     if (axios.isAxiosError(err) && err.response?.data instanceof Blob) {
       // Blob responses need to be read back as text to extract the error message.
       const text = await err.response.data.text();
+      let message = "Export failed";
       try {
         const body = JSON.parse(text) as { error?: { message?: string } };
-        throw new Error(body.error?.message ?? "Export failed");
+        message = body.error?.message ?? message;
       } catch {
-        throw new Error("Export failed");
+        /* not JSON, use default message */
       }
+      throw new Error(message);
     }
     throw err;
   }

@@ -181,7 +181,14 @@ export function SensorMainInfo({
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setExportOpen(false)}>Cancel</Button>
+          <Button
+            onClick={() => {
+              setExportOpen(false);
+              setExportError(null);
+            }}
+          >
+            Cancel
+          </Button>
           <Button
             onClick={handleExport}
             disabled={!fromDate || !toDate || exporting}
