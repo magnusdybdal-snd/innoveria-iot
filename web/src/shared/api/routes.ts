@@ -28,5 +28,6 @@ export const API_ROUTES = {
   measurementTypesAll: `/v1/device/measurement-types/all`,
   payloadSchema: `/v1/device/payload-schema/`,
   payloadTags: `/v1/collection/payload-tags?device_eui=`,
+  collectionExport: `/v1/collection/export`,
   logout: `/v1/auth/logout`,
 };
