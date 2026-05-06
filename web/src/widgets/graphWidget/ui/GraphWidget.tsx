@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import SettingsIcon from "@mui/icons-material/Settings";
@@ -13,9 +13,11 @@ import {
   getContextData,
   getRules,
   toMinutes,
+  type AggregationRule,
   type BucketUnit,
   type ContextDataResponse,
 } from "@entities/context";
+import { useMeasurementTypes } from "@entities/measurementType";
 import { getSensors } from "@entities/sensor";
 import { toLocalDateTimeString } from "@shared/lib";
 import {
@@ -69,18 +71,30 @@ export function GraphWidget({ defaultConfig, onDelete }: GraphWidgetProps) {
   const [deviceOptions, setDeviceOptions] = useState<
     { id: string; name: string }[]
   >([]);
-  const [ruleOptions, setRuleOptions] = useState<
-    { id: string; name: string }[]
-  >([]);
+  const [rules, setRules] = useState<AggregationRule[]>([]);
   const [optionsError, setOptionsError] = useState<string | null>(null);
+
+  const { measurementTypes, error: measurementTypesErr } =
+    useMeasurementTypes();
+
+  const measurementTypeOptions = useMemo(
+    () =>
+      measurementTypes
+        .slice()
+        .sort((a, b) => a.displayName.localeCompare(b.displayName))
+        .map((mt) => ({ id: mt.slug, name: `${mt.displayName} (${mt.slug})` })),
+    [measurementTypes],
+  );
+
+  const measurementTypesError = measurementTypesErr?.message ?? null;
 
   useEffect(() => {
     Promise.all([getSensors(), getRules(COMPANY_ID)])
-      .then(([sensors, rules]) => {
+      .then(([sensors, loadedRules]) => {
         setDeviceOptions(
           sensors.map((s) => ({ id: s.deviceEui, name: s.name })),
         );
-        setRuleOptions(rules.map((r) => ({ id: r.id, name: r.name })));
+        setRules(loadedRules);
       })
       .catch((err: unknown) => {
         setOptionsError(
@@ -197,7 +211,9 @@ export function GraphWidget({ defaultConfig, onDelete }: GraphWidgetProps) {
         onCancel={handleSettingsCancel}
         onConfirm={handleSettingsConfirm}
         deviceOptions={deviceOptions}
-        ruleOptions={ruleOptions}
+        rules={rules}
+        measurementTypeOptions={measurementTypeOptions}
+        measurementTypesError={measurementTypesError}
         optionsError={optionsError}
       />
     </Card>

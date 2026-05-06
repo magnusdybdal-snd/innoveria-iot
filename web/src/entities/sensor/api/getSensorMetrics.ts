@@ -17,25 +17,20 @@ export interface RawSensorMetricListApiResponse {
  * Fetches all sensor metrics of a given sensor from the device-service via the API gateway.
  * @param deviceEui - Device EUI used to identify the sensor
  * Maps snake_case API response keys to camelCase.
- * @returns Array of SensorMetricApiResponse objects, or an empty array if the request fails
+ * @returns Array of SensorMetricApiResponse objects
  */
 export const getSensorMetrics = async (
   deviceEui: string,
 ): Promise<SensorMetricApiResponse[]> => {
-  try {
-    const data = await apiRequest<RawSensorMetricListApiResponse>(
-      serviceClient,
-      `${API_ROUTES.sensors}/${encodeURIComponent(deviceEui)}/metrics`,
-      "GET",
-    );
+  const data = await apiRequest<RawSensorMetricListApiResponse>(
+    serviceClient,
+    `${API_ROUTES.sensors}/${encodeURIComponent(deviceEui)}/metrics`,
+    "GET",
+  );
 
-    return (data.metrics ?? []).map((m) => ({
-      measurementType: m.measurement_type,
-      payloadKey: m.payload_key,
-      unit: m.unit,
-    }));
-  } catch (error) {
-    console.error("Failed to fetch sensor metrics:", error);
-    return [];
-  }
+  return (data.metrics ?? []).map((m) => ({
+    measurementType: m.measurement_type,
+    payloadKey: m.payload_key,
+    unit: m.unit,
+  }));
 };

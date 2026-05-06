@@ -189,7 +189,12 @@ export default function PayloadSchema() {
       setIsLoadingKeys(true);
 
       try {
-        const metrics = await getSensorMetrics(sensor);
+        let metrics: Awaited<ReturnType<typeof getSensorMetrics>> = [];
+        try {
+          metrics = await getSensorMetrics(sensor);
+        } catch {
+          // metrics unavailable — fall through to raw payload tags below
+        }
 
         if (!active) return;
 
