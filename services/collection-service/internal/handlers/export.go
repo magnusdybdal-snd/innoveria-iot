@@ -75,15 +75,38 @@ func HandleExportMeasurements(svc domain.MeasurementService, deviceClient *clien
 			json.HandleError(w, http.StatusInternalServerError, err, "failed to fetch sensor metrics")
 			return
 		}
-		if len(metrics) == 0 {
-			json.HandleError(w, http.StatusUnprocessableEntity, fmt.Errorf("no metrics configured for sensor %s", deviceEUI), "sensor has no metrics configured — configure metrics before exporting")
-			return
-		}
 
 		measurements, err := svc.GetByTimeRange(r.Context(), auth.CompanyID, deviceEUI, from, to)
 		if err != nil {
 			json.HandleError(w, http.StatusInternalServerError, err, "failed to fetch measurements")
 			return
+		}
+
+		// Build a payloadKey → column header map from configured metrics.
+		metricHeader := make(map[string]string, len(metrics))
+		for _, m := range metrics {
+			col := m.MeasurementType
+			if m.Unit != nil && *m.Unit != "" {
+				col = col + " (" + *m.Unit + ")"
+			}
+			metricHeader[m.PayloadKey] = col
+		}
+
+		// Collect the ordered column set: configured metric keys first (preserving
+		// device-service order), then any unconfigured keys found in the measurements.
+		seen := make(map[string]bool, len(metrics))
+		columns := make([]string, 0, len(metrics))
+		for _, m := range metrics {
+			seen[m.PayloadKey] = true
+			columns = append(columns, m.PayloadKey)
+		}
+		for _, meas := range measurements {
+			for key := range meas.Payload {
+				if !seen[key] {
+					seen[key] = true
+					columns = append(columns, key)
+				}
+			}
 		}
 
 		filename := fmt.Sprintf("%s_%s_%s.csv", deviceEUI, from.Format(time.DateOnly), to.Format(time.DateOnly))
@@ -93,20 +116,19 @@ func HandleExportMeasurements(svc domain.MeasurementService, deviceClient *clien
 		cw := csv.NewWriter(w)
 
 		header := []string{"timestamp"}
-		for _, m := range metrics {
-			col := m.MeasurementType
-			if m.Unit != nil && *m.Unit != "" {
-				col = col + " (" + *m.Unit + ")"
+		for _, key := range columns {
+			if col, ok := metricHeader[key]; ok {
+				header = append(header, col)
+			} else {
+				header = append(header, key)
 			}
-			header = append(header, col)
 		}
 		cw.Write(header) //nolint:errcheck
 
 		for _, meas := range measurements {
 			row := []string{meas.Timestamp.Format(time.RFC3339)}
-			for _, m := range metrics {
-				val := fmt.Sprintf("%v", meas.Payload[m.PayloadKey])
-				row = append(row, val)
+			for _, key := range columns {
+				row = append(row, fmt.Sprintf("%v", meas.Payload[key]))
 			}
 			cw.Write(row) //nolint:errcheck
 		}
