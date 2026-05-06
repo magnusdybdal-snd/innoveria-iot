@@ -3,7 +3,9 @@ package handlers
 import (
 	"encoding/csv"
 	"fmt"
+	"math"
 	"net/http"
+	"strconv"
 	"time"
 
 	"innoveria-iot/collection-service/internal/clients"
@@ -20,6 +22,7 @@ import (
 // @Param		device_eui	query	string	true	"Device EUI"
 // @Param		from		query	string	true	"Start time (RFC3339, e.g. 2024-01-01T00:00:00Z)"
 // @Param		to			query	string	true	"End time (RFC3339, e.g. 2024-01-02T00:00:00Z)"
+// @Param		timezone	query	string	false	"IANA timezone name (e.g. Europe/Oslo). Defaults to UTC."
 // @Success		200
 // @Failure		400
 // @Failure		401
@@ -70,6 +73,13 @@ func HandleExportMeasurements(svc domain.MeasurementService, deviceClient *clien
 			return
 		}
 
+		loc := time.UTC
+		if tzName := q.Get("timezone"); tzName != "" {
+			if parsed, err := time.LoadLocation(tzName); err == nil {
+				loc = parsed
+			}
+		}
+
 		metrics, err := deviceClient.GetSensorMetrics(r.Context(), deviceEUI)
 		if err != nil {
 			json.HandleError(w, http.StatusInternalServerError, err, "failed to fetch sensor metrics")
@@ -115,7 +125,9 @@ func HandleExportMeasurements(svc domain.MeasurementService, deviceClient *clien
 
 		cw := csv.NewWriter(w)
 
-		header := []string{"timestamp"}
+		tzLabel := loc.String()
+
+		header := []string{"date", "time (" + tzLabel + ")"}
 		for _, key := range columns {
 			if col, ok := metricHeader[key]; ok {
 				header = append(header, col)
@@ -126,13 +138,29 @@ func HandleExportMeasurements(svc domain.MeasurementService, deviceClient *clien
 		cw.Write(header) //nolint:errcheck
 
 		for _, meas := range measurements {
-			row := []string{meas.Timestamp.Format(time.RFC3339)}
+			t := meas.Timestamp.In(loc)
+			row := []string{
+				t.Format(time.DateOnly),
+				t.Format("15:04:05"),
+			}
 			for _, key := range columns {
-				row = append(row, fmt.Sprintf("%v", meas.Payload[key]))
+				row = append(row, formatPayloadValue(meas.Payload[key]))
 			}
 			cw.Write(row) //nolint:errcheck
 		}
 
 		cw.Flush()
 	}
+}
+
+// formatPayloadValue formats a JSON payload value for CSV output.
+// Float64 values are rounded to 4 decimal places and trailing zeros are stripped.
+// All other types use their default string representation.
+func formatPayloadValue(v any) string {
+	f, ok := v.(float64)
+	if !ok {
+		return fmt.Sprintf("%v", v)
+	}
+	rounded := math.Round(f*10000) / 10000
+	return strconv.FormatFloat(rounded, 'f', -1, 64)
 }

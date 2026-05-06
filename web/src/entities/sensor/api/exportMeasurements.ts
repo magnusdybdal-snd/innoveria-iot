@@ -16,7 +16,12 @@ export const exportMeasurements = async (
   from: string,
   to: string,
 ): Promise<void> => {
-  const params = new URLSearchParams({ device_eui: deviceEUI, from, to });
+  const params = new URLSearchParams({
+    device_eui: deviceEUI,
+    from,
+    to,
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+  });
 
   let response;
   try {
@@ -40,10 +45,17 @@ export const exportMeasurements = async (
     throw err;
   }
 
+  // Use the filename from Content-Disposition so it matches what the backend generated.
+  const disposition = response.headers["content-disposition"] as
+    | string
+    | undefined;
+  const filename =
+    disposition?.match(/filename="([^"]+)"/)?.[1] ?? `${deviceEUI}.csv`;
+
   const url = window.URL.createObjectURL(response.data as Blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `${deviceEUI}.csv`;
+  a.download = filename;
   a.click();
   window.URL.revokeObjectURL(url);
 };
