@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"strings"
 
 	"innoveria-iot/device-service/internal/chirpstackrest"
 	"innoveria-iot/device-service/internal/chirpstackrest/dto"
@@ -31,7 +32,7 @@ func (s *SensorProfileServiceImpl) GetAll(ctx context.Context) ([]domain.SensorP
 	}
 	var result []domain.SensorProfile
 	for _, sp := range resp {
-		if sp.Region == "EU868" {
+		if sp.Region == "EU868" && !strings.HasPrefix(sp.MACVersion, "LORAWAN_1_1") {
 			result = append(result, mappers.MapChirpstackDeviceProfilesToDomain(sp))
 		}
 	}
