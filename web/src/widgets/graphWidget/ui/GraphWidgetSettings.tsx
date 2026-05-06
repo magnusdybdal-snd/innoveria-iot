@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import Autocomplete from "@mui/material/Autocomplete";
 import Box from "@mui/material/Box";
@@ -19,6 +19,7 @@ import {
   type AggregationRule,
   type BucketUnit,
 } from "@entities/context";
+import { getSensorMetrics } from "@entities/sensor";
 import { DropDownSelect } from "@shared/ui/DropDownSelect";
 import type { GraphWidgetConfig } from "@widgets/graphWidget/model/types";
 
@@ -66,29 +67,67 @@ export function GraphWidgetSettings({
   const selectedDevice =
     deviceOptions.find((o) => o.id === draft.deviceEui) ?? null;
 
+  const [prevDeviceEui, setPrevDeviceEui] = useState(draft.deviceEui);
+  const [deviceMetricSlugs, setDeviceMetricSlugs] = useState<string[] | null>(
+    null,
+  );
+  const [metricsError, setMetricsError] = useState<string | null>(null);
+
+  // Avoid setState-in-effect lint: reset during render when the device changes.
+  if (prevDeviceEui !== draft.deviceEui) {
+    setPrevDeviceEui(draft.deviceEui);
+    setDeviceMetricSlugs(null);
+    setMetricsError(null);
+  }
+
+  useEffect(() => {
+    if (!draft.deviceEui) return;
+    getSensorMetrics(draft.deviceEui)
+      .then((metrics) => {
+        setDeviceMetricSlugs(metrics.map((m) => m.measurementType));
+      })
+      .catch((err: unknown) => {
+        setDeviceMetricSlugs(null);
+        setMetricsError(
+          err instanceof Error ? err.message : "Failed to load sensor metrics.",
+        );
+      });
+  }, [draft.deviceEui]);
+
   const measurementTypeNameBySlug = useMemo(() => {
     return new Map(measurementTypeOptions.map((o) => [o.id, o.name]));
   }, [measurementTypeOptions]);
 
   const ruleOptions = useMemo(() => {
-    // If measurement types failed to load, fall back to rule.name only.
+    if (!draft.deviceEui || !deviceMetricSlugs) return [];
+
+    const matchingRules = rules.filter((r) =>
+      deviceMetricSlugs.includes(r.measurementType),
+    );
+
     if (measurementTypesError) {
-      return rules.map((r) => ({
+      return matchingRules.map((r) => ({
         id: r.id,
-        name: `${r.name} (${r.aggregationMethod})`,
+        name: `${r.measurementType} (unknown) - ${r.aggregationMethod}`,
       }));
     }
 
-    return rules.map((r) => {
-      const mtLabel =
-        measurementTypeNameBySlug.get(r.measurementType) ?? r.measurementType;
+    return matchingRules.map((r) => {
+      const mtLabel = measurementTypeNameBySlug.get(r.measurementType);
       return {
         id: r.id,
-        // Required: include measurement type label/slug + aggregation method in the label.
-        name: `${mtLabel} - ${r.aggregationMethod}`,
+        name: mtLabel
+          ? `${mtLabel} - ${r.aggregationMethod}`
+          : `${r.measurementType} (unknown) - ${r.aggregationMethod}`,
       };
     });
-  }, [measurementTypeNameBySlug, measurementTypesError, rules]);
+  }, [
+    draft.deviceEui,
+    deviceMetricSlugs,
+    measurementTypeNameBySlug,
+    measurementTypesError,
+    rules,
+  ]);
 
   return (
     <Dialog
@@ -228,13 +267,44 @@ export function GraphWidgetSettings({
           </Typography>
         )}
 
+        {metricsError && (
+          <Typography
+            variant="caption"
+            color="error"
+            sx={{ mt: 1, display: "block" }}
+          >
+            Could not load sensor metrics: {metricsError}
+          </Typography>
+        )}
+
+        {!draft.deviceEui && (
+          <Typography
+            variant="caption"
+            sx={{ mt: 1, display: "block", opacity: 0.6 }}
+          >
+            Select a device to see available rules.
+          </Typography>
+        )}
+
+        {draft.deviceEui &&
+          !metricsError &&
+          deviceMetricSlugs !== null &&
+          ruleOptions.length === 0 && (
+            <Typography
+              variant="caption"
+              sx={{ mt: 1, display: "block", opacity: 0.6 }}
+            >
+              No rules configured for this sensor&apos;s measurement types.
+            </Typography>
+          )}
+
         {measurementTypesError && (
           <Typography
             variant="caption"
             color="error"
             sx={{ mt: 1, display: "block" }}
           >
-            Measurement types failed to load. Showing all rules.
+            Measurement type names failed to load. Showing raw slugs.
           </Typography>
         )}
       </DialogContent>
