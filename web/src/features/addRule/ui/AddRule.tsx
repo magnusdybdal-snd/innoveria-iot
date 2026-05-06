@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -77,21 +77,19 @@ export function AddRule({
   const [measurementTypesError, setMeasurementTypesError] = useState<
     string | null
   >(null);
-  const [measurementTypesLoaded, setMeasurementTypesLoaded] = useState(false);
   const [prevOpen, setPrevOpen] = useState(open);
 
-  // Avoid setState-in-effect lint: reset and fetch during render when the dialog opens.
+  // Avoid setState-in-effect lint: reset during render when the dialog opens.
   if (prevOpen !== open) {
     setPrevOpen(open);
     if (open) {
-      setMeasurementTypesLoaded(false);
       setMeasurementTypes([]);
       setMeasurementTypesError(null);
     }
   }
 
-  if (open && !measurementTypesLoaded) {
-    setMeasurementTypesLoaded(true);
+  useEffect(() => {
+    if (!open) return;
     getMeasurementTypesAll()
       .then((types) => {
         setMeasurementTypes(types);
@@ -104,7 +102,7 @@ export function AddRule({
             : "Failed to load measurement types.",
         );
       });
-  }
+  }, [open]);
 
   const measurementTypeOptions = useMemo(() => {
     return measurementTypes
