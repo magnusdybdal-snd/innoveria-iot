@@ -21,6 +21,7 @@ export interface AddDeviceProps {
   open: boolean;
   onClose: () => void;
   sensor: SensorApiResponse;
+  sensorProfileName: string;
 }
 
 type InfoAllProps = {
@@ -40,7 +41,7 @@ type InfoAllProps = {
  * @param props.sensorEui - LoRaWAN DevEUI identifier
  * @param props.productionResource - ERP production resource ID the sensor is assigned to, or null if unassigned
  * @param props.lastReading - ISO timestamp of the most recent reading
- * @param props.senProf - Sensor profile ID
+ * @param props.senProf - Sensor profile name
  * @returns A fragment of MUI Typography elements and a status indicator icon
  */
 function SensorAllInfo({
@@ -94,12 +95,17 @@ function SensorAllInfo({
  * @returns The rendered sensor detail dialog
  */
 export function SensorAllInfoPopUp(props: AddDeviceProps) {
-  const { onClose, open, sensor } = props;
+  const { onClose, open, sensor, sensorProfileName } = props;
   const [reading, setReading] = useState<SensorReadingApiResponse | null>(null);
 
   useEffect(() => {
     if (!open) return;
-    fetchSensorReading(sensor.deviceEui).then(setReading);
+    fetchSensorReading(sensor.deviceEui)
+      .then(setReading)
+      .catch((err) => {
+        if (err?.response?.status !== 404)
+          console.error("fetchSensorReading failed", err);
+      });
   }, [open, sensor.deviceEui]);
 
   const handleClose = () => {
@@ -145,7 +151,7 @@ export function SensorAllInfoPopUp(props: AddDeviceProps) {
               lastReading={sensor.lastReading}
               sensorEui={sensor.deviceEui}
               productionResource={sensor.productionResource}
-              senProf={sensor.sensorProfileId}
+              senProf={sensorProfileName}
             />
           </DeviceRow>
         </CategoryHeader>

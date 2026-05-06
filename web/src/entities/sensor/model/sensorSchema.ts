@@ -67,7 +67,8 @@ export interface SensorProfileApiResponse {
   id: string;
   name: string;
   region: string;
-  vendorId: string;
+  mac_version: string;
+  vendor_id: string;
   vendor: string;
 }
 
