@@ -1,0 +1,59 @@
+// Package clients provides HTTP clients for communicating with internal service endpoints.
+package clients
+
+import (
+	"context"
+	"fmt"
+	"net/http"
+
+	"innoveria-iot/pkg/httpclient"
+)
+
+// sensorMetricResponse mirrors the device-service SensorMetricResponse shape.
+type sensorMetricResponse struct {
+	PayloadKey      string  `json:"payload_key"`
+	MeasurementType string  `json:"measurement_type"`
+	Unit            *string `json:"unit"`
+}
+
+type sensorMetricListResponse struct {
+	TotalCount int                    `json:"total_count"`
+	Metrics    []sensorMetricResponse `json:"metrics"`
+}
+
+// SensorMetric is the collection-service view of a device metric mapping.
+type SensorMetric struct {
+	PayloadKey      string
+	MeasurementType string
+	Unit            *string
+}
+
+// DeviceClient is an HTTP client for the internal device-service port.
+type DeviceClient struct {
+	internalBaseURL string
+	client          *httpclient.Client
+}
+
+// NewDeviceClient creates a DeviceClient targeting the unauthenticated internal port (9090).
+func NewDeviceClient(internalBaseURL string) *DeviceClient {
+	return &DeviceClient{
+		internalBaseURL: internalBaseURL,
+		client:          httpclient.New(),
+	}
+}
+
+// GetSensorMetrics fetches the payload-key → measurement type/unit mappings for a sensor.
+func (c *DeviceClient) GetSensorMetrics(ctx context.Context, deviceEUI string) ([]SensorMetric, error) {
+	url := fmt.Sprintf("%s/api/v1/device/sensors/%s/metrics", c.internalBaseURL, deviceEUI)
+
+	resp, err := httpclient.DoRequest[sensorMetricListResponse](c.client, ctx, url, http.MethodGet, nil, nil)
+	if err != nil {
+		return nil, fmt.Errorf("get sensor metrics for %s: %w", deviceEUI, err)
+	}
+
+	metrics := make([]SensorMetric, len(resp.Metrics))
+	for i, m := range resp.Metrics {
+		metrics[i] = SensorMetric(m)
+	}
+	return metrics, nil
+}
