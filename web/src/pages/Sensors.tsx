@@ -326,6 +326,11 @@ export default function Sensors() {
             open={true}
             onClose={handleCloseInfo}
             sensor={selectedSensor}
+            sensorProfileName={
+              sensorProfileOptions.find(
+                (p) => p.id === selectedSensor.sensorProfileId,
+              )?.name ?? selectedSensor.sensorProfileId
+            }
           />
         )}
         {!isLoading && filteredSensors.length === 0 && (
