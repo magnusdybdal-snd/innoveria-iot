@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import SettingsIcon from "@mui/icons-material/Settings";
@@ -17,7 +17,7 @@ import {
   type BucketUnit,
   type ContextDataResponse,
 } from "@entities/context";
-import { getMeasurementTypes } from "@entities/measurementType";
+import { useMeasurementTypes } from "@entities/measurementType";
 import { getSensors } from "@entities/sensor";
 import { toLocalDateTimeString } from "@shared/lib";
 import {
@@ -72,13 +72,21 @@ export function GraphWidget({ defaultConfig, onDelete }: GraphWidgetProps) {
     { id: string; name: string }[]
   >([]);
   const [rules, setRules] = useState<AggregationRule[]>([]);
-  const [measurementTypeOptions, setMeasurementTypeOptions] = useState<
-    { id: string; name: string }[]
-  >([]);
-  const [measurementTypesError, setMeasurementTypesError] = useState<
-    string | null
-  >(null);
   const [optionsError, setOptionsError] = useState<string | null>(null);
+
+  const { measurementTypes, error: measurementTypesErr } =
+    useMeasurementTypes();
+
+  const measurementTypeOptions = useMemo(
+    () =>
+      measurementTypes
+        .slice()
+        .sort((a, b) => a.displayName.localeCompare(b.displayName))
+        .map((mt) => ({ id: mt.slug, name: `${mt.displayName} (${mt.slug})` })),
+    [measurementTypes],
+  );
+
+  const measurementTypesError = measurementTypesErr?.message ?? null;
 
   useEffect(() => {
     Promise.all([getSensors(), getRules(COMPANY_ID)])
@@ -91,30 +99,6 @@ export function GraphWidget({ defaultConfig, onDelete }: GraphWidgetProps) {
       .catch((err: unknown) => {
         setOptionsError(
           err instanceof Error ? err.message : "Failed to load options.",
-        );
-      });
-
-    // Measurement types are optional for rule filtering; rule selection must still work
-    // even if this fails (unfiltered fallback).
-    getMeasurementTypes()
-      .then((measurementTypes) => {
-        setMeasurementTypeOptions(
-          measurementTypes
-            .slice()
-            .sort((a, b) => a.displayName.localeCompare(b.displayName))
-            .map((mt) => ({
-              id: mt.slug,
-              name: `${mt.displayName} (${mt.slug})`,
-            })),
-        );
-        setMeasurementTypesError(null);
-      })
-      .catch((err: unknown) => {
-        setMeasurementTypeOptions([]);
-        setMeasurementTypesError(
-          err instanceof Error
-            ? err.message
-            : "Failed to load measurement types.",
         );
       });
   }, []);
