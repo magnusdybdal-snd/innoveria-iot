@@ -102,7 +102,10 @@ export function SensorAllInfoPopUp(props: AddDeviceProps) {
     if (!open) return;
     fetchSensorReading(sensor.deviceEui)
       .then(setReading)
-      .catch(() => {});
+      .catch((err) => {
+        if (err?.response?.status !== 404)
+          console.error("fetchSensorReading failed", err);
+      });
   }, [open, sensor.deviceEui]);
 
   const handleClose = () => {

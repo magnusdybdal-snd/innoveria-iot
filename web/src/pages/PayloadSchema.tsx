@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -67,10 +67,14 @@ export default function PayloadSchema() {
     >
   >({});
 
-  const profileOptions = sensorProfiles.map((p) => ({
-    id: p.id,
-    name: `${p.name} (${p.mac_version.replace("LORAWAN_", "").replaceAll("_", ".")})`,
-  }));
+  const profileOptions = useMemo(
+    () =>
+      sensorProfiles.map((p) => ({
+        id: p.id,
+        name: `${p.name} (${p.mac_version.replace("LORAWAN_", "").replaceAll("_", ".")})`,
+      })),
+    [sensorProfiles],
+  );
 
   // State for controlling success snackbar
   const { show, hide, snackbar } = useSnackbar();
