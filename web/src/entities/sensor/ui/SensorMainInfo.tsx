@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import CircleIcon from "@mui/icons-material/Circle";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -57,6 +58,7 @@ export function SensorMainInfo({
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [exporting, setExporting] = useState(false);
+  const [exportError, setExportError] = useState<string | null>(null);
 
   const handleDeleteConfirm = () => {
     onDelete();
@@ -66,15 +68,18 @@ export function SensorMainInfo({
   const handleExport = async () => {
     if (!fromDate || !toDate) return;
     setExporting(true);
+    setExportError(null);
     try {
       await exportMeasurements(
         deviceEui,
         new Date(fromDate).toISOString(),
         new Date(toDate).toISOString(),
       );
+      setExportOpen(false);
+    } catch (err) {
+      setExportError(err instanceof Error ? err.message : "Export failed");
     } finally {
       setExporting(false);
-      setExportOpen(false);
     }
   };
 
@@ -146,13 +151,17 @@ export function SensorMainInfo({
       />
       <Dialog
         open={exportOpen}
-        onClose={() => setExportOpen(false)}
+        onClose={() => {
+          setExportOpen(false);
+          setExportError(null);
+        }}
         fullWidth
         maxWidth="xs"
       >
         <DialogTitle>Export CSV</DialogTitle>
         <DialogContent>
           <Stack spacing={2} sx={{ mt: 1 }}>
+            {exportError && <Alert severity="error">{exportError}</Alert>}
             <TextField
               label="From"
               type="date"
