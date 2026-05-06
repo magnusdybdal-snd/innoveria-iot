@@ -25,6 +25,7 @@ func NewSensorProfileService(cc *chirpstackrest.Client) *SensorProfileServiceImp
 }
 
 // GetAll retrieves all available EU868 sensor profiles from Chirpstack.
+// Profiles using LoRaWAN 1.1 (MACVersion prefix "LORAWAN_1_1") are excluded.
 func (s *SensorProfileServiceImpl) GetAll(ctx context.Context) ([]domain.SensorProfile, error) {
 	resp, err := s.cc.GetAllSensorProfiles(ctx)
 	if err != nil {
