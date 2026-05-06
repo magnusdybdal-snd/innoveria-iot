@@ -146,3 +146,24 @@ Fill in the values from k6 output and `docker stats` for each scenario.
 | sensor_dashboard | `GET /api/v1/collection/latest?device_eui=X` | Live sensor readings |
 | production_view | `GET /api/v1/erp/production-resources` | Production page |
 | production_view | `GET /api/v1/erp/orders` | Orders overview |
+
+---
+
+# Integration Tests
+
+## Go tests (tagged, no live stack needed)
+
+Tests in `services/context-service/internal/handlers/integration_test.go` are tagged `//go:build integration` so they are **never run by CI** (`go test ./...`). They wire real service and client code against `httptest` stubs — no database or Docker required.
+
+| Test | What it proves |
+|---|---|
+| `TestIntegration_OrderContext_DegradedOperation` | Device service 5xx on one operation → `degraded: true`; sibling with healthy response → `degraded: false` |
+| `TestIntegration_OrderContext_EmptySensors_NotDegraded` | Device service 404 (no sensors registered) → empty `sensors: []`, `degraded: false` — not an error |
+| `TestIntegration_Rules_CrossCompanyIsolation` | Rule created by company A is invisible to company B |
+
+**Run:**
+```bash
+cd services/context-service
+go test -tags=integration -v ./internal/handlers/...
+```
+
