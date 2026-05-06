@@ -69,7 +69,7 @@ export default function PayloadSchema() {
 
   const profileOptions = sensorProfiles.map((p) => ({
     id: p.id,
-    name: p.name,
+    name: `${p.name} (${p.mac_version.replace("LORAWAN_", "").replaceAll("_", ".")})`,
   }));
 
   // State for controlling success snackbar

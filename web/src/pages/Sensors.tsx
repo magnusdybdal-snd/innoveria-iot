@@ -81,6 +81,14 @@ export default function Sensors() {
     editSelectedFactoryId,
   );
   const { sensorProfiles } = useSensorProfiles();
+  const sensorProfileOptions = useMemo(
+    () =>
+      sensorProfiles.map((p) => ({
+        id: p.id,
+        name: `${p.name} (${p.mac_version.replace("LORAWAN_", "").replaceAll("_", ".")})`,
+      })),
+    [sensorProfiles],
+  );
   const { productionResources } = useProductionResources();
   const productionResourceOptions = useMemo(
     () => [
@@ -332,7 +340,7 @@ export default function Sensors() {
         open={openAdd}
         onClose={handleCloseAdd}
         addOptions={addSensorDetails}
-        profileOptions={sensorProfiles}
+        profileOptions={sensorProfileOptions}
         voltageOptions={voltageOptions}
         onAdd={handleAddSensor}
         submitError={addError}
@@ -353,7 +361,7 @@ export default function Sensors() {
           onEdit={handleEditSensor}
           factoryOptions={factories}
           factoryAreaOptions={editFactoryAreas}
-          sensorProfileOptions={sensorProfiles}
+          sensorProfileOptions={sensorProfileOptions}
           onErrorClear={() => setEditError(null)}
           productionResourceOptions={productionResourceOptions}
           voltageOptions={voltageOptions}
