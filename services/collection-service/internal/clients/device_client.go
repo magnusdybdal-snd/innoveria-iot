@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"net/url"
 
 	"innoveria-iot/collection-service/internal/clients/dto"
 	"innoveria-iot/collection-service/internal/clients/mappers"
@@ -28,7 +29,7 @@ func NewDeviceClient(internalBaseURL string) *DeviceClient {
 
 // GetSensorMetrics fetches the payload-key → measurement type/unit mappings for a sensor.
 func (c *DeviceClient) GetSensorMetrics(ctx context.Context, deviceEUI string) ([]domain.SensorMetric, error) {
-	url := fmt.Sprintf("%s/api/v1/device/sensors/%s/metrics", c.internalBaseURL, deviceEUI)
+	url := fmt.Sprintf("%s/api/v1/device/sensors/%s/metrics", c.internalBaseURL, url.PathEscape(deviceEUI))
 
 	resp, err := httpclient.DoRequest[dto.SensorMetricListResponse](c.client, ctx, url, http.MethodGet, nil, nil)
 	if err != nil {

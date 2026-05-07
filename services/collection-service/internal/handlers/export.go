@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"regexp"
 	"time"
 
 	"innoveria-iot/collection-service/internal/domain"
@@ -11,6 +12,8 @@ import (
 	"innoveria-iot/pkg/csvwriter"
 	"innoveria-iot/pkg/json"
 )
+
+var deviceEUIRegex = regexp.MustCompile(`^[0-9a-fA-F]{16}$`)
 
 // HandleExportMeasurements streams a CSV file of measurements for a device within a time range.
 //
@@ -37,8 +40,8 @@ func HandleExportMeasurements(exportSvc domain.ExportService) http.HandlerFunc {
 		q := r.URL.Query()
 
 		deviceEUI := q.Get("device_eui")
-		if deviceEUI == "" {
-			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("missing device_eui"), "device_eui query parameter is required")
+		if !deviceEUIRegex.MatchString(deviceEUI) {
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("invalid device_eui"), "device_eui must be a 16-character hex string")
 			return
 		}
 
