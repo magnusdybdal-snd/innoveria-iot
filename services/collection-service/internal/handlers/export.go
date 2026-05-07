@@ -78,11 +78,12 @@ func HandleExportMeasurements(exportSvc domain.ExportService) http.HandlerFunc {
 
 		loc := time.UTC
 		if tzName := q.Get("timezone"); tzName != "" {
-			if parsed, err := time.LoadLocation(tzName); err == nil {
-				loc = parsed
-			} else {
-				slog.WarnContext(r.Context(), "unrecognised timezone, falling back to UTC", "timezone", tzName)
+			parsed, err := time.LoadLocation(tzName)
+			if err != nil {
+				json.HandleError(w, http.StatusBadRequest, err, "unrecognised timezone")
+				return
 			}
+			loc = parsed
 		}
 
 		data, err := exportSvc.GetExportData(r.Context(), auth.CompanyID, deviceEUI, from, to)
