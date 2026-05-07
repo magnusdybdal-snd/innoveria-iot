@@ -100,6 +100,8 @@ func HandleExportMeasurements(exportSvc domain.ExportService) http.HandlerFunc {
 			rows[i] = csvwriter.Row{Timestamp: meas.Timestamp, Payload: meas.Payload}
 		}
 
-		csvwriter.Write(w, columns, rows, loc)
+		if err := csvwriter.Write(w, columns, rows, loc); err != nil {
+			slog.ErrorContext(r.Context(), "csv write failed", "device_eui", deviceEUI, "error", err)
+		}
 	}
 }

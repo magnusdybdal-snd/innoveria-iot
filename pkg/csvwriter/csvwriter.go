@@ -25,7 +25,8 @@ type Row struct {
 
 // Write renders columns and rows as CSV into w.
 // The first two columns are always date and local time; remaining columns follow the provided order.
-func Write(w io.Writer, columns []Column, rows []Row, loc *time.Location) {
+// Returns any I/O error that occurred during writing or flushing.
+func Write(w io.Writer, columns []Column, rows []Row, loc *time.Location) error {
 	cw := csv.NewWriter(w)
 
 	header := []string{"date", "time (" + loc.String() + ")"}
@@ -47,6 +48,7 @@ func Write(w io.Writer, columns []Column, rows []Row, loc *time.Location) {
 	}
 
 	cw.Flush()
+	return cw.Error()
 }
 
 // formatValue formats a JSON payload value for CSV output.
