@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"log/slog"
 	"net/http"
 	"time"
 
@@ -74,6 +75,8 @@ func HandleExportMeasurements(exportSvc domain.ExportService) http.HandlerFunc {
 		if tzName := q.Get("timezone"); tzName != "" {
 			if parsed, err := time.LoadLocation(tzName); err == nil {
 				loc = parsed
+			} else {
+				slog.WarnContext(r.Context(), "unrecognised timezone, falling back to UTC", "timezone", tzName)
 			}
 		}
 
