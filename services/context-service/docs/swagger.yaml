@@ -200,6 +200,10 @@ definitions:
         type: array
       name:
         type: string
+      total_power_wh:
+        type: number
+      voltage:
+        type: integer
     type: object
   internal_handlers_dto.MeasurementResponse:
     properties:
