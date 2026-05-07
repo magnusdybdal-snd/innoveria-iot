@@ -70,10 +70,12 @@ export function SensorMainInfo({
     setExporting(true);
     setExportError(null);
     try {
+      const to = new Date(toDate);
+      to.setHours(23, 59, 59, 999);
       await exportMeasurements(
         deviceEui,
         new Date(fromDate).toISOString(),
-        new Date(toDate).toISOString(),
+        to.toISOString(),
       );
       setExportOpen(false);
     } catch (err) {
