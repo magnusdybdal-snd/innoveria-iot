@@ -57,5 +57,5 @@ export const exportMeasurements = async (
   a.href = url;
   a.download = filename;
   a.click();
-  window.URL.revokeObjectURL(url);
+  setTimeout(() => window.URL.revokeObjectURL(url), 100);
 };
