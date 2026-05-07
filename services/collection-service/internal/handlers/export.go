@@ -1,10 +1,12 @@
 package handlers
 
 import (
+	"bytes"
 	"fmt"
 	"log/slog"
 	"net/http"
 	"regexp"
+	"strconv"
 	"time"
 
 	"innoveria-iot/collection-service/internal/domain"
@@ -89,10 +91,6 @@ func HandleExportMeasurements(exportSvc domain.ExportService) http.HandlerFunc {
 			return
 		}
 
-		filename := fmt.Sprintf("%s_%s_%s.csv", deviceEUI, from.Format(time.DateOnly), to.Format(time.DateOnly))
-		w.Header().Set("Content-Type", "text/csv")
-		w.Header().Set("Content-Disposition", `attachment; filename="`+filename+`"`)
-
 		columns := make([]csvwriter.Column, len(data.Columns))
 		for i, col := range data.Columns {
 			columns[i] = csvwriter.Column{PayloadKey: col.PayloadKey, Header: col.Header}
@@ -103,8 +101,19 @@ func HandleExportMeasurements(exportSvc domain.ExportService) http.HandlerFunc {
 			rows[i] = csvwriter.Row{Timestamp: meas.Timestamp, Payload: meas.Payload}
 		}
 
-		if err := csvwriter.Write(w, columns, rows, loc); err != nil {
+		var buf bytes.Buffer
+		if err := csvwriter.Write(&buf, columns, rows, loc); err != nil {
 			slog.ErrorContext(r.Context(), "csv write failed", "device_eui", deviceEUI, "error", err)
+			json.HandleError(w, http.StatusInternalServerError, err, "failed to generate CSV")
+			return
+		}
+
+		filename := fmt.Sprintf("%s_%s_%s.csv", deviceEUI, from.Format(time.DateOnly), to.Format(time.DateOnly))
+		w.Header().Set("Content-Type", "text/csv")
+		w.Header().Set("Content-Disposition", `attachment; filename="`+filename+`"`)
+		w.Header().Set("Content-Length", strconv.Itoa(buf.Len()))
+		if _, err := buf.WriteTo(w); err != nil {
+			slog.WarnContext(r.Context(), "csv response write failed", "device_eui", deviceEUI, "error", err)
 		}
 	}
 }
