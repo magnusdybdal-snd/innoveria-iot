@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"innoveria-iot/collection-service/internal/domain"
 	"innoveria-iot/pkg/httpclient"
 )
 
@@ -21,14 +22,7 @@ type sensorMetricListResponse struct {
 	Metrics    []sensorMetricResponse `json:"metrics"`
 }
 
-// SensorMetric is the collection-service view of a device metric mapping.
-type SensorMetric struct {
-	PayloadKey      string
-	MeasurementType string
-	Unit            *string
-}
-
-// DeviceClient is an HTTP client for the internal device-service port.
+// DeviceClient is an HTTP client for the device service internal port.
 type DeviceClient struct {
 	internalBaseURL string
 	client          *httpclient.Client
@@ -43,7 +37,7 @@ func NewDeviceClient(internalBaseURL string) *DeviceClient {
 }
 
 // GetSensorMetrics fetches the payload-key → measurement type/unit mappings for a sensor.
-func (c *DeviceClient) GetSensorMetrics(ctx context.Context, deviceEUI string) ([]SensorMetric, error) {
+func (c *DeviceClient) GetSensorMetrics(ctx context.Context, deviceEUI string) ([]domain.SensorMetric, error) {
 	url := fmt.Sprintf("%s/api/v1/device/sensors/%s/metrics", c.internalBaseURL, deviceEUI)
 
 	resp, err := httpclient.DoRequest[sensorMetricListResponse](c.client, ctx, url, http.MethodGet, nil, nil)
@@ -51,9 +45,9 @@ func (c *DeviceClient) GetSensorMetrics(ctx context.Context, deviceEUI string) (
 		return nil, fmt.Errorf("get sensor metrics for %s: %w", deviceEUI, err)
 	}
 
-	metrics := make([]SensorMetric, len(resp.Metrics))
+	metrics := make([]domain.SensorMetric, len(resp.Metrics))
 	for i, m := range resp.Metrics {
-		metrics[i] = SensorMetric(m)
+		metrics[i] = domain.SensorMetric(m)
 	}
 	return metrics, nil
 }
