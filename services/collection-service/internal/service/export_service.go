@@ -28,6 +28,8 @@ func NewExportService(measurementSvc domain.MeasurementService, deviceClient dom
 // GetExportData fetches measurements and sensor metric mappings, then returns structured
 // export data ready for CSV rendering. Configured metric keys appear first (with typed
 // headers), followed by any unconfigured payload keys found in the measurements.
+// If the device service returns 404 (no metrics configured), the export proceeds using
+// raw payload keys as column headers.
 func (s *ExportServiceImpl) GetExportData(ctx context.Context, companyID, deviceEUI string, from, to time.Time) (domain.ExportData, error) {
 	metrics, err := s.deviceClient.GetSensorMetrics(ctx, deviceEUI)
 	if err != nil {

@@ -36,6 +36,8 @@ func (c *DeviceClient) GetSensorMetrics(ctx context.Context, deviceEUI string) (
 		return nil, fmt.Errorf("get sensor metrics for %s: %w", deviceEUI, err)
 	}
 
+	// TotalCount is not used; this assumes the device service returns all metrics in one page.
+	// If the device service ever introduces pagination, this must be updated to fetch all pages.
 	metrics := make([]domain.SensorMetric, len(resp.Metrics))
 	for i, m := range resp.Metrics {
 		metrics[i] = mappers.ToSensorMetric(m)

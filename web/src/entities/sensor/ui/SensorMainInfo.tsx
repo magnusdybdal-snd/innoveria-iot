@@ -35,7 +35,7 @@ type InfoMainProps = {
  * @param props.name - Display name of the sensor
  * @param props.status - Numeric status code: 0 = online, 1 = warning, 2 = offline
  * @param props.lastReading - Timestamp of the most recent sensor reading
- * @param props.description - Optional description shown in a tooltip on hover
+ * @param props.description - Description shown in a tooltip on hover, or null if absent
  * @param props.deviceEui - LoRaWAN Device EUI used to identify the sensor
  * @param props.onClick - Called when the user clicks "Extra sensor info" to open the detail dialog
  * @param props.onDelete - Called when the user confirms deletion
@@ -75,6 +75,8 @@ export function SensorMainInfo({
       await exportMeasurements(deviceEui, from.toISOString(), to.toISOString());
       setExportOpen(false);
     } catch (err) {
+      if (!(err instanceof Error))
+        console.error("Unexpected export error:", err);
       setExportError(err instanceof Error ? err.message : "Export failed");
     } finally {
       setExporting(false);
