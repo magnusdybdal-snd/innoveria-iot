@@ -15,6 +15,9 @@ type Config struct {
 	DB_url        string
 	EnableSwagger bool
 
+	// External services
+	DeviceSvcInternalURL string
+
 	// MQTT Configs
 	MQTTBrokerURL   string
 	MQTTClientId    string
@@ -44,7 +47,8 @@ func Load() *Config {
 	sslmode := env.Get("DB_SSLMODE", "disable")
 
 	cfg := Config{
-		Addr: ":" + env.Get("PORT", "8080"),
+		Addr:                 ":" + env.Get("PORT", "8080"),
+		DeviceSvcInternalURL: env.Get("DEVICE_SERVICE_INTERNAL", "http://device-service:9090"),
 		DB_url: fmt.Sprintf(
 			"postgres://%s:%s@%s:%s/%s?sslmode=%s",
 			dbUser,

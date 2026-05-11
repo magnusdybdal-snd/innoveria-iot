@@ -76,6 +76,42 @@ paths:
       summary: Create tenant mapping
       tags:
       - company-config
+  /export:
+    get:
+      parameters:
+      - description: Device EUI
+        in: query
+        name: device_eui
+        required: true
+        type: string
+      - description: Start time (RFC3339, e.g. 2024-01-01T00:00:00Z)
+        in: query
+        name: from
+        required: true
+        type: string
+      - description: End time (RFC3339, e.g. 2024-01-02T00:00:00Z)
+        in: query
+        name: to
+        required: true
+        type: string
+      - description: IANA timezone name (e.g. Europe/Oslo). Defaults to UTC.
+        in: query
+        name: timezone
+        type: string
+      produces:
+      - text/csv
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal Server Error
+      summary: Export measurements as CSV
+      tags:
+      - measurements
   /latest:
     get:
       parameters:

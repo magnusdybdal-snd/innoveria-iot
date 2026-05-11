@@ -311,6 +311,7 @@ export default function Sensors() {
                 status={sensor.status}
                 lastReading={formatTimestamp(sensor.lastReading)}
                 description={sensor.description}
+                deviceEui={sensor.deviceEui}
                 onClick={() => handleRowClick(sensor)}
                 onDelete={() => handleDeleteSensor(sensor.id)}
                 onEdit={() => {

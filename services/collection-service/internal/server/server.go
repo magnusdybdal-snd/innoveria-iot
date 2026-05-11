@@ -11,6 +11,7 @@ import (
 	"syscall"
 	"time"
 
+	"innoveria-iot/collection-service/internal/clients"
 	"innoveria-iot/collection-service/internal/config"
 	"innoveria-iot/collection-service/internal/db"
 	"innoveria-iot/collection-service/internal/mqtt"
@@ -42,6 +43,8 @@ func Run() error {
 	svc := service.NewMeasurementService(repo)
 	tenantMappingRepo := repository.NewTenantMappingRepository(database)
 	tenantMappingSvc := service.NewTenantMappingService(tenantMappingRepo)
+	deviceClient := clients.NewDeviceClient(cfg.DeviceSvcInternalURL)
+	exportSvc := service.NewExportService(svc, deviceClient)
 
 	// Starting up a new collector
 	coll := mqtt.NewCollector(1000, cfg.MQTTWorkerCount, svc)
@@ -60,7 +63,7 @@ func Run() error {
 		return fmt.Errorf("mqtt subscribe: %w", err)
 	}
 
-	mux := NewRouter(svc, tenantMappingSvc, cfg.EnableSwagger)
+	mux := NewRouter(svc, tenantMappingSvc, exportSvc, cfg.EnableSwagger)
 	server := &http.Server{
 		Addr:              cfg.Addr,
 		Handler:           mux,

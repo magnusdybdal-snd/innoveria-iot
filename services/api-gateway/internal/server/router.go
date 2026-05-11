@@ -55,6 +55,7 @@ func NewRouter(cfg *config.Config) *http.ServeMux {
 		"/latest",
 		"/measurements",
 		"/payload-tags",
+		"/export",
 	})
 
 	// Onboarding service

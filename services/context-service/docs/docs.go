@@ -622,6 +622,12 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                },
+                "total_power_wh": {
+                    "type": "number"
+                },
+                "voltage": {
+                    "type": "integer"
                 }
             }
         },

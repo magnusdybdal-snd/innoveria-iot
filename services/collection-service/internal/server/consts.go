@@ -17,4 +17,5 @@ const (
 	PAYLOAD_TAGS         = COLLECTION_ROUTE + "/payload-tags"
 
 	COMPANY_CONFIG_ROUTE = COLLECTION_ROUTE + "/company-config"
+	EXPORT_MEASUREMENTS  = COLLECTION_ROUTE + "/export"
 )
