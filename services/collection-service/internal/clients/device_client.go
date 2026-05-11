@@ -3,6 +3,7 @@ package clients
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -33,6 +34,10 @@ func (c *DeviceClient) GetSensorMetrics(ctx context.Context, deviceEUI string) (
 
 	resp, err := httpclient.DoRequest[dto.SensorMetricListResponse](c.client, ctx, url, http.MethodGet, nil, nil)
 	if err != nil {
+		var httpErr *httpclient.HTTPError
+		if errors.As(err, &httpErr) && httpErr.StatusCode == http.StatusNotFound {
+			return nil, domain.ErrNotFound
+		}
 		return nil, fmt.Errorf("get sensor metrics for %s: %w", deviceEUI, err)
 	}
 

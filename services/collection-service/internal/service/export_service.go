@@ -4,11 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"net/http"
 	"time"
 
 	"innoveria-iot/collection-service/internal/domain"
-	"innoveria-iot/pkg/httpclient"
 )
 
 // ExportServiceImpl implements domain.ExportService.
@@ -32,12 +30,8 @@ func NewExportService(measurementSvc domain.MeasurementService, deviceClient dom
 // raw payload keys as column headers.
 func (s *ExportServiceImpl) GetExportData(ctx context.Context, companyID, deviceEUI string, from, to time.Time) (domain.ExportData, error) {
 	metrics, err := s.deviceClient.GetSensorMetrics(ctx, deviceEUI)
-	if err != nil {
-		var httpErr *httpclient.HTTPError
-		// 404 means no metrics found, we still want to proceed just using payload keys
-		if !errors.As(err, &httpErr) || httpErr.StatusCode != http.StatusNotFound {
-			return domain.ExportData{}, fmt.Errorf("get sensor metrics: %w", err)
-		}
+	if err != nil && !errors.Is(err, domain.ErrNotFound) {
+		return domain.ExportData{}, fmt.Errorf("get sensor metrics: %w", err)
 	}
 
 	measurements, err := s.measurementSvc.GetByTimeRange(ctx, companyID, deviceEUI, from, to)
