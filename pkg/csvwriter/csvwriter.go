@@ -55,6 +55,9 @@ func Write(w io.Writer, columns []Column, rows []Row, loc *time.Location) error 
 // Float64 values are rounded to 4 decimal places and trailing zeros are stripped.
 // All other types use their default string representation.
 func formatValue(v any) string {
+	if v == nil {
+		return ""
+	}
 	f, ok := v.(float64)
 	if !ok {
 		return fmt.Sprintf("%v", v)
