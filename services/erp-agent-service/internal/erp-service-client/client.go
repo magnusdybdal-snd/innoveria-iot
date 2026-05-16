@@ -27,7 +27,7 @@ const (
 	// Index is the API root prefix.
 	Index Endpoint = "/api/v1"
 	// Svc is the ERP service base route.
-	Svc Endpoint = Index + "/erp" // TODO: change this?
+	Svc Endpoint = Index + "/erp"
 	// Ingest is the ingest route used by agent services.
 	Ingest Endpoint = Svc + "/ingest"
 	// Order is the ingest endpoint for orders

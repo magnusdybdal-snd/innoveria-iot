@@ -8,8 +8,6 @@ import (
 	"innoveria-iot/pkg/roles"
 )
 
-// TODO: Add roles here
-
 const (
 	headerUserID    = "X-Auth-User-Id"
 	headerCompanyID = "X-Auth-Company-Id"

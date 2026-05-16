@@ -72,7 +72,6 @@ func NewRouter(cfg *config.Config) *http.ServeMux {
 		"/production-resources",
 	})
 
-	// TODO: route production resource endpoints to ERP
 	handlers.RegisterProxyService(mux, ERP_ROUTE, "erp-service", cfg.ErpSvcURL, []string{
 		"/production-resources",
 	})
