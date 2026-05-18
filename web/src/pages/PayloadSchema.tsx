@@ -185,9 +185,9 @@ export default function PayloadSchema() {
         setSchemaRows(
           Object.fromEntries(
             existing.map((row) => [
-              row.payloadKey,
+              row.payload_key,
               {
-                measurementType: row.measurementType,
+                measurementType: row.measurement_type,
                 unit: row.unit,
               },
             ]),
