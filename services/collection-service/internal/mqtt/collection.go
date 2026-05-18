@@ -89,7 +89,6 @@ func (c *Collector) Close() {
 }
 
 // Hashing is used to avoid having multiple workers handle the same topic
-// TODO: Test with alot of sensors to check duplication id
 func hash(s string) int {
 	h := 0
 	for _, c := range s {
