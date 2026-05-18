@@ -40,10 +40,9 @@ type SensorService interface {
 	// Not yet wired to a handler or route.
 	GetByID(ctx context.Context, companyID string, sensorID string) (Sensor, error)
 	GetByProductionResourceID(ctx context.Context, companyID string, productionResourceID int64) ([]Sensor, error)
-	// GetSampleEUI returns a single device EUI from any sensor registered on the given Chirpstack profile.
-	// Used by the admin UI to obtain a sample EUI for payload key lookup via collection-service /payload-tags.
-	// Returns domain.ErrNotFound (wrapped) if no sensor exists for the given profile.
-	GetSampleEUI(ctx context.Context, chirpstackProfileID string) (string, error)
+	// GetSampleEUIs returns all device EUIs registered on the given Chirpstack profile, ordered oldest-first.
+	// Used by the admin UI to find a transmitting EUI for payload key lookup via collection-service /payload-tags.
+	GetSampleEUIs(ctx context.Context, chirpstackProfileID string) ([]string, error)
 	Delete(ctx context.Context, companyID string, deviceID string) error
 }
 
@@ -55,9 +54,8 @@ type SensorRepository interface {
 	FindByProductionResourceID(ctx context.Context, companyID string, productionResourceID int64) ([]Sensor, error)
 	FindAllByCompanyID(ctx context.Context, companyID string) ([]Sensor, error)
 	FindByEUI(ctx context.Context, deviceEUI string) (Sensor, error)
-	// FindOneByChirpstackProfileID returns any single sensor registered on the given Chirpstack profile.
-	// Used to obtain a sample EUI for payload key lookup via collection-service /payload-tags. Returns domain.ErrNotFound if no sensor exists on the profile.
-	FindOneByChirpstackProfileID(ctx context.Context, chirpstackProfileID string) (Sensor, error)
+	// FindEUIsByChirpstackProfileID returns all device EUIs registered on the given global Chirpstack profile, ordered oldest-first.
+	FindEUIsByChirpstackProfileID(ctx context.Context, chirpstackProfileID string) ([]string, error)
 	UpdateState(ctx context.Context, companyID string, sensorID string, state DeviceState) error
 	Update(ctx context.Context, companyID string, deviceID string, sensor Sensor) error
 	Delete(ctx context.Context, companyID string, deviceID string) error

@@ -60,11 +60,11 @@ const (
 		WHERE company_id = $1 AND sensor_id = $2
 	`
 
-	findOneByChirpstackProfileIDQuery = `
-		SELECT sensor_id, company_id, device_eui, app_key, name, description, electricity_sensor, voltage, state, factory_id, factory_area_id, production_resource_id, chirpstack_profile_id, global_chirpstack_profile_id, created_at, updated_at
+	findEUIsByChirpstackProfileIDQuery = `
+		SELECT device_eui
 		FROM device.sensor
 		WHERE global_chirpstack_profile_id = $1
-		LIMIT 1
+		ORDER BY created_at ASC
 	`
 )
 
@@ -286,38 +286,27 @@ func (r *SensorRepository) FindByEUI(ctx context.Context, deviceEUI string) (dom
 
 }
 
-// FindOneByChirpstackProfileID retrieves any single sensor registered on the given Chirpstack profile.
-// Used to obtain a sample EUI for payload key lookup via collection-service /payload-tags.
-func (r *SensorRepository) FindOneByChirpstackProfileID(ctx context.Context, chirpstackProfileID string) (domain.Sensor, error) {
-
-	var out domain.Sensor
-	err := r.db.Pool.QueryRow(ctx, findOneByChirpstackProfileIDQuery, chirpstackProfileID).Scan(
-		&out.Id,
-		&out.CompanyID,
-		&out.DeviceEUI,
-		&out.AppKey,
-		&out.Name,
-		&out.Description,
-		&out.ElectricitySensor,
-		&out.Voltage,
-		&out.State,
-		&out.FactoryID,
-		&out.FactoryAreaID,
-		&out.ProductionResource,
-		&out.ChirpstackProfileID,
-		&out.GlobalChirpstackProfileID,
-		&out.CreatedAt,
-		&out.UpdatedAt,
-	)
+// FindEUIsByChirpstackProfileID returns all device EUIs registered on the given global Chirpstack profile, ordered oldest-first.
+func (r *SensorRepository) FindEUIsByChirpstackProfileID(ctx context.Context, chirpstackProfileID string) ([]string, error) {
+	rows, err := r.db.Pool.Query(ctx, findEUIsByChirpstackProfileIDQuery, chirpstackProfileID)
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return domain.Sensor{}, domain.ErrNotFound
+		return nil, fmt.Errorf("find euis by chirpstack profile id: %w", err)
+	}
+	defer rows.Close()
+
+	var euis []string
+	for rows.Next() {
+		var eui string
+		if err := rows.Scan(&eui); err != nil {
+			return nil, fmt.Errorf("scan device eui: %w", err)
 		}
-		return domain.Sensor{}, fmt.Errorf("find sensor by chirpstack profile id: %w", err)
+		euis = append(euis, eui)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("rows error: %w", err)
 	}
 
-	return out, nil
-
+	return euis, nil
 }
 
 // UpdateState sets the administrative state of a sensor and updates the updated at timestamp.
