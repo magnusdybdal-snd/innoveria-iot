@@ -1,6 +1,9 @@
-import type { DeviceEUIApiResponse } from "@entities/sensor/model/sensorSchema";
 import { apiRequest, serviceClient } from "@shared/api";
 import { API_ROUTES } from "@shared/api/routes";
+
+type RawDeviceEUIResponse = {
+  device_euis: string[];
+};
 
 /**
  * Fetches all device EUIs registered on a given Chirpstack profile, ordered oldest-first.
@@ -10,12 +13,12 @@ import { API_ROUTES } from "@shared/api/routes";
  */
 export const getDeviceEUI = async (profileId: string): Promise<string[]> => {
   try {
-    const data = await apiRequest<DeviceEUIApiResponse>(
+    const data = await apiRequest<RawDeviceEUIResponse>(
       serviceClient,
       `${API_ROUTES.deviceEUI}${encodeURIComponent(profileId)}`,
       "GET",
     );
-    return data.deviceEuis ?? [];
+    return data.device_euis ?? [];
   } catch (error) {
     console.error("Failed to fetch device EUIs:", error);
     return [];

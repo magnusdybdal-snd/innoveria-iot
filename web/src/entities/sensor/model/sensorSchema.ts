@@ -40,10 +40,6 @@ export interface SensorReadingApiResponse {
   companyId: string;
 }
 
-export interface DeviceEUIApiResponse {
-  deviceEuis: string[];
-}
-
 export interface CreateSensorRequest {
   electricitySensor: boolean;
   factoryId: string;
