@@ -18,7 +18,7 @@ type ChirpstackUpEvent struct {
 	RegionConfigID  string         `json:"regionConfigId"`
 }
 
-// DeviceInfo TODO(@vinjar): add proper documentation.
+// DeviceInfo holds Chirpstack device metadata from an uplink event.
 type DeviceInfo struct {
 	TenantID          string            `json:"tenantId"`
 	TenantName        string            `json:"tenantName"`
@@ -32,7 +32,7 @@ type DeviceInfo struct {
 	Tags              map[string]string `json:"tags"`
 }
 
-// RxInfo TODO(@vinjar): add proper documentation.
+// RxInfo contains reception metadata from a single gateway for an uplink.
 type RxInfo struct {
 	GatewayID string   `json:"gatewayId"`
 	UplinkID  uint32   `json:"uplinkId"`
@@ -45,23 +45,23 @@ type RxInfo struct {
 	Context   string   `json:"context"`
 }
 
-// Location TODO(@vinjar): add proper documentation.
+// Location represents the geographic source of a reception.
 type Location struct {
 	Source string `json:"source"`
 }
 
-// TxInfo TODO(@vinjar): add proper documentation.
+// TxInfo holds transmission parameters for an uplink.
 type TxInfo struct {
 	Frequency  int64      `json:"frequency"`
 	Modulation Modulation `json:"modulation"`
 }
 
-// Modulation TODO(@vinjar): add proper documentation.
+// Modulation describes the radio modulation used for an uplink.
 type Modulation struct {
 	LoRa LoRaModulation `json:"lora"`
 }
 
-// LoRaModulation TODO(@vinjar): add proper documentation.
+// LoRaModulation specifies LoRa-specific radio parameters for an uplink.
 type LoRaModulation struct {
 	Bandwidth       int    `json:"bandwidth"`
 	SpreadingFactor int    `json:"spreadingFactor"`

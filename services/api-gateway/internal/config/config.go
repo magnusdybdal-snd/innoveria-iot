@@ -1,4 +1,4 @@
-// Package config TODO(@vinjar): add proper documentation.
+// Package config loads api-gateway configuration from environment variables.
 package config
 
 import (
@@ -9,7 +9,7 @@ import (
 	"innoveria-iot/pkg/env"
 )
 
-// Config TODO(@vinjar): add proper documentation.
+// Config holds all configuration values for the API gateway.
 type Config struct {
 	Addr               string
 	CollSvcURL         string

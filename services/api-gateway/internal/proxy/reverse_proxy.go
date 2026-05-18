@@ -1,4 +1,4 @@
-// Package proxy TODO(@vinjar): add proper documentation.
+// Package proxy provides reverse proxy construction and transport configuration for the API gateway.
 package proxy
 
 import (

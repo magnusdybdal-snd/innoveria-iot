@@ -1,4 +1,4 @@
-// Package server TODO(@vinjar): add proper documentation.
+// Package server provides HTTP middleware for the API gateway.
 package server
 
 import (
