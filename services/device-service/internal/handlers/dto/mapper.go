@@ -269,7 +269,10 @@ func MapPutSensorProfileConfigDTOToDomain(profileID string, from PutSensorProfil
 	}
 }
 
-// MapSampleEUIDomainToDTO maps a device EUI string to a SampleEUIResponse.
-func MapSampleEUIDomainToDTO(deviceEUI string) SampleEUIResponse {
-	return SampleEUIResponse{DeviceEUI: deviceEUI}
+// MapSampleEUIDomainToDTO maps a slice of device EUIs to a SampleEUIResponse.
+func MapSampleEUIDomainToDTO(deviceEUIs []string) SampleEUIResponse {
+	if deviceEUIs == nil {
+		deviceEUIs = []string{}
+	}
+	return SampleEUIResponse{DeviceEUIs: deviceEUIs}
 }
