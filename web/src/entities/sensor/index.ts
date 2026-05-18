@@ -1,6 +1,5 @@
 export type {
   SensorApiResponse,
-  DeviceEUIApiResponse,
   SensorListApiResponse,
   SensorReadingApiResponse,
   CreateSensorRequest,
