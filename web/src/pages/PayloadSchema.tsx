@@ -146,19 +146,38 @@ export default function PayloadSchema() {
       setIsLoadingKeys(true);
 
       try {
-        const eui = await getDeviceEUI(profile);
+        const euis = await getDeviceEUI(profile);
 
-        if (!eui) {
-          if (!active) return;
+        if (!active) return;
+
+        if (euis.length === 0) {
           setPayloadKeys([]);
           setSchemaRows({});
           return;
         }
 
-        const [keys, existing] = await Promise.all([
-          getPayloadTags(eui),
-          getPayloadSchema(profile),
-        ]);
+        // Try each EUI in order (oldest first) and stop at the first one that has payload data.
+        let keys: string[] = [];
+        let hitEui: string | null = null;
+        for (const eui of euis) {
+          if (!active) return;
+          const result = await getPayloadTags(eui);
+          if (result.length > 0) {
+            keys = result;
+            hitEui = eui;
+            break;
+          }
+        }
+
+        if (!active) return;
+
+        if (!hitEui) {
+          setPayloadKeys([]);
+          setSchemaRows({});
+          return;
+        }
+
+        const existing = await getPayloadSchema(profile);
 
         if (!active) return;
 

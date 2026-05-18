@@ -41,7 +41,7 @@ export interface SensorReadingApiResponse {
 }
 
 export interface DeviceEUIApiResponse {
-  deviceEui: string;
+  deviceEuis: string[];
 }
 
 export interface CreateSensorRequest {
