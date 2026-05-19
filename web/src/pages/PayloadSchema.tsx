@@ -16,7 +16,7 @@ import {
   putPayloadSchema,
 } from "@entities/payloadSchema";
 import {
-  getDeviceEUI,
+  getDeviceEUIs,
   getSensorMetrics,
   getSensorProfileConfig,
   getSensorProfiles,
@@ -146,7 +146,7 @@ export default function PayloadSchema() {
       setIsLoadingKeys(true);
 
       try {
-        const euis = await getDeviceEUI(profile);
+        const euis = await getDeviceEUIs(profile);
 
         if (!active) return;
 
@@ -158,20 +158,18 @@ export default function PayloadSchema() {
 
         // Try each EUI in order (oldest first) and stop at the first one that has payload data.
         let keys: string[] = [];
-        let hitEui: string | null = null;
         for (const eui of euis) {
           if (!active) return;
           const result = await getPayloadTags(eui);
           if (result.length > 0) {
             keys = result;
-            hitEui = eui;
             break;
           }
         }
 
         if (!active) return;
 
-        if (!hitEui) {
+        if (keys.length === 0) {
           setPayloadKeys([]);
           setSchemaRows({});
           return;

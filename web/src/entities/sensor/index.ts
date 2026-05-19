@@ -9,7 +9,7 @@ export type {
 export {
   getSensors,
   patchSensor,
-  getDeviceEUI,
+  getDeviceEUIs,
   getSensorProfiles,
   fetchSensorReading,
   postSensor,

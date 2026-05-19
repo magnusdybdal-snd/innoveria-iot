@@ -11,7 +11,7 @@ type RawDeviceEUIResponse = {
  * @param profileId - Chirpstack profile ID
  * @returns Array of device EUIs, empty if none found or request fails
  */
-export const getDeviceEUI = async (profileId: string): Promise<string[]> => {
+export const getDeviceEUIs = async (profileId: string): Promise<string[]> => {
   try {
     const data = await apiRequest<RawDeviceEUIResponse>(
       serviceClient,
