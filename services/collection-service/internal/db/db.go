@@ -1,4 +1,4 @@
-// Package db TODO(@vinjar): add proper documentation.
+// Package db wraps a pgxpool connection pool for the collection service's TimescaleDB.
 package db
 
 import (
@@ -9,7 +9,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-// DB TODO(@vinjar): add proper documentation.
+// DB wraps a pgxpool.Pool for thread-safe database access.
 type DB struct {
 	Pool *pgxpool.Pool
 }
@@ -42,7 +42,7 @@ func New(connString string) (*DB, error) {
 	return &DB{Pool: pool}, nil
 }
 
-// Close TODO(@vinjar): add proper documentation.
+// Close shuts down the connection pool.
 func (d *DB) Close() {
 	d.Pool.Close()
 }

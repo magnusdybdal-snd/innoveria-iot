@@ -1,4 +1,4 @@
-// Package env TODO(@vinjar): add proper documentation.
+// Package env provides helpers for reading environment variables with fallbacks and type conversion.
 package env
 
 import (

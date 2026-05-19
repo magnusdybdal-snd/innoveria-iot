@@ -11,7 +11,7 @@ func NotFound(w http.ResponseWriter, r *http.Request) {
 	http.NotFound(w, r)
 }
 
-// RegisterServiceError TODO(@vinjar): add proper documentation.
+// RegisterServiceError registers a handler on route that always returns 503, used when an upstream service could not be reached at startup.
 func RegisterServiceError(mux *http.ServeMux, route, name string) {
 	handler := func(w http.ResponseWriter, r *http.Request) {
 		_ = json.Encode(w, http.StatusServiceUnavailable, map[string]string{
@@ -23,7 +23,7 @@ func RegisterServiceError(mux *http.ServeMux, route, name string) {
 	mux.HandleFunc(route+"/", handler)
 }
 
-// RegisterServiceInfo TODO(@vinjar): add proper documentation.
+// RegisterServiceInfo registers a handler on route that returns a JSON summary of the service name and its available paths.
 func RegisterServiceInfo(mux *http.ServeMux, route, name string, paths []string) {
 	mux.HandleFunc(route, func(w http.ResponseWriter, r *http.Request) {
 		full := make([]string, len(paths))
@@ -37,7 +37,7 @@ func RegisterServiceInfo(mux *http.ServeMux, route, name string, paths []string)
 	})
 }
 
-// RegisterProxyService TODO(@vinjar): add proper documentation.
+// RegisterProxyService registers reverse-proxy handlers for each path of an upstream service.
 func RegisterProxyService(
 	mux *http.ServeMux,
 	route string,

@@ -1,4 +1,4 @@
-// Package config TODO(@vinjar): add proper documentation.
+// Package config loads collection-service configuration from environment variables.
 package config
 
 import (
@@ -8,7 +8,7 @@ import (
 	"innoveria-iot/pkg/env"
 )
 
-// Config TODO(@vinjar): add proper documentation.
+// Config holds all configuration values for the collection service.
 type Config struct {
 	// Server Configs
 	Addr          string

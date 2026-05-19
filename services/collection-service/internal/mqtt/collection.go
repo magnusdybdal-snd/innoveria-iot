@@ -1,4 +1,4 @@
-// Package mqtt TODO(@vinjar): add proper documentation.
+// Package mqtt handles MQTT message ingestion from a Chirpstack broker.
 package mqtt
 
 import (
@@ -11,7 +11,7 @@ import (
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 )
 
-// Collector TODO(@vinjar): add proper documentation.
+// Collector distributes incoming MQTT uplink events across a pool of worker goroutines.
 type Collector struct {
 	workers []chan ChirpstackUpEvent
 	service domain.MeasurementService
