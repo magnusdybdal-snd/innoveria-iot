@@ -251,13 +251,13 @@ func (s *SensorServiceImpl) GetByID(ctx context.Context, companyID string, senso
 	return sensor, nil
 }
 
-// GetSampleEUI returns a single device EUI from any sensor registered on the given Chirpstack profile.
-func (s *SensorServiceImpl) GetSampleEUI(ctx context.Context, chirpstackProfileID string) (string, error) {
-	sensor, err := s.sensorRepo.FindOneByChirpstackProfileID(ctx, chirpstackProfileID)
+// GetSampleEUIs returns all device EUIs registered on the given Chirpstack profile, ordered oldest-first.
+func (s *SensorServiceImpl) GetSampleEUIs(ctx context.Context, chirpstackProfileID string) ([]string, error) {
+	euis, err := s.sensorRepo.FindEUIsByChirpstackProfileID(ctx, chirpstackProfileID)
 	if err != nil {
-		return "", fmt.Errorf("get sample eui: %w", err)
+		return nil, fmt.Errorf("get sample euis: %w", err)
 	}
-	return sensor.DeviceEUI, nil
+	return euis, nil
 }
 
 // Delete removes a sensor from Chirpstack and then from the database.

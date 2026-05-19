@@ -1,6 +1,5 @@
 export type {
   SensorApiResponse,
-  DeviceEUIApiResponse,
   SensorListApiResponse,
   SensorReadingApiResponse,
   CreateSensorRequest,
@@ -10,7 +9,7 @@ export type {
 export {
   getSensors,
   patchSensor,
-  getDeviceEUI,
+  getDeviceEUIs,
   getSensorProfiles,
   fetchSensorReading,
   postSensor,

@@ -16,7 +16,7 @@ import {
   putPayloadSchema,
 } from "@entities/payloadSchema";
 import {
-  getDeviceEUI,
+  getDeviceEUIs,
   getSensorMetrics,
   getSensorProfileConfig,
   getSensorProfiles,
@@ -146,19 +146,36 @@ export default function PayloadSchema() {
       setIsLoadingKeys(true);
 
       try {
-        const eui = await getDeviceEUI(profile);
+        const euis = await getDeviceEUIs(profile);
 
-        if (!eui) {
-          if (!active) return;
+        if (!active) return;
+
+        if (euis.length === 0) {
           setPayloadKeys([]);
           setSchemaRows({});
           return;
         }
 
-        const [keys, existing] = await Promise.all([
-          getPayloadTags(eui),
-          getPayloadSchema(profile),
-        ]);
+        // Try each EUI in order (oldest first) and stop at the first one that has payload data.
+        let keys: string[] = [];
+        for (const eui of euis) {
+          if (!active) return;
+          const result = await getPayloadTags(eui);
+          if (result.length > 0) {
+            keys = result;
+            break;
+          }
+        }
+
+        if (!active) return;
+
+        if (keys.length === 0) {
+          setPayloadKeys([]);
+          setSchemaRows({});
+          return;
+        }
+
+        const existing = await getPayloadSchema(profile);
 
         if (!active) return;
 
@@ -166,9 +183,9 @@ export default function PayloadSchema() {
         setSchemaRows(
           Object.fromEntries(
             existing.map((row) => [
-              row.payloadKey,
+              row.payload_key,
               {
-                measurementType: row.measurementType,
+                measurementType: row.measurement_type,
                 unit: row.unit,
               },
             ]),

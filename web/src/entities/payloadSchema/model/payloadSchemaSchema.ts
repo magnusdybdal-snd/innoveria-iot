@@ -8,9 +8,9 @@ export interface PayloadSchemaListApiResponse {
 }
 
 export interface PayloadSchemaApiResponse {
-  chirpstackProfileId: string;
-  measurementType: string;
-  payloadKey: string;
+  chirpstack_profile_id: string;
+  measurement_type: string;
+  payload_key: string;
   unit: string;
 }
 

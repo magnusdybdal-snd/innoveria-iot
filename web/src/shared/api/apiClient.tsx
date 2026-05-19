@@ -5,6 +5,7 @@ import { postLogout, postRefresh, type TokenApiResponse } from "@entities/user";
 // Client for all microservice requests — routed through the api-gateway
 export const serviceClient = axios.create({
   baseURL: "/api",
+  withCredentials: true,
   headers: {
     "Content-Type": "application/json",
   },

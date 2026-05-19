@@ -23,7 +23,7 @@ type mockSensorService struct {
 	createFunc                  func(ctx context.Context, payload domain.Sensor) error
 	updateFunc                  func(ctx context.Context, companyID string, deviceID string, payload domain.Sensor) error
 	deleteFunc                  func(ctx context.Context, companyID string, deviceID string) error
-	getSampleEUIFunc            func(ctx context.Context, chirpstackProfileID string) (string, error)
+	getSampleEUIsFunc           func(ctx context.Context, chirpstackProfileID string) ([]string, error)
 }
 
 func (m *mockSensorService) GetAll(ctx context.Context, companyID string) ([]domain.Sensor, error) {
@@ -68,11 +68,11 @@ func (m *mockSensorService) Delete(ctx context.Context, companyID string, device
 	return m.deleteFunc(ctx, companyID, deviceID)
 }
 
-func (m *mockSensorService) GetSampleEUI(ctx context.Context, chirpstackProfileID string) (string, error) {
-	if m.getSampleEUIFunc == nil {
-		m.t.Fatal("unexpected call to GetSampleEUI")
+func (m *mockSensorService) GetSampleEUIs(ctx context.Context, chirpstackProfileID string) ([]string, error) {
+	if m.getSampleEUIsFunc == nil {
+		m.t.Fatal("unexpected call to GetSampleEUIs")
 	}
-	return m.getSampleEUIFunc(ctx, chirpstackProfileID)
+	return m.getSampleEUIsFunc(ctx, chirpstackProfileID)
 }
 
 // withAuth sets the auth headers that authctx.FromRequest requires on every request
