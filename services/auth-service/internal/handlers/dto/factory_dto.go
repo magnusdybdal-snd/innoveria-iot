@@ -24,15 +24,14 @@ type FactoryListResponse struct {
 
 // CreateNewFactory is the request payload for creating a factory.
 type CreateNewFactory struct {
-	CompanyID string `json:"company_id"`
-	Name      string `json:"name"`
-	Address   string `json:"address"`
+	Name    string `json:"name"`
+	Address string `json:"address"`
 }
 
 // MapCreateFactoryToDomain maps a create-factory DTO to domain Factory.
-func MapCreateFactoryToDomain(from CreateNewFactory) domain.Factory {
+func MapCreateFactoryToDomain(from CreateNewFactory, companyID string) domain.Factory {
 	return domain.Factory{
-		CompanyID: from.CompanyID,
+		CompanyID: companyID,
 		Name:      from.Name,
 		Address:   from.Address,
 	}

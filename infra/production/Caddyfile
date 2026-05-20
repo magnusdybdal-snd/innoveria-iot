@@ -6,7 +6,13 @@
 
     # Send API requests to the gateway
     handle /api/* {
-        reverse_proxy api-gateway:8080
+        reverse_proxy api-gateway:8080 {
+            # Do not trust inbound X-forward-* from client
+            header_up X-Forwarded-For {remote_host}                                      
+            header_up X-Real-IP {remote_host}
+            header_up X-Forwarded-Proto {scheme}                                         
+            header_up X-Forwarded-Host {host}
+        }
     }
 
     # React SPA fallback

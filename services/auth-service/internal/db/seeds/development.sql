@@ -8,3 +8,30 @@ INSERT INTO "auth"."factory" ("factory_id", "company_id", "name", "address")
 VALUES
 ('f1000000-0000-0000-0000-000000000001', 'a0000000-0000-0000-0000-000000000001', 'NTNU Gjøvik', 'Gjøvik')
 ON CONFLICT DO NOTHING;
+
+-- Factory areas for the demo factory.
+INSERT INTO "auth"."factory_area" ("area_id", "factory_id", "name")
+VALUES
+('a1000000-0000-0000-0000-000000000001', 'f1000000-0000-0000-0000-000000000001', 'K-bygget'),
+('a1000000-0000-0000-0000-000000000002', 'f1000000-0000-0000-0000-000000000001', 'A-bygget')
+ON CONFLICT DO NOTHING;
+
+INSERT INTO "auth"."user" ("user_id", "company_id", "name", "email", "password_hash", "role")
+VALUES
+('b0000000-0000-0000-0000-000000000001',
+ 'a0000000-0000-0000-0000-000000000001',
+ 'NTNU dev',
+ 'ntnu@innoveria.dev',
+ '$2a$10$gIIhSjyrghm8ObTF4G/7HOvAw6scOTWoUj9xT0DjmJNBTEU5p4uae',
+ 'PLATFORM_ADMIN'
+) ON CONFLICT ("email") DO NOTHING;
+
+INSERT INTO "auth"."user" ("user_id", "company_id", "name", "email", "password_hash", "role")
+VALUES
+('c0000000-0000-0000-0000-000000000002',
+ 'a0000000-0000-0000-0000-000000000001',
+ 'Innoveria dev',
+ 'admin@innoveria.dev',
+ '$2a$10$6ggcDJWKULXKB8VaCUBTBeTJzywtB7yUw.J4erAT8cJ1au9qmNHza',
+ 'PLATFORM_ADMIN'
+) ON CONFLICT ("email") DO NOTHING;

@@ -5,26 +5,30 @@ import (
 
 	"innoveria-iot/device-service/internal/chirpstackrest/dto"
 	"innoveria-iot/device-service/internal/domain"
+	"innoveria-iot/pkg/ptrutil"
 )
 
 // MergeSensor merges Chirpstack runtime data with database metadata and returns a domain Sensor.
 func MergeSensor(cs dto.ChirpstackSensor, db domain.Sensor) domain.Sensor {
 	return domain.Sensor{
 		// From database
-		Id:                  db.Id,
-		CompanyID:           db.CompanyID,
-		DeviceEUI:           db.DeviceEUI,
-		AppKey:              db.AppKey,
-		Name:                db.Name,
-		Description:         db.Description,
-		State:               db.State,
-		FactoryID:           db.FactoryID,
-		FactoryAreaID:       db.FactoryAreaID,
-		ProductionResource:  db.ProductionResource,
-		ChirpstackProfileID: db.ChirpstackProfileID,
-		CreatedAt:           db.CreatedAt,
-		UpdatedAt:           db.UpdatedAt,
-		// Runetime from Chirpstack
+		Id:                        db.Id,
+		CompanyID:                 db.CompanyID,
+		DeviceEUI:                 db.DeviceEUI,
+		AppKey:                    db.AppKey,
+		Name:                      db.Name,
+		Description:               db.Description,
+		ElectricitySensor:         db.ElectricitySensor,
+		Voltage:                   db.Voltage,
+		State:                     db.State,
+		FactoryID:                 db.FactoryID,
+		FactoryAreaID:             db.FactoryAreaID,
+		ProductionResource:        db.ProductionResource,
+		ChirpstackProfileID:       db.ChirpstackProfileID,
+		GlobalChirpstackProfileID: db.GlobalChirpstackProfileID,
+		CreatedAt:                 db.CreatedAt,
+		UpdatedAt:                 db.UpdatedAt,
+		// Runtime from Chirpstack
 		Status:     mapStatusSensor(cs.LastSeenAt),
 		LastSeenAt: cs.LastSeenAt.Format(time.RFC3339),
 	}
@@ -48,7 +52,7 @@ func MapChirpstackSensorRequest(sensor domain.Sensor, applicationID string) dto.
 		SensorPayload: dto.SensorPayload{
 			DeviceEUI:       sensor.DeviceEUI,
 			Name:            sensor.Name,
-			Description:     derefString(sensor.Description),
+			Description:     ptrutil.Deref(sensor.Description),
 			ApplicationID:   applicationID,
 			DeviceProfileID: sensor.ChirpstackProfileID,
 			JoinEUI:         "0000000000000000", // Not an issue when we host Chirpstack privately.
@@ -64,11 +68,4 @@ func MapChirpstackSensorKeyRequest(sensor domain.Sensor) dto.ChirpstackSensorKey
 			NwkKey: sensor.AppKey,
 		},
 	}
-}
-
-func derefString(s *string) string {
-	if s == nil {
-		return ""
-	}
-	return *s
 }

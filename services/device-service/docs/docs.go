@@ -98,6 +98,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/dto.GatewayListResponse"
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
                     "500": {
                         "description": "Internal Server Error"
                     }
@@ -129,6 +132,9 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request"
                     },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
                     "500": {
                         "description": "Internal Server Error"
                     }
@@ -136,7 +142,39 @@ const docTemplate = `{
             }
         },
         "/gateways/{id}": {
-            "put": {
+            "delete": {
+                "tags": [
+                    "gateways"
+                ],
+                "summary": "Delete a gateway",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Gateway ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "patch": {
                 "consumes": [
                     "application/json"
                 ],
@@ -158,7 +196,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.CreateGatewayRequest"
+                            "$ref": "#/definitions/dto.UpdateGatewayRequest"
                         }
                     }
                 ],
@@ -169,23 +207,295 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request"
                     },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/measurement-types": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "measurement-types"
+                ],
+                "summary": "List active measurement types",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.MeasurementTypeListResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
                     "500": {
                         "description": "Internal Server Error"
                     }
                 }
             },
-            "delete": {
-                "tags": [
-                    "gateways"
+            "post": {
+                "consumes": [
+                    "application/json"
                 ],
-                "summary": "Delete a gateway",
+                "tags": [
+                    "measurement-types"
+                ],
+                "summary": "Create a measurement type",
+                "parameters": [
+                    {
+                        "description": "Measurement type payload",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateMeasurementTypeRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "409": {
+                        "description": "Conflict"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/measurement-types/all": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "measurement-types"
+                ],
+                "summary": "List all measurement types including deprecated",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.MeasurementTypeListResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/measurement-types/{slug}/deprecate": {
+            "patch": {
+                "tags": [
+                    "measurement-types"
+                ],
+                "summary": "Deprecate a measurement type",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Gateway ID",
-                        "name": "id",
+                        "description": "Measurement type slug",
+                        "name": "slug",
                         "in": "path",
                         "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/payload-schema/{chirpstack_profile_id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "payload-schema"
+                ],
+                "summary": "Get payload schema for a profile",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ChirpStack profile ID",
+                        "name": "chirpstack_profile_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.PayloadSchemaListResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "payload-schema"
+                ],
+                "summary": "Save payload schema labels for a profile",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ChirpStack profile ID",
+                        "name": "chirpstack_profile_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Labels to save",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.SavePayloadSchemaLabelsRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/sensor-profile-config/{profile_id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "sensor-profile-config"
+                ],
+                "summary": "Get sensor profile config",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Chirpstack profile ID",
+                        "name": "profile_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SensorProfileConfigResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "sensor-profile-config"
+                ],
+                "summary": "Set sensor profile config",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Chirpstack profile ID",
+                        "name": "profile_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Sensor profile config payload",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.PutSensorProfileConfigRequest"
+                        }
                     }
                 ],
                 "responses": {
@@ -211,24 +521,12 @@ const docTemplate = `{
                     "sensor-profiles"
                 ],
                 "summary": "List all sensor profiles",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Max number of profiles to return",
-                        "name": "limit",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/dto.SensorProfileListResponse"
                         }
-                    },
-                    "400": {
-                        "description": "Bad Request"
                     },
                     "500": {
                         "description": "Internal Server Error"
@@ -245,6 +543,14 @@ const docTemplate = `{
                     "sensors"
                 ],
                 "summary": "Lists all sensors.",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Production resource (ERP ProductionResource ID)",
+                        "name": "production_resource_id",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -254,6 +560,9 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     },
                     "500": {
                         "description": "Internal Server Error"
@@ -286,6 +595,136 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request"
                     },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/sensors/sample-eui": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "sensors"
+                ],
+                "summary": "Get a sample device EUI for a Chirpstack profile",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Chirpstack profile ID",
+                        "name": "chirpstack_profile_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SampleEUIResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/sensors/{eui}/metrics": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "sensor-metrics"
+                ],
+                "summary": "Get effective metrics for a sensor",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Device EUI",
+                        "name": "eui",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SensorMetricListResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "sensor-metrics"
+                ],
+                "summary": "Save metric labels for a sensor",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Device EUI",
+                        "name": "eui",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Metrics to save",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpsertSensorMetricsRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity"
+                    },
                     "500": {
                         "description": "Internal Server Error"
                     }
@@ -293,7 +732,39 @@ const docTemplate = `{
             }
         },
         "/sensors/{id}": {
-            "put": {
+            "delete": {
+                "tags": [
+                    "sensors"
+                ],
+                "summary": "Delete a sensor",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "SensorID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "patch": {
                 "consumes": [
                     "application/json"
                 ],
@@ -326,31 +797,11 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request"
                     },
-                    "500": {
-                        "description": "Internal Server Error"
-                    }
-                }
-            },
-            "delete": {
-                "tags": [
-                    "sensors"
-                ],
-                "summary": "Delete a sensor",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "SensorID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No Content"
+                    "401": {
+                        "description": "Unauthorized"
                     },
-                    "400": {
-                        "description": "Bad Request"
+                    "404": {
+                        "description": "Not Found"
                     },
                     "500": {
                         "description": "Internal Server Error"
@@ -382,12 +833,19 @@ const docTemplate = `{
         "dto.CreateGatewayRequest": {
             "type": "object",
             "required": [
-                "company_id",
+                "factory_area_id",
+                "factory_id",
                 "gateway_eui",
                 "name"
             ],
             "properties": {
-                "company_id": {
+                "description": {
+                    "type": "string"
+                },
+                "factory_area_id": {
+                    "type": "string"
+                },
+                "factory_id": {
                     "type": "string"
                 },
                 "gateway_eui": {
@@ -398,22 +856,39 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.CreateMeasurementTypeRequest": {
+            "type": "object",
+            "required": [
+                "display_name",
+                "slug"
+            ],
+            "properties": {
+                "default_unit": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "display_name": {
+                    "type": "string"
+                },
+                "slug": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.CreateSensorRequest": {
             "type": "object",
             "required": [
                 "app_key",
-                "company_id",
                 "device_eui",
                 "device_profile_id",
+                "factory_area_id",
                 "factory_id",
                 "name"
             ],
             "properties": {
                 "app_key": {
-                    "type": "string"
-                },
-                "company_id": {
-                    "description": "TODO: CompanyID should be extracted from auth",
                     "type": "string"
                 },
                 "description": {
@@ -425,8 +900,10 @@ const docTemplate = `{
                 "device_profile_id": {
                     "type": "string"
                 },
+                "electricity_sensor": {
+                    "type": "boolean"
+                },
                 "factory_area_id": {
-                    "description": "Optional — UUID, omit if service not yet available",
                     "type": "string"
                 },
                 "factory_id": {
@@ -436,8 +913,11 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "production_resource": {
-                    "description": "Optional — UUID, omit if service not yet available",
-                    "type": "string"
+                    "description": "Optional — int64 ERP production resource ID",
+                    "type": "integer"
+                },
+                "voltage": {
+                    "type": "integer"
                 }
             }
         },
@@ -470,6 +950,9 @@ const docTemplate = `{
                 "factory_area_id": {
                     "type": "string"
                 },
+                "factory_id": {
+                    "type": "string"
+                },
                 "gateway_eui": {
                     "type": "string"
                 },
@@ -493,6 +976,123 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.MeasurementTypeListResponse": {
+            "type": "object",
+            "properties": {
+                "measurement_types": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.MeasurementTypeResponse"
+                    }
+                },
+                "total_count": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.MeasurementTypeResponse": {
+            "type": "object",
+            "properties": {
+                "default_unit": {
+                    "type": "string"
+                },
+                "deprecated": {
+                    "type": "boolean"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "display_name": {
+                    "type": "string"
+                },
+                "slug": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.PayloadSchemaLabelRequest": {
+            "type": "object",
+            "required": [
+                "measurement_type",
+                "payload_key"
+            ],
+            "properties": {
+                "measurement_type": {
+                    "type": "string"
+                },
+                "payload_key": {
+                    "type": "string"
+                },
+                "unit": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.PayloadSchemaListResponse": {
+            "type": "object",
+            "properties": {
+                "schemas": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.PayloadSchemaResponse"
+                    }
+                },
+                "total_count": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.PayloadSchemaResponse": {
+            "type": "object",
+            "properties": {
+                "chirpstack_profile_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "measurement_type": {
+                    "type": "string"
+                },
+                "payload_key": {
+                    "type": "string"
+                },
+                "unit": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.PutSensorProfileConfigRequest": {
+            "type": "object",
+            "properties": {
+                "configurable_schema": {
+                    "description": "ConfigurableSchema uses *bool to distinguish an explicit false from a missing field,\nsince Go's JSON decoder cannot differentiate the two for plain bool types.\nThe field is required — a nil value is rejected with 400.",
+                    "type": "boolean"
+                }
+            }
+        },
+        "dto.SampleEUIResponse": {
+            "type": "object",
+            "properties": {
+                "device_eui": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.SavePayloadSchemaLabelsRequest": {
+            "type": "object",
+            "required": [
+                "labels"
+            ],
+            "properties": {
+                "labels": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.PayloadSchemaLabelRequest"
+                    }
+                }
+            }
+        },
         "dto.SensorListResponse": {
             "type": "object",
             "properties": {
@@ -504,6 +1104,63 @@ const docTemplate = `{
                 },
                 "total_count": {
                     "type": "integer"
+                }
+            }
+        },
+        "dto.SensorMetricListResponse": {
+            "type": "object",
+            "properties": {
+                "metrics": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.SensorMetricResponse"
+                    }
+                },
+                "total_count": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.SensorMetricRequest": {
+            "type": "object",
+            "required": [
+                "measurement_type",
+                "payload_key"
+            ],
+            "properties": {
+                "measurement_type": {
+                    "type": "string"
+                },
+                "payload_key": {
+                    "type": "string"
+                },
+                "unit": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.SensorMetricResponse": {
+            "type": "object",
+            "properties": {
+                "measurement_type": {
+                    "type": "string"
+                },
+                "payload_key": {
+                    "type": "string"
+                },
+                "unit": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.SensorProfileConfigResponse": {
+            "type": "object",
+            "properties": {
+                "chirpstack_profile_id": {
+                    "type": "string"
+                },
+                "configurable_schema": {
+                    "type": "boolean"
                 }
             }
         },
@@ -569,10 +1226,16 @@ const docTemplate = `{
                 "device_profile_id": {
                     "type": "string"
                 },
+                "electricity_sensor": {
+                    "type": "boolean"
+                },
                 "factory_area_id": {
                     "type": "string"
                 },
                 "factory_id": {
+                    "type": "string"
+                },
+                "global_device_profile_id": {
                     "type": "string"
                 },
                 "id": {
@@ -585,7 +1248,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "production_resource": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "state": {
                     "type": "string"
@@ -595,22 +1258,40 @@ const docTemplate = `{
                 },
                 "updated_at": {
                     "type": "string"
+                },
+                "voltage": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.UpdateGatewayRequest": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "factory_area_id": {
+                    "type": "string"
+                },
+                "factory_id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
                 }
             }
         },
         "dto.UpdateSensorRequest": {
             "type": "object",
-            "required": [
-                "device_profile_id",
-                "factory_id",
-                "name"
-            ],
             "properties": {
                 "description": {
                     "type": "string"
                 },
                 "device_profile_id": {
                     "type": "string"
+                },
+                "electricity_sensor": {
+                    "type": "boolean"
                 },
                 "factory_area_id": {
                     "description": "Optional — UUID, omit if service not yet available",
@@ -623,8 +1304,25 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "production_resource": {
-                    "description": "Optional — UUID, omit if service not yet available",
-                    "type": "string"
+                    "description": "Optional — int64 ERP production resource ID",
+                    "type": "integer"
+                },
+                "voltage": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.UpsertSensorMetricsRequest": {
+            "type": "object",
+            "required": [
+                "metrics"
+            ],
+            "properties": {
+                "metrics": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.SensorMetricRequest"
+                    }
                 }
             }
         }

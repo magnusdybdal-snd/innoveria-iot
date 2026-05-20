@@ -1,4 +1,4 @@
-// Package main TODO(@vinjar): add proper documentation.
+// Package main is the entry point for the api-gateway service.
 package main
 
 import (

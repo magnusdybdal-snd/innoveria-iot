@@ -2,10 +2,12 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
 	"innoveria-iot/collection-service/internal/domain"
+	"innoveria-iot/pkg/authctx"
 	"innoveria-iot/pkg/json"
 )
 
@@ -19,28 +21,35 @@ import (
 // @Param		to			query	string	true	"End time (RFC3339, e.g. 2024-01-02T00:00:00Z)"
 // @Success		200	{array}		domain.SensorMeasurement
 // @Failure		400
+// @Failure		401
 // @Failure		500
 // @Router		/measurements [get]
 func HandleMeasurementsByTimeRange(svc domain.MeasurementService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		auth, err := authctx.FromRequest(r)
+		if err != nil {
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
+			return
+		}
+
 		q := r.URL.Query()
 
 		// Check for all query parameters
 		deviceStr := q.Get("device_eui")
 		if deviceStr == "" {
-			json.HandleError(w, http.StatusBadRequest, nil, "device_eui query parameter is required")
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("missing device_eui"), "device_eui query parameter is required")
 			return
 		}
 
 		fromStr := q.Get("from")
 		if fromStr == "" {
-			json.HandleError(w, http.StatusBadRequest, nil, "from query parameter is required")
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("missing from"), "from query parameter is required")
 			return
 		}
 
 		toStr := q.Get("to")
 		if toStr == "" {
-			json.HandleError(w, http.StatusBadRequest, nil, "to query parameter is required")
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("missing to"), "to query parameter is required")
 			return
 		}
 
@@ -59,12 +68,12 @@ func HandleMeasurementsByTimeRange(svc domain.MeasurementService) http.HandlerFu
 
 		// Sanity check: timestamp from must come before timestamp to
 		if !from.Before(to) {
-			json.HandleError(w, http.StatusBadRequest, nil, "timestamp error: from must be before to")
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("from is not before to"), "from must be before to")
 			return
 		}
 
 		// Delegate to the service
-		measurements, err := svc.GetByTimeRange(r.Context(), deviceStr, from, to)
+		measurements, err := svc.GetByTimeRange(r.Context(), auth.CompanyID, deviceStr, from, to)
 		if err != nil {
 			json.HandleError(w, http.StatusInternalServerError, err, "failed to fetch measurements")
 			return

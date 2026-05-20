@@ -1,19 +1,14 @@
-import { serviceClient } from "@/shared/api";
+import { apiRequest, serviceClient } from "@/shared/api";
 import { API_ROUTES } from "@/shared/api/routes";
 
 /**
- * Deletes a sensor from the collection-service via the API gateway.
+ * Deletes a sensor by ID.
  * @param sensorId - The ID of the sensor to delete
- * @returns True if the deletion was successful, false otherwise
+ * @returns A promise that resolves when the deletion succeeds, or rejects on failure
  */
-export const deleteSensor = async (sensorId: string): Promise<boolean> => {
-  try {
-    const response = await serviceClient.delete(
-      `${API_ROUTES.sensors}/${encodeURIComponent(sensorId)}`,
-    );
-    return response.status === 204;
-  } catch (error) {
-    console.error(`Failed to delete sensor with ID ${sensorId}:`, error);
-    return false;
-  }
-};
+export const deleteSensor = (sensorId: string): Promise<void> =>
+  apiRequest(
+    serviceClient,
+    `${API_ROUTES.sensors}/${encodeURIComponent(sensorId)}`,
+    "DELETE",
+  );

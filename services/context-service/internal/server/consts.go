@@ -1,0 +1,22 @@
+// Package server provides the HTTP server and routing for the context service API.
+package server
+
+// Suppress godoclint in this file. Const naming should be explanatory in themselves
+//godoclint:disable
+
+// Context service API routes
+const (
+	VERSION   = "v1"
+	API_ROUTE = "/api/" + VERSION
+
+	CONTEXT_ROUTE = API_ROUTE + "/context"
+
+	// Routes:
+	RULES_ROUTE                = CONTEXT_ROUTE + "/rules"
+	RULES_ID_ROUTE             = RULES_ROUTE + "/{id}"
+	CONTEXT_DATA_ROUTE         = CONTEXT_ROUTE + "/data"
+	ORDERS_ROUTE               = CONTEXT_ROUTE + "/orders"
+	ORDER_BY_ID_ROUTE          = ORDERS_ROUTE + "/{id}"
+	ORDER_CONTEXT_ROUTE        = ORDERS_ROUTE + "/{id}/context"
+	PRODUCTION_RESOURCES_ROUTE = CONTEXT_ROUTE + "/production-resources"
+)

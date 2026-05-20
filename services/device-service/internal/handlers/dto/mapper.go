@@ -1,10 +1,73 @@
 package dto
 
 import (
+	"strings"
 	"time"
 
 	"innoveria-iot/device-service/internal/domain"
+	"innoveria-iot/pkg/ptrutil"
 )
+
+// MapPayloadSchemaDomainToDTO maps a slice of domain PayloadSchemas to a PayloadSchemaListResponse.
+func MapPayloadSchemaDomainToDTO(from []domain.PayloadSchema) PayloadSchemaListResponse {
+	schemas := make([]PayloadSchemaResponse, len(from))
+	for i, s := range from {
+		schemas[i] = PayloadSchemaResponse{
+			ID:                  s.ID,
+			ChirpstackProfileID: s.ChirpstackProfileID,
+			PayloadKey:          s.PayloadKey,
+			MeasurementType:     s.MeasurementType,
+			Unit:                s.Unit,
+		}
+	}
+	return PayloadSchemaListResponse{
+		TotalCount: len(schemas),
+		Schemas:    schemas,
+	}
+}
+
+// MapSaveLabelsRequestToDomain maps a SavePayloadSchemaLabelsRequest to a slice of domain PayloadSchemas.
+func MapSaveLabelsRequestToDomain(chirpstackProfileID string, from SavePayloadSchemaLabelsRequest) []domain.PayloadSchema {
+	schemas := make([]domain.PayloadSchema, len(from.Labels))
+	for i, l := range from.Labels {
+		schemas[i] = domain.PayloadSchema{
+			ChirpstackProfileID: chirpstackProfileID,
+			PayloadKey:          l.PayloadKey,
+			MeasurementType:     l.MeasurementType,
+			Unit:                l.Unit,
+		}
+	}
+	return schemas
+}
+
+// MapSensorMetricDomainToDTO maps a slice of domain SensorMetrics to a SensorMetricListResponse.
+func MapSensorMetricDomainToDTO(from []domain.SensorMetric) SensorMetricListResponse {
+	metrics := make([]SensorMetricResponse, len(from))
+	for i, m := range from {
+		metrics[i] = SensorMetricResponse{
+			PayloadKey:      m.PayloadKey,
+			MeasurementType: m.MeasurementType,
+			Unit:            m.Unit,
+		}
+	}
+	return SensorMetricListResponse{
+		TotalCount: len(metrics),
+		Metrics:    metrics,
+	}
+}
+
+// MapUpsertMetricsRequestToDomain maps an UpsertSensorMetricsRequest to a slice of domain SensorMetrics.
+func MapUpsertMetricsRequestToDomain(from UpsertSensorMetricsRequest) []domain.SensorMetric {
+	metrics := make([]domain.SensorMetric, len(from.Metrics))
+	for i, m := range from.Metrics {
+		metrics[i] = domain.SensorMetric{
+			PayloadKey:      m.PayloadKey,
+			MeasurementType: m.MeasurementType,
+			Unit:            m.Unit,
+		}
+	}
+	return metrics
+}
 
 // MapGatewayDomainToDTO maps a slice of domain Gateways to a GatewayListResponse.
 func MapGatewayDomainToDTO(from []domain.Gateway) GatewayListResponse {
@@ -30,6 +93,7 @@ func mapGateway(from domain.Gateway) GatewayResponse {
 		Description:   from.Description,
 		Status:        int(from.Status),
 		State:         string(from.State),
+		FactoryID:     from.FactoryID,
 		FactoryAreaID: from.FactoryAreaID,
 		LastSeenAt:    from.LastSeenAt,
 		CreatedAt:     from.CreatedAt.Format(time.RFC3339),
@@ -38,37 +102,54 @@ func mapGateway(from domain.Gateway) GatewayResponse {
 }
 
 // MapGatewayDTOToDomain maps a CreateGatewayRequest to a domain Gateway, setting defaults for State and Status.
-func MapGatewayDTOToDomain(from CreateGatewayRequest) domain.Gateway {
+func MapGatewayDTOToDomain(from CreateGatewayRequest, companyID string) domain.Gateway {
 	return domain.Gateway{
-		Id:         "", // converted later in db
-		CompanyId:  from.CompanyId,
-		GatewayEUI: from.GatewayEUI,
-		Name:       from.Name,
-		State:      domain.DeviceStateActive,
-		Status:     domain.StatusNeverSeen,
-		LastSeenAt: "", // converted later after chirpstack
+		Id:            "", // converted later in db
+		CompanyId:     companyID,
+		GatewayEUI:    strings.ToLower(from.GatewayEUI),
+		Name:          from.Name,
+		Description:   from.Description,
+		FactoryID:     from.FactoryID,
+		FactoryAreaID: from.FactoryAreaID,
+		State:         domain.DeviceStateActive,
+		Status:        domain.StatusNeverSeen,
+		LastSeenAt:    "", // converted later after chirpstack
 	}
 }
 
 // MapUpdateSensorDTOToDomain maps an UpdateSensorRequest to a domain Sensor.
 func MapUpdateSensorDTOToDomain(from UpdateSensorRequest) domain.Sensor {
 	return domain.Sensor{
-		Name:                from.Name,
+		Name:                ptrutil.Deref(from.Name),
 		Description:         from.Description,
-		FactoryID:           from.FactoryID,
-		FactoryAreaID:       from.FactoryAreaID,
-		ChirpstackProfileID: from.ChirpstackProfileID,
+		ElectricitySensor:   from.ElectricitySensor,
+		Voltage:             from.Voltage,
+		FactoryID:           ptrutil.Deref(from.FactoryID),
+		FactoryAreaID:       ptrutil.Deref(from.FactoryAreaID),
+		ChirpstackProfileID: ptrutil.Deref(from.ChirpstackProfileID),
 		ProductionResource:  from.ProductionResource,
 	}
 }
 
+// MapUpdateGatewayDTOToDomain maps an UpdateGatewayRequest to a domain Gateway.
+func MapUpdateGatewayDTOToDomain(from UpdateGatewayRequest) domain.Gateway {
+	return domain.Gateway{
+		Name:          ptrutil.Deref(from.Name),
+		Description:   from.Description,
+		FactoryID:     ptrutil.Deref(from.FactoryID),
+		FactoryAreaID: ptrutil.Deref(from.FactoryAreaID),
+	}
+}
+
 // MapCreateSensorDTOToDomain maps a CreateSensorRequest to a domain Sensor.
-func MapCreateSensorDTOToDomain(from CreateSensorRequest) domain.Sensor {
+func MapCreateSensorDTOToDomain(from CreateSensorRequest, companyID string) domain.Sensor {
 	return domain.Sensor{
-		CompanyID:           from.CompanyID,
+		CompanyID:           companyID,
 		Name:                from.Name,
 		Description:         from.Description,
-		DeviceEUI:           from.DeviceEUI,
+		ElectricitySensor:   &from.ElectricitySensor,
+		Voltage:             from.Voltage,
+		DeviceEUI:           strings.ToLower(from.DeviceEUI),
 		AppKey:              from.AppKey,
 		ChirpstackProfileID: from.ChirpstackProfileID,
 		FactoryID:           from.FactoryID,
@@ -95,21 +176,55 @@ func MapSensorDomainToDTO(from []domain.Sensor) SensorListResponse {
 
 func mapSensor(from domain.Sensor) SensorResponse {
 	return SensorResponse{
-		ID:                  from.Id,
-		CompanyID:           from.CompanyID,
-		Name:                from.Name,
-		Description:         from.Description,
-		DeviceEUI:           from.DeviceEUI,
-		AppKey:              from.AppKey,
-		State:               string(from.State),
-		FactoryID:           from.FactoryID,
-		FactoryAreaID:       from.FactoryAreaID,
-		ProductionResource:  from.ProductionResource,
-		ChirpstackProfileID: from.ChirpstackProfileID,
-		Status:              int(from.Status),
-		LastSeenAt:          from.LastSeenAt,
-		CreatedAt:           from.CreatedAt.Format(time.RFC3339),
-		UpdatedAt:           from.UpdatedAt.Format(time.RFC3339),
+		ID:                        from.Id,
+		CompanyID:                 from.CompanyID,
+		Name:                      from.Name,
+		Description:               from.Description,
+		ElectricitySensor:         from.ElectricitySensor != nil && *from.ElectricitySensor,
+		Voltage:                   from.Voltage,
+		DeviceEUI:                 from.DeviceEUI,
+		AppKey:                    from.AppKey,
+		State:                     string(from.State),
+		FactoryID:                 from.FactoryID,
+		FactoryAreaID:             from.FactoryAreaID,
+		ProductionResource:        from.ProductionResource,
+		ChirpstackProfileID:       from.ChirpstackProfileID,
+		GlobalChirpstackProfileID: from.GlobalChirpstackProfileID,
+		Status:                    int(from.Status),
+		LastSeenAt:                from.LastSeenAt,
+		CreatedAt:                 from.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:                 from.UpdatedAt.Format(time.RFC3339),
+	}
+}
+
+// MapMeasurementTypeDomainToDTO maps a slice of domain MeasurementTypes to a MeasurementTypeListResponse.
+func MapMeasurementTypeDomainToDTO(from []domain.MeasurementType) MeasurementTypeListResponse {
+	tot := len(from)
+	types := make([]MeasurementTypeResponse, tot)
+
+	for i, m := range from {
+		types[i] = MeasurementTypeResponse{
+			Slug:        m.Slug,
+			DisplayName: m.DisplayName,
+			Description: m.Description,
+			DefaultUnit: m.DefaultUnit,
+			Deprecated:  m.Deprecated,
+		}
+	}
+
+	return MeasurementTypeListResponse{
+		TotalCount:       tot,
+		MeasurementTypes: types,
+	}
+}
+
+// MapCreateMeasurementTypeDTOToDomain maps a CreateMeasurementTypeRequest to a domain MeasurementType.
+func MapCreateMeasurementTypeDTOToDomain(from CreateMeasurementTypeRequest) domain.MeasurementType {
+	return domain.MeasurementType{
+		Slug:        from.Slug,
+		DisplayName: from.DisplayName,
+		Description: from.Description,
+		DefaultUnit: from.DefaultUnit,
 	}
 }
 
@@ -136,4 +251,28 @@ func mapSensorProfiles(from domain.SensorProfile) SensorProfileResponse {
 		VendorId:   from.VendorId,
 		VendorName: from.VendorName,
 	}
+}
+
+// MapSensorProfileConfigDomainToDTO maps a domain SensorProfileConfig to a SensorProfileConfigResponse.
+func MapSensorProfileConfigDomainToDTO(from domain.SensorProfileConfig) SensorProfileConfigResponse {
+	return SensorProfileConfigResponse{
+		ChirpstackProfileID: from.ChirpstackProfileID,
+		ConfigurableSchema:  from.ConfigurableSchema,
+	}
+}
+
+// MapPutSensorProfileConfigDTOToDomain maps a PutSensorProfileConfigRequest to a domain SensorProfileConfig.
+func MapPutSensorProfileConfigDTOToDomain(profileID string, from PutSensorProfileConfigRequest) domain.SensorProfileConfig {
+	return domain.SensorProfileConfig{
+		ChirpstackProfileID: profileID,
+		ConfigurableSchema:  *from.ConfigurableSchema,
+	}
+}
+
+// MapSampleEUIDomainToDTO maps a slice of device EUIs to a SampleEUIResponse.
+func MapSampleEUIDomainToDTO(deviceEUIs []string) SampleEUIResponse {
+	if deviceEUIs == nil {
+		deviceEUIs = []string{}
+	}
+	return SampleEUIResponse{DeviceEUIs: deviceEUIs}
 }

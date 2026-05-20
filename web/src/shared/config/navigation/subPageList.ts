@@ -7,9 +7,9 @@ const subPages: Map<string, SubPage[]> = new Map([
   [
     "Dashboard views",
     [
-      { name: "KPI dashboard", path: "/Dashboard/KPI_dashboard" },
-      { name: "Building dashboard", path: "/Dashboard/Building_dashboard" },
-      { name: "Prod.line 5", path: "/Dashboard/Prod.line_5" },
+      { name: "Sensor Data", path: "/Dashboard/Context/SensorData" },
+      { name: "Context rules", path: "/Dashboard/Rules" },
+      { name: "Context", path: "/Dashboard/Context/OrderList" },
     ],
   ],
   [
@@ -19,12 +19,13 @@ const subPages: Map<string, SubPage[]> = new Map([
       { name: "Sensors", path: "/Devices/Sensors" },
     ],
   ],
-  ["Reports", []],
+  ["Organization", [{ name: "Factories", path: "/Organization/Factories" }]],
   [
     "Admin",
     [
       { name: "Companies", path: "/Admin/Companies" },
-      { name: "Factories", path: "/Admin/Factories" },
+      { name: "Measurement types", path: "/Admin/Measurement" },
+      { name: "Payload schema", path: "/Admin/PayloadSchema" },
       { name: "Users", path: "/Admin/Users" },
     ],
   ],

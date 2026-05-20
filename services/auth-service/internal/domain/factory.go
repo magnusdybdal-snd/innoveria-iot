@@ -18,7 +18,15 @@ type Factory struct {
 // FactoryRepo defines the factory repository
 type FactoryRepo interface {
 	Create(ctx context.Context, factory Factory) (Factory, error)
-	FindAll(ctx context.Context) ([]Factory, error)
-	FindByID(ctx context.Context, factoryID string) (Factory, error)
-	DeleteByID(ctx context.Context, factoryID string) error
+	FindAll(ctx context.Context, companyID string) ([]Factory, error)
+	FindByID(ctx context.Context, companyID string, factoryID string) (Factory, error)
+	Delete(ctx context.Context, companyID string, factoryID string) error
+}
+
+// FactoryService defines factory use-cases exposed by the service layer.
+type FactoryService interface {
+	RegisterFactory(ctx context.Context, payload Factory) (Factory, error)
+	GetOneFactory(ctx context.Context, companyID string, factoryID string) (Factory, error)
+	GetAllFactories(ctx context.Context, companyID string) ([]Factory, error)
+	DeleteFactory(ctx context.Context, companyID string, factoryID string) error
 }

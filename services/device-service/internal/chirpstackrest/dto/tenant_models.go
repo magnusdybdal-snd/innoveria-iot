@@ -7,7 +7,8 @@ type CreateChirpstackTenant struct {
 
 // TenantPayload contains the fields required by Chirpstack to create a new tenant
 type TenantPayload struct {
-	Name string `json:"name"`
+	Name            string `json:"name"`
+	CanHaveGateways bool   `json:"canHaveGateways"`
 }
 
 // ChirpstackTenantCreateResponse is the response from Chirpstack when creating a tenant.

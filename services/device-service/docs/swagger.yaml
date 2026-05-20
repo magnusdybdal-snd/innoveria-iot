@@ -14,23 +14,39 @@ definitions:
     type: object
   dto.CreateGatewayRequest:
     properties:
-      company_id:
+      description:
+        type: string
+      factory_area_id:
+        type: string
+      factory_id:
         type: string
       gateway_eui:
         type: string
       name:
         type: string
     required:
-    - company_id
+    - factory_area_id
+    - factory_id
     - gateway_eui
     - name
+    type: object
+  dto.CreateMeasurementTypeRequest:
+    properties:
+      default_unit:
+        type: string
+      description:
+        type: string
+      display_name:
+        type: string
+      slug:
+        type: string
+    required:
+    - display_name
+    - slug
     type: object
   dto.CreateSensorRequest:
     properties:
       app_key:
-        type: string
-      company_id:
-        description: 'TODO: CompanyID should be extracted from auth'
         type: string
       description:
         type: string
@@ -38,21 +54,24 @@ definitions:
         type: string
       device_profile_id:
         type: string
+      electricity_sensor:
+        type: boolean
       factory_area_id:
-        description: Optional — UUID, omit if service not yet available
         type: string
       factory_id:
         type: string
       name:
         type: string
       production_resource:
-        description: Optional — UUID, omit if service not yet available
-        type: string
+        description: Optional — int64 ERP production resource ID
+        type: integer
+      voltage:
+        type: integer
     required:
     - app_key
-    - company_id
     - device_eui
     - device_profile_id
+    - factory_area_id
     - factory_id
     - name
     type: object
@@ -75,6 +94,8 @@ definitions:
         type: string
       factory_area_id:
         type: string
+      factory_id:
+        type: string
       gateway_eui:
         type: string
       id:
@@ -90,6 +111,85 @@ definitions:
       updated_at:
         type: string
     type: object
+  dto.MeasurementTypeListResponse:
+    properties:
+      measurement_types:
+        items:
+          $ref: '#/definitions/dto.MeasurementTypeResponse'
+        type: array
+      total_count:
+        type: integer
+    type: object
+  dto.MeasurementTypeResponse:
+    properties:
+      default_unit:
+        type: string
+      deprecated:
+        type: boolean
+      description:
+        type: string
+      display_name:
+        type: string
+      slug:
+        type: string
+    type: object
+  dto.PayloadSchemaLabelRequest:
+    properties:
+      measurement_type:
+        type: string
+      payload_key:
+        type: string
+      unit:
+        type: string
+    required:
+    - measurement_type
+    - payload_key
+    type: object
+  dto.PayloadSchemaListResponse:
+    properties:
+      schemas:
+        items:
+          $ref: '#/definitions/dto.PayloadSchemaResponse'
+        type: array
+      total_count:
+        type: integer
+    type: object
+  dto.PayloadSchemaResponse:
+    properties:
+      chirpstack_profile_id:
+        type: string
+      id:
+        type: string
+      measurement_type:
+        type: string
+      payload_key:
+        type: string
+      unit:
+        type: string
+    type: object
+  dto.PutSensorProfileConfigRequest:
+    properties:
+      configurable_schema:
+        description: |-
+          ConfigurableSchema uses *bool to distinguish an explicit false from a missing field,
+          since Go's JSON decoder cannot differentiate the two for plain bool types.
+          The field is required — a nil value is rejected with 400.
+        type: boolean
+    type: object
+  dto.SampleEUIResponse:
+    properties:
+      device_eui:
+        type: string
+    type: object
+  dto.SavePayloadSchemaLabelsRequest:
+    properties:
+      labels:
+        items:
+          $ref: '#/definitions/dto.PayloadSchemaLabelRequest'
+        type: array
+    required:
+    - labels
+    type: object
   dto.SensorListResponse:
     properties:
       sensors:
@@ -98,6 +198,43 @@ definitions:
         type: array
       total_count:
         type: integer
+    type: object
+  dto.SensorMetricListResponse:
+    properties:
+      metrics:
+        items:
+          $ref: '#/definitions/dto.SensorMetricResponse'
+        type: array
+      total_count:
+        type: integer
+    type: object
+  dto.SensorMetricRequest:
+    properties:
+      measurement_type:
+        type: string
+      payload_key:
+        type: string
+      unit:
+        type: string
+    required:
+    - measurement_type
+    - payload_key
+    type: object
+  dto.SensorMetricResponse:
+    properties:
+      measurement_type:
+        type: string
+      payload_key:
+        type: string
+      unit:
+        type: string
+    type: object
+  dto.SensorProfileConfigResponse:
+    properties:
+      chirpstack_profile_id:
+        type: string
+      configurable_schema:
+        type: boolean
     type: object
   dto.SensorProfileListResponse:
     properties:
@@ -141,9 +278,13 @@ definitions:
         type: string
       device_profile_id:
         type: string
+      electricity_sensor:
+        type: boolean
       factory_area_id:
         type: string
       factory_id:
+        type: string
+      global_device_profile_id:
         type: string
       id:
         type: string
@@ -152,12 +293,25 @@ definitions:
       name:
         type: string
       production_resource:
-        type: string
+        type: integer
       state:
         type: string
       status:
         type: integer
       updated_at:
+        type: string
+      voltage:
+        type: integer
+    type: object
+  dto.UpdateGatewayRequest:
+    properties:
+      description:
+        type: string
+      factory_area_id:
+        type: string
+      factory_id:
+        type: string
+      name:
         type: string
     type: object
   dto.UpdateSensorRequest:
@@ -166,6 +320,8 @@ definitions:
         type: string
       device_profile_id:
         type: string
+      electricity_sensor:
+        type: boolean
       factory_area_id:
         description: Optional — UUID, omit if service not yet available
         type: string
@@ -174,12 +330,19 @@ definitions:
       name:
         type: string
       production_resource:
-        description: Optional — UUID, omit if service not yet available
-        type: string
+        description: Optional — int64 ERP production resource ID
+        type: integer
+      voltage:
+        type: integer
+    type: object
+  dto.UpsertSensorMetricsRequest:
+    properties:
+      metrics:
+        items:
+          $ref: '#/definitions/dto.SensorMetricRequest'
+        type: array
     required:
-    - device_profile_id
-    - factory_id
-    - name
+    - metrics
     type: object
 host: localhost:8083
 info:
@@ -240,6 +403,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.GatewayListResponse'
+        "401":
+          description: Unauthorized
         "500":
           description: Internal Server Error
       summary: List all gateways
@@ -260,6 +425,8 @@ paths:
           description: Created
         "400":
           description: Bad Request
+        "401":
+          description: Unauthorized
         "500":
           description: Internal Server Error
       summary: Create a gateway
@@ -278,12 +445,16 @@ paths:
           description: No Content
         "400":
           description: Bad Request
+        "401":
+          description: Unauthorized
+        "404":
+          description: Not Found
         "500":
           description: Internal Server Error
       summary: Delete a gateway
       tags:
       - gateways
-    put:
+    patch:
       consumes:
       - application/json
       parameters:
@@ -297,7 +468,201 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/dto.CreateGatewayRequest'
+          $ref: '#/definitions/dto.UpdateGatewayRequest'
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Update a gateway
+      tags:
+      - gateways
+  /measurement-types:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.MeasurementTypeListResponse'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          description: Internal Server Error
+      summary: List active measurement types
+      tags:
+      - measurement-types
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Measurement type payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateMeasurementTypeRequest'
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "409":
+          description: Conflict
+        "500":
+          description: Internal Server Error
+      summary: Create a measurement type
+      tags:
+      - measurement-types
+  /measurement-types/{slug}/deprecate:
+    patch:
+      parameters:
+      - description: Measurement type slug
+        in: path
+        name: slug
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Deprecate a measurement type
+      tags:
+      - measurement-types
+  /measurement-types/all:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.MeasurementTypeListResponse'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          description: Internal Server Error
+      summary: List all measurement types including deprecated
+      tags:
+      - measurement-types
+  /payload-schema/{chirpstack_profile_id}:
+    get:
+      parameters:
+      - description: ChirpStack profile ID
+        in: path
+        name: chirpstack_profile_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.PayloadSchemaListResponse'
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          description: Internal Server Error
+      summary: Get payload schema for a profile
+      tags:
+      - payload-schema
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ChirpStack profile ID
+        in: path
+        name: chirpstack_profile_id
+        required: true
+        type: string
+      - description: Labels to save
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.SavePayloadSchemaLabelsRequest'
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "422":
+          description: Unprocessable Entity
+        "500":
+          description: Internal Server Error
+      summary: Save payload schema labels for a profile
+      tags:
+      - payload-schema
+  /sensor-profile-config/{profile_id}:
+    get:
+      parameters:
+      - description: Chirpstack profile ID
+        in: path
+        name: profile_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.SensorProfileConfigResponse'
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Get sensor profile config
+      tags:
+      - sensor-profile-config
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Chirpstack profile ID
+        in: path
+        name: profile_id
+        required: true
+        type: string
+      - description: Sensor profile config payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.PutSensorProfileConfigRequest'
+      produces:
+      - application/json
       responses:
         "204":
           description: No Content
@@ -305,18 +670,12 @@ paths:
           description: Bad Request
         "500":
           description: Internal Server Error
-      summary: Update a gateway
+      summary: Set sensor profile config
       tags:
-      - gateways
+      - sensor-profile-config
   /sensor-profiles:
     get:
       description: Not authenticated — every user can access this list.
-      parameters:
-      - description: Max number of profiles to return
-        in: query
-        name: limit
-        required: true
-        type: integer
       produces:
       - application/json
       responses:
@@ -324,8 +683,6 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.SensorProfileListResponse'
-        "400":
-          description: Bad Request
         "500":
           description: Internal Server Error
       summary: List all sensor profiles
@@ -333,6 +690,11 @@ paths:
       - sensor-profiles
   /sensors:
     get:
+      parameters:
+      - description: Production resource (ERP ProductionResource ID)
+        in: query
+        name: production_resource_id
+        type: integer
       produces:
       - application/json
       responses:
@@ -342,6 +704,8 @@ paths:
             $ref: '#/definitions/dto.SensorListResponse'
         "400":
           description: Bad Request
+        "401":
+          description: Unauthorized
         "500":
           description: Internal Server Error
       summary: Lists all sensors.
@@ -362,11 +726,72 @@ paths:
           description: Created
         "400":
           description: Bad Request
+        "401":
+          description: Unauthorized
         "500":
           description: Internal Server Error
       summary: Create a sensor
       tags:
       - sensors
+  /sensors/{eui}/metrics:
+    get:
+      parameters:
+      - description: Device EUI
+        in: path
+        name: eui
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.SensorMetricListResponse'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get effective metrics for a sensor
+      tags:
+      - sensor-metrics
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Device EUI
+        in: path
+        name: eui
+        required: true
+        type: string
+      - description: Metrics to save
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpsertSensorMetricsRequest'
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          description: Not Found
+        "422":
+          description: Unprocessable Entity
+        "500":
+          description: Internal Server Error
+      summary: Save metric labels for a sensor
+      tags:
+      - sensor-metrics
   /sensors/{id}:
     delete:
       parameters:
@@ -380,12 +805,16 @@ paths:
           description: No Content
         "400":
           description: Bad Request
+        "401":
+          description: Unauthorized
+        "404":
+          description: Not Found
         "500":
           description: Internal Server Error
       summary: Delete a sensor
       tags:
       - sensors
-    put:
+    patch:
       consumes:
       - application/json
       parameters:
@@ -405,9 +834,37 @@ paths:
           description: No Content
         "400":
           description: Bad Request
+        "401":
+          description: Unauthorized
+        "404":
+          description: Not Found
         "500":
           description: Internal Server Error
       summary: Update a sensor
+      tags:
+      - sensors
+  /sensors/sample-eui:
+    get:
+      parameters:
+      - description: Chirpstack profile ID
+        in: query
+        name: chirpstack_profile_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.SampleEUIResponse'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get a sample device EUI for a Chirpstack profile
       tags:
       - sensors
 swagger: "2.0"

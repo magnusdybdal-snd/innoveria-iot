@@ -1,0 +1,298 @@
+// Package dto contains transport-to-domain mapping helpers for ERP handlers.
+package dto
+
+import (
+	"log/slog"
+	"strconv"
+	"time"
+
+	"innoveria-iot/erp-service/internal/domain"
+	erpdto "innoveria-iot/pkg/erp/dto"
+	"innoveria-iot/pkg/monitor/dto"
+)
+
+// MapMonitorOrderOperationToDomain maps Monitor order operations into domain entities.
+func MapMonitorOrderOperationToDomain(from []dto.ManufacturingOrderOperation, companyID string) []domain.OrderOperation {
+	to := make([]domain.OrderOperation, 0, len(from))
+	receivedAt := time.Now().UTC()
+
+	for _, item := range from {
+		to = append(to, domain.OrderOperation{
+			CompanyID:                companyID,
+			ID:                       item.ID,
+			ProductionResourceID:     item.WorkCenterId,
+			OrderID:                  item.ManufacturingOrderId,
+			PlannedStartDate:         item.PlannedStartDate,
+			PlannedFinishDate:        item.PlannedFinishDate,
+			ActualStartDate:          item.ActualStartDate,
+			ActualFinishDate:         item.ActualFinishDate,
+			Status:                   mapOperationStatus(item.Status),
+			ProductionResourceStatus: mapOperationStatus(item.WorkshopOperationStatus),
+			ReceivedAt:               receivedAt,
+		})
+	}
+
+	return to
+}
+
+// MapMonitorOrderToDomain maps Monitor manufacturing orders into domain entities.
+func MapMonitorOrderToDomain(from []dto.ManufacturingOrder, companyID string) []domain.Order {
+	to := make([]domain.Order, 0, len(from))
+	receivedAt := time.Now().UTC()
+
+	for _, item := range from {
+		to = append(to, domain.Order{
+			CompanyID:         companyID,
+			ID:                item.ID,
+			OrderNumber:       item.OrderNumber,
+			PartID:            item.PartID,
+			PartDescription:   item.PartDescription,
+			PlannedStartDate:  item.PlannedStartDate,
+			PlannedFinishDate: item.PlannedFinishDate,
+			ActualStartDate:   item.ActualStartDate,
+			ActualFinishDate:  item.ActualFinishDate,
+			Status:            mapOrderStatus(item.Status),
+			Priority:          item.Priority,
+			ReceivedAt:        receivedAt,
+		})
+	}
+
+	return to
+}
+
+// MapMonitorOrderReportToDomain maps Monitor operation reportings into domain entities.
+func MapMonitorOrderReportToDomain(from []dto.ManufacturingOrderOperationReporting, companyID string) []domain.OrderReport {
+	to := make([]domain.OrderReport, 0, len(from))
+	receivedAt := time.Now().UTC()
+
+	for _, item := range from {
+		to = append(to, domain.OrderReport{
+			CompanyID:            companyID,
+			ID:                   item.ID,
+			OrderOperationID:     item.OperationId,
+			ProductionResourceID: item.WorkCenterId,
+			Quantity:             item.Quantity,
+			RestQuantity:         item.RestQuantity,
+			Type:                 mapOrderReportType(item.Type),
+			ReportingTimestamp:   item.ReportingTimestamp,
+			ActualReportedDate:   item.ActualReportedDate,
+			ReceivedAt:           receivedAt,
+		})
+	}
+
+	return to
+}
+
+// MapMonitorWorkcenterToDomain maps Monitor work centers into production resources.
+func MapMonitorWorkcenterToDomain(from []dto.WorkCenter, companyID string) []domain.ProductionResource {
+	to := make([]domain.ProductionResource, 0, len(from))
+	receivedAt := time.Now().UTC()
+
+	for _, item := range from {
+		description := item.Description
+		to = append(to, domain.ProductionResource{
+			CompanyID:   companyID,
+			ID:          item.ID,
+			Number:      item.Number,
+			Description: description,
+			Type:        mapWorkCenterType(item.Type),
+			ReceivedAt:  receivedAt,
+		})
+	}
+
+	return to
+}
+
+// MapProductionResourceDomainToDTO maps domain production resources into shared ERP DTOs.
+func MapProductionResourceDomainToDTO(from []domain.ProductionResource) []erpdto.ProductionResource {
+	to := make([]erpdto.ProductionResource, len(from))
+	for i, item := range from {
+		to[i] = MapProductionResourceDomainToDTOSingle(item)
+	}
+
+	return to
+}
+
+// MapProductionResourceDomainToDTOSingle maps domain production resource into a shared ERP DTO (single instance)
+func MapProductionResourceDomainToDTOSingle(from domain.ProductionResource) erpdto.ProductionResource {
+	return erpdto.ProductionResource{
+		ID:          from.ID,
+		Number:      from.Number,
+		Description: from.Description,
+		Type:        erpdto.WorkCenterType(from.Type),
+		ReceivedAt:  from.ReceivedAt,
+	}
+}
+
+// MapOrderSummaryDomainToDTO maps domain order summaries into shared ERP DTOs.
+func MapOrderSummaryDomainToDTO(from []domain.OrderSummary) []erpdto.OrderSummary {
+	to := make([]erpdto.OrderSummary, len(from))
+	for i, item := range from {
+		to[i] = erpdto.OrderSummary{
+			ID:          item.ID,
+			OrderNumber: item.OrderNumber,
+		}
+	}
+
+	return to
+}
+
+// MapOrderAggregateDomainToDTO maps a domain order aggregate into shared ERP DTO.
+func MapOrderAggregateDomainToDTO(from domain.OrderAggregate) erpdto.OrderAggregate {
+	orderDTO := erpdto.Order{
+		ID:                from.Order.ID,
+		CompanyID:         from.Order.CompanyID,
+		OrderNumber:       from.Order.OrderNumber,
+		PartID:            from.Order.PartID,
+		PartDescription:   from.Order.PartDescription,
+		PlannedStartDate:  from.Order.PlannedStartDate,
+		PlannedFinishDate: from.Order.PlannedFinishDate,
+		ActualStartDate:   from.Order.ActualStartDate,
+		ActualFinishDate:  from.Order.ActualFinishDate,
+		Status:            erpdto.OrderStatus(from.Order.Status),
+		Priority:          from.Order.Priority,
+		ReceivedAt:        from.Order.ReceivedAt,
+	}
+
+	operations := make([]erpdto.OrderOperationWithReports, len(from.Operations))
+	for i, item := range from.Operations {
+		reports := make([]erpdto.OrderReport, len(item.Reports))
+		for j, report := range item.Reports {
+			reports[j] = erpdto.OrderReport{
+				ID:                   report.ID,
+				OrderOperationID:     report.OrderOperationID,
+				ProductionResourceID: report.ProductionResourceID,
+				Quantity:             report.Quantity,
+				RestQuantity:         report.RestQuantity,
+				Type:                 erpdto.OrderReportType(report.Type),
+				ReportingTimestamp:   report.ReportingTimestamp,
+				ActualReportedDate:   report.ActualReportedDate,
+				ReceivedAt:           report.ReceivedAt,
+			}
+		}
+
+		operations[i] = erpdto.OrderOperationWithReports{
+			ID:                       item.Operation.ID,
+			ProductionResourceID:     item.Operation.ProductionResourceID,
+			OrderID:                  item.Operation.OrderID,
+			PlannedStartDate:         item.Operation.PlannedStartDate,
+			PlannedFinishDate:        item.Operation.PlannedFinishDate,
+			ActualStartDate:          item.Operation.ActualStartDate,
+			ActualFinishDate:         item.Operation.ActualFinishDate,
+			Status:                   erpdto.OperationStatus(item.Operation.Status),
+			ProductionResourceStatus: erpdto.OperationStatus(item.Operation.ProductionResourceStatus),
+			ReceivedAt:               item.Operation.ReceivedAt,
+			Reports:                  reports,
+		}
+	}
+
+	resources := MapProductionResourceDomainToDTO(from.ProductionResources)
+
+	return erpdto.OrderAggregate{
+		Order:               orderDTO,
+		Operations:          operations,
+		ProductionResources: resources,
+	}
+}
+
+// mapOrderStatus converts Monitor order status values to domain order statuses.
+func mapOrderStatus(status int) domain.OrderStatus {
+	switch status {
+	case 0:
+		return domain.OrderStatusNotInitialized
+	case 1:
+		return domain.OrderStatusRegistered
+	case 2:
+		return domain.OrderStatusPrinted
+	case 3:
+		return domain.OrderStatusStarted
+	case 4:
+		return domain.OrderStatusFinished
+	case 5:
+		return domain.OrderStatusPostCalculated
+	case 6:
+		return domain.OrderStatusDelivered
+	case 7:
+		return domain.OrderStatusHistorical
+	default:
+		slog.Warn("unknown monitor order status, preserving raw value", "status", status)
+		return domain.OrderStatus(strconv.Itoa(status))
+	}
+}
+
+// mapOperationStatus converts Monitor operation status values to domain operation statuses.
+func mapOperationStatus(status int) domain.OperationStatus {
+	switch status {
+	case 0:
+		return domain.OperationStatusNone
+	case 1:
+		return domain.OperationStatusStarted
+	case 2:
+		return domain.OperationStatusPartiallyShipped
+	case 3:
+		return domain.OperationStatusFullyShipped
+	case 4:
+		return domain.OperationStatusPartiallyReported
+	case 5:
+		return domain.OperationStatusFinished
+	default:
+		slog.Warn("unknown monitor operation status, preserving raw value", "status", status)
+		return domain.OperationStatus(strconv.Itoa(status))
+	}
+}
+
+// mapOrderReportType converts Monitor report type values to domain report types.
+func mapOrderReportType(reportType int) domain.OrderReportType {
+	switch reportType {
+	case 0:
+		return domain.OrderReportTypeRegular
+	case 1:
+		return domain.OrderReportTypeSendToSubcontractor
+	case 2:
+		return domain.OrderReportTypeReceiveFromSubcontractor
+	case 3:
+		return domain.OrderReportTypeCancelRest
+	case 4:
+		return domain.OrderReportTypeMaterialOnly
+	case 5:
+		return domain.OrderReportTypeSubcontractorInvoicePrice
+	case 6:
+		return domain.OrderReportTypeRecordingTerminal
+	case 7:
+		return domain.OrderReportTypeAdjustRecording
+	case 8:
+		return domain.OrderReportTypeUndoRegular
+	case 9:
+		return domain.OrderReportTypeUndoRecordingTerminal
+	case 10:
+		return domain.OrderReportTypeUndoAdjustRecording
+	case 11:
+		return domain.OrderReportTypeSubcontractorPosteriorReport
+	case 12:
+		return domain.OrderReportTypeSubcontractorCostsManual
+	case 13:
+		return domain.OrderReportTypePickWorkCenter
+	default:
+		slog.Warn("unknown monitor order report type, preserving raw value", "type", reportType)
+		return domain.OrderReportType(strconv.Itoa(reportType))
+	}
+}
+
+// mapWorkCenterType converts Monitor work center type values to domain resource types.
+func mapWorkCenterType(workCenterType int) domain.WorkCenterType {
+	switch workCenterType {
+	case 0:
+		return domain.WorkCenterTypeMachine
+	case 1:
+		return domain.WorkCenterTypeManualWork
+	case 2:
+		return domain.WorkCenterTypeSubContract
+	case 3:
+		return domain.WorkCenterTypePool
+	case 4:
+		return domain.WorkCenterTypePick
+	default:
+		slog.Warn("unknown monitor work center type, preserving raw value", "type", workCenterType)
+		return domain.WorkCenterType(strconv.Itoa(workCenterType))
+	}
+}

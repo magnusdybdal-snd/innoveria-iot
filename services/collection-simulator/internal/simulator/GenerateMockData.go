@@ -33,10 +33,17 @@ func GenerateMockEvent(deviceEUI string) domain.ChirpstackUpEvent {
 			DeviceClass:       "A",
 			Tags:              map[string]string{},
 		},
-		Object: domain.SensorObject{
-			Temperature: 20 + rand.Float64()*10,
-			Humidity:    40 + rand.Float64()*30,
-			Battery:     3.5 + rand.Float64()*0.5,
-		},
+		Object: buildSensorObject(deviceEUI),
 	}
+}
+
+func buildSensorObject(deviceEUI string) domain.SensorObject {
+	obj := domain.SensorObject{Battery: 3.5 + rand.Float64()*0.5}
+	if deviceEUI == "b000000000000004" {
+		obj.ElectricCurrent = 2.0 + rand.Float64()*8.0 // 2–10 A
+	} else {
+		obj.Temperature = 20 + rand.Float64()*10
+		obj.Humidity = 40 + rand.Float64()*30
+	}
+	return obj
 }

@@ -9,7 +9,8 @@ type GatewayResponse struct {
 	Name          string  `json:"name"`
 	Description   *string `json:"description"`
 	State         string  `json:"state"`
-	FactoryAreaID *string `json:"factory_area_id"`
+	FactoryID     string  `json:"factory_id"`
+	FactoryAreaID string  `json:"factory_area_id"`
 	Status        int     `json:"status"`
 	LastSeenAt    string  `json:"last_seen_at"`
 	CreatedAt     string  `json:"created_at"`
@@ -24,7 +25,17 @@ type GatewayListResponse struct {
 
 // CreateGatewayRequest contains the fields required to register a new gateway.
 type CreateGatewayRequest struct {
-	CompanyId  string `json:"company_id"    binding:"required"`
-	GatewayEUI string `json:"gateway_eui"   binding:"required"`
-	Name       string `json:"name"          binding:"required"`
+	GatewayEUI    string  `json:"gateway_eui" binding:"required"`
+	Name          string  `json:"name" binding:"required"`
+	Description   *string `json:"description"`
+	FactoryID     string  `json:"factory_id" binding:"required"`
+	FactoryAreaID string  `json:"factory_area_id" binding:"required"`
+}
+
+// UpdateGatewayRequest represents the fields a caller can update on a gateway.
+type UpdateGatewayRequest struct {
+	Name          *string `json:"name"`
+	Description   *string `json:"description"`
+	FactoryID     *string `json:"factory_id"`
+	FactoryAreaID *string `json:"factory_area_id"`
 }

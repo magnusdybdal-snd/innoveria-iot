@@ -45,6 +45,7 @@ tmp/
 docker-data/
 volumes/
 data/
+backups/
 
 docker-compose.override.yml
 
@@ -58,3 +59,8 @@ docker-compose.override.yml
 # Claude
 .claude/
 CLAUDE.md
+
+# Opencode
+.ocr/
+.opencode/
+AGENTS.md

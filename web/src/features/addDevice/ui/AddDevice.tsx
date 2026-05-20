@@ -6,6 +6,8 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import Typography from "@mui/material/Typography";
+
+import { ELECTRICITY_SENSOR, VOLTAGE } from "@shared/const";
 import { DeviceFormFields } from "@shared/ui/DeviceFormFields";
 
 export interface AddDeviceProps {
@@ -14,13 +16,21 @@ export interface AddDeviceProps {
   addOptions: string[];
   profileOptions?: { id: string; name: string }[];
   factoryOptions?: { id: string; name: string }[];
+  factoryAreaOptions?: { id: string; name: string }[];
+  productionResourceOptions?: { id: string; name: string }[];
+  voltageOptions?: { id: string; name: string }[];
+  onFactoryChange?: (factoryId: string) => void;
   onAdd: (sensor: {
     name: string;
     deviceEui: string;
+    description: string;
+    electricitySensor: boolean;
     factory: string;
-    machine: string;
+    factoryArea: string;
+    productionResource: number | null;
     appKey: string;
     senProf: string;
+    voltage: number | null;
   }) => Promise<void>;
   submitError?: string | null;
 }
@@ -28,7 +38,7 @@ export interface AddDeviceProps {
 const inputHints: Record<string, string> = {
   Name: "Enter device name",
   DeviceEUI: "16 characters (hex)",
-  Machine: "Enter machine name",
+  ProductionResource: "Enter production resource",
   "Application key": "32 characters (hex)",
 };
 
@@ -55,6 +65,10 @@ export function AddDevice(props: AddDeviceProps) {
     addOptions,
     profileOptions = [],
     factoryOptions = [],
+    factoryAreaOptions = [],
+    onFactoryChange,
+    productionResourceOptions = [],
+    voltageOptions = [],
     submitError,
   } = props;
   const [values, setValues] = useState<Record<string, string>>({});
@@ -62,13 +76,24 @@ export function AddDevice(props: AddDeviceProps) {
   const [lengthErrors, setLengthErrors] = useState<Record<string, boolean>>({});
 
   const handleClose = () => {
+    setValues({});
+    setFillError(false);
+    setLengthErrors({});
     onClose();
   };
 
   const handleSafeClose = () => {
-    const allFilled = addOptions.every(
-      (option) => (values[option] ?? "").trim() !== "",
-    );
+    const electricityEnabled = values[ELECTRICITY_SENSOR] === "true";
+
+    const allFilled = addOptions
+      .filter(
+        (option) =>
+          option !== ELECTRICITY_SENSOR &&
+          option !== "Production resource" &&
+          option !== "Description" &&
+          (option !== VOLTAGE || electricityEnabled),
+      )
+      .every((option) => (values[option] ?? "").trim() !== "");
 
     const newLengthErrors = {
       DeviceEUI: (values["DeviceEUI"] ?? "").length !== 16,
@@ -88,21 +113,29 @@ export function AddDevice(props: AddDeviceProps) {
       return;
     }
 
+    const productionResourceRaw = (values["Production resource"] ?? "").trim();
+    const productionResourceParsed = parseInt(productionResourceRaw, 10);
+
     props
       .onAdd({
         name: values["Name"],
         deviceEui: values["DeviceEUI"],
+        description: values["Description"] ?? "",
+        electricitySensor: values["Electricity sensor"] === "true",
         factory: values["Factory"],
-        machine: values["Machine"],
+        factoryArea: values["Factory area"],
+        productionResource:
+          productionResourceRaw !== "" ? productionResourceParsed : null,
         appKey: values["Application key"],
         senProf: values["Sensor profile"],
+        voltage: electricityEnabled ? Number(values["Voltage"]) : null,
       })
       .then(() => {
         setValues({});
-      });
-
-    setFillError(false);
-    setLengthErrors({});
+        setFillError(false); // only clear on success
+        setLengthErrors({});
+      })
+      .catch(() => {});
   };
 
   return (
@@ -129,12 +162,24 @@ export function AddDevice(props: AddDeviceProps) {
           values={values}
           profileOptions={profileOptions}
           factoryOptions={factoryOptions}
+          factoryAreaOptions={factoryAreaOptions}
+          productionResourceOptions={productionResourceOptions}
+          voltageOptions={voltageOptions}
           lengthErrors={lengthErrors}
           lengthErrorMessages={inputLengthError}
           inputHints={inputHints}
-          onChange={(option, value) =>
-            setValues((prev) => ({ ...prev, [option]: value }))
-          }
+          onChange={(option, value) => {
+            if (option === "Factory") {
+              setValues((prev) => ({
+                ...prev,
+                Factory: value,
+                "Factory area": "",
+              }));
+              onFactoryChange?.(value);
+            } else {
+              setValues((prev) => ({ ...prev, [option]: value }));
+            }
+          }}
         />
         {fillError && (
           <Typography color="error" mt={1}>

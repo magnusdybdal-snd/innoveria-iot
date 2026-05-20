@@ -1,8 +1,10 @@
-// Package env TODO(@vinjar): add proper documentation.
+// Package env provides helpers for reading environment variables with fallbacks and type conversion.
 package env
 
 import (
+	"fmt"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -12,6 +14,28 @@ import (
 func Get(key, fallback string) string {
 	if v := os.Getenv(key); v != "" {
 		return v
+	}
+	return fallback
+}
+
+// Required will return error if env value is not set
+// used for secrets loading
+func Required(key string) (string, error) {
+	v := strings.TrimSpace(os.Getenv(key))
+	if v == "" {
+		return "", fmt.Errorf("missing required env: %s", key)
+	}
+	return v, nil
+}
+
+// GetBool will fallback if the value is missing or not a bool
+func GetBool(key string, fallback bool) bool {
+	if v := os.Getenv(key); v != "" {
+		boolVal, err := strconv.ParseBool(v)
+		if err != nil {
+			return fallback
+		}
+		return boolVal
 	}
 	return fallback
 }

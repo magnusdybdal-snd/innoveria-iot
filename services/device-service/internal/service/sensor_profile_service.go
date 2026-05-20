@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"strings"
 
 	"innoveria-iot/device-service/internal/chirpstackrest"
 	"innoveria-iot/device-service/internal/chirpstackrest/dto"
@@ -23,15 +24,18 @@ func NewSensorProfileService(cc *chirpstackrest.Client) *SensorProfileServiceImp
 	}
 }
 
-// GetAll retrieves all available sensor profiles from Chirpstack up to the given limit.
-func (s *SensorProfileServiceImpl) GetAll(ctx context.Context, limit int) ([]domain.SensorProfile, error) {
-	resp, err := s.cc.GetAllSensorProfiles(ctx, limit)
+// GetAll retrieves all available EU868 sensor profiles from Chirpstack.
+// Profiles using LoRaWAN 1.1 (MACVersion prefix "LORAWAN_1_1") are excluded.
+func (s *SensorProfileServiceImpl) GetAll(ctx context.Context) ([]domain.SensorProfile, error) {
+	resp, err := s.cc.GetAllSensorProfiles(ctx)
 	if err != nil {
 		return nil, err
 	}
 	var result []domain.SensorProfile
-	for _, sp := range resp.Result {
-		result = append(result, mappers.MapChirpstackDeviceProfilesToDomain(sp))
+	for _, sp := range resp {
+		if sp.Region == "EU868" && !strings.HasPrefix(sp.MACVersion, "LORAWAN_1_1") {
+			result = append(result, mappers.MapChirpstackDeviceProfilesToDomain(sp))
+		}
 	}
 
 	return result, nil

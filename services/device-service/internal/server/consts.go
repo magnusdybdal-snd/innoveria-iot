@@ -35,4 +35,25 @@ const (
 	COMPANY_CONFIG_ROUTE = DEVICE_ROUTE + "/company-config"
 	// COMPANY_CONFIG_ROUTE_ID is the route for single company config endpoints, with a {companyID} path parameter.
 	COMPANY_CONFIG_ROUTE_ID = DEVICE_ROUTE + "/company-config/{companyID}"
+
+	// MEASUREMENT_TYPE_ROUTE is the route for measurement type collection endpoints.
+	MEASUREMENT_TYPE_ROUTE = DEVICE_ROUTE + "/measurement-types"
+	// MEASUREMENT_TYPE_ROUTE_ALL is the route for listing all measurement types including deprecated.
+	MEASUREMENT_TYPE_ROUTE_ALL = DEVICE_ROUTE + "/measurement-types/all"
+	// MEASUREMENT_TYPE_ROUTE_DEPRECATE is the route for deprecating a single measurement type.
+	MEASUREMENT_TYPE_ROUTE_DEPRECATE = DEVICE_ROUTE + "/measurement-types/{slug}/deprecate"
+
+	// PAYLOAD_SCHEMA_ROUTE is the route for payload schema endpoints.
+	PAYLOAD_SCHEMA_ROUTE = DEVICE_ROUTE + "/payload-schema"
+	// PAYLOAD_SCHEMA_ROUTE_PROFILE is the route for a single profile's payload schema.
+	PAYLOAD_SCHEMA_ROUTE_PROFILE = DEVICE_ROUTE + "/payload-schema/{chirpstack_profile_id}"
+
+	// SENSOR_METRICS_ROUTE is the route for sensor metric endpoints.
+	SENSOR_METRICS_ROUTE = DEVICE_ROUTE + "/sensors/{eui}/metrics"
+
+	// SENSOR_SAMPLE_EUI_ROUTE is the route for the sample EUI endpoint.
+	SENSOR_SAMPLE_EUI_ROUTE = DEVICE_ROUTE + "/sensors/sample-eui"
+
+	// SENSOR_PROFILE_CONFIG_ROUTE_ID is the route for single sensor profile config endpoints, with a {profile_id} path parameter.
+	SENSOR_PROFILE_CONFIG_ROUTE_ID = DEVICE_ROUTE + "/sensor-profile-config/{profile_id}"
 )

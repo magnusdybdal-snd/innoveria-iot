@@ -5,23 +5,61 @@ VALUES ('a0000000-0000-0000-0000-000000000001', 'd0000000-0000-0000-0000-0000000
 ON CONFLICT DO NOTHING;
 
 -- Gateway (matches chirpstack seed.)
-INSERT INTO "device"."gateway" ("gateway_id", "company_id", "gateway_eui", "name", "state")
-VALUES ('b0000000-0000-0000-0000-000000000001', 'a0000000-0000-0000-0000-000000000001', 'a000000000000001', 'Dev Gateway', 'ACTIVE')
+INSERT INTO "device"."gateway" ("gateway_id", "company_id", "gateway_eui", "name", "state", "factory_id", "factory_area_id")
+VALUES ('b0000000-0000-0000-0000-000000000001', 'a0000000-0000-0000-0000-000000000001', 'a000000000000001', 'Dev Gateway', 'ACTIVE', 'f1000000-0000-0000-0000-000000000001', 'a1000000-0000-0000-0000-000000000001')
+ON CONFLICT DO NOTHING;
+
+-- Measurement types (vocabulary required by sensor_metric and payload_schema FKs)
+INSERT INTO "device"."measurement_type" ("slug", "display_name", "description", "default_unit")
+VALUES
+('temperature',       'Temperature',        'Ambient or surface temperature',    '°C'),
+('humidity',          'Relative Humidity',  'Relative humidity percentage',      '%'),
+('electric_current',  'Electric Current',   'RMS current draw',                  'A'),
+('voltage',           'Voltage',            'Line or supply voltage',            'V')
 ON CONFLICT DO NOTHING;
 
 -- Sensors (matches chirpstack seed.)
-INSERT INTO "device"."sensor" ("sensor_id", "company_id", "device_eui", "app_key", "factory_id", "name", "state", "chirpstack_profile_id")
+-- Sensor 1: profile A, has sensor_metric rows  → tests sensor-level override path
+-- Sensor 2: profile A, no sensor_metric rows   → tests fallback to payload_schema
+INSERT INTO "device"."sensor" ("sensor_id", "company_id", "device_eui", "app_key", "factory_id", "factory_area_id", "name", "state", "chirpstack_profile_id", "global_chirpstack_profile_id")
 VALUES
-('c0000000-0000-0000-0000-000000000001', 'a0000000-0000-0000-0000-000000000001', 'b000000000000001', '00000000000000000000000000000001', 'f1000000-0000-0000-0000-000000000001', 'Dev Sensor 1', 'ACTIVE', 'f0000000-0000-0000-0000-000000000001'),
-('c0000000-0000-0000-0000-000000000002', 'a0000000-0000-0000-0000-000000000001', 'b000000000000002', '00000000000000000000000000000002', 'f1000000-0000-0000-0000-000000000001', 'Dev Sensor 2', 'ACTIVE', 'f0000000-0000-0000-0000-000000000001'),
-('c0000000-0000-0000-0000-000000000003', 'a0000000-0000-0000-0000-000000000001', 'b000000000000003', '00000000000000000000000000000003', 'f1000000-0000-0000-0000-000000000001', 'Dev Sensor 3', 'ACTIVE', 'f0000000-0000-0000-0000-000000000001')
+('c0000000-0000-0000-0000-000000000001', 'a0000000-0000-0000-0000-000000000001', 'b000000000000001', '00000000000000000000000000000001', 'f1000000-0000-0000-0000-000000000001', 'a1000000-0000-0000-0000-000000000001', 'Dev Sensor 1 (override)',      'ACTIVE', 'f0000000-0000-0000-0000-000000000001', 'f0000000-0000-0000-0000-000000000001'),
+('c0000000-0000-0000-0000-000000000002', 'a0000000-0000-0000-0000-000000000001', 'b000000000000002', '00000000000000000000000000000002', 'f1000000-0000-0000-0000-000000000001', 'a1000000-0000-0000-0000-000000000002', 'Dev Sensor 2 (fallback)',      'ACTIVE', 'f0000000-0000-0000-0000-000000000001', 'f0000000-0000-0000-0000-000000000001'),
+('c0000000-0000-0000-0000-000000000003', 'a0000000-0000-0000-0000-000000000001', 'b000000000000003', '00000000000000000000000000000003', 'f1000000-0000-0000-0000-000000000001', 'a1000000-0000-0000-0000-000000000002', 'Dev Sensor 3 (unconfigured)', 'ACTIVE', 'f0000000-0000-0000-0000-000000000002', 'f0000000-0000-0000-0000-000000000001'),
+('c0000000-0000-0000-0000-000000000004', 'a0000000-0000-0000-0000-000000000001', 'b000000000000004', '00000000000000000000000000000004', 'f1000000-0000-0000-0000-000000000001', 'a1000000-0000-0000-0000-000000000001', 'Dev Sensor 4 (electricity)',  'ACTIVE', 'f0000000-0000-0000-0000-000000000001', 'f0000000-0000-0000-0000-000000000001')
 ON CONFLICT DO NOTHING;
 
+UPDATE "device"."sensor"
+SET "electricity_sensor" = true, "voltage" = 230
+WHERE "sensor_id" = 'c0000000-0000-0000-0000-000000000004';
 
--- Sensor metrics
-INSERT INTO "device"."sensor_metric" ("sensor_id", "measurement_type", "unit")
+-- Map sensors to production resources (matches mock ERP data in context-service)
+-- Resource 1 (WC-101): sensors 1 and 2 (temperature/humidity)
+UPDATE "device"."sensor"
+SET "production_resource_id" = 1
+WHERE "sensor_id" IN (
+    'c0000000-0000-0000-0000-000000000001',
+    'c0000000-0000-0000-0000-000000000002'
+);
+
+-- Resource 4 (WC-104): sensor 4 (electricity)
+UPDATE "device"."sensor"
+SET "production_resource_id" = 4
+WHERE "sensor_id" = 'c0000000-0000-0000-0000-000000000004';
+
+-- Payload schema for profile A (f0000000-0000-0000-0000-000000000001)
+-- Fully labeled — used by sensor 2 fallback path
+INSERT INTO "device"."payload_schema" ("chirpstack_profile_id", "payload_key", "measurement_type", "unit")
 VALUES
-('c0000000-0000-0000-0000-000000000001', 'electric_current', 'A'),
-('c0000000-0000-0000-0000-000000000002', 'temperature', 'C'),
-('c0000000-0000-0000-0000-000000000003', 'humidity', '%')
+('f0000000-0000-0000-0000-000000000001', 'temperature', 'temperature',      '°C'),
+('f0000000-0000-0000-0000-000000000001', 'humidity',    'humidity',         '%')
+ON CONFLICT DO NOTHING;
+
+-- Sensor metrics for sensor 1 only (override path)
+-- payload_key maps to the raw JSON field names sent by the simulator
+INSERT INTO "device"."sensor_metric" ("sensor_id", "payload_key", "measurement_type", "unit")
+VALUES
+('c0000000-0000-0000-0000-000000000001', 'temperature',     'temperature',     '°C'),
+('c0000000-0000-0000-0000-000000000001', 'humidity',        'humidity',        '%'),
+('c0000000-0000-0000-0000-000000000004', 'electric_current','electric_current','A')
 ON CONFLICT DO NOTHING;

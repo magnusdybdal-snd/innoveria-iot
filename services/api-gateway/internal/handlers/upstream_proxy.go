@@ -7,7 +7,7 @@ import (
 	"innoveria-iot/api-gateway/internal/proxy"
 )
 
-// NewUpstreamProxy TODO(@vinjar): add proper documentation.
+// NewUpstreamProxy creates an http.Handler that proxies requests to the given upstream base URL.
 func NewUpstreamProxy(baseURL string) (http.Handler, error) {
 	base, err := url.Parse(baseURL)
 	if err != nil {

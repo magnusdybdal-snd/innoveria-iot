@@ -11,7 +11,7 @@ export interface CompanyApiResponse {
 }
 
 export interface CompanyListApiResponse {
-  totalCount: number; // TODO: check id backens uses batching of max fetched in one fetch - if so update logic to fetch again. (pagination)
+  totalCount: number;
   companies: CompanyApiResponse[];
 }
 

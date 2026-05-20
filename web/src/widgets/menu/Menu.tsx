@@ -5,24 +5,28 @@ import {
   type ReactNode,
 } from "react";
 
-import innLogoDark from "@assets/innoveriaDark.png";
-import innLogoLight from "@assets/innoveriaLight.png";
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
+import AssignmentIcon from "@mui/icons-material/Assignment";
 import BusinessIcon from "@mui/icons-material/Business";
+import CorporateFareIcon from "@mui/icons-material/CorporateFare";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import FactoryIcon from "@mui/icons-material/Factory";
 import HomeIcon from "@mui/icons-material/Home";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import MemoryIcon from "@mui/icons-material/Memory";
+import NoteAltIcon from "@mui/icons-material/NoteAlt";
 import PeopleIcon from "@mui/icons-material/People";
 import RouterIcon from "@mui/icons-material/Router";
+import RuleIcon from "@mui/icons-material/Rule";
+import SensorsIcon from "@mui/icons-material/Sensors";
 import SettingsRemoteIcon from "@mui/icons-material/SettingsRemote";
 import SpaceDashboardIcon from "@mui/icons-material/SpaceDashboard";
+import StraightenIcon from "@mui/icons-material/Straighten";
 import SummarizeIcon from "@mui/icons-material/Summarize";
 import Accordion from "@mui/material/Accordion";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import AccordionSummary from "@mui/material/AccordionSummary";
-import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Divider from "@mui/material/Divider";
@@ -36,12 +40,15 @@ import ListItemText from "@mui/material/ListItemText";
 import type { SvgIconProps } from "@mui/material/SvgIcon";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
+import { Link as RouterLink, useLocation } from "react-router";
+
+import { useCurrentUser } from "@app/providers/useCurrentUser";
+import innLogoDark from "@assets/innoveriaDark.png";
+import innLogoLight from "@assets/innoveriaLight.png";
+import { postLogout } from "@entities/user";
 import MainPages from "@shared/config/navigation/mainPageList";
 import SubPages from "@shared/config/navigation/subPageList";
 import { ThemeContext } from "@shared/config/theme/themeContext";
-import { Link as RouterLink, useLocation } from "react-router";
-
-import viteLogo from "/vite.svg";
 
 interface MenuProps {
   children: ReactNode;
@@ -49,6 +56,8 @@ interface MenuProps {
 
 const pageSymbol: Map<string, ComponentType<SvgIconProps>> = new Map([
   ["Home", HomeIcon],
+  ["Organization", CorporateFareIcon],
+  ["Admin", AdminPanelSettingsIcon],
   ["Dashboard views", SpaceDashboardIcon],
   ["Devices", MemoryIcon],
   ["Gateways", RouterIcon],
@@ -56,7 +65,17 @@ const pageSymbol: Map<string, ComponentType<SvgIconProps>> = new Map([
   ["Reports", SummarizeIcon],
   ["Companies", BusinessIcon],
   ["Factories", FactoryIcon],
+  ["Measurement types", StraightenIcon],
+  ["Payload schema", NoteAltIcon],
   ["Users", PeopleIcon],
+  ["Context rules", RuleIcon],
+  ["Sensor Data", SensorsIcon],
+  ["Context", AssignmentIcon],
+]);
+
+const roles: Map<string, string> = new Map([
+  ["FACTORY_WORKER", "Factory worker"],
+  ["PLATFORM_ADMIN", "Platform admin"],
 ]);
 
 /**
@@ -70,6 +89,8 @@ export default function Menu(menuProps: MenuProps) {
   const { mode, toggle } = useContext(ThemeContext);
   const location = useLocation();
   const [expanded, setExpanded] = useState<string[]>([]);
+  const { user } = useCurrentUser();
+  const isAdmin = user?.role === "PLATFORM_ADMIN";
 
   const handleAccordionChange =
     (category: string) =>
@@ -99,6 +120,9 @@ export default function Menu(menuProps: MenuProps) {
               display: "none", // Chrome, Safari, Edge
             },
             scrollbarWidth: "none", // Firefox
+
+            backgroundColor: "primary.light",
+            color: "primary.main",
           },
         }}
         variant="permanent"
@@ -122,17 +146,15 @@ export default function Menu(menuProps: MenuProps) {
           {/* User info */}
           <ListItem>
             <div className="flex items-center gap-3 p-4">
-              <Avatar
-                alt="User"
-                src={viteLogo}
-                style={{
-                  width: "60px",
-                  height: "auto",
-                }}
-              />
               <div>
-                <Typography variant="h4">Username</Typography>
-                <Typography variant="h6">email@email.com</Typography>
+                {user ? (
+                  <>
+                    <Typography variant="h6">{user.email}</Typography>
+                    <Typography variant="h6">{roles.get(user.role)}</Typography>
+                  </>
+                ) : (
+                  <Typography variant="h6">Loading...</Typography>
+                )}
               </div>
               <Divider
                 sx={{
@@ -144,6 +166,7 @@ export default function Menu(menuProps: MenuProps) {
           </ListItem>
           {/* Menu navigation */}
           {Array.from(MainPages.entries()).map(([category, page]) => {
+            if (category === "Admin" && !isAdmin) return null;
             const subPagesForCategory = SubPages.get(category) ?? [];
             const isCategoryActive = subPagesForCategory.some(
               (sub) => location.pathname === sub.path,
@@ -244,14 +267,19 @@ export default function Menu(menuProps: MenuProps) {
         </List>
         <Box sx={{ p: 2, display: "flex", justifyContent: "space-between" }}>
           <Button
-            component={RouterLink}
-            to="/Login"
+            onClick={() => {
+              postLogout().finally(() => {
+                localStorage.removeItem("access_token");
+                window.location.replace("/Login");
+              });
+            }}
             variant="outlined"
             sx={{
               backgroundColor: "secondary.main",
               color: "white",
               "&:hover": {
                 backgroundColor: "secondary.dark",
+                color: "white",
               },
               borderRadius: 2,
               margin: 0,

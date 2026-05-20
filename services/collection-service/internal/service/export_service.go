@@ -1,0 +1,67 @@
+package service
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	"time"
+
+	"innoveria-iot/collection-service/internal/domain"
+)
+
+// ExportServiceImpl implements domain.ExportService.
+type ExportServiceImpl struct {
+	measurementSvc domain.MeasurementService
+	deviceClient   domain.DeviceClient
+}
+
+// NewExportService creates a new ExportServiceImpl.
+func NewExportService(measurementSvc domain.MeasurementService, deviceClient domain.DeviceClient) *ExportServiceImpl {
+	return &ExportServiceImpl{
+		measurementSvc: measurementSvc,
+		deviceClient:   deviceClient,
+	}
+}
+
+// GetExportData fetches measurements and sensor metric mappings, then returns structured
+// export data ready for CSV rendering. Configured metric keys appear first (with typed
+// headers), followed by any unconfigured payload keys found in the measurements.
+// If the device service returns 404 (no metrics configured), the export proceeds using
+// raw payload keys as column headers.
+func (s *ExportServiceImpl) GetExportData(ctx context.Context, companyID, deviceEUI string, from, to time.Time) (domain.ExportData, error) {
+	metrics, err := s.deviceClient.GetSensorMetrics(ctx, deviceEUI)
+	if err != nil && !errors.Is(err, domain.ErrNotFound) {
+		return domain.ExportData{}, fmt.Errorf("get sensor metrics: %w", err)
+	}
+
+	measurements, err := s.measurementSvc.GetByTimeRange(ctx, companyID, deviceEUI, from, to)
+	if err != nil {
+		return domain.ExportData{}, fmt.Errorf("get measurements: %w", err)
+	}
+
+	metricHeader := make(map[string]string, len(metrics))
+	for _, m := range metrics {
+		header := m.MeasurementType
+		if m.Unit != nil && *m.Unit != "" {
+			header += " (" + *m.Unit + ")"
+		}
+		metricHeader[m.PayloadKey] = header
+	}
+
+	seen := make(map[string]bool, len(metrics))
+	columns := make([]domain.ExportColumn, 0, len(metrics))
+	for _, m := range metrics {
+		seen[m.PayloadKey] = true
+		columns = append(columns, domain.ExportColumn{PayloadKey: m.PayloadKey, Header: metricHeader[m.PayloadKey]})
+	}
+	for _, meas := range measurements {
+		for key := range meas.Payload {
+			if !seen[key] {
+				seen[key] = true
+				columns = append(columns, domain.ExportColumn{PayloadKey: key, Header: key})
+			}
+		}
+	}
+
+	return domain.ExportData{Columns: columns, Measurements: measurements}, nil
+}

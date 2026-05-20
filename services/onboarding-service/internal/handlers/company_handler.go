@@ -7,11 +7,12 @@ import (
 
 	"innoveria-iot/onboarding-service/internal/domain"
 	"innoveria-iot/onboarding-service/internal/handlers/dto"
+	"innoveria-iot/pkg/authctx"
 	"innoveria-iot/pkg/httpclient"
 	"innoveria-iot/pkg/json"
 )
 
-// PostCompany onboards a new company by running the creation SAGA.
+// PostCompany onboards a new company by running the creation SAGA. Admin only.
 //
 // @Summary		Onboard a new company
 // @Tags		onboarding
@@ -19,12 +20,24 @@ import (
 // @Param		body	body	dto.CreateCompanyRequest	true	"Company payload"
 // @Success		201
 // @Failure		400
+// @Failure		401
+// @Failure		403
 // @Failure     409
 // @Failure		500
 // @Router		/company [post]
 func PostCompany(svc domain.OnboardingService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
+
+		auth, err := authctx.FromRequest(r)
+		if err != nil {
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
+			return
+		}
+		if !auth.IsAdmin() {
+			json.HandleError(w, http.StatusForbidden, fmt.Errorf("forbidden"), "forbidden")
+			return
+		}
 
 		payload, err := json.Decode[dto.CreateCompanyRequest](r)
 		if err != nil {

@@ -63,15 +63,31 @@ func (g *GatewayServiceImpl) Create(ctx context.Context, payload domain.Gateway)
 // and the database second. If the database update fails, the Chirpstack rename is reverted
 // as a compensating transaction. If only non-name fields changed, only the database is
 // updated since Chirpstack stores no other gateway fields.
-func (g *GatewayServiceImpl) Update(ctx context.Context, gatewayId string, payload domain.Gateway) error {
-	// Verify that the gateway exists in db
-	gateway, err := g.gatewayRepo.FindByID(ctx, gatewayId)
+func (g *GatewayServiceImpl) Update(ctx context.Context, companyID string, gatewayId string, payload domain.Gateway) error {
+	// Verify that the gateway exists in db and belongs to the caller's company.
+	gateway, err := g.gatewayRepo.FindByID(ctx, companyID, gatewayId)
 	if err != nil {
 		return fmt.Errorf("update gateway: gateway %s not found in database: %w", gatewayId, err)
 	}
 
+	oldGateway := gateway // save before merge
+
+	// Update values if not nil / empty string
+	if payload.Name != "" {
+		gateway.Name = payload.Name
+	}
+	if payload.Description != nil {
+		gateway.Description = payload.Description
+	}
+	if payload.FactoryID != "" {
+		gateway.FactoryID = payload.FactoryID
+	}
+	if payload.FactoryAreaID != "" {
+		gateway.FactoryAreaID = payload.FactoryAreaID
+	}
+
 	// Only update in Chirpstack (and apply saga) if the name has changed (Chirpstack only allows name updates)
-	if payload.Name != gateway.Name {
+	if gateway.Name != oldGateway.Name {
 
 		// check database for chirpstack tenant ID
 		companycfg, err := g.companycfgRepo.FindByCompanyID(ctx, gateway.CompanyId)
@@ -79,19 +95,16 @@ func (g *GatewayServiceImpl) Update(ctx context.Context, gatewayId string, paylo
 			return fmt.Errorf("update gateway: finding company tenant ID: %w", err)
 		}
 
-		// Ensure the payload EUI field is populated before mapping to Chirpstack
-		payload.GatewayEUI = gateway.GatewayEUI
-
 		// Chirpstack put request, Chirpstack dont need gatewayID, just gatewayEUI
-		newReq := mappers.MapChirpstackGatewayRequest(payload, companycfg.ChirpstackTenantID)
+		newReq := mappers.MapChirpstackGatewayRequest(gateway, companycfg.ChirpstackTenantID)
 		if err := g.cc.RenameGateway(ctx, newReq); err != nil {
 			return fmt.Errorf("update gateway: update in chirpstack: %w", err)
 		}
 
 		// On successful update in Chirpstack, try to update the database.
-		if err := g.gatewayRepo.Update(ctx, gatewayId, payload); err != nil {
+		if err := g.gatewayRepo.Update(ctx, companyID, gatewayId, gateway); err != nil {
 			// Compensate: revert Chirpstack to the old name.
-			oldReq := mappers.MapChirpstackGatewayRequest(gateway, companycfg.ChirpstackTenantID)
+			oldReq := mappers.MapChirpstackGatewayRequest(oldGateway, companycfg.ChirpstackTenantID)
 			if compErr := g.cc.RenameGateway(ctx, oldReq); compErr != nil {
 				slog.Error("saga compensation failed: could not revert gateway name in chirpstack after db update failure",
 					"id", gatewayId, "error", compErr)
@@ -100,7 +113,7 @@ func (g *GatewayServiceImpl) Update(ctx context.Context, gatewayId string, paylo
 		}
 	} else {
 		// Name unchanged — Chirpstack stores no other gateway fields, so only update the DB.
-		if err := g.gatewayRepo.Update(ctx, gatewayId, payload); err != nil {
+		if err := g.gatewayRepo.Update(ctx, companyID, gatewayId, gateway); err != nil {
 			return fmt.Errorf("update gateway: update in database: %w", err)
 		}
 	}
@@ -111,10 +124,10 @@ func (g *GatewayServiceImpl) Update(ctx context.Context, gatewayId string, paylo
 
 // GetAll retrieves all gateways belonging to a companyID from the database and merges
 // it with the status from Chirpstack (status and last seen).
-func (g *GatewayServiceImpl) GetAll(ctx context.Context) ([]domain.Gateway, error) {
+func (g *GatewayServiceImpl) GetAll(ctx context.Context, companyID string) ([]domain.Gateway, error) {
 
 	// Fetch all gateways belonging to the company in DB
-	gateways, err := g.gatewayRepo.FindAllByCompanyID(ctx, "a0000000-0000-0000-0000-000000000001") // TODO: REPLACE HARDCODED COMPANYID WITH PROPER AUTH
+	gateways, err := g.gatewayRepo.FindAllByCompanyID(ctx, companyID)
 	if err != nil {
 		return nil, fmt.Errorf("get all gateways: getting gateways from db: %w", err)
 	}
@@ -137,13 +150,24 @@ func (g *GatewayServiceImpl) GetAll(ctx context.Context) ([]domain.Gateway, erro
 	return result, nil
 }
 
+// GetByID retrieves a single gateway by its ID, scoped to the caller's company.
+// Not yet wired to a handler or route.
+func (g *GatewayServiceImpl) GetByID(ctx context.Context, companyID string, gatewayID string) (domain.Gateway, error) {
+	gateway, err := g.gatewayRepo.FindByID(ctx, companyID, gatewayID)
+	if err != nil {
+		return domain.Gateway{}, fmt.Errorf("get gateway by id: %w", err)
+	}
+
+	return gateway, nil
+}
+
 // Delete deletes a gateway from both Chirpstack and from the database. Deletion in
 // Chirpstack is always tried first so we keep the database entry if Chirpstack fails.
 // If the database delete fails, the gateway is re-created in Chirpstack as a compensating
 // transaction to keep both systems in sync.
-func (g *GatewayServiceImpl) Delete(ctx context.Context, gatewayID string) error {
-	// Get the gateway EUI from database
-	gateway, err := g.gatewayRepo.FindByID(ctx, gatewayID)
+func (g *GatewayServiceImpl) Delete(ctx context.Context, companyID string, gatewayID string) error {
+	// Get the gateway from the database, scoped to the caller's company.
+	gateway, err := g.gatewayRepo.FindByID(ctx, companyID, gatewayID)
 	if err != nil {
 		return fmt.Errorf("delete gateway: gateway %s not found in database: %w", gatewayID, err)
 	}
@@ -160,7 +184,7 @@ func (g *GatewayServiceImpl) Delete(ctx context.Context, gatewayID string) error
 	}
 
 	// Delete in database after successfully deleting in Chirpstack.
-	if err := g.gatewayRepo.Delete(ctx, gatewayID); err != nil {
+	if err := g.gatewayRepo.Delete(ctx, companyID, gatewayID); err != nil {
 		// Compensate: re-create in Chirpstack so systems stay in sync.
 		gatewayReq := mappers.MapChirpstackGatewayRequest(gateway, companycfg.ChirpstackTenantID)
 		if compErr := g.cc.CreateGateway(ctx, gatewayReq); compErr != nil {

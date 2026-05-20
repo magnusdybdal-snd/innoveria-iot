@@ -1,4 +1,4 @@
-// Package httpclient TODO(@vinjar): add proper documentation.
+// Package httpclient provides a reusable HTTP client with JSON request/response helpers.
 package httpclient
 
 import (
@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-// Client TODO(@vinjar): add proper documentation.
+// Client wraps net/http.Client with a preconfigured transport and timeout.
 type Client struct {
 	http *http.Client
 }
@@ -87,7 +87,7 @@ func DoRequest[T any](
 	if err != nil {
 		return zero, fmt.Errorf("error doing the request: %w", err)
 	}
-	defer resp.Body.Close() //nolint:errcheck // TODO(vinjar): handle or wrap Body.Close error properly
+	defer func() { _ = resp.Body.Close() }()
 
 	// error handling for status codes
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {

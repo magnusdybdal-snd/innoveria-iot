@@ -3,7 +3,7 @@ import { apiRequest, serviceClient } from "@shared/api";
 import { API_ROUTES } from "@shared/api/routes";
 
 type RawCompany = {
-  company_id: string;
+  id: string;
   name: string;
   address: string;
   created_at: string;
@@ -16,26 +16,21 @@ type RawCompanyListApiResponse = {
 };
 
 /**
- * Fetches all companies from the collection-service via the API company.
- * @returns Array of CompanyApiResponse objects, or an empty array if the request fails
+ * Fetches all companies from the auth-service API.
+ * @returns Array of CompanyApiResponse objects
  */
 export const getCompanies = async (): Promise<CompanyApiResponse[]> => {
-  try {
-    const data = await apiRequest<RawCompanyListApiResponse>(
-      serviceClient,
-      API_ROUTES.companiesGet,
-      "GET",
-    );
+  const data = await apiRequest<RawCompanyListApiResponse>(
+    serviceClient,
+    API_ROUTES.companiesGet,
+    "GET",
+  );
 
-    return (data.companies ?? []).map((s) => ({
-      companyId: s.company_id,
-      name: s.name,
-      address: s.address,
-      createdAt: s.created_at,
-      updatedAt: s.updated_at,
-    }));
-  } catch (error) {
-    console.error("Failed to fetch companies:", error);
-    return [];
-  }
+  return (data.companies ?? []).map((s) => ({
+    companyId: s.id,
+    name: s.name,
+    address: s.address,
+    createdAt: s.created_at,
+    updatedAt: s.updated_at,
+  }));
 };

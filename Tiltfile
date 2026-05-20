@@ -26,7 +26,22 @@ dc_resource(
 )
 
 dc_resource(
+    'erp-db',
+    labels=['database']
+)
+
+dc_resource(
     'collection-service',
+    labels=['microservice']
+)
+
+dc_resource(
+    'erp-service',
+    labels=['microservice']
+)
+
+dc_resource(
+    'erp-agent-service',
     labels=['microservice']
 )
 
@@ -48,6 +63,16 @@ dc_resource(
 dc_resource(
     'onboarding-service',
     labels=['microservice']
+)
+
+dc_resource(
+    'context-service',
+    labels=['microservice']
+)
+
+dc_resource(
+    'context-db',
+    labels=['database']
 )
 
 dc_resource(

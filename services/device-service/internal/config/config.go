@@ -9,8 +9,10 @@ import (
 
 // Config holds all runtime configuration values for the device service.
 type Config struct {
-	Addr   string
-	DB_url string
+	Addr          string
+	InternalAddr  string
+	DB_url        string
+	EnableSwagger bool
 
 	ChirpstackURL        string // chirpstack rest api url
 	ChirpstackSecretPath string // chirpstack api token (bearer token)
@@ -27,7 +29,8 @@ func Load() *Config {
 	sslmode := env.Get("DB_SSLMODE", "disable")
 
 	return &Config{
-		Addr: ":" + env.Get("PORT", "8080"),
+		Addr:         ":" + env.Get("PORT", "8080"),
+		InternalAddr: ":" + env.Get("INTERNAL_PORT", "9090"),
 		DB_url: fmt.Sprintf(
 			"postgres://%s:%s@%s:%s/%s?sslmode=%s",
 			dbUser,
@@ -37,6 +40,7 @@ func Load() *Config {
 			dbName,
 			sslmode,
 		),
+		EnableSwagger:        env.GetBool("ENABLE_SWAGGER", false),
 		ChirpstackURL:        env.Get("CHIRPSTACK_REST", "http://chirpstack-rest-api:8090"),
 		ChirpstackSecretPath: "/secrets/chirpstack-api-key",
 	}

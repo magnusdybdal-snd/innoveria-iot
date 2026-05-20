@@ -1,12 +1,101 @@
 import axios, { type AxiosInstance, type AxiosResponse } from "axios";
 
+import { postLogout, postRefresh, type TokenApiResponse } from "@entities/user";
+
 // Client for all microservice requests — routed through the api-gateway
 export const serviceClient = axios.create({
   baseURL: "/api",
+  withCredentials: true,
   headers: {
     "Content-Type": "application/json",
   },
 });
+
+let refreshPromise: Promise<TokenApiResponse> | null = null;
+
+serviceClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem("access_token");
+
+  const isLoginRequest = config.url?.includes("/login");
+  const isRefreshRequest = config.url?.includes("/refresh");
+
+  if (token && config.headers && !isLoginRequest && !isRefreshRequest) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return config;
+});
+
+serviceClient.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+    if (!originalRequest) return Promise.reject(error);
+
+    const isRefreshRequest = originalRequest.url?.includes("/refresh");
+    const isLoginRequest = originalRequest.url?.includes("/login");
+
+    // No token at all → redirect to login immediately
+    if (
+      error.response?.status === 401 &&
+      !isRefreshRequest &&
+      !isLoginRequest &&
+      !localStorage.getItem("access_token")
+    ) {
+      window.location.replace("/Login");
+      return Promise.reject(error);
+    }
+
+    // If refresh fails → logout
+    if (error.response?.status === 401 && isRefreshRequest) {
+      refreshPromise = null;
+      void postLogout().finally(() => {
+        localStorage.removeItem("access_token");
+        window.location.replace("/Login");
+      });
+      return Promise.reject(error);
+    }
+
+    // Only refresh for normal API calls (not login/refresh) and only when a token exists
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !isRefreshRequest &&
+      !isLoginRequest &&
+      localStorage.getItem("access_token")
+    ) {
+      originalRequest.headers = originalRequest.headers || {};
+      originalRequest._retry = true;
+
+      try {
+        if (!refreshPromise) {
+          refreshPromise = postRefresh().finally(() => {
+            refreshPromise = null;
+          });
+        }
+
+        const data = await refreshPromise;
+
+        localStorage.setItem("access_token", data.accessToken);
+
+        // Retry original request with new token
+        originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
+
+        return serviceClient(originalRequest);
+      } catch (refreshError) {
+        // Refresh fails → logout
+        void postLogout().finally(() => {
+          localStorage.removeItem("access_token");
+          window.location.replace("/Login");
+        });
+
+        return Promise.reject(refreshError);
+      }
+    }
+
+    return Promise.reject(error);
+  },
+);
 
 /**
  * Generic API request helper
@@ -19,7 +108,7 @@ export const serviceClient = axios.create({
 export const apiRequest = async <T,>(
   client: AxiosInstance,
   url: string,
-  method: "GET" | "POST" | "PUT" | "DELETE",
+  method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
   data?: unknown,
 ): Promise<T> => {
   const response: AxiosResponse<T> = await client({

@@ -6,6 +6,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import TextField from "@mui/material/TextField";
+
 import { CategoryHeader } from "@shared/ui/CategoryHeader";
 
 export interface AddCompanyProps {

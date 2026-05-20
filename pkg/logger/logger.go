@@ -1,4 +1,4 @@
-// Package logger TODO(@vinjar): add proper documentation.
+// Package logger configures a structured slog logger for a named service.
 package logger
 
 import (

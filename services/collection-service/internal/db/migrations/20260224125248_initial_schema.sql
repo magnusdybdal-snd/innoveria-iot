@@ -1,4 +1,6 @@
 -- +goose Up
+CREATE EXTENSION IF NOT EXISTS timescaledb;
+
 CREATE SCHEMA "collection";
 
 CREATE TABLE "collection"."tenant_mapping" (

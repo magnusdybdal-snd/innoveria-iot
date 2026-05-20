@@ -16,26 +16,21 @@ type RawFactoryApiResponse = {
 };
 /**
  * Fetches all factories from the collection-service via the API gateway.
- * @returns Array of FactoryApiResponse objects, or an empty array if the request fails
+ * @returns Array of FactoryApiResponse objects
  */
 export const getFactories = async (): Promise<FactoryApiResponse[]> => {
-  try {
-    const data = await apiRequest<RawFactoryListApiResponse>(
-      serviceClient,
-      API_ROUTES.factories,
-      "GET",
-    );
+  const data = await apiRequest<RawFactoryListApiResponse>(
+    serviceClient,
+    API_ROUTES.factories,
+    "GET",
+  );
 
-    return (data.factories ?? []).map((a) => ({
-      id: a.id,
-      companyId: a.company_id,
-      name: a.name,
-      address: a.address,
-      createdAt: new Date(a.created_at),
-      updatedAt: new Date(a.updated_at),
-    }));
-  } catch (error) {
-    console.error("Failed to fetch factories:", error);
-    return [];
-  }
+  return (data.factories ?? []).map((a) => ({
+    id: a.id,
+    companyId: a.company_id,
+    name: a.name,
+    address: a.address,
+    createdAt: new Date(a.created_at),
+    updatedAt: new Date(a.updated_at),
+  }));
 };

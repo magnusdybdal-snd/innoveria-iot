@@ -2,6 +2,9 @@
 - docker and docker compose: https://docs.docker.com/compose/install/
 - Tilt: https://docs.tilt.dev/index.html
 
+Related guides:
+- `docs/erp-agent-service-onprem-installation.md` for standalone on-prem ERP agent deployment
+
 # Development enviroment
 
 Development enviroment with hot code reloading

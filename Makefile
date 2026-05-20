@@ -1,8 +1,8 @@
 # Services that need swagger deps (includes api-gateway which serves the merged UI)
-SERVICES := services/device-service services/collection-service services/auth-service services/onboarding-service services/api-gateway
+SERVICES := services/device-service services/collection-service services/auth-service services/onboarding-service services/context-service services/api-gateway
 
 # Services that have swagger annotations and need doc generation (excludes api-gateway)
-ANNOTATED_SERVICES := services/device-service services/collection-service services/auth-service services/onboarding-service
+ANNOTATED_SERVICES := services/device-service services/collection-service services/auth-service services/onboarding-service services/context-service
 
 # Pinned versions — update here when upgrading, keep all services in sync
 SWAGGO_HTTP_SWAGGER_VERSION := v1.3.4

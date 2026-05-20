@@ -3,10 +3,13 @@ package handlers
 import (
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
+	"strings"
 
 	"innoveria-iot/auth-service/internal/domain"
 	"innoveria-iot/auth-service/internal/handlers/dto"
+	"innoveria-iot/pkg/authctx"
 	"innoveria-iot/pkg/json"
 
 	"github.com/google/uuid"
@@ -23,7 +26,7 @@ import (
 // @Failure 400
 // @Failure 500
 // @Router /companies [post]
-func PostCompany(svc domain.AuthService) http.HandlerFunc {
+func PostCompany(svc domain.CompanyService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
@@ -33,6 +36,9 @@ func PostCompany(svc domain.AuthService) http.HandlerFunc {
 			return
 		}
 
+		payload.Name = strings.TrimSpace(payload.Name)
+		payload.Address = strings.TrimSpace(payload.Address)
+
 		// Dto to domain, only name and address
 		companyDomain := dto.MapCreateCompanyToDomain(payload)
 		if companyDomain.Name == "" {
@@ -40,31 +46,43 @@ func PostCompany(svc domain.AuthService) http.HandlerFunc {
 			return
 		}
 
-		companyResp, err := svc.RegisterCompany(ctx, companyDomain)
+		result, err := svc.RegisterCompany(ctx, companyDomain)
 		if err != nil {
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
 			return
 		}
 
 		// Maps from domain to DTO
-		resp := dto.MapCompanyFromDomain(companyResp)
+		resp := dto.MapCompanyFromDomain(result)
 		if err := json.Encode(w, http.StatusCreated, resp); err != nil {
 			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
 		}
 	}
 }
 
-// GetAllCompanies handles requests to fetch all companies.
+// GetAllCompanies handles requests to fetch all companies. Admin only.
 //
 // @Summary Get all companies
 // @Tags companies
 // @Produce json
 // @Success 200 {object} dto.CompanyListResponse
+// @Failure 401
+// @Failure 403
 // @Failure 500
 // @Router /companies [get]
-func GetAllCompanies(svc domain.AuthService) http.HandlerFunc {
+func GetAllCompanies(svc domain.CompanyService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
+
+		auth, err := authctx.FromRequest(r)
+		if err != nil {
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
+			return
+		}
+		if !auth.IsAdmin() {
+			json.HandleError(w, http.StatusForbidden, fmt.Errorf("forbidden"), "forbidden")
+			return
+		}
 
 		companies, err := svc.GetAllCompanies(ctx)
 		if err != nil {
@@ -79,7 +97,7 @@ func GetAllCompanies(svc domain.AuthService) http.HandlerFunc {
 	}
 }
 
-// GetOneCompany handles requests to fetch one company by ID.
+// GetOneCompany handles requests to fetch one company by ID. Admin only.
 //
 // @Summary Get one company
 // @Tags companies
@@ -87,12 +105,24 @@ func GetAllCompanies(svc domain.AuthService) http.HandlerFunc {
 // @Param id path string true "id"
 // @Success 200 {object} dto.CompanyResponse
 // @Failure 400
+// @Failure 401
+// @Failure 403
 // @Failure 404
 // @Failure 500
 // @Router /companies/{id} [get]
-func GetOneCompany(svc domain.AuthService) http.HandlerFunc {
+func GetOneCompany(svc domain.CompanyService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
+
+		auth, err := authctx.FromRequest(r)
+		if err != nil {
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
+			return
+		}
+		if !auth.IsAdmin() {
+			json.HandleError(w, http.StatusForbidden, fmt.Errorf("forbidden"), "forbidden")
+			return
+		}
 
 		companyID := r.PathValue("id")
 		if companyID == "" {
@@ -134,7 +164,7 @@ func GetOneCompany(svc domain.AuthService) http.HandlerFunc {
 // @Failure 404
 // @Failure 500
 // @Router /companies/{id} [delete]
-func DeleteCompany(svc domain.AuthService) http.HandlerFunc {
+func DeleteCompany(svc domain.CompanyService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		companyID := r.PathValue("id")
@@ -160,5 +190,62 @@ func DeleteCompany(svc domain.AuthService) http.HandlerFunc {
 		}
 
 		w.WriteHeader(http.StatusNoContent)
+	}
+}
+
+// PostCompanyERPAgentToken handles requests to issue a new ERP agent token for a company.
+//
+// @Summary Issue ERP agent token
+// @Tags companies
+// @Produce json
+// @Param id path string true "id"
+// @Success 200 {object} dto.ERPAgentTokenResponse
+// @Failure 400
+// @Failure 401
+// @Failure 403
+// @Failure 404
+// @Failure 500
+// @Router /companies/{id}/erp-agent-token [post]
+func PostCompanyERPAgentToken(svc domain.CompanyService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+
+		auth, err := authctx.FromRequest(r)
+		if err != nil {
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
+			return
+		}
+
+		if !auth.IsAdmin() {
+			json.HandleError(w, http.StatusForbidden, fmt.Errorf("forbidden"), "forbidden")
+			return
+		}
+
+		companyID := r.PathValue("id")
+		if companyID == "" {
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("missing id path parameter"), "id is required")
+			return
+		}
+		slog.Info("test", "id", companyID)
+		if _, err := uuid.Parse(companyID); err != nil {
+			json.HandleError(w, http.StatusBadRequest, err, "invalid company id (uuid)")
+			return
+		}
+
+		token, err := svc.IssueERPAgentToken(ctx, companyID)
+		if err != nil {
+			switch {
+			case errors.Is(err, domain.ErrCompanyNotFound):
+				json.HandleError(w, http.StatusNotFound, err, "company not found")
+			default:
+				json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+			}
+			return
+		}
+
+		resp := dto.MapERPAgentTokenResponse(token)
+		if err := json.Encode(w, http.StatusOK, resp); err != nil {
+			json.HandleError(w, http.StatusInternalServerError, err, "internal server error")
+		}
 	}
 }

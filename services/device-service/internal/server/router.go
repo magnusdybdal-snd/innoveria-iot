@@ -6,11 +6,22 @@ import (
 
 	"innoveria-iot/device-service/internal/domain"
 	"innoveria-iot/device-service/internal/handlers"
+	"innoveria-iot/pkg/middleware"
 
 	_ "innoveria-iot/device-service/docs"
 
 	httpSwagger "github.com/swaggo/http-swagger"
 )
+
+// NewInternalRouter creates and returns an HTTP ServerMux with all device service internal routes
+func NewInternalRouter(sensorMetricSvc domain.SensorMetricService) *http.ServeMux {
+	mux := http.NewServeMux()
+
+	// Sensor metric internal routes
+	mux.HandleFunc("GET "+SENSOR_METRICS_ROUTE, handlers.GetSensorMetrics(sensorMetricSvc))
+
+	return mux
+}
 
 // NewRouter creates and returns an HTTP ServeMux with all device service routes registered.
 func NewRouter(
@@ -18,6 +29,11 @@ func NewRouter(
 	sensorSvc domain.SensorService,
 	sensorProfileSvc domain.SensorProfileService,
 	companyConfigSvc domain.CompanyConfigService,
+	measurementTypeSvc domain.MeasurementTypeService,
+	payloadSchemaSvc domain.PayloadSchemaService,
+	sensorMetricSvc domain.SensorMetricService,
+	sensorProfileConfigSvc domain.SensorProfileConfigService,
+	enableSwagger bool,
 ) *http.ServeMux {
 	mux := http.NewServeMux()
 
@@ -26,14 +42,15 @@ func NewRouter(
 	// Gateway Routes:
 	mux.HandleFunc("GET "+GATEWAY_ROUTE, handlers.GetGateways(gatewaySvc))
 	mux.HandleFunc("POST "+GATEWAY_ROUTE, handlers.PostGateway(gatewaySvc))
-	mux.HandleFunc("PUT "+GATEWAY_ROUTE_ID, handlers.PutGateway(gatewaySvc))
+	mux.HandleFunc("PATCH "+GATEWAY_ROUTE_ID, handlers.PatchGateway(gatewaySvc))
 	mux.HandleFunc("DELETE "+GATEWAY_ROUTE_ID, handlers.DeleteGateway(gatewaySvc))
 
 	// Sensor Routes:
 	mux.HandleFunc("GET "+SENSOR_ROUTE, handlers.GetSensors(sensorSvc))
 	mux.HandleFunc("POST "+SENSOR_ROUTE, handlers.PostSensor(sensorSvc))
+	mux.HandleFunc("GET "+SENSOR_SAMPLE_EUI_ROUTE, middleware.AdminGuard(handlers.GetSampleEUI(sensorSvc)))
 	mux.HandleFunc("DELETE "+SENSOR_ROUTE_ID, handlers.DeleteSensor(sensorSvc))
-	mux.HandleFunc("PUT "+SENSOR_ROUTE_ID, handlers.PutSensor(sensorSvc))
+	mux.HandleFunc("PATCH "+SENSOR_ROUTE_ID, handlers.PatchSensor(sensorSvc))
 
 	// Sensor profile routes:
 	mux.HandleFunc("GET "+SENSOR_PROFILE_ROUTE, handlers.GetAllSensorProfiles(sensorProfileSvc))
@@ -42,8 +59,28 @@ func NewRouter(
 	mux.HandleFunc("POST "+COMPANY_CONFIG_ROUTE, handlers.PostCompanyConfig(companyConfigSvc))
 	mux.HandleFunc("DELETE "+COMPANY_CONFIG_ROUTE_ID, handlers.DeleteCompanyConfig(companyConfigSvc))
 
+	// Measurement type routes:
+	mux.HandleFunc("GET "+MEASUREMENT_TYPE_ROUTE, handlers.GetMeasurementTypes(measurementTypeSvc))
+	mux.HandleFunc("GET "+MEASUREMENT_TYPE_ROUTE_ALL, handlers.GetAllMeasurementTypes(measurementTypeSvc))
+	mux.HandleFunc("POST "+MEASUREMENT_TYPE_ROUTE, handlers.PostMeasurementType(measurementTypeSvc))
+	mux.HandleFunc("PATCH "+MEASUREMENT_TYPE_ROUTE_DEPRECATE, handlers.PatchDeprecateMeasurementType(measurementTypeSvc))
+
+	// Payload schema routes:
+	mux.HandleFunc("GET "+PAYLOAD_SCHEMA_ROUTE_PROFILE, handlers.GetPayloadSchemaByProfile(payloadSchemaSvc))
+	mux.HandleFunc("PUT "+PAYLOAD_SCHEMA_ROUTE_PROFILE, handlers.PutPayloadSchemaLabels(payloadSchemaSvc))
+
+	// Sensor metric routes:
+	mux.HandleFunc("GET "+SENSOR_METRICS_ROUTE, middleware.AdminGuard(handlers.GetSensorMetrics(sensorMetricSvc)))
+	mux.HandleFunc("PUT "+SENSOR_METRICS_ROUTE, handlers.PutSensorMetrics(sensorMetricSvc))
+
+	// Sensor profile config routes:
+	mux.HandleFunc("GET "+SENSOR_PROFILE_CONFIG_ROUTE_ID, handlers.GetSensorProfileConfig(sensorProfileConfigSvc))
+	mux.HandleFunc("PUT "+SENSOR_PROFILE_CONFIG_ROUTE_ID, handlers.PutSensorProfileConfig(sensorProfileConfigSvc))
+
 	// Swagger docs
-	mux.HandleFunc("GET /swagger/", httpSwagger.WrapHandler)
+	if enableSwagger {
+		mux.HandleFunc("GET /swagger/", httpSwagger.WrapHandler)
+	}
 
 	return mux
 }

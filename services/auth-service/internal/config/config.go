@@ -3,24 +3,71 @@ package config
 
 import (
 	"fmt"
+	"log/slog"
+	"os"
+	"time"
+
 	"innoveria-iot/pkg/env"
 )
 
 // Config holds auth-service runtime configuration.
 type Config struct {
-	Addr   string
-	DB_URL string
+	Addr                 string
+	DB_URL               string
+	JWT_SECRET           string
+	ERP_AGENT_JWT_SECRET string
+	RefreshPepper        string
+	JWTIssuer            string
+	JWTAccessTTL         time.Duration
+	JWTRefreshTokenTTL   time.Duration
+	ERPAgentTokenTTL     time.Duration
+	EnableSwagger        bool
 }
 
 // Load reads configuration from environment variables.
 func Load() *Config {
-
 	dbHost := env.Get("DB_HOST", "auth-db")
 	dbPort := env.Get("DB_PORT", "5432")
 	dbUser := env.Get("DB_USER", "auth")
 	dbPassword := env.Get("DB_PASSWORD", "auth")
 	dbName := env.Get("DB_NAME", "auth")
 	sslmode := env.Get("DB_SSLMODE", "disable")
+
+	jwtAccessTTL, err := time.ParseDuration(env.Get("JWT_ACCESS_TTL", "15m"))
+	if err != nil {
+		slog.Error("invalid JWT_ACCESS_TTL", "error", err)
+		os.Exit(1)
+	}
+
+	jwtRefreshTTL, err := time.ParseDuration(env.Get("JWT_REFRESH_TTL", "720h")) // 30 days
+	if err != nil {
+		slog.Error("invalid JWT_REFRESH_TTL", "error", err)
+		os.Exit(1)
+	}
+
+	jwtSecret, err := env.Required("JWT_SECRET")
+	if err != nil {
+		slog.Error("invalid jwt secret", "error", err)
+		os.Exit(1)
+	}
+
+	erpAgentSecret, err := env.Required("ERP_AGENT_JWT_SECRET")
+	if err != nil {
+		slog.Error("invalid erp agent jwt secret", "error", err)
+		os.Exit(1)
+	}
+
+	refreshPepper, err := env.Required("REFRESH_PEPPER")
+	if err != nil {
+		slog.Error("invalid refresh pepper", "error", err)
+		os.Exit(1)
+	}
+
+	erpAgentTokenTTL, err := time.ParseDuration(env.Get("ERP_AGENT_TOKEN_TTL", "8760h"))
+	if err != nil {
+		slog.Error("invalid ERP_AGENT_TOKEN_TTL", "error", err)
+		os.Exit(1)
+	}
 
 	return &Config{
 		Addr: ":" + env.Get("PORT", "8080"),
@@ -33,5 +80,13 @@ func Load() *Config {
 			dbName,
 			sslmode,
 		),
+		JWT_SECRET:           jwtSecret, // jwt secret loading
+		ERP_AGENT_JWT_SECRET: erpAgentSecret,
+		RefreshPepper:        refreshPepper, // jwt refresh loading
+		JWTIssuer:            env.Get("JWT_ISSUER", "auth-service"),
+		JWTAccessTTL:         jwtAccessTTL,
+		JWTRefreshTokenTTL:   jwtRefreshTTL,
+		ERPAgentTokenTTL:     erpAgentTokenTTL,
+		EnableSwagger:        env.GetBool("ENABLE_SWAGGER", false),
 	}
 }

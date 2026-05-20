@@ -1,9 +1,11 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 
 	"innoveria-iot/collection-service/internal/domain"
+	"innoveria-iot/pkg/authctx"
 	"innoveria-iot/pkg/json"
 )
 
@@ -15,20 +17,27 @@ import (
 // @Param		device_eui	query	string	true	"DeviceEUI"
 // @Success		200		{object}	domain.SensorMeasurement
 // @Failure		400
+// @Failure		401
 // @Failure		404
+// @Failure		500
 // @Router		/latest [get]
 func HandleLatestMeasurement(svc domain.MeasurementService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		auth, err := authctx.FromRequest(r)
+		if err != nil {
+			json.HandleError(w, http.StatusUnauthorized, err, "unauthorized")
+			return
+		}
 
 		// Extract the device eui query and check that it is not empty
 		deviceEUI := r.URL.Query().Get("device_eui")
 		if deviceEUI == "" {
-			json.HandleError(w, http.StatusBadRequest, nil, "device_eui query parameter is required")
+			json.HandleError(w, http.StatusBadRequest, fmt.Errorf("missing device_eui"), "device_eui query parameter is required")
 			return
 		}
 
 		// Get the latest measurement
-		measurement, err := svc.GetLatest(r.Context(), deviceEUI)
+		measurement, err := svc.GetLatest(r.Context(), auth.CompanyID, deviceEUI)
 		if err != nil {
 			// TODO: Any db error is now sent as 404, need more specific from repo
 			json.HandleError(w, http.StatusNotFound, err, "no measurement found for device")

@@ -1,4 +1,4 @@
-// Package proxy TODO(@vinjar): add proper documentation.
+// Package proxy provides reverse proxy construction and transport configuration for the API gateway.
 package proxy
 
 import (
@@ -47,22 +47,48 @@ func DefaultReverseProxyTransport() *http.Transport {
 //   - streaming-friendly flush behavior
 func NewReverseProxy(base *url.URL) *httputil.ReverseProxy {
 	// Standard reverse proxy to target host
-	rp := httputil.NewSingleHostReverseProxy(base)
+	rp := &httputil.ReverseProxy{
+		// customized director to remove untrusted IP forwarder
+		Rewrite: func(pr *httputil.ProxyRequest) {
+			// Set upstream target URL
+			pr.SetURL(base)
 
-	// Transport for configuring own tranpsport. So we dont use the default transport config
-	rp.Transport = DefaultReverseProxyTransport()
+			// Remove any client-supplied forwarding headers
+			pr.Out.Header.Del("X-Forwarded-For")
+			pr.Out.Header.Del("X-Forwarded-Host")
+			pr.Out.Header.Del("X-Forwarded-Proto")
+			pr.Out.Header.Del("X-Real-IP")
+			pr.Out.Header.Del("Forwarded")
 
-	// Flush repsonse periodically instead of buffering
-	rp.FlushInterval = 100 * time.Millisecond
+			// Set trusted forwarding headers from gateway request
+			pr.SetXForwarded()
 
-	// Error handling for to big requests and upstream errors
-	rp.ErrorHandler = func(w http.ResponseWriter, r *http.Request, err error) {
-		var mbe *http.MaxBytesError
-		if errors.As(err, &mbe) {
-			json.HandleError(w, http.StatusRequestEntityTooLarge, err, "request to large")
-		}
+			// rewrite the header for auth-service to strip
+			if host, _, err := net.SplitHostPort(pr.In.RemoteAddr); err == nil && host != "" {
+				pr.Out.Header.Set("X-Real-IP", host)
+				pr.Out.Header.Set("X-Client-IP", host)
+			} else {
+				pr.Out.Header.Del("X-Real-IP")
+				pr.Out.Header.Del("X-Client-IP")
+			}
+		},
 
-		json.HandleError(w, http.StatusBadGateway, err, "bad gateway")
+		// Transport for configuring own tranpsport. So we dont use the default transport config
+		Transport: DefaultReverseProxyTransport(),
+
+		// Flush repsonse periodically instead of buffering
+		FlushInterval: 100 * time.Millisecond,
+
+		// Error handling for to big requests and upstream errors
+		ErrorHandler: func(w http.ResponseWriter, r *http.Request, err error) {
+			var mbe *http.MaxBytesError
+			if errors.As(err, &mbe) {
+				json.HandleError(w, http.StatusRequestEntityTooLarge, err, "request to large")
+			}
+
+			json.HandleError(w, http.StatusBadGateway, err, "bad gateway")
+		},
 	}
+
 	return rp
 }

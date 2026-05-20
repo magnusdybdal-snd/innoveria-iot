@@ -13,10 +13,12 @@ type SortDirection = "asc" | "desc";
 type CategoryHeaderProps = {
   categories: string[];
   columns?: number;
+  gridTemplateColumns?: string;
   children?: ReactNode;
   sortableColumns?: string[];
   sortConfig?: { key: string | null; direction: SortDirection };
   onSort?: (column: string) => void;
+  fit?: boolean;
 };
 
 /**
@@ -26,27 +28,35 @@ type CategoryHeaderProps = {
  * @param props - Component props
  * @param props.categories - Ordered list of column label strings
  * @param props.columns - Total column count for the grid template; defaults to categories.length if omitted
+ * @param props.gridTemplateColumns - Custom CSS grid-template-columns string; overrides the auto-generated template when provided
  * @param props.children - Data rows to render inside the grid
  * @param props.sortableColumns - Subset of category labels that are clickable for sorting
  * @param props.sortConfig - Currently active sort key and direction
  * @param props.onSort - Callback invoked with the column label when a sortable header is clicked
+ * @param props.fit - Whether the header stretches the widt of the content
  * @returns A full-width grid box with header labels and child content
  */
 export function CategoryHeader({
   categories,
   columns,
+  gridTemplateColumns,
   children,
   sortableColumns = [],
   sortConfig,
   onSort,
+  fit,
 }: CategoryHeaderProps) {
   // Creates number of columns based on string[] passed as parameter
   // First category is made to fit the object through "auto"
-  const templateColumns = columns
-    ? `auto ${Array(columns - 1)
-        .fill("1fr")
-        .join(" ")}`
-    : `repeat(${categories.length}, 1fr)`;
+  const templateColumns = gridTemplateColumns
+    ? gridTemplateColumns
+    : fit
+      ? `repeat(${columns ?? categories.length}, max-content)`
+      : columns
+        ? `auto ${Array(columns - 1)
+            .fill("1fr")
+            .join(" ")}`
+        : `repeat(${categories.length}, 1fr)`;
 
   return (
     <Box
@@ -58,8 +68,8 @@ export function CategoryHeader({
         backgroundColor: "primary.light",
         color: "primary.main",
         padding: 2,
+        width: fit ? "fit-content" : "100%",
       }}
-      className="w-full"
     >
       {/* Map every category to display as text */}
       {categories.map((category) => {

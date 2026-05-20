@@ -5,7 +5,9 @@ replace innoveria-iot/pkg => ../../pkg
 go 1.25.6
 
 require (
+	github.com/golang-jwt/jwt/v5 v5.3.1
 	github.com/swaggo/http-swagger v1.3.4
+	golang.org/x/time v0.15.0
 	innoveria-iot/pkg v0.0.0
 )
 

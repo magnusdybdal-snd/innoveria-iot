@@ -1,4 +1,4 @@
-// Package domain TODO(@Magnus Dybdal): add proper documentation.
+// Package domain defines the core types and interfaces for the collection service.
 package domain
 
 import (
@@ -6,7 +6,8 @@ import (
 	"time"
 )
 
-// SensorMeasurement TODO(@Magnus Dybdal): add proper documentation.
+// SensorMeasurement represents a single decoded payload reading from a LoRaWAN sensor,
+// tagged with the originating device and the internal company it belongs to.
 type SensorMeasurement struct {
 	DeviceEUI string         `json:"device_eui"`
 	Timestamp time.Time      `json:"timestamp"`
@@ -14,16 +15,18 @@ type SensorMeasurement struct {
 	CompanyID string         `json:"company_id"`
 }
 
-// MeasurementRepository TODO(@Magnus Dybdal): add proper documentation.
+// MeasurementRepository is the persistence interface for sensor measurements.
 type MeasurementRepository interface {
 	Insert(ctx context.Context, measurement SensorMeasurement, tenantID string) error
-	FindLatest(ctx context.Context, deviceEUI string) (SensorMeasurement, error)
-	FindByTimeRange(ctx context.Context, deviceEUI string, from, to time.Time) ([]SensorMeasurement, error)
+	FindLatest(ctx context.Context, companyID string, deviceEUI string) (SensorMeasurement, error)
+	FindByTimeRange(ctx context.Context, companyID string, deviceEUI string, from, to time.Time) ([]SensorMeasurement, error)
+	FindPayloadKeys(ctx context.Context, deviceEUI string) ([]string, error)
 }
 
-// MeasurementService TODO(@Magnus Dybdal): add proper documentation.
+// MeasurementService is the business logic interface for sensor measurements.
 type MeasurementService interface {
 	Create(ctx context.Context, measurement SensorMeasurement, tenantID string) error
-	GetLatest(ctx context.Context, deviceEUI string) (SensorMeasurement, error)
-	GetByTimeRange(ctx context.Context, deviceEUI string, from, to time.Time) ([]SensorMeasurement, error)
+	GetLatest(ctx context.Context, companyID string, deviceEUI string) (SensorMeasurement, error)
+	GetByTimeRange(ctx context.Context, companyID string, deviceEUI string, from, to time.Time) ([]SensorMeasurement, error)
+	GetPayloadKeys(ctx context.Context, deviceEUI string) ([]string, error)
 }
